@@ -6,13 +6,16 @@
     <title>ตั้งกระทู้ใหม่ - ศิษย์หลวงปู่</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;700&family=Sarabun:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        /* สไตล์ทั้งหมดเหมือนเดิมเป๊ะ ขอละไว้เพื่อความกระชับ */
         html { scroll-behavior: smooth; overflow-x: hidden; width: 100%; } * { box-sizing: border-box; }
         :root { --bg-deep: #070402; --bg-glow: #2a1805; --gold-light: #f5d77f; --gold-main: #d4af37; --gold-dark: #8a6315; --text-muted: #8a7761; }
         body { margin: 0; padding: 0; width: 100%; min-height: 100vh; background-color: var(--bg-deep); background-image: radial-gradient(circle at 50% 50%, var(--bg-glow) 0%, var(--bg-deep) 90%); background-attachment: fixed; color: #d1bfae; font-family: 'Sarabun', sans-serif; overflow-x: hidden; }
         body::before, body::after { content: ""; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; }
-        body::before { z-index: -2; background-image: radial-gradient(2px 2px at 40px 60px, var(--gold-light), transparent), radial-gradient(1.5px 1.5px at 150px 120px, var(--gold-main), transparent); background-size: 200px 200px; animation: floatingMagic 15s linear infinite; opacity: 0.5; }
-        @keyframes floatingMagic { 0% { background-position: 0px 0px; } 100% { background-position: 200px -200px; } }
+        
+        /* ===== ละอองมนตรา (GPU) ===== */
+        body::before { z-index: -2; background-image: radial-gradient(2px 2px at 40px 60px, var(--gold-light), transparent), radial-gradient(1.5px 1.5px at 150px 120px, var(--gold-main), transparent), radial-gradient(2.5px 2.5px at 90px 200px, var(--gold-light), transparent), radial-gradient(1.5px 1.5px at 110px 90px, var(--gold-light), transparent); background-size: 200px 200px; opacity: 0.4; animation: floatingMagic 15s linear infinite; will-change: transform; }
+        body::after { z-index: -1; background-image: radial-gradient(3px 3px at 20px 30px, var(--gold-main), transparent), radial-gradient(2px 2px at 120px 80px, var(--gold-light), transparent), radial-gradient(3px 3px at 220px 150px, var(--gold-dark), transparent); background-size: 350px 350px; opacity: 0.25; animation: floatingMagic2 22s linear infinite; will-change: transform; }
+        @keyframes floatingMagic { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(200px, -200px, 0); } } @keyframes floatingMagic2 { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-350px, -350px, 0); } }
+
         h1, h2, h3, h4 { font-family: 'Prompt', sans-serif; margin: 0; }
         .main-container { position: relative; isolation: isolate; max-width: 1200px; width: 92%; margin: 40px auto; padding: 40px 30px; background-color: rgba(7, 4, 2, 0.85); border: 1px solid var(--gold-dark); border-radius: 16px; backdrop-filter: blur(10px); }
         .corner-decor { position: absolute; width: clamp(60px, 8vw, 110px); z-index: 20; pointer-events: none; opacity: 0.7; }
@@ -30,9 +33,10 @@
         .form-actions { display: flex; gap: 15px; margin-top: 30px; } .btn-submit { flex: 2; background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; border: none; padding: 15px; border-radius: 6px; font-family: 'Prompt', font-weight: bold; font-size: 1.1rem; cursor: pointer; } .btn-cancel { flex: 1; background: transparent; color: var(--text-muted); border: 1px solid var(--text-muted); padding: 15px; border-radius: 6px; cursor: pointer; text-align: center; text-decoration: none; }
         .widget { background: rgba(12, 7, 4, 0.7); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 8px; padding: 20px; margin-bottom: 25px; } .widget-title { color: var(--gold-main); font-size: 1.2rem; margin-bottom: 15px; border-bottom: 1px solid rgba(138, 99, 21, 0.3); padding-bottom: 10px; }
         .rules-list { list-style: none; padding: 0; margin: 0; color: #d1bfae; font-size: 0.95rem; line-height: 1.6; } .rules-list li { margin-bottom: 12px; padding-left: 20px; position: relative; } .rules-list li::before { content: '❖'; color: #a82e2e; position: absolute; left: 0; }
+        
         #guardOverlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--gold-main); font-family: 'Prompt', sans-serif; }
         
-        /* สไตล์แจ้งเตือนแบบ Custom เหมือนหน้าอื่น */
+        /* Custom Alert CSS */
         .sect-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(7, 4, 2, 0.9); backdrop-filter: blur(8px); z-index: 1000; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; } .sect-modal-overlay.active { display: flex; opacity: 1; }
         .sect-modal-content { position: relative; background: linear-gradient(135deg, #1a120b, #0a0603); border: 1px solid var(--gold-main); border-radius: 12px; width: 90%; max-width: 450px; padding: 40px 30px 60px 30px; box-shadow: 0 15px 40px rgba(0,0,0,0.9), inset 0 0 20px rgba(212,175,55,0.1); transform: translateY(-20px); transition: transform 0.3s ease; } .sect-modal-overlay.active .sect-modal-content { transform: translateY(0); }
         .modal-corner { position: absolute; width: 60px; pointer-events: none; opacity: 0.8; } .mc-top-left { top: 12px; left: 12px; transform: scaleX(-1); } .mc-top-right { top: 12px; right: 12px; } .mc-bottom-left { bottom: 12px; left: 12px; transform: scaleX(-1) scaleY(-1); } .mc-bottom-right { bottom: 12px; right: 12px; transform: scaleY(-1); }
@@ -134,7 +138,7 @@
 
     <script>
         const API_CONFIG = {
-            USE_REAL_API: false, // สลับเป็น true เพื่อใช้ Cloudflare Worker
+            USE_REAL_API: false, 
             BASE_URL: "https://your-worker-url.workers.dev/api"
         };
 
@@ -148,10 +152,7 @@
                             body: JSON.stringify(postData)
                         });
                         return await response.json();
-                    } catch (error) {
-                        console.error("Error creating post:", error);
-                        return { success: false };
-                    }
+                    } catch (error) { return { success: false }; }
                 } else {
                     return new Promise((resolve) => {
                         setTimeout(() => {
@@ -180,14 +181,11 @@
             const userType = localStorage.getItem('siy_usertype'); 
             
             setTimeout(() => {
-                // 🛑 1. ปิดม่านสีดำ (Guard Overlay) ก่อนเสมอ เพื่อให้เห็นกล่องแจ้งเตือน
                 document.getElementById('guardOverlay').style.display = 'none';
 
                 if (!savedUser || userType === 'guest') {
-                    // 🛑 2. ถ้าเป็น Guest หรือคนนอก ให้โชว์กล่องเตือนแล้วเตะกลับ
                     showCustomAlert('เขตหวงห้าม! วิญญาณเร่ร่อนไม่อาจสร้างศิลาจารึกใหม่ได้ ต้องฝากตัวเป็นศิษย์ก่อน', 'webboard.html');
                 } else {
-                    // ✅ 3. ถ้าเป็น Member ปกติ ให้โชว์หน้ากรอกข้อมูลตั้งกระทู้
                     document.getElementById('authorName').textContent = savedUser;
                     document.getElementById('mainContent').style.display = 'block';
                 }
@@ -201,13 +199,11 @@
 
             if (!title || !content) { showCustomAlert('โปรดระบุหัวข้อและเนื้อหาให้ครบถ้วนเสียก่อน'); return; }
 
-            // ปลี่ยนปุ่มเป็นสถานะกำลังโหลด
             const submitBtn = document.getElementById('submitPostBtn');
             submitBtn.textContent = "กำลังสลักศิลาจารึก...";
             submitBtn.disabled = true;
 
             const now = new Date();
-            // สร้างเวลาตามเวลาในประเทศไทย (อ้างอิงจาก Context ปัจจุบัน 24 ส.ค. 2026)
             const timeStr = '24 ส.ค. 2569 | ' + now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0') + ' น.';
 
             const newPost = {
