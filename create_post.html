@@ -11,7 +11,6 @@
         body { margin: 0; padding: 0; width: 100%; min-height: 100vh; background-color: var(--bg-deep); background-image: radial-gradient(circle at 50% 50%, var(--bg-glow) 0%, var(--bg-deep) 90%); background-attachment: fixed; color: #d1bfae; font-family: 'Sarabun', sans-serif; overflow-x: hidden; }
         body::before, body::after { content: ""; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; }
         
-        /* ===== ละอองมนตรา (GPU) ===== */
         body::before { z-index: -2; background-image: radial-gradient(2px 2px at 40px 60px, var(--gold-light), transparent), radial-gradient(1.5px 1.5px at 150px 120px, var(--gold-main), transparent), radial-gradient(2.5px 2.5px at 90px 200px, var(--gold-light), transparent), radial-gradient(1.5px 1.5px at 110px 90px, var(--gold-light), transparent); background-size: 200px 200px; opacity: 0.4; animation: floatingMagic 15s linear infinite; will-change: transform; }
         body::after { z-index: -1; background-image: radial-gradient(3px 3px at 20px 30px, var(--gold-main), transparent), radial-gradient(2px 2px at 120px 80px, var(--gold-light), transparent), radial-gradient(3px 3px at 220px 150px, var(--gold-dark), transparent); background-size: 350px 350px; opacity: 0.25; animation: floatingMagic2 22s linear infinite; will-change: transform; }
         @keyframes floatingMagic { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(200px, -200px, 0); } } @keyframes floatingMagic2 { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-350px, -350px, 0); } }
@@ -36,7 +35,6 @@
         
         #guardOverlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--gold-main); font-family: 'Prompt', sans-serif; }
         
-        /* Custom Alert CSS */
         .sect-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(7, 4, 2, 0.9); backdrop-filter: blur(8px); z-index: 1000; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; } .sect-modal-overlay.active { display: flex; opacity: 1; }
         .sect-modal-content { position: relative; background: linear-gradient(135deg, #1a120b, #0a0603); border: 1px solid var(--gold-main); border-radius: 12px; width: 90%; max-width: 450px; padding: 40px 30px 60px 30px; box-shadow: 0 15px 40px rgba(0,0,0,0.9), inset 0 0 20px rgba(212,175,55,0.1); transform: translateY(-20px); transition: transform 0.3s ease; } .sect-modal-overlay.active .sect-modal-content { transform: translateY(0); }
         .modal-corner { position: absolute; width: 60px; pointer-events: none; opacity: 0.8; } .mc-top-left { top: 12px; left: 12px; transform: scaleX(-1); } .mc-top-right { top: 12px; right: 12px; } .mc-bottom-left { bottom: 12px; left: 12px; transform: scaleX(-1) scaleY(-1); } .mc-bottom-right { bottom: 12px; right: 12px; transform: scaleY(-1); }
@@ -64,17 +62,17 @@
 
         <div class="post-layout">
             <div class="post-main-content">
-                <a href="webboard.html" class="btn-back">⬅️ ถอยกลับลานเสวนา</a>
+                <a href="webboard.html" class="btn-back">ถอยกลับลานเสวนา</a>
                 <div class="breadcrumb"><a href="webboard.html">ลานเสวนา</a> > <span style="color: #fff;">ตั้งกระทู้ใหม่</span></div>
 
                 <div class="form-card">
-                    <div class="form-header">📝 สลักเรื่องราวลงศิลา</div>
+                    <div class="form-header">สลักเรื่องราวลงศิลา</div>
                     
                     <div class="form-group">
                         <label>หมวดหมู่คัมภีร์</label>
                         <select class="form-select" id="postCategory">
-                            <option value="1">🔥 ธรรมะ & ธรรมาลัย</option>
-                            <option value="2">⚔️ เรื่องเล่า & ตำนาน</option>
+                            <option value="1">ธรรมะ & ธรรมาลัย</option>
+                            <option value="2">เรื่องเล่า & ตำนาน</option>
                         </select>
                     </div>
 
@@ -88,7 +86,7 @@
                         <div class="editor-toolbar">
                             <button class="editor-btn"><b>B</b></button>
                             <button class="editor-btn"><i>I</i></button>
-                            <button class="editor-btn">🔗 ลิงก์</button>
+                            <button class="editor-btn">ลิงก์</button>
                         </div>
                         <textarea id="postContent" class="form-textarea" placeholder="จงเขียนเล่าเรื่องราวหรือสิ่งที่ท่านต้องการสนทนา..."></textarea>
                     </div>
@@ -104,10 +102,9 @@
                 <div class="widget">
                     <h4 class="widget-title">ผู้ลงนามบัญญัติ</h4>
                     <div style="display: flex; align-items: center; gap: 12px;">
-                        <span style="font-size: 2rem;">📿</span>
                         <div>
                             <h4 id="authorName" style="color: var(--gold-light); margin: 0; font-family: 'Prompt', sans-serif;">นามแฝง</h4>
-                            <p style="color: var(--text-muted); font-size: 0.8rem; margin: 0;">🛡️ ผู้ศรัทธาแห่งสำนัก</p>
+                            <p style="color: var(--text-muted); font-size: 0.8rem; margin: 0;">ผู้ศรัทธาแห่งสำนัก</p>
                         </div>
                     </div>
                 </div>
@@ -123,14 +120,13 @@
         </div>
     </div>
 
-    <!-- Custom Alert Modal -->
     <div class="sect-modal-overlay" id="customAlertModal">
         <div class="sect-modal-content">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-left" alt="">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-right" alt="">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-bottom-left" alt="">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-bottom-right" alt="">
-            <div class="modal-header"><h3 style="font-size: 1.4rem;">📜 ประกาศสำนัก</h3></div>
+            <div class="modal-header"><h3 style="font-size: 1.4rem;">ประกาศสำนัก</h3></div>
             <p id="customAlertMessage" style="color: #e2d4c3; font-size: 1.05rem; margin-bottom: 25px; text-align:center;">ข้อความแจ้งเตือน</p>
             <button type="button" class="btn-submit-modal" id="customAlertBtn">รับทราบ</button>
         </div>
@@ -214,8 +210,7 @@
                 author: localStorage.getItem('siy_username'),
                 timestamp: timeStr,
                 views: 0,
-                replies: 0,
-                icon: category === "1" ? "📜" : "🕯️" 
+                replies: 0
             };
 
             const result = await ApiManager.createPost(newPost);
