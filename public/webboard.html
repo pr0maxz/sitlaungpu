@@ -460,28 +460,59 @@ function checkAndApplyAutoPromotion(username) {
             enterAsAnonymous();
         }
 
-        function handleSubmitAction() {
+        async function handleSubmitAction() {
             const usernameInput = document.getElementById('regUsername').value.trim();
             const passwordInput = document.getElementById('regPassword').value.trim();
 
-            if (!usernameInput || !passwordInput) { showCustomAlert('กรุณากรอกนามแฝงและรหัสผ่านลับให้ครบถ้วน'); return; }
-
-            let usersDB = JSON.parse(localStorage.getItem('siy_users')) || [];
+            if (!usernameInput || !passwordInput) { 
+                showCustomAlert('กรุณากรอกนามแฝงและรหัสผ่านลับให้ครบถ้วน'); 
+                return; 
+            }
 
             if (currentModalMode === 'register') {
-                if (document.getElementById('regCaptchaInput').value.trim() !== 'สัตยาสาบาน') { showCustomAlert('ตอบคำถามกันผีไม่ถูกต้อง! (ต้องพิมพ์คำว่า "สัตยาสาบาน")'); return; }
-                const userExists = usersDB.find(u => u.username === usernameInput);
-                if (userExists) { showCustomAlert('นามแฝงนี้มีผู้ใช้งานแล้ว โปรดใช้นามแฝงอื่น หรือเลือกเข้าสู่ระบบ'); return; }
+                if (document.getElementById('regCaptchaInput').value.trim() !== 'สัตยาสาบาน') { 
+                    showCustomAlert('ตอบคำถามกันผีไม่ถูกต้อง! (ต้องพิมพ์คำว่า "สัตยาสาบาน")'); 
+                    return; 
+                }
 
-                // สมาชิกใหม่จะได้รับยศ 5 (เด็กวัด)
-                usersDB.push({ username: usernameInput, password: passwordInput, role: '5' });
-                localStorage.setItem('siy_users', JSON.stringify(usersDB));
-                showCustomAlert('ลงนามสำเร็จ ยินดีต้อนรับสู่สำนัก, ' + usernameInput);
+                // สมัครสมาชิกใหม่ผ่าน API (D1)
+                try {
+                    const res = await fetch(`${API_CONFIG.BASE_URL}/users`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username: usernameInput, password: passwordInput, role: '5' })
+                    });
+                    const result = await res.json();
+                    if (!res.ok) {
+                        showCustomAlert(result.message || 'นามแฝงนี้มีผู้ใช้งานแล้ว');
+                        return;
+                    }
+                    showCustomAlert('ลงนามสำเร็จ ยินดีต้อนรับสู่สำนัก, ' + usernameInput);
+                } catch (e) {
+                    showCustomAlert('เกิดอาถรรพ์ขัดข้องในการเชื่อมต่อ');
+                    return;
+                }
+
             } else {
-                const user = usersDB.find(u => u.username === usernameInput);
-                if (!user) { showCustomAlert('ไม่พบนามแฝงนี้ในระบบ! โปรดสมัครเข้าสำนักก่อน'); return; }
-                if (user.password !== passwordInput) { showCustomAlert('รหัสผ่านลับไม่ถูกต้อง! อาถรรพ์กำลังสะท้อนกลับ'); return; }
-                showCustomAlert('เข้าสู่ระบบสำเร็จ, ยินดีต้อนรับกลับมา ' + usernameInput);
+                // เข้าสู่ระบบ: ดึงรายชื่อจาก D1 มาตรวจสอบ
+                try {
+                    const res = await fetch(`${API_CONFIG.BASE_URL}/users`);
+                    const usersDB = await res.json();
+                    
+                    const user = usersDB.find(u => u.username === usernameInput);
+                    if (!user) { 
+                        showCustomAlert('ไม่พบนามแฝงนี้ในระบบ! โปรดสมัครเข้าสำนักก่อน'); 
+                        return; 
+                    }
+                    if (user.password !== passwordInput) { 
+                        showCustomAlert('รหัสผ่านลับไม่ถูกต้อง! อาถรรพ์กำลังสะท้อนกลับ'); 
+                        return; 
+                    }
+                    showCustomAlert('เข้าสู่ระบบสำเร็จ, ยินดีต้อนรับกลับมา ' + usernameInput);
+                } catch (e) {
+                    showCustomAlert('เกิดอาถรรพ์ขัดข้องในการเชื่อมต่อแก่นเซิร์ฟเวอร์');
+                    return;
+                }
             }
             
             localStorage.setItem('siy_username', usernameInput);
