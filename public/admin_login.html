@@ -149,7 +149,7 @@
                 <span class="toggle-password" onclick="togglePassword()">เพ่งมอง</span>
             </div>
 
-            <button type="submit" class="btn-submit">ล่วงล้ำเขตแดน (Login)</button>
+            <button type="submit" class="btn-submit" id="loginBtn">ล่วงล้ำเขตแดน (Login)</button>
             <a href="index.html" class="back-link">← ถอยกลับสู่โลกเบื้องหน้า</a>
         </form>
     </div>
@@ -164,6 +164,12 @@
     </div>
 
     <script>
+        // 🌟 ตั้งค่าเชื่อมต่อ API จริง 🌟
+        const API_CONFIG = { 
+            USE_REAL_API: true, 
+            BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" // (เปลี่ยนเป็น Worker URL จริงของคุณ หรือถ้าเทส Local ให้ใช้ http://127.0.0.1:8787/api)
+        };
+
         function togglePassword() {
             const pwdInput = document.getElementById('adminPass');
             const toggleIcon = document.querySelector('.toggle-password');
@@ -194,49 +200,60 @@
             document.getElementById('alertModal').classList.remove('active');
         }
 
-        function handleAdminLogin(e) {
+        async function handleAdminLogin(e) {
             e.preventDefault();
-            const user = document.getElementById('adminUser').value.trim();
-            const pass = document.getElementById('adminPass').value.trim();
+            const username = document.getElementById('adminUser').value.trim();
+            const password = document.getElementById('adminPass').value.trim();
+            const btn = document.getElementById('loginBtn');
 
-            // ดึงข้อมูล User จาก LocalStorage (เหมือนที่ระบบ admin.html ใช้)
-            let usersDB = JSON.parse(localStorage.getItem('siy_users')) || [];
-            
-            // กรณีไม่มี Database เลย (เข้าครั้งแรก) สร้าง Default Admin ให้
-            if (usersDB.length === 0) {
-                usersDB = [{ username: "ADMIN", password: "password", role: "1" }];
-                localStorage.setItem('siy_users', JSON.stringify(usersDB));
+            btn.textContent = 'กำลังร่ายมนตรา...';
+            btn.disabled = true;
+
+            try {
+                let response;
+                if (API_CONFIG.USE_REAL_API) {
+                    // 🔮 ส่งข้อมูลไปเช็คที่ Backend (Cloudflare D1)
+                    response = await fetch(`${API_CONFIG.BASE_URL}/admin/login`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username, password })
+                    });
+                } else {
+                    // ระบบจำลองเดิม (เผื่อสำรอง)
+                    let usersDB = JSON.parse(localStorage.getItem('siy_users')) || [];
+                    const foundUser = usersDB.find(u => u.username === username);
+                    if (!foundUser || foundUser.password !== password || foundUser.role !== '1') {
+                        throw new Error('นามหรือรหัสผ่านอาคมไม่ถูกต้อง!');
+                    }
+                    response = { ok: true, json: async () => ({ success: true, username: foundUser.username }) };
+                }
+
+                const result = await response.json();
+
+                if (!response.ok || !result.success) {
+                    showAlert('อาถรรพ์สะท้อนกลับ!', result.error || 'รหัสผ่านอาคมผิดเพี้ยน หรือท่านไม่ใช่ "ปรมัตถ์"!');
+                    btn.textContent = 'ล่วงล้ำเขตแดน (Login)';
+                    btn.disabled = false;
+                    return;
+                }
+
+                // Login สำเร็จ
+                showAlert('ยินดีต้อนรับ', 'มนตราบรรลุผล... ประตูเมืองลับแลเปิดออกแล้วท่านจ้าวปะรำพิธี', true);
+                
+                // เซ็ต Session
+                localStorage.setItem('siy_username', result.username || username);
+                localStorage.setItem('siy_usertype', 'admin');
+
+                setTimeout(() => {
+                    window.location.href = 'admin.html';
+                }, 1500);
+
+            } catch (error) {
+                console.error('Login Error:', error);
+                showAlert('ผู้บุกรุก!', 'เกิดอาถรรพ์ขัดข้องในการเชื่อมต่อสู่แก่นเซิร์ฟเวอร์');
+                btn.textContent = 'ล่วงล้ำเขตแดน (Login)';
+                btn.disabled = false;
             }
-
-            const foundUser = usersDB.find(u => u.username === user);
-
-            if (!foundUser) {
-                showAlert('ผู้บุกรุก!', 'มนตราป้องกันทำงาน... ไม่มีนามของเจ้าในจารึกเมืองนี้!');
-                return;
-            }
-
-            if (foundUser.password !== pass) {
-                showAlert('อาถรรพ์สะท้อนกลับ!', 'รหัสผ่านอาคมผิดเพี้ยน! จงถอยกลับไปเสีย!');
-                return;
-            }
-
-            // ตรวจสอบระดับขั้น (Role 1 = ปรมัตถ์/Admin)
-            if (foundUser.role !== '1') {
-                showAlert('เขตหวงห้าม!', 'ตบะบารมีของท่านยังไม่เพียงพอ ทวารนี้เปิดให้เฉพาะ "ปรมัตถ์" เท่านั้น!');
-                return;
-            }
-
-            // Login สำเร็จ
-            showAlert('ยินดีต้อนรับ', 'มนตราบรรลุผล... ประตูเมืองลับแลเปิดออกแล้วท่านจ้าวปะรำพิธี', true);
-            
-            // เซ็ต Session สั้นๆ (จำลอง) ให้รู้ว่า Login แล้ว
-            localStorage.setItem('siy_username', foundUser.username);
-            localStorage.setItem('siy_usertype', 'admin');
-
-            // หน่วงเวลาเล็กน้อยให้ได้อ่านข้อความ แล้วเด้งไปหน้า admin.html
-            setTimeout(() => {
-                window.location.href = 'admin.html';
-            }, 1500);
         }
     </script>
 </body>
