@@ -161,7 +161,8 @@
             </div>
             <div class="form-group">
                 <label id="usernameLabel">นามแฝง (Username)</label>
-                <input type="text" id="regUsername" class="form-input" placeholder="ภาษาไทยเท่านั้น">
+                <!-- บล็อกไม่ให้พิมพ์ภาษาอังกฤษ -->
+                <input type="text" id="regUsername" class="form-input" placeholder="ภาษาไทยเท่านั้น" oninput="this.value = this.value.replace(/[^\u0E00-\u0E7F]/g, '')" onpaste="setTimeout(() => { this.value = this.value.replace(/[a-zA-Z]/g, ''); }, 10)">
             </div>
             <div class="form-group">
                 <label>รหัสผ่านลับ (Password)</label>
@@ -171,7 +172,7 @@
                 </div>
             </div>
             <div class="captcha-box" id="captchaBoxContainer">
-                <p><strong>ด่านทดสอบสัจจะ:</strong> จงพิมพ์คำว่า "สัตยาสาบาน"</p>
+                <p><strong>จงพิมพ์คำว่า:</strong> "สัตยาสาบาน"</p>
                 <input type="text" id="regCaptchaInput" class="form-input" style="text-align: center;">
             </div>
             <div class="modal-actions">
@@ -264,7 +265,8 @@
             }
         };
 
-        async function loadAndRenderPosts() {
+        // 🌟 รองรับการค้นหากระทู้ผ่าน searchQuery 🌟
+        async function loadAndRenderPosts(searchQuery = '') {
             const cat1Container = document.getElementById('dynamic-category-1');
             const cat2Container = document.getElementById('dynamic-category-2');
 
@@ -274,6 +276,22 @@
             if (!posts || posts.length === 0) {
                 cat1Container.innerHTML = '<div style="padding: 20px; color: var(--gold-dark); text-align:center;">ยังไม่มีจารึกในหมวดนี้</div>';
                 cat2Container.innerHTML = '<div style="padding: 20px; color: var(--gold-dark); text-align:center;">ยังไม่มีจารึกในหมวดนี้</div>';
+                return;
+            }
+
+            // กรองข้อมูลตามคำค้นหา
+            if (searchQuery && searchQuery.trim() !== '') {
+                const q = searchQuery.toLowerCase().trim();
+                posts = posts.filter(p => 
+                    (p.title && p.title.toLowerCase().includes(q)) || 
+                    (p.content && p.content.toLowerCase().includes(q)) || 
+                    (p.author && p.author.toLowerCase().includes(q))
+                );
+            }
+
+            if (posts.length === 0) {
+                cat1Container.innerHTML = '<div style="padding: 20px; color: var(--gold-dark); text-align:center;">ไม่พบจารึกที่ค้นหา</div>';
+                cat2Container.innerHTML = '<div style="padding: 20px; color: var(--gold-dark); text-align:center;">ไม่พบจารึกที่ค้นหา</div>';
                 return;
             }
 
@@ -303,13 +321,28 @@
                 else if (post.category === "2") cat2Container.innerHTML += postHTML;
             });
 
-            if(cat1Container.innerHTML === '') cat1Container.innerHTML = '<div style="padding: 20px; color: #8a6315; text-align:center;">ยังไม่มีจารึกในหมวดนี้</div>';
-            if(cat2Container.innerHTML === '') cat2Container.innerHTML = '<div style="padding: 20px; color: #8a6315; text-align:center;">ยังไม่มีจารึกในหมวดนี้</div>';
+            if(cat1Container.innerHTML === '') cat1Container.innerHTML = '<div style="padding: 20px; color: var(--gold-dark); text-align:center;">ยังไม่มีจารึกในหมวดนี้</div>';
+            if(cat2Container.innerHTML === '') cat2Container.innerHTML = '<div style="padding: 20px; color: var(--gold-dark); text-align:center;">ยังไม่มีจารึกในหมวดนี้</div>';
         }
 
         document.addEventListener('DOMContentLoaded', () => {
             loadAndRenderPosts();
             checkUserLoginStatus();
+
+            // 🌟 ผูกเหตุการณ์ปุ่มค้นหาและกด Enter 🌟
+            const searchInput = document.querySelector('.search-input');
+            const searchBtn = document.querySelector('.search-btn');
+
+            if (searchBtn && searchInput) {
+                searchBtn.addEventListener('click', () => {
+                    loadAndRenderPosts(searchInput.value);
+                });
+                searchInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        loadAndRenderPosts(searchInput.value);
+                    }
+                });
+            }
         });
 
         function showCustomAlert(message, redirectUrl = null) {
@@ -422,6 +455,12 @@
             if (!usernameInput || !passwordInput) { 
                 showCustomAlert('กรุณากรอกนามแฝงและรหัสผ่านลับให้ครบถ้วน'); 
                 return; 
+            }
+
+            // ป้องกันภาษาอังกฤษหลุดรอด
+            if (/[a-zA-Z]/.test(usernameInput)) {
+                showCustomAlert('นามแฝง (Username) ห้ามมีอักษรภาษาอังกฤษเด็ดขาด!');
+                return;
             }
 
             if (currentModalMode === 'register') {
