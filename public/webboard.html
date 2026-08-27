@@ -493,11 +493,17 @@ function checkAndApplyAutoPromotion(username) {
 
                 // สมัครสมาชิกใหม่ผ่าน API (D1)
                 try {
-                    const res = await fetch(`${API_CONFIG.BASE_URL}/users`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ username: usernameInput, password: passwordInput, role: '5' })
-                    });
+                    // ตอนส่ง fetch สมัครสมาชิกไปที่ D1
+const res = await fetch(`${API_CONFIG.BASE_URL}/users`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ 
+        username: usernameInput, 
+        password: passwordInput, 
+        role: '5',             // บังคับให้เป็นระดับ 5 เสมอสำหรับสมาชิกใหม่
+        rank_name: 'เด็กวัด'    // บังคับชื่อยศเริ่มต้นเป็น "เด็กวัด" ไม่ใช่วิญญาณเร่ร่อน
+    })
+});
                     const result = await res.json();
                     if (!res.ok) {
                         showCustomAlert(result.message || 'นามแฝงนี้มีผู้ใช้งานแล้ว');
