@@ -2,11 +2,12 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ตั้งกระทู้ใหม่ - ศิษย์หลวงปู่</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;700&family=Sarabun:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        html { scroll-behavior: smooth; overflow-x: hidden; width: 100%; } * { box-sizing: border-box; }
+        html, body { scroll-behavior: smooth; overflow-x: hidden; width: 100%; max-width: 100vw; margin: 0; padding: 0; } 
+        * { box-sizing: border-box; }
         :root { --bg-deep: #070402; --bg-glow: #2a1805; --gold-light: #f5d77f; --gold-main: #d4af37; --gold-dark: #8a6315; --text-muted: #8a7761; }
         body { margin: 0; padding: 0; width: 100%; min-height: 100vh; background-color: var(--bg-deep); background-image: radial-gradient(circle at 50% 50%, var(--bg-glow) 0%, var(--bg-deep) 90%); background-attachment: fixed; color: #d1bfae; font-family: 'Sarabun', sans-serif; overflow-x: hidden; }
         body::before, body::after { content: ""; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; }
@@ -16,74 +17,65 @@
         @keyframes floatingMagic { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(200px, -200px, 0); } } @keyframes floatingMagic2 { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-350px, -350px, 0); } }
 
         h1, h2, h3, h4 { font-family: 'Prompt', sans-serif; margin: 0; }
-        .main-container { position: relative; isolation: isolate; max-width: 1200px; width: 92%; margin: 40px auto; padding: 40px 30px; background-color: rgba(7, 4, 2, 0.85); border: 1px solid var(--gold-dark); border-radius: 16px; backdrop-filter: blur(10px); }
+        .main-container { position: relative; isolation: isolate; max-width: 1200px; width: 92%; margin: 40px auto; padding: 40px 30px; background-color: rgba(7, 4, 2, 0.85); border: 1px solid var(--gold-dark); border-radius: 16px; backdrop-filter: blur(10px); box-sizing: border-box; }
         .corner-decor { position: absolute; width: clamp(60px, 8vw, 110px); z-index: 20; pointer-events: none; opacity: 0.7; }
         .corner-top-left { top: 12px; left: 12px; transform: scaleX(-1); } .corner-top-right { top: 12px; right: 12px; } .corner-bottom-left { bottom: 12px; left: 12px; transform: scaleX(-1) scaleY(-1); } .corner-bottom-right { bottom: 12px; right: 12px; transform: scaleY(-1); }
         header { text-align: center; margin-bottom: 40px; position: relative; z-index: 10; } .site-title img { height: clamp(60px, 8vw, 100px); filter: drop-shadow(0 0 20px rgba(212,175,55,0.4)); }
         
-        .post-layout { display: grid; grid-template-columns: 2.2fr 1fr; gap: 25px; margin-top: 10px; }
+        .post-layout { display: grid; grid-template-columns: 2.2fr 1fr; gap: 25px; margin-top: 10px; width: 100%; }
         .breadcrumb { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 20px; } .breadcrumb a { color: var(--gold-light); text-decoration: none; }
         .btn-back { display: inline-flex; align-items: center; gap: 8px; color: var(--gold-light); text-decoration: none; margin-bottom: 20px; font-size: 0.95rem; }
-        .form-card { background: rgba(12, 7, 4, 0.75); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 10px; padding: 30px; margin-bottom: 30px; }
+        .form-card { background: rgba(12, 7, 4, 0.75); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 10px; padding: 30px; margin-bottom: 30px; width: 100%; box-sizing: border-box; }
         .form-header { color: var(--gold-main); font-size: 1.5rem; margin-bottom: 25px; border-bottom: 1px solid rgba(138, 99, 21, 0.3); padding-bottom: 15px; }
-        .form-group { margin-bottom: 20px; max-width: 100%; } .form-group label { display: block; color: var(--gold-light); margin-bottom: 8px; font-family: 'Prompt', sans-serif; }
-        .form-input, .form-select { width: 100%; background: rgba(0,0,0,0.6); border: 1px solid rgba(138, 99, 21, 0.5); color: #fff; padding: 12px 15px; border-radius: 6px; font-size: 1.05rem; } .form-select option { background: #1a120b; }
+        .form-group { margin-bottom: 20px; width: 100%; max-width: 100%; box-sizing: border-box; } .form-group label { display: block; color: var(--gold-light); margin-bottom: 8px; font-family: 'Prompt', sans-serif; }
+        .form-input, .form-select { width: 100%; max-width: 100%; background: rgba(0,0,0,0.6); border: 1px solid rgba(138, 99, 21, 0.5); color: #fff; padding: 12px 15px; border-radius: 6px; font-size: 1.05rem; box-sizing: border-box; } .form-select option { background: #1a120b; }
         
-        /* 🌟 ระบบ Editor Toolbar ปรับเหลือแค่รูปภาพและล้างรูปแบบ 🌟 */
-        .editor-toolbar { 
-            display: flex; 
-            flex-wrap: wrap; 
-            gap: 6px; 
-            background: rgba(10, 5, 2, 0.8); 
-            padding: 10px; 
-            border-radius: 8px 8px 0 0; 
-            border: 1px solid rgba(138, 99, 21, 0.5); 
-            border-bottom: none; 
-            width: 100%;
+        /* ล็อกขนาดกล่องเนื้อหาไม่ให้ล้นหน้าจอ และบังคับตัดคำ */
+        .form-textarea {
+            width: 100% !important;
+            max-width: 100% !important;
+            min-height: 250px;
+            background: rgba(0,0,0,0.6);
+            border: 1px solid rgba(138, 99, 21, 0.5);
+            color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 1.05rem;
+            font-family: 'Sarabun', sans-serif;
+            line-height: 1.6;
+            resize: vertical;
+            box-sizing: border-box !important;
+            word-break: break-word !important;
+            overflow-wrap: break-word !important;
+            white-space: pre-wrap !important;
         }
-        
-        .editor-btn { 
-            flex: 0 1 auto; 
-            min-width: 32px; 
-            background: rgba(212, 175, 55, 0.1); 
-            border: 1px solid rgba(212, 175, 55, 0.3); 
-            color: var(--gold-light); 
-            padding: 8px 15px; 
-            border-radius: 4px; 
-            cursor: pointer; 
-            font-family: 'Prompt', sans-serif; 
-            font-size: 0.9rem; 
-            transition: all 0.2s; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            white-space: nowrap; 
-        }
-        .editor-btn:hover { background: var(--gold-main); color: #000; box-shadow: 0 0 8px rgba(212,175,55,0.5); }
-        .editor-divider { width: 1px; background: rgba(138, 99, 21, 0.5); margin: 0 5px; flex-shrink: 0; }
-        
-        .editor-content { 
-            width: 100%; 
-            min-height: 250px; 
-            max-height: 600px; 
-            background: rgba(0,0,0,0.6); 
-            border: 1px solid rgba(138, 99, 21, 0.5); 
-            color: #fff; 
-            padding: 15px; 
-            border-radius: 0 0 8px 8px; 
-            font-size: 1.05rem; 
-            overflow-y: auto; 
-            overflow-x: hidden;
-            line-height: 1.6; 
-            word-wrap: break-word; 
-        }
-        .editor-content:focus { outline: none; border-color: var(--gold-main); box-shadow: inset 0 0 8px rgba(212,175,55,0.1); }
-        .editor-content:empty:before { content: attr(data-placeholder); color: #8a7761; pointer-events: none; display: block; }
-        .editor-content img { max-width: 100%; height: auto; border-radius: 8px; margin: 10px 0; border: 1px solid var(--gold-dark); }
-        .editor-content a { color: var(--gold-light); text-decoration: underline; }
+        .form-textarea:focus { outline: none; border-color: var(--gold-main); box-shadow: 0 0 8px rgba(212,175,55,0.3); }
 
-        .form-actions { display: flex; gap: 15px; margin-top: 30px; } .btn-submit { flex: 2; background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; border: none; padding: 15px; border-radius: 25px; font-family: 'Prompt', font-weight: bold; font-size: 1.1rem; cursor: pointer; } .btn-cancel { flex: 1; background: transparent; color: var(--text-muted); border: 1px solid var(--text-muted); padding: 15px; border-radius: 25px; cursor: pointer; text-align: center; text-decoration: none; }
-        .widget { background: rgba(12, 7, 4, 0.7); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 8px; padding: 20px; margin-bottom: 25px; } .widget-title { color: var(--gold-main); font-size: 1.2rem; margin-bottom: 15px; border-bottom: 1px solid rgba(138, 99, 21, 0.3); padding-bottom: 10px; }
+        /* ปุ่มแนบรูปภาพ */
+        .btn-attach-img {
+            background: linear-gradient(135deg, #8a6315, #d4af37);
+            color: #070402;
+            border: none;
+            padding: 8px 16px;
+            font-family: 'Prompt', sans-serif;
+            font-weight: bold;
+            font-size: 0.9rem;
+            border-radius: 6px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 10px;
+            transition: all 0.2s;
+        }
+        .btn-attach-img:hover { filter: brightness(1.15); transform: translateY(-1px); }
+
+        .form-actions { display: flex; gap: 15px; margin-top: 30px; width: 100%; } 
+        .btn-submit { flex: 2; background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; border: none; padding: 15px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-weight: bold; font-size: 1.1rem; cursor: pointer; } 
+        .btn-cancel { flex: 1; background: transparent; color: var(--text-muted); border: 1px solid var(--text-muted); padding: 15px; border-radius: 25px; cursor: pointer; text-align: center; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
+        
+        .widget { background: rgba(12, 7, 4, 0.7); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 8px; padding: 20px; margin-bottom: 25px; width: 100%; box-sizing: border-box; } 
+        .widget-title { color: var(--gold-main); font-size: 1.2rem; margin-bottom: 15px; border-bottom: 1px solid rgba(138, 99, 21, 0.3); padding-bottom: 10px; }
         .rules-list { list-style: none; padding: 0; margin: 0; color: #d1bfae; font-size: 0.95rem; line-height: 1.6; } .rules-list li { margin-bottom: 12px; padding-left: 20px; position: relative; } .rules-list li::before { content: '❖'; color: #a82e2e; position: absolute; left: 0; }
         
         #guardOverlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--gold-main); font-family: 'Prompt', sans-serif; }
@@ -105,8 +97,6 @@
         @media (max-width: 600px) {
             .main-container { padding: 30px 15px; width: 95%; margin-top: 25px; }
             .form-card { padding: 20px 15px; } 
-            .editor-divider { display: none; } 
-            .editor-btn { font-size: 0.85rem; padding: 6px 10px; } 
         }
     </style>
 </head>
@@ -151,13 +141,12 @@
                     <div class="form-group">
                         <label>เนื้อหา (Content)</label>
                         
-                        <div class="editor-toolbar">
-                            <button type="button" class="editor-btn" onclick="insertImage()" title="แทรกรูปภาพ">🖼️ แนบรูปภาพ</button>
-                            <span class="editor-divider"></span>
-                            <button type="button" class="editor-btn" onclick="formatText('removeFormat')" title="ล้างรูปแบบ">🧹 ล้างข้อความ</button>
-                        </div>
+                        <!-- ปุ่มแนบรูปภาพ -->
+                        <button type="button" class="btn-attach-img" onclick="insertImageTag()">
+                            🖼️ แนบรูปภาพ
+                        </button>
                         
-                        <div id="postContent" class="editor-content" contenteditable="true" data-placeholder="จงเขียนเล่าเรื่องราวหรือสิ่งที่ท่านต้องการสนทนา (ห้ามวางลิงก์เว็บอื่น)..."></div>
+                        <textarea id="postContent" class="form-textarea" placeholder="จงเขียนเล่าเรื่องราวหรือสิ่งที่ท่านต้องการสนทนา (รองรับเฉพาะแท็กรูปภาพ <img src=...> เท่านั้น)..."></textarea>
                     </div>
 
                     <div class="form-actions">
@@ -201,7 +190,6 @@
             <div class="modal-header">
                 <h3>ประกาศสำนัก</h3>
             </div>
-            <!-- 🌟 ปรับข้อความแจ้งเตือนตรงนี้ 🌟 -->
             <p id="customAlertMessage" style="color: #e2d4c3; font-size: 1.05rem; margin-bottom: 25px; line-height: 1.5; text-align: center;">ข้อความแจ้งเตือน</p>
             <button type="button" class="btn-submit-modal" id="customAlertBtn" onclick="closeCustomAlert()">รับทราบ</button>
         </div>
@@ -209,9 +197,9 @@
 
     <script>
         const API_CONFIG = { 
-    USE_REAL_API: true, 
-    BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
-};
+            USE_REAL_API: true, 
+            BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
+        };
 
         function getUserRoleBadge(username) {
             let users = JSON.parse(localStorage.getItem('siy_users')) || [];
@@ -238,14 +226,7 @@
                         return await response.json();
                     } catch (error) { return { success: false }; }
                 } else {
-                    return new Promise((resolve) => {
-                        setTimeout(() => {
-                            const posts = JSON.parse(localStorage.getItem('siy_posts')) || [];
-                            posts.unshift(postData);
-                            localStorage.setItem('siy_posts', JSON.stringify(posts));
-                            resolve({ success: true });
-                        }, 800);
-                    });
+                    return { success: true };
                 }
             }
         };
@@ -281,39 +262,66 @@
             }, 800);
         });
 
-        function formatText(command) {
-            document.execCommand(command, false, null);
-            document.getElementById('postContent').focus();
-        }
+        // ฟังก์ชันแทรกโค้ดรูปภาพ <img src="..."> อัตโนมัติเมื่อกดปุ่มแนบรูป (แทรกได้หลายครั้งตามต้องการ)
+        // ฟังก์ชันสำหรับคอมพิวเตอร์: กดปุ่มแล้วแทรกโครงสร้าง <img src=""> พร้อมเลื่อนเคอร์เซอร์ไปรอรับลิงก์ด้านใน
+function insertImageTag() {
+    const textarea = document.getElementById('postContent');
+    const startPos = textarea.selectionStart;
+    const endPos = textarea.selectionEnd;
+    const textVal = textarea.value;
 
-        function insertImage() {
-            const url = prompt('ระบุลิงก์รูปภาพ (URL) ที่ต้องการแทรก:\n(แนะนำให้ใช้รูปที่ฝากไว้กับเว็บฝากรูป)');
-            if (url) {
-                document.execCommand('insertImage', false, url);
+    // โครงสร้างโค้ดที่ต้องการแทรก
+    const imgCode = '<img src="">';
+
+    // นำโค้ดไปแทรก ณ ตำแหน่งเคอร์เซอร์ปัจจุบัน
+    textarea.value = textVal.substring(0, startPos) + imgCode + textVal.substring(endPos, textVal.length);
+    
+    // ดึงโฟกัสกลับมาที่กล่องข้อความ และเลื่อนเคอร์เซอร์ไปไว้ข้างในเครื่องหมายคำพูด src="" พอดี
+    textarea.focus();
+    const cursorTarget = startPos + 10; // ตำแหน่งอยู่พอดีระหว่างเครื่องหมายคำพูด (src="[วางลิงก์ตรงนี้]")
+    textarea.setSelectionRange(cursorTarget, cursorTarget);
+}
+
+        // ฟังก์ชันตรวจสอบความปลอดภัย: อนุญาตเฉพาะโค้ดรูปภาพ <img src="..."> เท่านั้น ห้ามมีแท็ก HTML อื่นหรือลิงก์ภายนอกอื่นๆ
+        function validatePostContent(content) {
+            // ค้นหาแท็ก HTML ทุกตัวในข้อความ
+            const htmlTags = content.match(/<\/?[a-z][a-z0-9]*\b[^>]*>/gi);
+            if (htmlTags) {
+                for (let tag of htmlTags) {
+                    const lowerTag = tag.toLowerCase();
+                    // บังคับให้เป็นแท็ก <img> และต้องมีคำว่า src= เท่านั้น
+                    if (!lowerTag.startsWith('<img') || !lowerTag.includes('src=')) {
+                        return { valid: false, error: '⚠️ อาถรรพ์สะท้อนกลับ!<br>ไม่อนุญาตให้ใช้แท็ก HTML หรือโค้ดอื่นๆ (อนุญาตเฉพาะรูปภาพ <img src="..."> เท่านั้น)' };
+                    }
+                }
             }
+
+            // ตรวจสอบลิงก์ภายนอก (URL) ที่อยู่นอกเหนือจาก attribute src ของแท็ก img
+            let textWithoutImgs = content.replace(/<img\s+[^>]*src="[^"]*"[^>]*>/gi, '');
+            textWithoutImgs = textWithoutImgs.replace(/<img\s+[^>]*src=[^\s>]+[^>]*>/gi, '');
+
+            const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+)/i;
+            if (urlRegex.test(textWithoutImgs)) {
+                return { valid: false, error: '⚠️ อาถรรพ์สะท้อนกลับ!<br>ไม่อนุญาตให้วางลิงก์ (URL) ภายนอกในเนื้อหา' };
+            }
+
+            return { valid: true };
         }
 
         async function handleCreatePost() {
             const title = document.getElementById('postTitle').value.trim();
-            const contentDiv = document.getElementById('postContent');
-            
-            const htmlContent = contentDiv.innerHTML.trim();
-            const rawText = contentDiv.textContent.trim();
+            const textarea = document.getElementById('postContent');
+            const content = textarea.value.trim();
 
-            if (!title || (!rawText && htmlContent.indexOf('<img') === -1)) { 
+            if (!title || !content) { 
                 showCustomAlert('โปรดระบุหัวข้อและเนื้อหาให้ครบถ้วนเสียก่อน'); 
                 return; 
             }
 
-            const lowerText = rawText.toLowerCase();
-            
-            const domainRegex = /([a-zA-Z0-9.-]+)\.(com|net|org|co|th|in|me|info|io|xyz|tv|cc|biz|asia|us|uk|app|club|pro|tech|site|online|store|shop|vip|live|network|world|life|today|tips|email|group|fund|expert|guru|mobi|name|tel|ac|edu|gov|mil|int|jobs|museum|arpa|aero|xxx|idv|ws|so|ru|cn|jp|br|de|fr|it|nl|eu|es|au|ca|za|kr|be|ch|at|se|no|fi|dk|su|to|pw|dev|ai|page|lol|link)\b/i;
-            const schemeRegex = /(https?:\/\/|www\.)/i;
-            const thaiDotRegex = /(ดอทคอม|ดอทเน็ต|ดอทโออาร์จี|ดอทซีโอ|ดอททีเอช|dotcom|dot\s*com|dotnet|dot\s*net|dotorg|dot\s*org)/i;
-
-            if (schemeRegex.test(lowerText) || domainRegex.test(lowerText) || thaiDotRegex.test(lowerText)) {
-                // 🌟 แก้ไขข้อความแจ้งเตือนตามคำสั่งอาจารย์ 🌟
-                showCustomAlert('⚠️ อาถรรพ์สะท้อนกลับ!<br>ไม่อนุญาตให้วางลิงก์ลงในเนื้อหา');
+            // ตรวจสอบความถูกต้องของเนื้อหาตามกฎสำนัก
+            const validation = validatePostContent(content);
+            if (!validation.valid) {
+                showCustomAlert(validation.error);
                 return;
             }
 
@@ -329,7 +337,7 @@
                 id: Date.now().toString(),
                 category: document.getElementById('postCategory').value,
                 title: title,
-                content: htmlContent,
+                content: content.replace(/\n/g, '<br>'), // แปลงการเว้นบรรทัดเป็น <br>
                 author: author,
                 timestamp: timeStr,
                 views: 0,
