@@ -215,69 +215,106 @@
     </div>
 
     <script>
-       // 🌟 1. ฟังก์ชันตรวจเช็กสิทธิ์แอดมิน (ปรับให้ Redirect เงียบๆ ไร้รอยต่อ) 🌟
-// 🌟 1. ปรับปรุงฟังก์ชันตรวจเช็กสิทธิ์แอดมินให้เช็กจาก Session หรือ API ของ D1
-async function checkAdminAuth() {
-    const savedUsername = localStorage.getItem('siy_username');
-    const userType = localStorage.getItem('siy_usertype');
-
-    // ถ้าไม่ได้ล็อกอิน หรือไม่ใช่สถานะ admin ให้เด้งออกทันที
-    if (!savedUsername || userType !== 'admin') {
-        window.location.replace('admin_login.html');
-        return false;
-    }
-
-    // ตรวจสอบกับ API จริง (D1) เพื่อความชัวร์ว่ายังมีสิทธิ์เป็นแอดมินจริง
-    try {
-        const res = await fetch(`${API_CONFIG.BASE_URL}/users`);
-        const usersDB = await res.json();
-        const currentUser = usersDB.find(u => u.username === savedUsername);
-
-        if (!currentUser || String(currentUser.role) !== '1') {
-            window.location.replace('admin_login.html');
-            return false;
-        }
-
-        // แสดงชื่อผู้ใช้งานที่ Header
-        const nameDisplay = document.getElementById('currentAdminName');
-        if (nameDisplay) nameDisplay.textContent = `👤 ${currentUser.username} (${currentUser.rank_name || 'ปรมัตถ์'})`;
-    } catch (e) {
-        // เผื่อกรณีออฟไลน์ ให้ใช้ชื่อจาก localStorage แสดงผลชั่วคราว
-        const nameDisplay = document.getElementById('currentAdminName');
-        if (nameDisplay) nameDisplay.textContent = `👤 ${savedUsername}`;
-    }
-
-    return true;
-}
-
-// 🌟 ปรับตอนเรียกใช้งานใน DOMContentLoaded ให้รองรับแบบ Async
-document.addEventListener('DOMContentLoaded', async () => {
-    if (await checkAdminAuth()) {
-        loadAdminData();
-    }
-});
-
         const API_CONFIG = { 
-    USE_REAL_API: true, 
-    BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
-};
-
-        const AdminAPI = {
-            async getPosts() { if (API_CONFIG.USE_REAL_API) { try { const res = await fetch(`${API_CONFIG.BASE_URL}/posts`); return await res.json(); } catch(e){ return []; } } else { return JSON.parse(localStorage.getItem('siy_posts')) || []; } },
-            async savePost(postData) { if (API_CONFIG.USE_REAL_API) { await fetch(`${API_CONFIG.BASE_URL}/posts`, { method: postData.id ? 'PUT' : 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(postData) }); } else { let posts = await this.getPosts(); if (postData.id) { const idx = posts.findIndex(p => p.id === postData.id); if (idx > -1) posts[idx] = { ...posts[idx], ...postData }; } else { const now = new Date(); const timeStr = '26 ส.ค. 2569 | ' + now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0') + ' น.'; posts.unshift({ ...postData, id: Date.now().toString(), timestamp: timeStr, views: 0, replies: 0, pinned: false }); } localStorage.setItem('siy_posts', JSON.stringify(posts)); } },
-            async deletePost(id) { if (API_CONFIG.USE_REAL_API) { await fetch(`${API_CONFIG.BASE_URL}/posts/${id}`, { method: 'DELETE' }); } else { let posts = await this.getPosts(); localStorage.setItem('siy_posts', JSON.stringify(posts.filter(p => p.id !== id))); } },
-            
-            async getUsers() { if (API_CONFIG.USE_REAL_API) { try { const res = await fetch(`${API_CONFIG.BASE_URL}/users`); return await res.json(); } catch(e){ return []; } } else { return JSON.parse(localStorage.getItem('siy_users')) || []; } },
-            async saveUser(userData, oldUsername) { if (API_CONFIG.USE_REAL_API) { await fetch(`${API_CONFIG.BASE_URL}/users`, { method: oldUsername ? 'PUT' : 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({...userData, oldUsername}) }); } else { let users = await this.getUsers(); if (oldUsername) { const idx = users.findIndex(u => u.username === oldUsername); if (idx > -1) users[idx] = userData; } else { if (users.find(u => u.username === userData.username)) throw new Error('DUPLICATE'); users.push(userData); } localStorage.setItem('siy_users', JSON.stringify(users)); } },
-            async deleteUser(username) { if (API_CONFIG.USE_REAL_API) { await fetch(`${API_CONFIG.BASE_URL}/users/${username}`, { method: 'DELETE' }); } else { let users = await this.getUsers(); localStorage.setItem('siy_users', JSON.stringify(users.filter(u => u.username !== username))); } },
-            
-            async getCMS() { if (API_CONFIG.USE_REAL_API) { try { const res = await fetch(`${API_CONFIG.BASE_URL}/cms`); return await res.json(); } catch(e){ return {}; } } else { return JSON.parse(localStorage.getItem('siy_index_cms')) || {}; } },
-            async saveCMS(cmsData) { if (API_CONFIG.USE_REAL_API) { await fetch(`${API_CONFIG.BASE_URL}/cms`, { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(cmsData) }); } else { let current = await this.getCMS(); localStorage.setItem('siy_index_cms', JSON.stringify({ ...current, ...cmsData })); } }
+            USE_REAL_API: true, 
+            BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
         };
 
-        function switchTab(tabId) { document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('active')); document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active')); document.getElementById(tabId).classList.add('active'); event.currentTarget.classList.add('active'); }
-        function showCustomAlert(msg) { document.getElementById('customAlertMessage').textContent = msg; document.getElementById('customAlertModal').classList.add('active'); }
-        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+        async function checkAdminAuth() {
+            const savedUsername = localStorage.getItem('siy_username');
+            const userType = localStorage.getItem('siy_usertype');
+
+            if (!savedUsername || userType !== 'admin') {
+                window.location.replace('admin_login.html');
+                return false;
+            }
+
+            try {
+                const res = await fetch(`${API_CONFIG.BASE_URL}/users`);
+                const usersDB = await res.json();
+                const currentUser = usersDB.find(u => u.username === savedUsername);
+
+                if (!currentUser || String(currentUser.role) !== '1') {
+                    window.location.replace('admin_login.html');
+                    return false;
+                }
+
+                const nameDisplay = document.getElementById('currentAdminName');
+                if (nameDisplay) nameDisplay.textContent = `👤 ${currentUser.username} (${currentUser.rank_name || 'ปรมัตถ์'})`;
+            } catch (e) {
+                const nameDisplay = document.getElementById('currentAdminName');
+                if (nameDisplay) nameDisplay.textContent = `👤 ${savedUsername}`;
+            }
+
+            return true;
+        }
+
+        const AdminAPI = {
+            async getPosts() { 
+                if (API_CONFIG.USE_REAL_API) { 
+                    try { const res = await fetch(`${API_CONFIG.BASE_URL}/posts`); return await res.json(); } catch(e){ return []; } 
+                } else { return JSON.parse(localStorage.getItem('siy_posts')) || []; } 
+            },
+            async savePost(postData) { 
+                if (API_CONFIG.USE_REAL_API) { 
+                    await fetch(`${API_CONFIG.BASE_URL}/posts`, { method: postData.id ? 'PUT' : 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(postData) }); 
+                } else { 
+                    let posts = await this.getPosts(); if (postData.id) { const idx = posts.findIndex(p => p.id === postData.id); if (idx > -1) posts[idx] = { ...posts[idx], ...postData }; } else { const now = new Date(); const timeStr = '26 ส.ค. 2569 | ' + now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0') + ' น.'; posts.unshift({ ...postData, id: Date.now().toString(), timestamp: timeStr, views: 0, replies: 0, pinned: false }); } localStorage.setItem('siy_posts', JSON.stringify(posts)); 
+                } 
+            },
+            async deletePost(id) { 
+                if (API_CONFIG.USE_REAL_API) { await fetch(`${API_CONFIG.BASE_URL}/posts/${id}`, { method: 'DELETE' }); } else { let posts = await this.getPosts(); localStorage.setItem('siy_posts', JSON.stringify(posts.filter(p => p.id !== id))); } 
+            },
+            
+            async getUsers() { 
+                if (API_CONFIG.USE_REAL_API) { try { const res = await fetch(`${API_CONFIG.BASE_URL}/users`); return await res.json(); } catch(e){ return []; } } else { return JSON.parse(localStorage.getItem('siy_users')) || []; } 
+            },
+            async saveUser(userData, oldUsername) { 
+                if (API_CONFIG.USE_REAL_API) { await fetch(`${API_CONFIG.BASE_URL}/users`, { method: 'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({...userData, oldUsername}) }); } else { let users = await this.getUsers(); if (oldUsername) { const idx = users.findIndex(u => u.username === oldUsername); if (idx > -1) users[idx] = userData; } else { if (users.find(u => u.username === userData.username)) throw new Error('DUPLICATE'); users.push(userData); } localStorage.setItem('siy_users', JSON.stringify(users)); } 
+            },
+            async deleteUser(username) { 
+                if (API_CONFIG.USE_REAL_API) { await fetch(`${API_CONFIG.BASE_URL}/users/${username}`, { method: 'DELETE' }); } else { let users = await this.getUsers(); localStorage.setItem('siy_users', JSON.stringify(users.filter(u => u.username !== username))); } 
+            },
+            
+            async getCMS() { 
+                if (API_CONFIG.USE_REAL_API) { 
+                    try { 
+                        const res = await fetch(`${API_CONFIG.BASE_URL}/cms`); 
+                        return await res.json(); 
+                    } catch(e){ return {}; } 
+                } else { 
+                    return JSON.parse(localStorage.getItem('siy_index_cms')) || {}; 
+                } 
+            },
+            async saveCMS(cmsData) { 
+                if (API_CONFIG.USE_REAL_API) { 
+                    await fetch(`${API_CONFIG.BASE_URL}/cms`, { 
+                        method: 'POST', 
+                        headers:{'Content-Type':'application/json'}, 
+                        body: JSON.stringify(cmsData) 
+                    }); 
+                } else { 
+                    let current = await this.getCMS(); 
+                    localStorage.setItem('siy_index_cms', JSON.stringify({ ...current, ...cmsData })); 
+                } 
+            }
+        };
+
+        function switchTab(tabId) { 
+            document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('active')); 
+            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active')); 
+            document.getElementById(tabId).classList.add('active'); 
+            event.currentTarget.classList.add('active'); 
+        }
+
+        function showCustomAlert(msg) { 
+            document.getElementById('customAlertMessage').textContent = msg; 
+            document.getElementById('customAlertModal').classList.add('active'); 
+        }
+
+        function closeModal(id) { 
+            document.getElementById(id).classList.remove('active'); 
+        }
 
         let pendingConfirmAction = null;
         function showCustomConfirm(message, callback) {
@@ -365,12 +402,17 @@ document.addEventListener('DOMContentLoaded', async () => {
             const usersTbody = document.getElementById('users-table-body'); usersTbody.innerHTML = '';
             users.forEach((u, i) => { 
                 const displayRole = getRoleBadge(u.role);
-                usersTbody.innerHTML += `<tr><td>${i + 1}</td><td><strong>${u.username}</strong></td><td><code>${u.password}</code></td><td>${displayRole}</td><td><button class="btn btn-edit" onclick="editUser('${u.username}')">แก้ไข</button> <button class="btn btn-delete" onclick="deleteUser('${u.username}')">ลบ</button></td></tr>`; 
+                usersTbody.innerHTML += `<tr><td>${i + 1}</td><td><strong>${u.username}</strong></td><td><code>${u.password || '-'}</code></td><td>${displayRole}</td><td><button class="btn btn-edit" onclick="editUser('${u.username}')">แก้ไข</button> <button class="btn btn-delete" onclick="deleteUser('${u.username}')">ลบ</button></td></tr>`; 
             });
 
+            // โหลดข้อมูล Hero CMS มาใส่ในฟอร์ม
             const cms = await AdminAPI.getCMS();
-            if (cms.heroSubtitle) {
-                document.getElementById('cms-hero-subtitle').value = cms.heroSubtitle || ''; document.getElementById('cms-hero-desc').value = cms.heroDesc || ''; document.getElementById('cms-hero-img').value = cms.heroImg || ''; document.getElementById('cms-hero-btn-text').value = cms.heroBtnText || ''; document.getElementById('cms-hero-btn-url').value = cms.heroBtnUrl || '#';
+            if (cms) {
+                document.getElementById('cms-hero-subtitle').value = cms.heroSubtitle || ''; 
+                document.getElementById('cms-hero-desc').value = cms.heroDesc || ''; 
+                document.getElementById('cms-hero-img').value = cms.heroImg || ''; 
+                document.getElementById('cms-hero-btn-text').value = cms.heroBtnText || ''; 
+                document.getElementById('cms-hero-btn-url').value = cms.heroBtnUrl || '#';
             }
         }
 
@@ -445,8 +487,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         async function saveHeroCMS(e) {
             e.preventDefault();
-            const data = { heroSubtitle: document.getElementById('cms-hero-subtitle').value.trim(), heroDesc: document.getElementById('cms-hero-desc').value.trim(), heroImg: document.getElementById('cms-hero-img').value.trim(), heroBtnText: document.getElementById('cms-hero-btn-text').value.trim(), heroBtnUrl: document.getElementById('cms-hero-btn-url').value.trim() };
-            await AdminAPI.saveCMS(data); showCustomAlert('บันทึกข้อมูลส่วน Hero เรียบร้อยแล้ว');
+            const data = { 
+                heroSubtitle: document.getElementById('cms-hero-subtitle').value.trim(), 
+                heroDesc: document.getElementById('cms-hero-desc').value.trim(), 
+                heroImg: document.getElementById('cms-hero-img').value.trim(), 
+                heroBtnText: document.getElementById('cms-hero-btn-text').value.trim(), 
+                heroBtnUrl: document.getElementById('cms-hero-btn-url').value.trim() 
+            };
+            await AdminAPI.saveCMS(data); 
+            showCustomAlert('บันทึกข้อมูลส่วน Hero เรียบร้อยแล้ว');
         }
         
         function resetDefaultMockData() { 
@@ -458,16 +507,16 @@ document.addEventListener('DOMContentLoaded', async () => {
                 showCustomAlert('รีเซ็ตข้อมูลระบบกลับสู่ค่าเริ่มต้นเรียบร้อยแล้ว'); 
             });
         }
-function handleAdminLogout() {
+
+        function handleAdminLogout() {
             localStorage.removeItem('siy_username');
             localStorage.removeItem('siy_usertype');
-            // เคลียร์ค่าอื่นๆ เผื่อค้างไว้
             sessionStorage.clear();
             window.location.replace('admin_login.html');
         }
-        // 🌟 เรียกใช้การเช็กสิทธิ์แอดมินก่อนเริ่มโหลดข้อมูล 🌟
-        document.addEventListener('DOMContentLoaded', () => {
-            if (checkAdminAuth()) {
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (await checkAdminAuth()) {
                 loadAdminData();
             }
         });
