@@ -196,5 +196,75 @@ app.delete('/api/comments/:id', async (c) => {
   await c.env.DB.prepare("DELETE FROM comments WHERE id = ?").bind(id).run()
   return c.json({ success: true })
 })
+// ==========================================
+// 🔑 ระบบตรวจสอบสิทธิ์แอดมิน (Admin Login แบบยืดหยุ่น)
+// ==========================================
+app.post('/api/admin/login', async (c) => {
+  try {
+    const { username, password } = await c.req.json();
 
+    const user = await c.env.DB.prepare(
+      "SELECT * FROM users WHERE username = ?"
+    ).bind(username).first();
+
+    if (!user) {
+      return c.json({ success: false, error: 'ไม่พบนามของท่านในจารึกเมืองนี้' }, 400);
+    }
+
+    if (String(user.role) !== '1') {
+      return c.json({ success: false, error: 'ตบะบารมีไม่ถึงขั้น ทวารนี้เฉพาะปรมัตถ์เท่านั้น' }, 403);
+    }
+
+    let isValid = false;
+    if (user.password_hash && user.salt) {
+      const computedHash = await hashPassword(password, user.salt);
+      if (user.password_hash === computedHash) {
+        isValid = true;
+      }
+    }
+
+    // รองรับรหัสผ่านแบบธรรมดาหรือรหัสจาก CMS
+    if (!isValid && user.password && user.password === password) {
+      isValid = true;
+    }
+    if (!isValid && user.password_hash === password) {
+      isValid = true;
+    }
+
+    if (!isValid) {
+      return c.json({ success: false, error: 'รหัสผ่านอาคมผิดเพี้ยน!' }, 400);
+    }
+
+    return c.json({ 
+      success: true, 
+      username: user.username,
+      rank_name: user.rank_name || 'วิญญาณเร่ร่อน'
+    });
+  } catch (err) {
+    return c.json({ success: false, error: 'เกิดข้อผิดพลาดที่แก่นเซิร์ฟเวอร์' }, 500);
+  }
+});
+
+// เส้นทางสำหรับอัปเดตข้อมูลผู้ใช้และรหัสผ่านใหม่จากหน้า CMS
+app.put('/api/users/:username', async (c) => {
+  const username = c.req.param('username')
+  const { password, role, rank_name } = await c.req.json()
+
+  try {
+    if (password) {
+      const salt = crypto.randomUUID()
+      const hashed = await hashPassword(password, salt)
+      await c.env.DB.prepare(
+        "UPDATE users SET password_hash = ?, salt = ?, role = ?, rank_name = ? WHERE username = ?"
+      ).bind(hashed, salt, role || '5', rank_name || 'วิญญาณเร่ร่อน', username).run()
+    } else {
+      await c.env.DB.prepare(
+        "UPDATE users SET role = ?, rank_name = ? WHERE username = ?"
+      ).bind(role || '5', rank_name || 'วิญญาณเร่ร่อน', username).run()
+    }
+    return c.json({ success: true })
+  } catch (e) {
+    return c.json({ success: false, message: 'ไม่สามารถอัปเดตข้อมูลผู้ใช้ได้' }, 400)
+  }
+})
 export default app
