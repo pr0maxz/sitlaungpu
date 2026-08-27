@@ -52,23 +52,6 @@
         .search-wrapper { display: flex; gap: 8px; margin-bottom: 20px; } .search-input { flex: 1; background: rgba(0,0,0,0.5); border: 1px solid var(--gold-dark); color: var(--gold-light); padding: 10px 15px; border-radius: 25px; font-family: 'Sarabun', sans-serif; } .search-input:focus { outline: none; border-color: var(--gold-main); box-shadow: 0 0 8px rgba(212,175,55,0.3); } .search-btn { background: transparent; border: 1px solid var(--gold-dark); color: var(--gold-main); padding: 0 15px; border-radius: 25px; cursor: pointer; transition: all 0.3s; font-family: 'Prompt', sans-serif; } .search-btn:hover { background: var(--gold-dark); color: #fff; }
         .btn-primary { display: block; width: 100%; text-align: center; background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; font-family: 'Prompt', sans-serif; font-weight: bold; padding: 12px; border-radius: 25px; font-size: 1.1rem; box-shadow: 0 5px 15px rgba(0,0,0,0.6), inset 0 2px 4px rgba(255,255,255,0.4); border: 1px solid #ffeba9; cursor: pointer; transition: all 0.3s; text-decoration: none; } .btn-primary:hover { filter: brightness(1.15); transform: translateY(-2px); }
         
-        /* สมุดเยี่ยมชานเรือน พร้อมลูกเล่นระดับแสงสว่าง-จาง-มืด */
-        .visitor-log { list-style: none; padding: 0; margin: 0; } 
-        .visitor-item { display: flex; align-items: flex-start; gap: 10px; padding: 12px 0; border-bottom: 1px dashed rgba(138, 99, 21, 0.2); transition: all 0.5s ease; } 
-        .visitor-item:last-child { border-bottom: none; } 
-        
-        .visitor-glow-1 h4 { color: #fff; text-shadow: 0 0 12px #f5d77f, 0 0 20px #d4af37; }
-        .visitor-glow-1 p { color: #f5d77f; }
-
-        .visitor-glow-2 h4 { color: #f5d77f; text-shadow: 0 0 6px rgba(212,175,55,0.5); }
-        .visitor-glow-2 p { color: #d1bfae; }
-
-        .visitor-glow-3 h4 { color: #d4af37; text-shadow: none; }
-        .visitor-glow-3 p { color: #a69477; }
-
-        .visitor-glow-4 h4 { color: #6b5a45; opacity: 0.6; }
-        .visitor-glow-4 p { color: #423528; opacity: 0.5; }
-
         /* Footer อยู่ใน main-container ด้านล่างสุดตรงกลางระหว่างมุมลายไทย */
         .site-footer { text-align: center; margin-top: 50px; padding-top: 20px; border-top: 1px dashed rgba(138, 99, 21, 0.3); }
         .site-footer p { color: var(--text-muted); font-family: 'Sarabun', sans-serif; font-size: 0.85rem; letter-spacing: 0.5px; margin: 0; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9); }
@@ -152,21 +135,16 @@
                         <button onclick="checkAccessAndGo('create_post.html')" class="btn-primary">ตั้งกระทู้ใหม่</button>
                     </div>
                 </div>
-
-                <div class="widget">
-                    <h4 class="section-title">สมุดเยี่ยมชานเรือน</h4>
-                    <ul class="visitor-log" id="dynamicVisitorLog">
-                        <li style="text-align: center; color: var(--gold-dark); border: none;">กำลังสัมผัสร่องรอย...</li>
-                    </ul>
-                </div>
             </div>
         </div>
 
+        <!-- Footer อยู่ด้านใน main-container ตรงกลางระหว่างมุมลายไทยด้านล่าง -->
         <footer class="site-footer">
             <p>© 2026 sitluangpu by SLP Corporation Public Company Limited</p>
         </footer>
     </div>
 
+    <!-- Modals -->
     <div class="sect-modal-overlay" id="registerModal">
         <div class="sect-modal-content">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-left" alt="">
@@ -332,7 +310,6 @@
         document.addEventListener('DOMContentLoaded', () => {
             loadAndRenderPosts();
             checkUserLoginStatus();
-            setTimeout(fetchRecentLogins, 800);
         });
 
         function showCustomAlert(message, redirectUrl = null) {
@@ -520,101 +497,6 @@
             const toggleIcon = document.getElementById('togglePwdBtn');
             if (pwdInput.type === 'password') { pwdInput.type = 'text'; toggleIcon.textContent = 'ซ่อน'; } 
             else { pwdInput.type = 'password'; toggleIcon.textContent = 'แสดง'; }
-        }
-
-        // 🌟 1. รายการ 10 ประโยคสุ่มสำหรับสมุดเยี่ยมชานเรือน
-        const visitorPhrases = [
-            "ฝากรอยเท้าไว้",
-            "ประทับตราจารึก",
-            "แวะเยี่ยมเยือน",
-            "แอบมองจากในเงา",
-            "ทิ้งกลิ่นอายธูปเทียน",
-            "ผ่านมาด้วยแรงศรัทธา",
-            "ทิ้งร่องรอยอาคม",
-            "แวะมาฟังเสียงกระซิบ",
-            "ลงนามด้วยจิตคารวะ",
-            "ทิ้งรอยวิญญาณไว้เบื้องหลัง"
-        ];
-
-        function getRandomPhrase() {
-            const randomIndex = Math.floor(Math.random() * visitorPhrases.length);
-            return visitorPhrases[randomIndex];
-        }
-
-        // 🌟 2. เชื่อมต่อระบบสมุดเยี่ยมผ่าน Cloudflare D1 (API กลาง) อย่างสมบูรณ์
-        async function fetchRecentLogins() {
-            const username = localStorage.getItem('siy_username');
-            const logContainer = document.getElementById('dynamicVisitorLog');
-            
-            // ถ้ายืนยันตัวตนแล้ว ให้ส่งข้อมูลการเข้าชมไปบันทึกที่ Database กลาง
-            if (username) {
-                try {
-                    await fetch(`${API_CONFIG.BASE_URL}/visitors`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ username: username, phrase: getRandomPhrase() })
-                    });
-                } catch (error) {
-                    console.error("Error recording visitor:", error);
-                }
-            }
-
-            try {
-                // ดึงข้อมูลรายชื่อผู้เข้าชมจาก Server กลาง
-                const response = await fetch(`${API_CONFIG.BASE_URL}/visitors`);
-                if (!response.ok) throw new Error('Failed to fetch visitors');
-                
-                let visitors = await response.json();
-                logContainer.innerHTML = ''; 
-
-                if (!visitors || visitors.length === 0) {
-                    logContainer.innerHTML = '<li style="text-align: center; color: var(--gold-dark); border: none; padding: 15px 0;">ยังไม่มีผู้ใดฝากรอยเท้าไว้... เป็นคนแรกสิ</li>';
-                    return;
-                }
-
-                const currentTime = Date.now();
-
-                visitors.forEach(visitor => {
-                    const diffMs = currentTime - visitor.timestamp;
-                    const diffMins = Math.floor(diffMs / (1000 * 60)); 
-
-                    let glowClass = 'visitor-glow-4';
-                    let timeStatusText = 'ร่องรอยเลือนราง';
-
-                    if (diffMins < 5) {
-                        glowClass = 'visitor-glow-1'; // เพิ่งเข้า (0-5 นาที): สว่างจ้าออร่าพุ่ง
-                        timeStatusText = diffMins <= 1 ? 'เพิ่งเข้ามาสดๆ ร้อนๆ' : `เข้ามาเมื่อ ${diffMins} นาทีที่แล้ว`;
-                    } else if (diffMins < 30) {
-                        glowClass = 'visitor-glow-2'; // ผ่านไป 5-30 นาที: เริ่มซอฟต์ลง
-                        timeStatusText = `เข้ามาเมื่อ ${diffMins} นาทีที่แล้ว`;
-                    } else if (diffMins < 120) {
-                        glowClass = 'visitor-glow-3'; // ผ่านไป 30 นาที - 2 ชั่วโมง: ค่อยๆ จาง
-                        const diffHours = Math.floor(diffMins / 60);
-                        timeStatusText = `เข้ามาเมื่อ ${diffHours} ชั่วโมงที่แล้ว`;
-                    } else {
-                        glowClass = 'visitor-glow-4'; // นานมาก / ออกไปนานแล้ว: มืดทึบ สลัวลง
-                        timeStatusText = 'ออกไปนานแล้ว';
-                    }
-
-                    const phrase = visitor.phrase || getRandomPhrase();
-
-                    logContainer.innerHTML += `
-                        <li class="visitor-item ${glowClass}">
-                            <div class="w-content" style="width: 100%;">
-                                <div style="display: flex; justify-content: space-between; align-items: center;">
-                                    <h4 style="margin:0;">${visitor.username}</h4>
-                                    <span style="font-size: 0.7rem; color: var(--text-muted);">${timeStatusText}</span>
-                                </div>
-                                <p style="margin-top: 2px;">${phrase}</p>
-                            </div>
-                        </li>
-                    `;
-                });
-
-            } catch (error) {
-                console.error("Error fetching visitors:", error);
-                logContainer.innerHTML = '<li style="text-align: center; color: #ff6b6b; border: none; padding: 15px 0;">เกิดข้อผิดพลาดในการเชื่อมต่อมิติข้อมูล</li>';
-            }
         }
     </script>
 </body>

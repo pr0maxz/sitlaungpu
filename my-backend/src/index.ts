@@ -52,6 +52,7 @@ app.post('/api/admin/login', async (c) => {
       }
     }
 
+    // รองรับรหัสผ่านแบบ Plain Text ตรงๆ หรือรหัสจาก CMS เก่า
     if (!isValid && user.password && user.password === password) {
       isValid = true;
     }
@@ -196,37 +197,5 @@ app.post('/api/cms', async (c) => {
   ).run()
   return c.json({ success: true })
 })
-
-// ==========================================
-// 👣 ระบบสมุดเยี่ยมชานเรือน (Visitors Log)
-// ==========================================
-app.get('/api/visitors', async (c) => {
-    try {
-        const { results } = await c.env.DB.prepare(
-            "SELECT * FROM visitors ORDER BY timestamp DESC LIMIT 15"
-        ).all();
-        return c.json(results || []);
-    } catch (e: any) {
-        return c.json({ error: e.message }, { status: 500 });
-    }
-});
-
-app.post('/api/visitors', async (c) => {
-    try {
-        const body = await c.req.json();
-        const { username, phrase } = body;
-        if (!username) return c.json({ success: false }, { status: 400 });
-
-        const timestamp = Date.now();
-        await c.env.DB.prepare(
-            `INSERT INTO visitors (username, timestamp, phrase) VALUES (?, ?, ?)
-             ON CONFLICT(username) DO UPDATE SET timestamp = ?, phrase = ?`
-        ).bind(username, timestamp, phrase, timestamp, phrase).run();
-
-        return c.json({ success: true });
-    } catch (e: any) {
-        return c.json({ error: e.message }, { status: 500 });
-    }
-});
 
 export default app
