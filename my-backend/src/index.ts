@@ -52,7 +52,6 @@ app.post('/api/admin/login', async (c) => {
       }
     }
 
-    // รองรับรหัสผ่านแบบ Plain Text ตรงๆ หรือรหัสจาก CMS เก่า
     if (!isValid && user.password && user.password === password) {
       isValid = true;
     }
@@ -97,7 +96,6 @@ app.post('/api/users', async (c) => {
   }
 })
 
-// จุดสำคัญ: เพิ่ม API รองรับการกดแก้ไข/เปลี่ยนรหัสจากหน้า CMS
 app.put('/api/users', async (c) => {
   const { username, oldUsername, password, role, rank_name } = await c.req.json()
   const targetName = oldUsername || username
@@ -202,8 +200,6 @@ app.post('/api/cms', async (c) => {
 // ==========================================
 // 👣 ระบบสมุดเยี่ยมชานเรือน (Visitors Log)
 // ==========================================
-
-// 1. ดึงรายชื่อผู้เยี่ยมชมล่าสุด (แสดง 15 คนล่าสุดที่ active อยู่)
 app.get('/api/visitors', async (c) => {
     try {
         const { results } = await c.env.DB.prepare(
@@ -215,7 +211,6 @@ app.get('/api/visitors', async (c) => {
     }
 });
 
-// 2. บันทึกหรืออัปเดตเวลาการเข้าเยี่ยมชมของผู้ใช้
 app.post('/api/visitors', async (c) => {
     try {
         const body = await c.req.json();

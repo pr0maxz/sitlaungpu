@@ -541,12 +541,12 @@
             return visitorPhrases[randomIndex];
         }
 
-        // 🌟 2. เชื่อมต่อฐานข้อมูลกลาง (Cloudflare D1 API) สำหรับสมุดเยี่ยมชานเรือน
+        // 🌟 2. เชื่อมต่อระบบสมุดเยี่ยมผ่าน Cloudflare D1 (API กลาง) อย่างสมบูรณ์
         async function fetchRecentLogins() {
             const username = localStorage.getItem('siy_username');
             const logContainer = document.getElementById('dynamicVisitorLog');
             
-            // ถ้าผู้ใช้ล็อกอินอยู่ ให้ยิง API บันทึก/อัปเดตเวลาเข้าชมลง Database กลางทันที
+            // ถ้ายืนยันตัวตนแล้ว ให้ส่งข้อมูลการเข้าชมไปบันทึกที่ Database กลาง
             if (username) {
                 try {
                     await fetch(`${API_CONFIG.BASE_URL}/visitors`, {
@@ -560,7 +560,7 @@
             }
 
             try {
-                // ดึงรายชื่อผู้เข้าชมทุกคนจากฐานข้อมูลกลาง
+                // ดึงข้อมูลรายชื่อผู้เข้าชมจาก Server กลาง
                 const response = await fetch(`${API_CONFIG.BASE_URL}/visitors`);
                 if (!response.ok) throw new Error('Failed to fetch visitors');
                 
@@ -613,7 +613,7 @@
 
             } catch (error) {
                 console.error("Error fetching visitors:", error);
-                logContainer.innerHTML = '<li style="text-align: center; color: #ff6b6b; border: none; padding: 15px 0;">กำลังเชื่อมต่อมิติข้อมูล...</li>';
+                logContainer.innerHTML = '<li style="text-align: center; color: #ff6b6b; border: none; padding: 15px 0;">เกิดข้อผิดพลาดในการเชื่อมต่อมิติข้อมูล</li>';
             }
         }
     </script>
