@@ -35,7 +35,6 @@
         .comment-author { color: var(--gold-main); font-weight: bold; font-family: 'Prompt', sans-serif; }
         .comment-body { color: #d1bfae; line-height: 1.6; }
         
-        /* 🌟 CSS สำหรับปุ่มลบคอมเมนต์สำหรับแอดมิน 🌟 */
         .btn-delete-comment { background: transparent; border: 1px solid rgba(168, 46, 46, 0.3); color: var(--danger-color); padding: 4px 10px; border-radius: 15px; font-family: 'Prompt', sans-serif; font-size: 0.75rem; cursor: pointer; margin-left: 10px; transition: all 0.3s; opacity: 0.7; }
         .btn-delete-comment:hover { background: rgba(168, 46, 46, 0.15); opacity: 1; text-shadow: 0 0 5px var(--danger-color); border-color: var(--danger-color); }
 
@@ -49,7 +48,6 @@
         .widget { background: rgba(12, 7, 4, 0.7); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 8px; padding: 20px; margin-bottom: 25px; } .widget-title { color: var(--gold-main); font-size: 1.2rem; margin-bottom: 15px; border-bottom: 1px solid rgba(138, 99, 21, 0.3); padding-bottom: 10px; }
         .user-logged-in-profile { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; background: rgba(212, 175, 55, 0.05); padding: 12px; border-radius: 8px; border: 1px dashed var(--gold-dark); } .btn-logout { display: block; width: 100%; background: transparent; color: #ff6b6b; border: 1px solid rgba(168, 46, 46, 0.5); padding: 8px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-size: 0.9rem; cursor: pointer; transition: all 0.3s; } .btn-logout:hover { background: rgba(168, 46, 46, 0.1); border-color: #ff6b6b; }
 
-        /* 🌟 CSS ป้ายยศ 🌟 */
         .role-badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 0.75rem; font-family: 'Prompt', sans-serif; font-weight: 600; letter-spacing: 0.5px; box-shadow: 0 2px 4px rgba(0,0,0,0.6); vertical-align: middle; margin-left: 6px; }
         .role-1 { background: linear-gradient(135deg, #4a0e0e, #2e0808); color: #f5d77f; border: 1px solid #d4af37; text-shadow: 0 0 5px rgba(212,175,55,0.5); }
         .role-2 { background: linear-gradient(135deg, #3a1c4a, #1f0f29); color: #e5b3ff; border: 1px solid #a86bd1; }
@@ -146,7 +144,7 @@
         </div>
     </div>
 
-    <!-- 🌟 Confirm Modal สำหรับลบคอมเมนต์ 🌟 -->
+    <!-- Confirm Modal สำหรับลบคอมเมนต์ -->
     <div class="sect-modal-overlay" id="customConfirmModal" style="z-index: 9999;">
         <div class="sect-modal-content" style="max-width: 380px; text-align: center; padding: 30px 20px 40px 20px;">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-left" alt="">
@@ -164,7 +162,7 @@
 
     <script>
         const API_CONFIG = { 
-            USE_REAL_API: true, // เปิดการเชื่อมต่อของจริง
+            USE_REAL_API: true, 
             BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
         };
 
@@ -173,22 +171,12 @@
                 if (API_CONFIG.USE_REAL_API) {
                     try {
                         const response = await fetch(`${API_CONFIG.BASE_URL}/posts/${id}`);
-                        if (!response.ok) {
-                            console.error('พบอาถรรพ์ (API Error):', response.status);
-                            return null;
-                        }
+                        if (!response.ok) return null;
                         return await response.json();
-                    } catch (error) { 
-                        console.error('เชื่อมต่อไม่สำเร็จ (Fetch Error):', error);
-                        return null; 
-                    }
+                    } catch (error) { return null; }
                 } else {
-                    return new Promise((resolve) => {
-                        setTimeout(() => {
-                            const posts = JSON.parse(localStorage.getItem('siy_posts')) || [];
-                            resolve(posts.find(p => p.id === id));
-                        }, 500); 
-                    });
+                    const posts = JSON.parse(localStorage.getItem('siy_posts')) || [];
+                    return posts.find(p => p.id === id);
                 }
             },
             async getComments(postId) {
@@ -199,12 +187,8 @@
                         return await response.json();
                     } catch (error) { return []; }
                 } else {
-                    return new Promise((resolve) => {
-                        setTimeout(() => {
-                            const comments = JSON.parse(localStorage.getItem('siy_comments')) || [];
-                            resolve(comments.filter(c => c.postId === postId).sort((a, b) => a.id - b.id)); 
-                        }, 400);
-                    });
+                    const comments = JSON.parse(localStorage.getItem('siy_comments')) || [];
+                    return comments.filter(c => c.postId === postId).sort((a, b) => a.id - b.id);
                 }
             },
             async saveComment(commentData) {
@@ -218,22 +202,10 @@
                         return await response.json();
                     } catch (error) { return { success: false }; }
                 } else {
-                    return new Promise((resolve) => {
-                        setTimeout(() => {
-                            const comments = JSON.parse(localStorage.getItem('siy_comments')) || [];
-                            comments.push(commentData);
-                            localStorage.setItem('siy_comments', JSON.stringify(comments));
-                            
-                            // จำลองการบวกจำนวน reply ในโพสต์หลัก
-                            const posts = JSON.parse(localStorage.getItem('siy_posts')) || [];
-                            const postIndex = posts.findIndex(p => p.id === commentData.postId);
-                            if(postIndex > -1) {
-                                posts[postIndex].replies = (posts[postIndex].replies || 0) + 1;
-                                localStorage.setItem('siy_posts', JSON.stringify(posts));
-                            }
-                            resolve({ success: true });
-                        }, 500);
-                    });
+                    const comments = JSON.parse(localStorage.getItem('siy_comments')) || [];
+                    comments.push(commentData);
+                    localStorage.setItem('siy_comments', JSON.stringify(comments));
+                    return { success: true };
                 }
             },
             async deleteComment(commentId) {
@@ -243,25 +215,10 @@
                         return await response.json();
                     } catch (error) { return { success: false }; }
                 } else {
-                    return new Promise((resolve) => {
-                        setTimeout(() => {
-                            let comments = JSON.parse(localStorage.getItem('siy_comments')) || [];
-                            const commentToDelete = comments.find(c => c.id === commentId);
-                            comments = comments.filter(c => c.id !== commentId);
-                            localStorage.setItem('siy_comments', JSON.stringify(comments));
-
-                            // จำลองการลบจำนวน reply ในโพสต์หลักให้ลดลง
-                            if (commentToDelete) {
-                                let posts = JSON.parse(localStorage.getItem('siy_posts')) || [];
-                                const postIndex = posts.findIndex(p => p.id === commentToDelete.postId);
-                                if(postIndex > -1) {
-                                    posts[postIndex].replies = Math.max(0, (posts[postIndex].replies || 0) - 1);
-                                    localStorage.setItem('siy_posts', JSON.stringify(posts));
-                                }
-                            }
-                            resolve({ success: true });
-                        }, 400);
-                    });
+                    let comments = JSON.parse(localStorage.getItem('siy_comments')) || [];
+                    comments = comments.filter(c => c.id !== commentId);
+                    localStorage.setItem('siy_comments', JSON.stringify(comments));
+                    return { success: true };
                 }
             }
         };
@@ -276,7 +233,6 @@
             document.getElementById('customConfirmModal').classList.remove('active');
         }
 
-        // จัดการคลิกปุ่มยืนยัน
         document.getElementById('customConfirmBtn').addEventListener('click', async () => {
             closeConfirmModal();
             if (pendingConfirmAction) {
@@ -295,31 +251,48 @@
             };
         }
 
-        function getUserRoleBadge(username) {
-            // ถ้าชื่อเป็น ADMIN หรือตรวจสอบจากฐานข้อมูลพบว่าเป็น role 1
-            if (username && username.toUpperCase() === 'ADMIN') {
+        // 🌟 ฟังก์ชันดึงป้ายยศแบบเชื่อมต่อข้อมูลจริงจาก D1 (API) 🌟
+        async function getRoleBadgeFromAPI(username) {
+            if (!username) return '<span class="role-badge role-5">เด็กวัด</span>';
+            if (username.toUpperCase() === 'ADMIN') {
                 return '<span class="role-badge role-1">ปรมัตถ์</span>';
             }
-            let users = JSON.parse(localStorage.getItem('siy_users')) || [];
-            let user = users.find(u => u.username === username);
-            let role = user ? (user.role || '5') : '5';
-            
-            switch(String(role)) {
-                case '1': return '<span class="role-badge role-1">ปรมัตถ์</span>';
-                case '2': return '<span class="role-badge role-2">ปรมาจารย์</span>';
-                case '3': return '<span class="role-badge role-3">ผู้สำเร็จวิชา</span>';
-                case '4': return '<span class="role-badge role-4">ขั้นปฐมภูมิ</span>';
-                default: return '<span class="role-badge role-5">เด็กวัด</span>';
-            }
+            try {
+                const res = await fetch(`${API_CONFIG.BASE_URL}/users`);
+                const usersDB = await res.json();
+                const user = usersDB.find(u => u.username === username);
+                if (user) {
+                    let role = String(user.role || '5');
+                    let rank = user.rank_name || 'เด็กวัด';
+                    if (role === '1') {
+                        return '<span class="role-badge role-1">ปรมัตถ์</span>';
+                    }
+                    return `<span class="role-badge role-${role}">${rank}</span>`;
+                }
+            } catch (e) {}
+            return '<span class="role-badge role-5">เด็กวัด</span>';
         }
 
-        // 🌟 ตรวจสอบสิทธิ์แอดมิน: รองรับทั้งชื่อ ADMIN หรือผู้ที่มี role เป็น '1'
-            const savedUser = localStorage.getItem('siy_username');
-            let users = JSON.parse(localStorage.getItem('siy_users')) || [];
-            let currentUser = users.find(u => u.username === savedUser);
+        async function loadComments(postId) {
+            const container = document.getElementById('commentsList');
+            const comments = await ApiManager.getComments(postId);
             
-            let isAdmin = (savedUser && savedUser.toUpperCase() === 'ADMIN') || 
-                          (currentUser && String(currentUser.role) === '1');
+            const savedUser = localStorage.getItem('siy_username');
+            let isUserAdmin = false;
+            if (savedUser) {
+                if (savedUser.toUpperCase() === 'ADMIN') {
+                    isUserAdmin = true;
+                } else {
+                    try {
+                        const res = await fetch(`${API_CONFIG.BASE_URL}/users`);
+                        const usersDB = await res.json();
+                        const curUser = usersDB.find(u => u.username === savedUser);
+                        if (curUser && String(curUser.role) === '1') {
+                            isUserAdmin = true;
+                        }
+                    } catch (e) {}
+                }
+            }
 
             container.innerHTML = ''; 
 
@@ -328,13 +301,9 @@
                 return;
             }
 
-            comments.forEach(c => {
-                const badge = getUserRoleBadge(c.author);
-                
-                let adminControls = '';
-                if(isAdmin) {
-                    adminControls = `<button type="button" class="btn-delete-comment" onclick="deleteCommentAction('${c.id}', '${postId}')">🗑️ ทำลาย</button>`;
-                }
+            for (const c of comments) {
+                const badge = await getRoleBadgeFromAPI(c.author);
+                let adminControls = isUserAdmin ? `<button type="button" class="btn-delete-comment" onclick="deleteCommentAction('${c.id}', '${postId}')">🗑️ ทำลาย</button>` : '';
 
                 container.innerHTML += `
                     <div class="comment-card">
@@ -351,7 +320,7 @@
                         <div class="comment-body">${c.content}</div>
                     </div>
                 `;
-            });
+            }
         }
 
         function deleteCommentAction(commentId, postId) {
@@ -359,7 +328,7 @@
                 const result = await ApiManager.deleteComment(commentId);
                 if(result.success !== false) {
                     showCustomAlert('ทำลายร่องรอยวิญญาณเรียบร้อยแล้ว');
-                    loadComments(postId); // โหลดคอมเมนต์ใหม่ทันที
+                    loadComments(postId);
                 } else {
                     showCustomAlert('เกิดอาถรรพ์ขัดข้อง ลบไม่ได้!');
                 }
@@ -398,33 +367,7 @@
 
             if(result.success !== false) {
                 textarea.value = ''; 
-                
-                // เช็กการเลื่อนยศแบบเรียลไทม์หลังจากคอมเมนต์สำเร็จ
-                let users = JSON.parse(localStorage.getItem('siy_users')) || [];
-                let userIndex = users.findIndex(u => u.username === author);
-                let promotionMsg = '';
-                
-                if (userIndex > -1 && users[userIndex].role !== '1') {
-                    let comments = JSON.parse(localStorage.getItem('siy_comments')) || [];
-                    let userCommentCount = comments.filter(c => c.author === author).length;
-                    
-                    let newRole = '5';
-                    if (userCommentCount >= 100) { newRole = '2'; }
-                    else if (userCommentCount >= 50) { newRole = '3'; }
-                    else if (userCommentCount >= 20) { newRole = '4'; }
-
-                    if ((users[userIndex].role || '5') !== newRole) {
-                        users[userIndex].role = newRole;
-                        localStorage.setItem('siy_users', JSON.stringify(users));
-                        
-                        let roleNames = {'2': 'ปรมาจารย์', '3': 'ผู้สำเร็จวิชา', '4': 'ขั้นปฐมภูมิ', '5': 'เด็กวัด'};
-                        promotionMsg = `<br><br>🎉 บารมีแกร่งกล้าขึ้น! ท่านได้เลื่อนยศเป็น <strong>${roleNames[newRole]}</strong> แล้ว`;
-                        
-                        document.getElementById('displayUserBadge').innerHTML = getUserRoleBadge(author);
-                    }
-                }
-                
-                showCustomAlert('บันทึกจารึกสำเร็จ!' + promotionMsg);
+                showCustomAlert('บันทึกจารึกสำเร็จ!');
                 loadComments(postId); 
             } else {
                 showCustomAlert('เกิดอาถรรพ์ขัดข้อง ส่งข้อความไม่สำเร็จ');
@@ -443,6 +386,31 @@
                 return;
             }
 
+            // โหลดข้อมูลผู้ใช้ปัจจุบันจาก D1
+            let currentUserRole = '5';
+            let currentUserRank = 'เด็กวัด';
+            try {
+                const userRes = await fetch(`${API_CONFIG.BASE_URL}/users`);
+                const usersDB = await userRes.json();
+                const foundUser = usersDB.find(u => u.username === savedUser);
+                if (foundUser) {
+                    currentUserRole = String(foundUser.role || '5');
+                    currentUserRank = foundUser.rank_name || 'เด็กวัด';
+                }
+            } catch (e) {}
+
+            document.getElementById('displayUsername').textContent = savedUser;
+            
+            let myBadgeHtml = '';
+            if (savedUser.toUpperCase() === 'ADMIN' || currentUserRole === '1') {
+                myBadgeHtml = '<span class="role-badge role-1">ปรมัตถ์</span>';
+            } else if (userType === 'guest') {
+                myBadgeHtml = '<span class="role-badge role-guest">วิญญาณเร่ร่อน</span>';
+            } else {
+                myBadgeHtml = `<span class="role-badge role-${currentUserRole}">${currentUserRank}</span>`;
+            }
+            document.getElementById('displayUserBadge').innerHTML = myBadgeHtml;
+
             const urlParams = new URLSearchParams(window.location.search);
             const postId = urlParams.get('id');
 
@@ -458,12 +426,9 @@
             document.getElementById('dyn-title').textContent = postData.title;
             document.getElementById('dyn-content').innerHTML = postData.content;
             document.getElementById('dyn-author').textContent = postData.author;
-            document.getElementById('dyn-author-badge').innerHTML = getUserRoleBadge(postData.author);
+            document.getElementById('dyn-author-badge').innerHTML = await getRoleBadgeFromAPI(postData.author);
             document.getElementById('dyn-time').textContent = 'โพสต์เมื่อ: ' + postData.timestamp;
             document.getElementById('dyn-views').textContent = 'เข้าชม ' + (postData.views || 0) + ' ครั้ง';
-
-            document.getElementById('displayUsername').textContent = savedUser;
-            document.getElementById('displayUserBadge').innerHTML = (userType === 'guest') ? '<span class="role-badge role-guest">วิญญาณเร่ร่อน</span>' : getUserRoleBadge(savedUser);
 
             loadComments(postId);
 
@@ -484,7 +449,7 @@
                         <h4 style="margin-bottom: 18px; display: flex; align-items: center; flex-wrap: wrap; gap: 5px;">
                             ร่วมแสดงความคิดเห็นในนาม: 
                             <span style="color: var(--gold-light); margin-left: 5px;">${savedUser}</span> 
-                            ${getUserRoleBadge(savedUser)}
+                            ${myBadgeHtml}
                         </h4>
                         <textarea id="commentInput" class="form-textarea" placeholder="พิมพ์ความคิดเห็นของคุณที่นี่..."></textarea>
                         <button type="button" id="submitCommentBtn" class="btn-submit-comment" onclick="submitComment()">ส่งความคิดเห็น</button>
