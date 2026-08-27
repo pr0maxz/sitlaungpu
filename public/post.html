@@ -30,13 +30,12 @@
         .author-name { color: var(--gold-light); font-family: 'Prompt', sans-serif; font-size: 1.1rem; } .post-time { font-size: 0.8rem; color: var(--text-muted); }
         .post-title { color: var(--gold-light); font-size: 1.8rem; font-family: 'Prompt', sans-serif; margin-bottom: 20px; word-break: break-word; } 
         
-        /* 🌟 ล็อกขนาดรูปภาพในเนื้อหาไม่ให้ล้นจอทุก Device อัตโนมัติ 🌟 */
         .post-body { line-height: 1.8; color: #e2d4c3; font-size: 1.05rem; margin-bottom: 30px; word-wrap: break-word; overflow-wrap: break-word; } 
-        .post-body img {
+        .post-body img, .comment-body img {
             max-width: 100% !important;
             height: auto !important;
             display: block;
-            margin: 15px auto;
+            margin: 10px auto;
             border-radius: 8px;
             border: 1px solid var(--gold-dark);
             box-sizing: border-box;
@@ -351,12 +350,50 @@
             });
         }
 
+        // 🌟 ฟังก์ชันตรวจสอบคอมเมนต์: อนุญาตเฉพาะข้อความปกติและแท็ก <img src="..."> เท่านั้น ห้ามมีลิงก์หรือแท็ก HTML อื่นๆ 🌟
+        function validateComment(content) {
+            const htmlTags = content.match(/<\/?[a-z][a-z0-9]*\b[^>]*>/gi);
+            if (htmlTags) {
+                for (let tag of htmlTags) {
+                    const lowerTag = tag.toLowerCase();
+                    if (!lowerTag.startsWith('<img') && lowerTag !== '<br>' && lowerTag !== '<br/>') {
+                        return { valid: false, error: '⚠️ อาถรรพ์สะท้อนกลับ!<br>ไม่อนุญาตให้ใช้แท็ก HTML หรือโค้ดอื่นๆ ในความคิดเห็น' };
+                    }
+                }
+            }
+
+            if (htmlTags) {
+                for (let tag of htmlTags) {
+                    if (tag.toLowerCase().startsWith('<img') && !tag.toLowerCase().includes('src=')) {
+                        return { valid: false, error: '⚠️ อาถรรพ์สะท้อนกลับ!<br>โครงสร้างรูปภาพไม่ถูกต้อง (<img src="...">)' };
+                    }
+                }
+            }
+
+            let textWithoutImgs = content.replace(/<img\s+[^>]*src="[^"]*"[^>]*>/gi, '');
+            textWithoutImgs = textWithoutImgs.replace(/<img\s+[^>]*src=[^\s>]+[^>]*>/gi, '');
+
+            const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+)/i;
+            if (urlRegex.test(textWithoutImgs)) {
+                return { valid: false, error: '⚠️ อาถรรพ์สะท้อนกลับ!<br>ไม่อนุญาตให้วางลิงก์ (URL) ภายนอกในความคิดเห็น' };
+            }
+
+            return { valid: true };
+        }
+
         async function submitComment() {
             const textarea = document.getElementById('commentInput');
             const content = textarea.value.trim();
 
             if(!content) {
                 showCustomAlert('ท่านต้องเปล่งวาจาเสียก่อนถึงจะสลักข้อความได้');
+                return;
+            }
+
+            // 🌟 ตรวจสอบความปลอดภัยก่อนส่ง หากไม่ใช่รูปภาพหรือข้อความปกติ จะบล็อกและแจ้งเตือนทันที 🌟
+            const validation = validateComment(content);
+            if (!validation.valid) {
+                showCustomAlert(validation.error);
                 return;
             }
 
