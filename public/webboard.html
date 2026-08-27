@@ -144,6 +144,7 @@
         </div>
     </div>
 
+    <!-- Modals -->
     <div class="sect-modal-overlay" id="registerModal">
         <div class="sect-modal-content">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-left" alt="">
@@ -224,15 +225,6 @@
         function getUserRole(username) {
             if (!username) return '5';
             if (username.toUpperCase() === 'ADMIN') return '1';
-
-            let users = JSON.parse(localStorage.getItem('siy_users')) || [];
-            let user = users.find(u => u.username === username);
-            if (user) return user.role || '5';
-
-            const userType = localStorage.getItem('siy_usertype');
-            if (userType === 'guest' || username.includes('ผู้ไม่ประสงค์ออกนาม')) {
-                return 'guest';
-            }
             return '5';
         }
 
@@ -240,18 +232,10 @@
             if (username && username.toUpperCase() === 'ADMIN') {
                 return '<span class="role-badge role-1">ปรมัตถ์</span>';
             }
-            if (username && (username.includes('ผู้ไม่ประสงค์ออกนาม'))) {
+            if (username && username.includes('ผู้ไม่ประสงค์ออกนาม')) {
                 return '<span class="role-badge role-guest">วิญญาณเร่ร่อน</span>';
             }
-
-            const role = getUserRole(username);
-            switch(String(role)) {
-                case '1': return '<span class="role-badge role-1">ปรมัตถ์</span>';
-                case '2': return '<span class="role-badge role-2">ปรมาจารย์</span>';
-                case '3': return '<span class="role-badge role-3">ผู้สำเร็จวิชา</span>';
-                case '4': return '<span class="role-badge role-4">ขั้นปฐมภูมิ</span>';
-                default: return '<span class="role-badge role-5">เด็กวัด</span>';
-            }
+            return '<span class="role-badge role-5">เด็กวัด</span>';
         }
 
         function getRoleTitleName(role) {
@@ -264,46 +248,19 @@
             }
         }
 
-        function checkAndApplyAutoPromotion(username) {
-            if (!username || localStorage.getItem('siy_usertype'] === 'guest' || username.includes('ผู้ไม่ประสงค์ออกนาม')) return;
-            
-            let users = JSON.parse(localStorage.getItem('siy_users')) || [];
-            let userIndex = users.findIndex(u => u.username === username);
-            if (userIndex === -1) return;
-
-            let user = users[userIndex];
-            if (user.role === '1') return;
-
-            let comments = JSON.parse(localStorage.getItem('siy_comments')) || [];
-            let userCommentCount = comments.filter(c => c.author === username).length;
-
-            let newRole = '5';
-            if (userCommentCount >= 100) { newRole = '2'; }
-            else if (userCommentCount >= 50) { newRole = '3'; }
-            else if (userCommentCount >= 20) { newRole = '4'; }
-            else { newRole = '5'; }
-
-            if ((user.role || '5') !== newRole) {
-                let oldRoleTitle = getRoleTitleName(user.role || '5');
-                let newRoleTitle = getRoleTitleName(newRole);
-                user.role = newRole;
-                users[userIndex] = user;
-                localStorage.setItem('siy_users', JSON.stringify(users));
-                
-                showCustomAlert(`🎉 ยินดีด้วย! ท่านได้รับการเลื่อนยศจาก <strong>${oldRoleTitle}</strong> เป็น <strong>${newRoleTitle}</strong><br>(จากการร่วมตอบสนทนาครบ ${userCommentCount} ครั้ง)`);
-            }
-        }
-
         const ApiManager = {
             async fetchPosts() {
                 if (API_CONFIG.USE_REAL_API) {
                     try {
                         const response = await fetch(`${API_CONFIG.BASE_URL}/posts`);
+                        if (!response.ok) return [];
                         return await response.json();
-                    } catch (error) { return []; }
-                } else {
-                    return [];
+                    } catch (error) { 
+                        console.error("API Error:", error);
+                        return []; 
+                    }
                 }
+                return [];
             }
         };
 
@@ -313,6 +270,12 @@
 
             let posts = await ApiManager.fetchPosts();
             cat1Container.innerHTML = ''; cat2Container.innerHTML = '';
+
+            if (!posts || posts.length === 0) {
+                cat1Container.innerHTML = '<div style="padding: 20px; color: var(--gold-dark); text-align:center;">ยังไม่มีจารึกในหมวดนี้</div>';
+                cat2Container.innerHTML = '<div style="padding: 20px; color: var(--gold-dark); text-align:center;">ยังไม่มีจารึกในหมวดนี้</div>';
+                return;
+            }
 
             posts.sort((a, b) => {
                 if (a.pinned && !b.pinned) return -1;
@@ -328,11 +291,11 @@
                     <div class="thread-item">
                         <div class="thread-content">
                             <a onclick="checkAccessAndGo('post.html?id=${post.id}')" class="thread-title">${pinTag}${post.title}</a>
-                            <div class="thread-details">โดย <span>${post.author}</span> ${authorBadge} | อัปเดตล่าสุด: ${post.timestamp.split('|')[0].trim()}</div>
+                            <div class="thread-details">โดย <span>${post.author}</span> ${authorBadge} | อัปเดตล่าสุด: ${post.timestamp ? post.timestamp.split('|')[0].trim() : '-'}</div>
                         </div>
                         <div class="thread-stats">
                             <div class="stat-box">👤 ${post.author}</div>
-                            <div class="stat-box">💬 ${post.replies} ตอบ</div>
+                            <div class="stat-box">💬 ${post.replies || 0} ตอบ</div>
                         </div>
                     </div>
                 `;
@@ -340,8 +303,8 @@
                 else if (post.category === "2") cat2Container.innerHTML += postHTML;
             });
 
-            if(cat1Container.innerHTML === '') cat1Container.innerHTML = '<div style="padding: 20px; color: #8a6315;">ยังไม่มีจารึกในหมวดนี้</div>';
-            if(cat2Container.innerHTML === '') cat2Container.innerHTML = '<div style="padding: 20px; color: #8a6315;">ยังไม่มีจารึกในหมวดนี้</div>';
+            if(cat1Container.innerHTML === '') cat1Container.innerHTML = '<div style="padding: 20px; color: #8a6315; text-align:center;">ยังไม่มีจารึกในหมวดนี้</div>';
+            if(cat2Container.innerHTML === '') cat2Container.innerHTML = '<div style="padding: 20px; color: #8a6315; text-align:center;">ยังไม่มีจารึกในหมวดนี้</div>';
         }
 
         document.addEventListener('DOMContentLoaded', () => {
