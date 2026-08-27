@@ -387,18 +387,34 @@ function checkAndApplyAutoPromotion(username) {
         }
         function closeCustomAlert() { document.getElementById('customAlertModal').classList.remove('active'); }
 
-        function checkUserLoginStatus() {
+        async function checkUserLoginStatus() {
             const savedUser = localStorage.getItem('siy_username');
             const userType = localStorage.getItem('siy_usertype'); 
             const guestView = document.getElementById('guestView');
             const loggedInView = document.getElementById('loggedInView');
             
             if (savedUser) {
-                // เช็กการเลื่อนยศออโต้เมื่อเปิดหน้า
-                checkAndApplyAutoPromotion(savedUser);
-
                 document.getElementById('displayUsername').textContent = savedUser;
-                document.getElementById('displayUserBadge').innerHTML = getUserRoleBadge(savedUser);
+
+                // 🌟 ดึงข้อมูลสิทธิ์และยศจาก D1 (API) โดยตรง เพื่อให้ตรงกับฐานข้อมูลจริง 🌟
+                try {
+                    const res = await fetch(`${API_CONFIG.BASE_URL}/users`);
+                    const usersDB = await res.json();
+                    const currentUser = usersDB.find(u => u.username === savedUser);
+
+                    if (currentUser) {
+                        // แสดงชื่อยศ (rank_name) หรือแปลงตาม role ให้ตรงกับ D1
+                        let roleTitle = currentUser.rank_name || getRoleTitleName(currentUser.role);
+                        let roleClass = 'role-' + (currentUser.role || '5');
+                        
+                        document.getElementById('displayUserBadge').innerHTML = 
+                            `<span class="role-badge ${roleClass}">${roleTitle}</span>`;
+                    } else {
+                        document.getElementById('displayUserBadge').innerHTML = getUserRoleBadge(savedUser);
+                    }
+                } catch (e) {
+                    document.getElementById('displayUserBadge').innerHTML = getUserRoleBadge(savedUser);
+                }
                 
                 guestView.style.display = 'none';
                 loggedInView.style.display = 'block';
