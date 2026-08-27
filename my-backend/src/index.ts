@@ -198,5 +198,34 @@ app.post('/api/cms', async (c) => {
   ).run()
   return c.json({ success: true })
 })
+// 1. ดึงรายชื่อผู้เยี่ยมชมล่าสุด (แสดง 15 คนล่าสุดที่ active อยู่)
+router.get('/api/visitors', async (request, env) => {
+    try {
+        const { results } = await env.DB.prepare(
+            "SELECT * FROM visitors ORDER BY timestamp DESC LIMIT 15"
+        ).all();
+        return Response.json(results || []);
+    } catch (e) {
+        return Response.json({ error: e.message }, { status: 500 });
+    }
+});
 
+// 2. บันทึกหรืออัปเดตเวลาการเข้าเยี่ยมชมของผู้ใช้
+router.post('/api/visitors', async (request, env) => {
+    try {
+        const body = await request.json();
+        const { username, phrase } = body;
+        if (!username) return Response.json({ success: false }, { status: 400 });
+
+        const timestamp = Date.now();
+        await env.DB.prepare(
+            `INSERT INTO visitors (username, timestamp, phrase) VALUES (?, ?, ?)
+             ON CONFLICT(username) DO UPDATE SET timestamp = ?, phrase = ?`
+        ).bind(username, timestamp, phrase, timestamp, phrase).run();
+
+        return Response.json({ success: true });
+    } catch (e) {
+        return Response.json({ error: e.message }, { status: 500 });
+    }
+});
 export default app
