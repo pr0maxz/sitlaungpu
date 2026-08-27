@@ -19,7 +19,7 @@
         @property --ring-angle { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
         @keyframes containerPulse { 0% { box-shadow: 0 0 30px rgba(0,0,0,0.8), inset 0 0 20px rgba(212, 175, 55, 0.02); } 50% { box-shadow: 0 0 50px rgba(212, 175, 55, 0.15), inset 0 0 40px rgba(212, 175, 55, 0.08); } 100% { box-shadow: 0 0 30px rgba(0,0,0,0.8), inset 0 0 20px rgba(212, 175, 55, 0.02); } }
         @keyframes ringRotate { to { --ring-angle: 360deg; } }
-        .main-container { position: relative; isolation: isolate; max-width: 1200px; width: 92%; margin: 60px auto 40px; padding: 50px 40px 90px 40px; background-color: rgba(7, 4, 2, 0.85); border: 1px solid var(--gold-dark); border-radius: 16px; box-sizing: border-box; backdrop-filter: blur(10px); animation: containerPulse 6s infinite alternate; }
+        .main-container { position: relative; isolation: isolate; max-width: 1200px; width: 92%; margin: 60px auto 40px; padding: 50px 40px 60px 40px; background-color: rgba(7, 4, 2, 0.85); border: 1px solid var(--gold-dark); border-radius: 16px; box-sizing: border-box; backdrop-filter: blur(10px); animation: containerPulse 6s infinite alternate; }
         .main-container::before { content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1px; background: conic-gradient(from var(--ring-angle), transparent 0deg, var(--gold-main) 25deg, transparent 70deg, transparent 180deg, var(--gold-light) 205deg, transparent 250deg, transparent 360deg); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: ringRotate 10s linear infinite; pointer-events: none; z-index: -1; }
         @keyframes bracketGlow { 0%, 100% { opacity: 0.7; filter: drop-shadow(0 0 2px rgba(212,175,55,0.3)); } 50% { opacity: 1; filter: drop-shadow(0 0 8px rgba(212,175,55,0.7)); } }
         .corner-decor { position: absolute; width: clamp(70px, 9vw, 130px); height: auto; z-index: 20; pointer-events: none; animation: bracketGlow 3s ease-in-out infinite; }
@@ -55,13 +55,17 @@
 
         .wb-action-container { text-align: center; margin-top: 35px; } .action-btn { background: linear-gradient(180deg, #3a2511 0%, #150a03 100%); color: var(--gold-light); font-family: 'Prompt', sans-serif; padding: 12px 30px; border: 1px solid var(--gold-main); border-radius: 30px; font-size: 1.05rem; font-weight: 600; cursor: pointer; text-decoration: none; box-shadow: 0 4px 10px rgba(0,0,0,0.9), inset 0 1px 2px rgba(255,255,255,0.15); transition: all 0.3s; display: inline-block; letter-spacing: 0.5px; } .action-btn:hover { filter: brightness(1.2); transform: translateY(-3px); box-shadow: 0 6px 15px rgba(212, 175, 55, 0.3); color: #fff; }
 
+        /* Footer อยู่ใน main-container ด้านล่างสุดตรงกลางระหว่างมุมลายไทย */
+        .site-footer { text-align: center; margin-top: 50px; padding-top: 20px; border-top: 1px dashed rgba(138, 99, 21, 0.3); }
+        .site-footer p { color: var(--text-muted); font-family: 'Sarabun', sans-serif; font-size: 0.85rem; letter-spacing: 0.5px; margin: 0; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9); }
+
         .sect-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(7, 4, 2, 0.9); backdrop-filter: blur(8px); z-index: 1000; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; } .sect-modal-overlay.active { display: flex; opacity: 1; }
         .sect-modal-content { position: relative; background: linear-gradient(135deg, #1a120b, #0a0603); border: 1px solid var(--gold-main); border-radius: 12px; width: 90%; max-width: 450px; padding: 40px 30px 60px 30px; box-shadow: 0 15px 40px rgba(0,0,0,0.9), inset 0 0 20px rgba(212,175,55,0.1); transform: translateY(-20px); transition: transform 0.3s ease; } .sect-modal-overlay.active .sect-modal-content { transform: translateY(0); }
         .modal-corner { position: absolute; width: 60px; pointer-events: none; opacity: 0.8; } .mc-top-left { top: 12px; left: 12px; transform: scaleX(-1); } .mc-top-right { top: 12px; right: 12px; } .mc-bottom-left { bottom: 12px; left: 12px; transform: scaleX(-1) scaleY(-1); } .mc-bottom-right { bottom: 12px; right: 12px; transform: scaleY(-1); }
         .modal-header { text-align: center; margin-bottom: 25px; } .modal-header h3 { color: var(--gold-light); font-size: 1.6rem; margin-bottom: 5px; text-shadow: 0 2px 5px rgba(0,0,0,0.8); }
         .btn-submit-modal { background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; border: none; padding: 12px; border-radius: 6px; font-family: 'Prompt', sans-serif; font-weight: bold; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: all 0.3s; width: 80%; margin: 0 auto; display: block; }
         
-        @media (max-width: 850px) { .hero { flex-direction: column; text-align: center; padding: 0; } .hero-text { margin-bottom: 40px; } .main-container { padding: 30px 20px 80px 20px; width: 95%; } nav { flex-wrap: nowrap; justify-content: flex-start; overflow-x: auto; scrollbar-width: none; gap: 10px; padding: 14px 24px; border-radius: 40px; max-width: 100%; mask-image: linear-gradient(to right, transparent 0, black 24px, black calc(100% - 24px), transparent 100%); -webkit-mask-image: linear-gradient(to right, transparent 0, black 24px, black calc(100% - 24px), transparent 100%); } nav::-webkit-scrollbar { display: none; } nav a { white-space: nowrap; flex-shrink: 0; padding: 10px 20px; font-size: 1.15rem; } .wb-row { flex-direction: column; align-items: flex-start; gap: 10px; } .wb-meta { width: 100%; justify-content: space-between; } }
+        @media (max-width: 850px) { .hero { flex-direction: column; text-align: center; padding: 0; } .hero-text { margin-bottom: 40px; } .main-container { padding: 30px 20px 40px 20px; width: 95%; } nav { flex-wrap: nowrap; justify-content: flex-start; overflow-x: auto; scrollbar-width: none; gap: 10px; padding: 14px 24px; border-radius: 40px; max-width: 100%; mask-image: linear-gradient(to right, transparent 0, black 24px, black calc(100% - 24px), transparent 100%); -webkit-mask-image: linear-gradient(to right, transparent 0, black 24px, black calc(100% - 24px), transparent 100%); } nav::-webkit-scrollbar { display: none; } nav a { white-space: nowrap; flex-shrink: 0; padding: 10px 20px; font-size: 1.15rem; } .wb-row { flex-direction: column; align-items: flex-start; gap: 10px; } .wb-meta { width: 100%; justify-content: space-between; } }
         @media (max-width: 400px) { nav { gap: 8px; padding: 12px 18px; } nav a { padding: 9px 16px; font-size: 1.05rem; } }
     </style>
 </head>
@@ -114,10 +118,16 @@
         <section class="card reveal" id="contact" style="text-align:center; margin-top: 40px;">
             <h3 class="section-title">ติดต่อเรา</h3>
             <p style="color:#c7b5a1; margin-top:15px;">สนใจสอบถามข้อมูลเพิ่มเติม ติดต่อได้ทางอีเมล<br>
-            <a href="mailto:contact@example.com" style="color: var(--gold-light);">contact@example.com</a></p>
+            <a href="mailto:contact@example.com" style="color: var(--gold-light);">sitluangpu@proton.me</a></p>
         </section>
+
+        <!-- Footer ย้ายมาอยู่ด้านใน main-container ตรงกลางระหว่างมุมลายไทยล่าง -->
+        <footer class="site-footer">
+            <p>© 2026 SitLuangPu</p>
+        </footer>
     </div>
 
+    <!-- Custom Alert Modal -->
     <div class="sect-modal-overlay" id="customAlertModal" style="z-index: 9999;">
         <div class="sect-modal-content" style="max-width: 350px; text-align: center; padding: 30px 20px 40px 20px;">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-left" alt="">
@@ -147,7 +157,6 @@
             let cms = {};
             if (API_CONFIG.USE_REAL_API) {
                 try {
-                    // 🌟 แก้ไขให้เรียกผ่าน ${API_CONFIG.BASE_URL}/cms ตามเส้นทาง Backend 🌟
                     const response = await fetch(`${API_CONFIG.BASE_URL}/cms`);
                     if (response.ok) {
                         cms = await response.json() || {};

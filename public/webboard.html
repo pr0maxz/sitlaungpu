@@ -18,7 +18,7 @@
         @property --ring-angle { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
         @keyframes containerPulse { 0% { box-shadow: 0 0 30px rgba(0,0,0,0.8), inset 0 0 20px rgba(212,175,55,0.02); } 50% { box-shadow: 0 0 50px rgba(212,175,55,0.15), inset 0 0 40px rgba(212,175,55,0.08); } 100% { box-shadow: 0 0 30px rgba(0,0,0,0.8), inset 0 0 20px rgba(212,175,55,0.02); } }
         @keyframes ringRotate { to { --ring-angle: 360deg; } }
-        .main-container { position: relative; isolation: isolate; max-width: 1200px; width: 92%; margin: 40px auto; padding: 40px 30px; background-color: rgba(7, 4, 2, 0.85); border: 1px solid var(--gold-dark); border-radius: 16px; backdrop-filter: blur(10px); animation: containerPulse 6s infinite alternate; }
+        .main-container { position: relative; isolation: isolate; max-width: 1200px; width: 92%; margin: 40px auto; padding: 40px 30px 60px 30px; background-color: rgba(7, 4, 2, 0.85); border: 1px solid var(--gold-dark); border-radius: 16px; backdrop-filter: blur(10px); animation: containerPulse 6s infinite alternate; }
         .main-container::before { content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1px; background: conic-gradient(from var(--ring-angle), transparent 0deg, var(--gold-main) 25deg, transparent 70deg, transparent 180deg, var(--gold-light) 205deg, transparent 250deg, transparent 360deg); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: ringRotate 10s linear infinite; pointer-events: none; z-index: -1; }
         @keyframes bracketGlow { 0%, 100% { opacity: 0.7; filter: drop-shadow(0 0 2px rgba(212,175,55,0.3)); } 50% { opacity: 1; filter: drop-shadow(0 0 8px rgba(212,175,55,0.7)); } }
         .corner-decor { position: absolute; width: clamp(60px, 8vw, 110px); z-index: 20; pointer-events: none; animation: bracketGlow 3s ease-in-out infinite; }
@@ -51,8 +51,28 @@
         .btn-logout { display: block; width: 100%; background: transparent; color: #ff6b6b; border: 1px solid rgba(168, 46, 46, 0.5); padding: 10px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-size: 0.95rem; cursor: pointer; transition: all 0.3s; } .btn-logout:hover { background: rgba(168, 46, 46, 0.1); border-color: #ff6b6b; }
         .search-wrapper { display: flex; gap: 8px; margin-bottom: 20px; } .search-input { flex: 1; background: rgba(0,0,0,0.5); border: 1px solid var(--gold-dark); color: var(--gold-light); padding: 10px 15px; border-radius: 25px; font-family: 'Sarabun', sans-serif; } .search-input:focus { outline: none; border-color: var(--gold-main); box-shadow: 0 0 8px rgba(212,175,55,0.3); } .search-btn { background: transparent; border: 1px solid var(--gold-dark); color: var(--gold-main); padding: 0 15px; border-radius: 25px; cursor: pointer; transition: all 0.3s; font-family: 'Prompt', sans-serif; } .search-btn:hover { background: var(--gold-dark); color: #fff; }
         .btn-primary { display: block; width: 100%; text-align: center; background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; font-family: 'Prompt', sans-serif; font-weight: bold; padding: 12px; border-radius: 25px; font-size: 1.1rem; box-shadow: 0 5px 15px rgba(0,0,0,0.6), inset 0 2px 4px rgba(255,255,255,0.4); border: 1px solid #ffeba9; cursor: pointer; transition: all 0.3s; text-decoration: none; } .btn-primary:hover { filter: brightness(1.15); transform: translateY(-2px); }
-        .visitor-log { list-style: none; padding: 0; margin: 0; } .visitor-log li { display: flex; align-items: flex-start; gap: 10px; padding: 12px 0; border-bottom: 1px dashed rgba(138, 99, 21, 0.2); } .visitor-log li:last-child { border-bottom: none; } .w-content h4 { font-family: 'Prompt', sans-serif; font-size: 1.1rem; font-weight: 600; margin-bottom: 3px; cursor: pointer; transition: all 0.3s; } .w-content p { margin: 0; font-size: 0.85rem; }
-        .visitor-log li:nth-child(1) h4 { color: #f5d77f; text-shadow: 0 0 10px #d4af37; } .visitor-log li:nth-child(1) p { color: #d1bfae; } .visitor-log li:nth-child(2) h4 { color: #d4af37; text-shadow: 0 0 4px rgba(212, 175, 55, 0.5); } .visitor-log li:nth-child(2) p { color: #a69477; } .visitor-log li:nth-child(3) h4 { color: #a69477; } .visitor-log li:nth-child(3) p { color: #6b5a45; } .visitor-log li:nth-child(n+4) h4 { color: #7a6855; } .visitor-log li:nth-child(n+4) p { color: #524433; }
+        
+        /* สมุดเยี่ยมชานเรือน พร้อมลูกเล่นระดับแสงสว่าง-จาง-มืด */
+        .visitor-log { list-style: none; padding: 0; margin: 0; } 
+        .visitor-item { display: flex; align-items: flex-start; gap: 10px; padding: 12px 0; border-bottom: 1px dashed rgba(138, 99, 21, 0.2); transition: all 0.5s ease; } 
+        .visitor-item:last-child { border-bottom: none; } 
+        
+        .visitor-glow-1 h4 { color: #fff; text-shadow: 0 0 12px #f5d77f, 0 0 20px #d4af37; }
+        .visitor-glow-1 p { color: #f5d77f; }
+
+        .visitor-glow-2 h4 { color: #f5d77f; text-shadow: 0 0 6px rgba(212,175,55,0.5); }
+        .visitor-glow-2 p { color: #d1bfae; }
+
+        .visitor-glow-3 h4 { color: #d4af37; text-shadow: none; }
+        .visitor-glow-3 p { color: #a69477; }
+
+        .visitor-glow-4 h4 { color: #6b5a45; opacity: 0.6; }
+        .visitor-glow-4 p { color: #423528; opacity: 0.5; }
+
+        /* Footer อยู่ใน main-container ด้านล่างสุดตรงกลางระหว่างมุมลายไทย */
+        .site-footer { text-align: center; margin-top: 50px; padding-top: 20px; border-top: 1px dashed rgba(138, 99, 21, 0.3); }
+        .site-footer p { color: var(--text-muted); font-family: 'Sarabun', sans-serif; font-size: 0.85rem; letter-spacing: 0.5px; margin: 0; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9); }
+
         .sect-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(7, 4, 2, 0.9); backdrop-filter: blur(8px); z-index: 1000; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; } .sect-modal-overlay.active { display: flex; opacity: 1; }
         .sect-modal-content { position: relative; background: linear-gradient(135deg, #1a120b, #0a0603); border: 1px solid var(--gold-main); border-radius: 12px; width: 90%; max-width: 450px; padding: 40px 30px 60px 30px; box-shadow: 0 15px 40px rgba(0,0,0,0.9), inset 0 0 20px rgba(212,175,55,0.1); transform: translateY(-20px); transition: transform 0.3s ease; } .sect-modal-overlay.active .sect-modal-content { transform: translateY(0); }
         .modal-corner { position: absolute; width: 60px; pointer-events: none; opacity: 0.8; } .mc-top-left { top: 12px; left: 12px; transform: scaleX(-1); } .mc-top-right { top: 12px; right: 12px; } .mc-bottom-left { bottom: 12px; left: 12px; transform: scaleX(-1) scaleY(-1); } .mc-bottom-right { bottom: 12px; right: 12px; transform: scaleY(-1); }
@@ -142,6 +162,11 @@
                 </div>
             </div>
         </div>
+
+        <!-- Footer อยู่ด้านใน main-container ตรงกลางระหว่างมุมลายไทยด้านล่าง -->
+        <footer class="site-footer">
+            <p>© 2026 sitluangpu by SLP Corporation Public Company Limited</p>
+        </footer>
     </div>
 
     <!-- Modals -->
@@ -500,12 +525,103 @@
             else { pwdInput.type = 'password'; toggleIcon.textContent = 'แสดง'; }
         }
 
+        // 🌟 1. รายการ 10 ประโยคสุ่มสำหรับสมุดเยี่ยมชานเรือน
+        const visitorPhrases = [
+            "ฝากรอยเท้าไว้",
+            "ประทับตราจารึก",
+            "แวะเยี่ยมเยือน",
+            "แอบมองจากในเงา",
+            "ทิ้งกลิ่นอายธูปเทียน",
+            "ผ่านมาด้วยแรงศรัทธา",
+            "ทิ้งร่องรอยอาคม",
+            "แวะมาฟังเสียงกระซิบ",
+            "ลงนามด้วยจิตคารวะ",
+            "ทิ้งรอยวิญญาณไว้เบื้องหลัง"
+        ];
+
+        function getRandomPhrase() {
+            const randomIndex = Math.floor(Math.random() * visitorPhrases.length);
+            return visitorPhrases[randomIndex];
+        }
+
+        // 🌟 2. บันทึกการเข้าชมปัจจุบันลงระบบสมุดเยี่ยม
+        function recordVisitorPresence() {
+            const username = localStorage.getItem('siy_username');
+            if (!username) return;
+
+            let visitors = JSON.parse(localStorage.getItem('siy_visitors_log')) || [];
+            let existingIndex = visitors.findIndex(v => v.username === username);
+            const currentTime = Date.now();
+
+            if (existingIndex > -1) {
+                visitors[existingIndex].timestamp = currentTime;
+            } else {
+                visitors.unshift({ username: username, timestamp: currentTime, phrase: getRandomPhrase() });
+            }
+
+            if (visitors.length > 15) visitors = visitors.slice(0, 15);
+            localStorage.setItem('siy_visitors_log', JSON.stringify(visitors));
+        }
+
+        // 🌟 3. ดึงข้อมูลและคำนวณระดับแสงสว่าง-จาง-มืด พร้อมสุ่มประโยค
         async function fetchRecentLogins() {
-            const mockApiData = [{ username: "Niran" }, { username: "Jenny" }, { username: "สายมูตัวจริง" }];
+            recordVisitorPresence();
+
             const logContainer = document.getElementById('dynamicVisitorLog');
             logContainer.innerHTML = ''; 
-            mockApiData.forEach(user => {
-                logContainer.innerHTML += `<li><div class="w-content"><h4 style="margin:0;">${user.username}</h4><p>ฝากรอยเท้าไว้</p></div></li>`;
+
+            let visitors = JSON.parse(localStorage.getItem('siy_visitors_log')) || [];
+
+            if (visitors.length === 0) {
+                const now = Date.now();
+                visitors = [
+                    { username: "Niran", timestamp: now - (2 * 60 * 1000), phrase: getRandomPhrase() },       
+                    { username: "Jenny", timestamp: now - (25 * 60 * 1000), phrase: getRandomPhrase() },      
+                    { username: "สายมูตัวจริง", timestamp: now - (3 * 60 * 60 * 1000), phrase: getRandomPhrase() } 
+                ];
+                localStorage.setItem('siy_visitors_log', JSON.stringify(visitors));
+            }
+
+            const currentTime = Date.now();
+
+            visitors.forEach(visitor => {
+                const diffMs = currentTime - visitor.timestamp;
+                const diffMins = Math.floor(diffMs / (1000 * 60)); 
+
+                let glowClass = 'visitor-glow-4';
+                let timeStatusText = 'ร่องรอยเลือนราง';
+
+                if (diffMins < 5) {
+                    glowClass = 'visitor-glow-1'; // เพิ่งเข้า (0-5 นาที): สว่างจ้าออร่าพุ่ง
+                    timeStatusText = diffMins <= 1 ? 'เพิ่งเข้ามาสดๆ ร้อนๆ' : `เข้ามาเมื่อ ${diffMins} นาทีที่แล้ว`;
+                } else if (diffMins < 30) {
+                    glowClass = 'visitor-glow-2'; // ผ่านไป 5-30 นาที: เริ่มซอฟต์ลง
+                    timeStatusText = `เข้ามาเมื่อ ${diffMins} นาทีที่แล้ว`;
+                } else if (diffMins < 120) {
+                    glowClass = 'visitor-glow-3'; // ผ่านไป 30 นาที - 2 ชั่วโมง: ค่อยๆ จาง
+                    const diffHours = Math.floor(diffMins / 60);
+                    timeStatusText = `เข้ามาเมื่อ ${diffHours} ชั่วโมงที่แล้ว`;
+                } else {
+                    glowClass = 'visitor-glow-4'; // นานมาก / ออกไปนานแล้ว: มืดทึบ สลัวลง
+                    timeStatusText = 'ออกไปนานแล้ว';
+                }
+
+                // ถ้าในข้อมูลเก่าไม่มี phrase ให้สุ่มให้ใหม่ทันที
+                if (!visitor.phrase) {
+                    visitor.phrase = getRandomPhrase();
+                }
+
+                logContainer.innerHTML += `
+                    <li class="visitor-item ${glowClass}">
+                        <div class="w-content" style="width: 100%;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <h4 style="margin:0;">${visitor.username}</h4>
+                                <span style="font-size: 0.7rem; color: var(--text-muted);">${timeStatusText}</span>
+                            </div>
+                            <p style="margin-top: 2px;">${visitor.phrase}</p>
+                        </div>
+                    </li>
+                `;
             });
         }
     </script>
