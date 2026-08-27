@@ -33,7 +33,6 @@
         
         .thread-title { color: var(--gold-light); font-family: 'Prompt', sans-serif; font-size: 1.05rem; font-weight: 500; text-decoration: none; display: block; margin-bottom: 5px; cursor: pointer; } .thread-title:hover { color: #fff; text-shadow: 0 0 8px var(--gold-main); } 
         
-        /* 🌟 CSS ป้ายยศ (ตัดไอคอนออกแล้ว) 🌟 */
         .role-badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 0.75rem; font-family: 'Prompt', sans-serif; font-weight: 600; letter-spacing: 0.5px; box-shadow: 0 2px 4px rgba(0,0,0,0.6); vertical-align: middle; margin-left: 4px; }
         .role-1 { background: linear-gradient(135deg, #4a0e0e, #2e0808); color: #f5d77f; border: 1px solid #d4af37; text-shadow: 0 0 5px rgba(212,175,55,0.5); }
         .role-2 { background: linear-gradient(135deg, #3a1c4a, #1f0f29); color: #e5b3ff; border: 1px solid #a86bd1; }
@@ -218,41 +217,31 @@
         let currentModalMode = 'register';
 
         const API_CONFIG = { 
-    USE_REAL_API: true, 
-    BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
-};
+            USE_REAL_API: true, 
+            BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
+        };
 
-       // 🌟 ปรับปรุงใหม่: ให้ดึงยศจากฐานข้อมูลผู้ใช้จริงเสมอ แม้จะเข้าแบบไม่ระบุตัวตนก็ตาม
         function getUserRole(username) {
             if (!username) return '5';
-            
-            // ถ้าชื่อเป็น ADMIN ให้คืนค่าสิทธิ์สูงสุด (1 = ปรมัตถ์) ทันที
-            if (username.toUpperCase() === 'ADMIN') {
-                return '1';
-            }
+            if (username.toUpperCase() === 'ADMIN') return '1';
 
-            // ค้นหายศจากฐานข้อมูลผู้ใช้ทั้งหมดในเครื่อง (siy_users)
             let users = JSON.parse(localStorage.getItem('siy_users')) || [];
             let user = users.find(u => u.username === username);
-            
-            // ถ้าพบข้อมูลในระบบ ให้ใช้ยศตามจริงของ User นั้นๆ
-            if (user) {
-                return user.role || '5';
-            }
+            if (user) return user.role || '5';
 
-            // ถ้าไม่พบในระบบเลย (เช่น เป็นชื่อสุ่มของ Guest ที่ไม่มีใน DB) ค่อยให้เป็นยศเริ่มต้นหรือวิญญาณเร่ร่อน
             const userType = localStorage.getItem('siy_usertype');
-            if (userType === 'guest') {
-                return 'guest'; // หรือถ้าอยากให้ Guest มีตั๋วเทียบเท่าเด็กวัด ให้เปลี่ยนเป็น return '5'; แทนได้เลยครับ
+            if (userType === 'guest' || username.includes('ผู้ไม่ประสงค์ออกนาม')) {
+                return 'guest';
             }
-
             return '5';
         }
 
         function getUserRoleBadge(username) {
-            // เช็กพิเศษ ถ้าเป็น ADMIN บังคับแสดงป้ายปรมัตถ์ทันที
             if (username && username.toUpperCase() === 'ADMIN') {
                 return '<span class="role-badge role-1">ปรมัตถ์</span>';
+            }
+            if (username && (username.includes('ผู้ไม่ประสงค์ออกนาม'))) {
+                return '<span class="role-badge role-guest">วิญญาณเร่ร่อน</span>';
             }
 
             const role = getUserRole(username);
@@ -275,38 +264,35 @@
             }
         }
 
-        // ⚡ ระบบตรวจและเลื่อนยศอัตโนมัติ (เปลี่ยนเป็นนับยอดคอมเมนต์) ⚡
-function checkAndApplyAutoPromotion(username) {
-    if (!username || localStorage.getItem('siy_usertype') === 'guest') return;
-    
-    let users = JSON.parse(localStorage.getItem('siy_users')) || [];
-    let userIndex = users.findIndex(u => u.username === username);
-    if (userIndex === -1) return;
+        function checkAndApplyAutoPromotion(username) {
+            if (!username || localStorage.getItem('siy_usertype'] === 'guest' || username.includes('ผู้ไม่ประสงค์ออกนาม')) return;
+            
+            let users = JSON.parse(localStorage.getItem('siy_users')) || [];
+            let userIndex = users.findIndex(u => u.username === username);
+            if (userIndex === -1) return;
 
-    let user = users[userIndex];
-    if (user.role === '1') return; // สิทธิ์แอดมินสูงสุด ไม่ปรับลด
+            let user = users[userIndex];
+            if (user.role === '1') return;
 
-    // ดึงฐานข้อมูลคอมเมนต์มานับจำนวน
-    let comments = JSON.parse(localStorage.getItem('siy_comments')) || [];
-    let userCommentCount = comments.filter(c => c.author === username).length;
+            let comments = JSON.parse(localStorage.getItem('siy_comments')) || [];
+            let userCommentCount = comments.filter(c => c.author === username).length;
 
-    // เช็กเงื่อนไขเลื่อนยศแบบใหม่
-    let newRole = '5';
-    if (userCommentCount >= 100) { newRole = '2'; }
-    else if (userCommentCount >= 50) { newRole = '3'; }
-    else if (userCommentCount >= 20) { newRole = '4'; }
-    else { newRole = '5'; }
+            let newRole = '5';
+            if (userCommentCount >= 100) { newRole = '2'; }
+            else if (userCommentCount >= 50) { newRole = '3'; }
+            else if (userCommentCount >= 20) { newRole = '4'; }
+            else { newRole = '5'; }
 
-    if ((user.role || '5') !== newRole) {
-        let oldRoleTitle = getRoleTitleName(user.role || '5');
-        let newRoleTitle = getRoleTitleName(newRole);
-        user.role = newRole;
-        users[userIndex] = user;
-        localStorage.setItem('siy_users', JSON.stringify(users));
-        
-        showCustomAlert(`🎉 ยินดีด้วย! ท่านได้รับการเลื่อนยศจาก <strong>${oldRoleTitle}</strong> เป็น <strong>${newRoleTitle}</strong><br>(จากการร่วมตอบสนทนาครบ ${userCommentCount} ครั้ง)`);
-    }
-}
+            if ((user.role || '5') !== newRole) {
+                let oldRoleTitle = getRoleTitleName(user.role || '5');
+                let newRoleTitle = getRoleTitleName(newRole);
+                user.role = newRole;
+                users[userIndex] = user;
+                localStorage.setItem('siy_users', JSON.stringify(users));
+                
+                showCustomAlert(`🎉 ยินดีด้วย! ท่านได้รับการเลื่อนยศจาก <strong>${oldRoleTitle}</strong> เป็น <strong>${newRoleTitle}</strong><br>(จากการร่วมตอบสนทนาครบ ${userCommentCount} ครั้ง)`);
+            }
+        }
 
         const ApiManager = {
             async fetchPosts() {
@@ -316,19 +302,7 @@ function checkAndApplyAutoPromotion(username) {
                         return await response.json();
                     } catch (error) { return []; }
                 } else {
-                    return new Promise((resolve) => {
-                        setTimeout(() => {
-                            if (!localStorage.getItem('siy_posts')) {
-                                const defaultPosts = [
-                                    { id: "1001", category: "1", title: "สัตยาสาบาน ตอนที่ 1: รอยยันต์สีเลือด", author: "ADMIN", timestamp: "25 สิงหาคม 2569 | 15:00 น.", views: 240, replies: 4, pinned: true },
-                                    { id: "1002", category: "1", title: "สัตยาสาบาน ตอนที่ 2: เสียงเพรียกจากป่าช้า", author: "ADMIN", timestamp: "25 สิงหาคม 2569 | 10:00 น.", views: 150, replies: 10, pinned: false },
-                                    { id: "2001", category: "2", title: "อาถรรพ์ป่าช้าเก่าหลังวัด (โปรดใช้วิจารณญาณ)", author: "ศิษย์ใหม่", timestamp: "26 สิงหาคม 2569 | 03:00 น.", views: 560, replies: 42, pinned: false }
-                                ];
-                                localStorage.setItem('siy_posts', JSON.stringify(defaultPosts));
-                            }
-                            resolve(JSON.parse(localStorage.getItem('siy_posts')));
-                        }, 800); 
-                    });
+                    return [];
                 }
             }
         };
@@ -396,12 +370,10 @@ function checkAndApplyAutoPromotion(username) {
             if (savedUser) {
                 document.getElementById('displayUsername').textContent = savedUser;
 
-                // 🌟 หากเป็นสถานะวิญญาณเร่ร่อน (Guest) ให้บังคับแสดงป้ายวิญญาณเร่ร่อนทันที 🌟
                 if (userType === 'guest' || savedUser.includes('ผู้ไม่ประสงค์ออกนาม')) {
                     document.getElementById('displayUserBadge').innerHTML = 
                         `<span class="role-badge role-guest">วิญญาณเร่ร่อน</span>`;
                 } else {
-                    // ถ้าเป็นสมาชิกปกติ ให้ดึงข้อมูลสิทธิ์และยศจาก D1 (API)
                     try {
                         const res = await fetch(`${API_CONFIG.BASE_URL}/users`);
                         const usersDB = await res.json();
@@ -424,18 +396,7 @@ function checkAndApplyAutoPromotion(username) {
                 guestView.style.display = 'none';
                 loggedInView.style.display = 'block';
 
-                if (userType === 'guest') {
-                    document.getElementById('logoutBtnText').textContent = 'ลบตัวตน (สละร่าง)';
-                } else {
-                    document.getElementById('logoutBtnText').textContent = 'ออกจากระบบ';
-                }
-            } else {
-                guestView.style.display = 'block';
-                loggedInView.style.display = 'none';
-            }
-        }
-
-                if (userType === 'guest') {
+                if (userType === 'guest' || savedUser.includes('ผู้ไม่ประสงค์ออกนาม')) {
                     document.getElementById('logoutBtnText').textContent = 'ลบตัวตน (สละร่าง)';
                 } else {
                     document.getElementById('logoutBtnText').textContent = 'ออกจากระบบ';
@@ -507,19 +468,17 @@ function checkAndApplyAutoPromotion(username) {
                     return; 
                 }
 
-                // สมัครสมาชิกใหม่ผ่าน API (D1)
                 try {
-                    // ตอนส่ง fetch สมัครสมาชิกไปที่ D1
-const res = await fetch(`${API_CONFIG.BASE_URL}/users`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ 
-        username: usernameInput, 
-        password: passwordInput, 
-        role: '5',             // บังคับให้เป็นระดับ 5 เสมอสำหรับสมาชิกใหม่
-        rank_name: 'เด็กวัด'    // บังคับชื่อยศเริ่มต้นเป็น "เด็กวัด" ไม่ใช่วิญญาณเร่ร่อน
-    })
-});
+                    const res = await fetch(`${API_CONFIG.BASE_URL}/users`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            username: usernameInput, 
+                            password: passwordInput, 
+                            role: '5',             
+                            rank_name: 'เด็กวัด'    
+                        })
+                    });
                     const result = await res.json();
                     if (!res.ok) {
                         showCustomAlert(result.message || 'นามแฝงนี้มีผู้ใช้งานแล้ว');
@@ -532,7 +491,6 @@ const res = await fetch(`${API_CONFIG.BASE_URL}/users`, {
                 }
 
             } else {
-                // เข้าสู่ระบบ: ดึงรายชื่อจาก D1 มาตรวจสอบ
                 try {
                     const res = await fetch(`${API_CONFIG.BASE_URL}/users`);
                     const usersDB = await res.json();
