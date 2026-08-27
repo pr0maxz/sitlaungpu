@@ -458,7 +458,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                 showCustomAlert('รีเซ็ตข้อมูลระบบกลับสู่ค่าเริ่มต้นเรียบร้อยแล้ว'); 
             });
         }
-
+function handleAdminLogout() {
+            localStorage.removeItem('siy_username');
+            localStorage.removeItem('siy_usertype');
+            // เคลียร์ค่าอื่นๆ เผื่อค้างไว้
+            sessionStorage.clear();
+            window.location.replace('admin_login.html');
+        }
         // 🌟 เรียกใช้การเช็กสิทธิ์แอดมินก่อนเริ่มโหลดข้อมูล 🌟
         document.addEventListener('DOMContentLoaded', () => {
             if (checkAdminAuth()) {
