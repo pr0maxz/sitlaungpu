@@ -543,12 +543,16 @@
             return visitorPhrases[randomIndex];
         }
 
-        // 🌟 2. บันทึกการเข้าชมปัจจุบันลงระบบสมุดเยี่ยม
+        // 🌟 2. บันทึกการเข้าชมปัจจุบันลงระบบสมุดเยี่ยม (ตัดรายชื่อ Mockup ออกทั้งหมด)
         function recordVisitorPresence() {
             const username = localStorage.getItem('siy_username');
             if (!username) return;
 
             let visitors = JSON.parse(localStorage.getItem('siy_visitors_log')) || [];
+            
+            // ล้างข้อมูลชื่อ Mockup เก่า (Niran, Jenny, สายมูตัวจริง) ทิ้งไปถาวร
+            visitors = visitors.filter(v => v.username !== "Niran" && v.username !== "Jenny" && v.username !== "สายมูตัวจริง");
+
             let existingIndex = visitors.findIndex(v => v.username === username);
             const currentTime = Date.now();
 
@@ -570,15 +574,13 @@
             logContainer.innerHTML = ''; 
 
             let visitors = JSON.parse(localStorage.getItem('siy_visitors_log')) || [];
+            
+            // กรองชื่อ Mockup ออกอีกชั้นเพื่อความชัวร์
+            visitors = visitors.filter(v => v.username !== "Niran" && v.username !== "Jenny" && v.username !== "สายมูตัวจริง");
 
             if (visitors.length === 0) {
-                const now = Date.now();
-                visitors = [
-                    { username: "Niran", timestamp: now - (2 * 60 * 1000), phrase: getRandomPhrase() },       
-                    { username: "Jenny", timestamp: now - (25 * 60 * 1000), phrase: getRandomPhrase() },      
-                    { username: "สายมูตัวจริง", timestamp: now - (3 * 60 * 60 * 1000), phrase: getRandomPhrase() } 
-                ];
-                localStorage.setItem('siy_visitors_log', JSON.stringify(visitors));
+                logContainer.innerHTML = '<li style="text-align: center; color: var(--gold-dark); border: none; padding: 15px 0;">ยังไม่มีผู้ใดฝากรอยเท้าไว้... เป็นคนแรกสิ</li>';
+                return;
             }
 
             const currentTime = Date.now();
@@ -605,7 +607,6 @@
                     timeStatusText = 'ออกไปนานแล้ว';
                 }
 
-                // ถ้าในข้อมูลเก่าไม่มี phrase ให้สุ่มให้ใหม่ทันที
                 if (!visitor.phrase) {
                     visitor.phrase = getRandomPhrase();
                 }
