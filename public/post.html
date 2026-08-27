@@ -31,13 +31,11 @@
         .post-title { color: var(--gold-light); font-size: 1.8rem; font-family: 'Prompt', sans-serif; margin-bottom: 20px; word-break: break-word; } 
         
         .post-body { line-height: 1.8; color: #e2d4c3; font-size: 1.05rem; margin-bottom: 30px; word-wrap: break-word; overflow-wrap: break-word; } 
+        
+        /* 🌟 ปรับแต่งรูปภาพให้ปรับขนาดอัตโนมัติพอดีกับหน้าจอ ไม่ล้นและไม่มีกรอบเกะกะ 🌟 */
         .post-body img, .comment-body img {
             max-width: 100% !important;
             height: auto !important;
-            display: block;
-            margin: 10px auto;
-            border-radius: 8px;
-            border: 1px solid var(--gold-dark);
             box-sizing: border-box;
         }
 
@@ -350,7 +348,6 @@
             });
         }
 
-        // 🌟 ฟังก์ชันตรวจสอบคอมเมนต์: อนุญาตเฉพาะข้อความปกติและแท็ก <img src="..."> เท่านั้น ห้ามมีลิงก์หรือแท็ก HTML อื่นๆ 🌟
         function validateComment(content) {
             const htmlTags = content.match(/<\/?[a-z][a-z0-9]*\b[^>]*>/gi);
             if (htmlTags) {
@@ -390,7 +387,6 @@
                 return;
             }
 
-            // 🌟 ตรวจสอบความปลอดภัยก่อนส่ง หากไม่ใช่รูปภาพหรือข้อความปกติ จะบล็อกและแจ้งเตือนทันที 🌟
             const validation = validateComment(content);
             if (!validation.valid) {
                 showCustomAlert(validation.error);
