@@ -396,28 +396,44 @@ function checkAndApplyAutoPromotion(username) {
             if (savedUser) {
                 document.getElementById('displayUsername').textContent = savedUser;
 
-                // 🌟 ดึงข้อมูลสิทธิ์และยศจาก D1 (API) โดยตรง เพื่อให้ตรงกับฐานข้อมูลจริง 🌟
-                try {
-                    const res = await fetch(`${API_CONFIG.BASE_URL}/users`);
-                    const usersDB = await res.json();
-                    const currentUser = usersDB.find(u => u.username === savedUser);
+                // 🌟 หากเป็นสถานะวิญญาณเร่ร่อน (Guest) ให้บังคับแสดงป้ายวิญญาณเร่ร่อนทันที 🌟
+                if (userType === 'guest' || savedUser.includes('ผู้ไม่ประสงค์ออกนาม')) {
+                    document.getElementById('displayUserBadge').innerHTML = 
+                        `<span class="role-badge role-guest">วิญญาณเร่ร่อน</span>`;
+                } else {
+                    // ถ้าเป็นสมาชิกปกติ ให้ดึงข้อมูลสิทธิ์และยศจาก D1 (API)
+                    try {
+                        const res = await fetch(`${API_CONFIG.BASE_URL}/users`);
+                        const usersDB = await res.json();
+                        const currentUser = usersDB.find(u => u.username === savedUser);
 
-                    if (currentUser) {
-                        // แสดงชื่อยศ (rank_name) หรือแปลงตาม role ให้ตรงกับ D1
-                        let roleTitle = currentUser.rank_name || getRoleTitleName(currentUser.role);
-                        let roleClass = 'role-' + (currentUser.role || '5');
-                        
-                        document.getElementById('displayUserBadge').innerHTML = 
-                            `<span class="role-badge ${roleClass}">${roleTitle}</span>`;
-                    } else {
+                        if (currentUser) {
+                            let roleTitle = currentUser.rank_name || getRoleTitleName(currentUser.role);
+                            let roleClass = 'role-' + (currentUser.role || '5');
+                            
+                            document.getElementById('displayUserBadge').innerHTML = 
+                                `<span class="role-badge ${roleClass}">${roleTitle}</span>`;
+                        } else {
+                            document.getElementById('displayUserBadge').innerHTML = getUserRoleBadge(savedUser);
+                        }
+                    } catch (e) {
                         document.getElementById('displayUserBadge').innerHTML = getUserRoleBadge(savedUser);
                     }
-                } catch (e) {
-                    document.getElementById('displayUserBadge').innerHTML = getUserRoleBadge(savedUser);
                 }
                 
                 guestView.style.display = 'none';
                 loggedInView.style.display = 'block';
+
+                if (userType === 'guest') {
+                    document.getElementById('logoutBtnText').textContent = 'ลบตัวตน (สละร่าง)';
+                } else {
+                    document.getElementById('logoutBtnText').textContent = 'ออกจากระบบ';
+                }
+            } else {
+                guestView.style.display = 'block';
+                loggedInView.style.display = 'none';
+            }
+        }
 
                 if (userType === 'guest') {
                     document.getElementById('logoutBtnText').textContent = 'ลบตัวตน (สละร่าง)';
