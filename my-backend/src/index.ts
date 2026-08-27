@@ -97,7 +97,7 @@ app.post('/api/users', async (c) => {
   }
 })
 
-// 🌟 จุดสำคัญ: เพิ่ม API รองรับการกดแก้ไข/เปลี่ยนรหัสจากหน้า CMS 🌟
+// จุดสำคัญ: เพิ่ม API รองรับการกดแก้ไข/เปลี่ยนรหัสจากหน้า CMS
 app.put('/api/users', async (c) => {
   const { username, oldUsername, password, role, rank_name } = await c.req.json()
   const targetName = oldUsername || username
@@ -198,34 +198,40 @@ app.post('/api/cms', async (c) => {
   ).run()
   return c.json({ success: true })
 })
+
+// ==========================================
+// 👣 ระบบสมุดเยี่ยมชานเรือน (Visitors Log)
+// ==========================================
+
 // 1. ดึงรายชื่อผู้เยี่ยมชมล่าสุด (แสดง 15 คนล่าสุดที่ active อยู่)
-router.get('/api/visitors', async (request, env) => {
+app.get('/api/visitors', async (c) => {
     try {
-        const { results } = await env.DB.prepare(
+        const { results } = await c.env.DB.prepare(
             "SELECT * FROM visitors ORDER BY timestamp DESC LIMIT 15"
         ).all();
-        return Response.json(results || []);
-    } catch (e) {
-        return Response.json({ error: e.message }, { status: 500 });
+        return c.json(results || []);
+    } catch (e: any) {
+        return c.json({ error: e.message }, { status: 500 });
     }
 });
 
 // 2. บันทึกหรืออัปเดตเวลาการเข้าเยี่ยมชมของผู้ใช้
-router.post('/api/visitors', async (request, env) => {
+app.post('/api/visitors', async (c) => {
     try {
-        const body = await request.json();
+        const body = await c.req.json();
         const { username, phrase } = body;
-        if (!username) return Response.json({ success: false }, { status: 400 });
+        if (!username) return c.json({ success: false }, { status: 400 });
 
         const timestamp = Date.now();
-        await env.DB.prepare(
+        await c.env.DB.prepare(
             `INSERT INTO visitors (username, timestamp, phrase) VALUES (?, ?, ?)
              ON CONFLICT(username) DO UPDATE SET timestamp = ?, phrase = ?`
         ).bind(username, timestamp, phrase, timestamp, phrase).run();
 
-        return Response.json({ success: true });
-    } catch (e) {
-        return Response.json({ error: e.message }, { status: 500 });
+        return c.json({ success: true });
+    } catch (e: any) {
+        return c.json({ error: e.message }, { status: 500 });
     }
 });
+
 export default app
