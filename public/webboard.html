@@ -222,19 +222,39 @@
     BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
 };
 
-        // 🌟 Helper ดึงยศและป้ายยศ 🌟
+       // 🌟 ปรับปรุงใหม่: ให้ดึงยศจากฐานข้อมูลผู้ใช้จริงเสมอ แม้จะเข้าแบบไม่ระบุตัวตนก็ตาม
         function getUserRole(username) {
             if (!username) return '5';
+            
+            // ถ้าชื่อเป็น ADMIN ให้คืนค่าสิทธิ์สูงสุด (1 = ปรมัตถ์) ทันที
+            if (username.toUpperCase() === 'ADMIN') {
+                return '1';
+            }
+
+            // ค้นหายศจากฐานข้อมูลผู้ใช้ทั้งหมดในเครื่อง (siy_users)
             let users = JSON.parse(localStorage.getItem('siy_users')) || [];
             let user = users.find(u => u.username === username);
-            return user ? (user.role || '5') : '5';
+            
+            // ถ้าพบข้อมูลในระบบ ให้ใช้ยศตามจริงของ User นั้นๆ
+            if (user) {
+                return user.role || '5';
+            }
+
+            // ถ้าไม่พบในระบบเลย (เช่น เป็นชื่อสุ่มของ Guest ที่ไม่มีใน DB) ค่อยให้เป็นยศเริ่มต้นหรือวิญญาณเร่ร่อน
+            const userType = localStorage.getItem('siy_usertype');
+            if (userType === 'guest') {
+                return 'guest'; // หรือถ้าอยากให้ Guest มีตั๋วเทียบเท่าเด็กวัด ให้เปลี่ยนเป็น return '5'; แทนได้เลยครับ
+            }
+
+            return '5';
         }
 
         function getUserRoleBadge(username) {
-            const userType = localStorage.getItem('siy_usertype');
-            if (userType === 'guest') {
-                return '<span class="role-badge role-guest">วิญญาณเร่ร่อน</span>';
+            // เช็กพิเศษ ถ้าเป็น ADMIN บังคับแสดงป้ายปรมัตถ์ทันที
+            if (username && username.toUpperCase() === 'ADMIN') {
+                return '<span class="role-badge role-1">ปรมัตถ์</span>';
             }
+
             const role = getUserRole(username);
             switch(String(role)) {
                 case '1': return '<span class="role-badge role-1">ปรมัตถ์</span>';
