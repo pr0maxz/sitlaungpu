@@ -162,13 +162,11 @@
             </div>
         </div>
 
-        <!-- Footer อยู่ด้านใน main-container ตรงกลางระหว่างมุมลายไทยด้านล่าง -->
         <footer class="site-footer">
-            <p>© 2026 SitLuangPu</p>
+            <p>© 2026 sitluangpu by SLP Corporation Public Company Limited</p>
         </footer>
     </div>
 
-    <!-- Modals -->
     <div class="sect-modal-overlay" id="registerModal">
         <div class="sect-modal-content">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-left" alt="">
@@ -543,86 +541,84 @@
             return visitorPhrases[randomIndex];
         }
 
-        // 🌟 2. บันทึกการเข้าชมปัจจุบันลงระบบสมุดเยี่ยม (ตัดรายชื่อ Mockup ออกทั้งหมด)
-        function recordVisitorPresence() {
+        // 🌟 2. บันทึกการเข้าชมผ่าน API ไปยัง Backend (Cloudflare D1) แทน localStorage
+        async function recordVisitorPresence() {
             const username = localStorage.getItem('siy_username');
-            if (!username) return;
+            if (!username) return; // ถ้ายังไม่ล็อกอินไม่ต้องบันทึก
 
-            let visitors = JSON.parse(localStorage.getItem('siy_visitors_log')) || [];
-            
-            // ล้างข้อมูลชื่อ Mockup เก่า (Niran, Jenny, สายมูตัวจริง) ทิ้งไปถาวร
-            visitors = visitors.filter(v => v.username !== "Niran" && v.username !== "Jenny" && v.username !== "สายมูตัวจริง");
-
-            let existingIndex = visitors.findIndex(v => v.username === username);
-            const currentTime = Date.now();
-
-            if (existingIndex > -1) {
-                visitors[existingIndex].timestamp = currentTime;
-            } else {
-                visitors.unshift({ username: username, timestamp: currentTime, phrase: getRandomPhrase() });
+            try {
+                await fetch(`${API_CONFIG.BASE_URL}/visitors`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: username, phrase: getRandomPhrase() })
+                });
+            } catch (error) {
+                console.error("Error recording visitor:", error);
             }
-
-            if (visitors.length > 15) visitors = visitors.slice(0, 15);
-            localStorage.setItem('siy_visitors_log', JSON.stringify(visitors));
         }
 
-        // 🌟 3. ดึงข้อมูลและคำนวณระดับแสงสว่าง-จาง-มืด พร้อมสุ่มประโยค
+        // 🌟 3. ดึงข้อมูลและคำนวณระดับแสงสว่าง-จาง-มืด จาก API กลาง
         async function fetchRecentLogins() {
-            recordVisitorPresence();
+            await recordVisitorPresence();
 
             const logContainer = document.getElementById('dynamicVisitorLog');
-            logContainer.innerHTML = ''; 
+            logContainer.innerHTML = '<li style="text-align: center; color: var(--gold-dark); border: none;">กำลังสัมผัสร่องรอย...</li>'; 
 
-            let visitors = JSON.parse(localStorage.getItem('siy_visitors_log')) || [];
-            
-            // กรองชื่อ Mockup ออกอีกชั้นเพื่อความชัวร์
-            visitors = visitors.filter(v => v.username !== "Niran" && v.username !== "Jenny" && v.username !== "สายมูตัวจริง");
+            try {
+                const response = await fetch(`${API_CONFIG.BASE_URL}/visitors`);
+                if (!response.ok) throw new Error('Failed to fetch visitors');
+                
+                let visitors = await response.json();
+                logContainer.innerHTML = ''; 
 
-            if (visitors.length === 0) {
-                logContainer.innerHTML = '<li style="text-align: center; color: var(--gold-dark); border: none; padding: 15px 0;">ยังไม่มีผู้ใดฝากรอยเท้าไว้... เป็นคนแรกสิ</li>';
-                return;
-            }
-
-            const currentTime = Date.now();
-
-            visitors.forEach(visitor => {
-                const diffMs = currentTime - visitor.timestamp;
-                const diffMins = Math.floor(diffMs / (1000 * 60)); 
-
-                let glowClass = 'visitor-glow-4';
-                let timeStatusText = 'ร่องรอยเลือนราง';
-
-                if (diffMins < 5) {
-                    glowClass = 'visitor-glow-1'; // เพิ่งเข้า (0-5 นาที): สว่างจ้าออร่าพุ่ง
-                    timeStatusText = diffMins <= 1 ? 'เพิ่งเข้ามาสดๆ ร้อนๆ' : `เข้ามาเมื่อ ${diffMins} นาทีที่แล้ว`;
-                } else if (diffMins < 30) {
-                    glowClass = 'visitor-glow-2'; // ผ่านไป 5-30 นาที: เริ่มซอฟต์ลง
-                    timeStatusText = `เข้ามาเมื่อ ${diffMins} นาทีที่แล้ว`;
-                } else if (diffMins < 120) {
-                    glowClass = 'visitor-glow-3'; // ผ่านไป 30 นาที - 2 ชั่วโมง: ค่อยๆ จาง
-                    const diffHours = Math.floor(diffMins / 60);
-                    timeStatusText = `เข้ามาเมื่อ ${diffHours} ชั่วโมงที่แล้ว`;
-                } else {
-                    glowClass = 'visitor-glow-4'; // นานมาก / ออกไปนานแล้ว: มืดทึบ สลัวลง
-                    timeStatusText = 'ออกไปนานแล้ว';
+                if (!visitors || visitors.length === 0) {
+                    logContainer.innerHTML = '<li style="text-align: center; color: var(--gold-dark); border: none; padding: 15px 0;">ยังไม่มีผู้ใดฝากรอยเท้าไว้... เป็นคนแรกสิ</li>';
+                    return;
                 }
 
-                if (!visitor.phrase) {
-                    visitor.phrase = getRandomPhrase();
-                }
+                const currentTime = Date.now();
 
-                logContainer.innerHTML += `
-                    <li class="visitor-item ${glowClass}">
-                        <div class="w-content" style="width: 100%;">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <h4 style="margin:0;">${visitor.username}</h4>
-                                <span style="font-size: 0.7rem; color: var(--text-muted);">${timeStatusText}</span>
+                visitors.forEach(visitor => {
+                    const diffMs = currentTime - visitor.timestamp;
+                    const diffMins = Math.floor(diffMs / (1000 * 60)); 
+
+                    let glowClass = 'visitor-glow-4';
+                    let timeStatusText = 'ร่องรอยเลือนราง';
+
+                    if (diffMins < 5) {
+                        glowClass = 'visitor-glow-1'; // เพิ่งเข้า (0-5 นาที): สว่างจ้าออร่าพุ่ง
+                        timeStatusText = diffMins <= 1 ? 'เพิ่งเข้ามาสดๆ ร้อนๆ' : `เข้ามาเมื่อ ${diffMins} นาทีที่แล้ว`;
+                    } else if (diffMins < 30) {
+                        glowClass = 'visitor-glow-2'; // ผ่านไป 5-30 นาที: เริ่มซอฟต์ลง
+                        timeStatusText = `เข้ามาเมื่อ ${diffMins} นาทีที่แล้ว`;
+                    } else if (diffMins < 120) {
+                        glowClass = 'visitor-glow-3'; // ผ่านไป 30 นาที - 2 ชั่วโมง: ค่อยๆ จาง
+                        const diffHours = Math.floor(diffMins / 60);
+                        timeStatusText = `เข้ามาเมื่อ ${diffHours} ชั่วโมงที่แล้ว`;
+                    } else {
+                        glowClass = 'visitor-glow-4'; // นานมาก / ออกไปนานแล้ว: มืดทึบ สลัวลง
+                        timeStatusText = 'ออกไปนานแล้ว';
+                    }
+
+                    const phrase = visitor.phrase || getRandomPhrase();
+
+                    logContainer.innerHTML += `
+                        <li class="visitor-item ${glowClass}">
+                            <div class="w-content" style="width: 100%;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <h4 style="margin:0;">${visitor.username}</h4>
+                                    <span style="font-size: 0.7rem; color: var(--text-muted);">${timeStatusText}</span>
+                                </div>
+                                <p style="margin-top: 2px;">${phrase}</p>
                             </div>
-                            <p style="margin-top: 2px;">${visitor.phrase}</p>
-                        </div>
-                    </li>
-                `;
-            });
+                        </li>
+                    `;
+                });
+
+            } catch (error) {
+                console.error("Error fetching visitors:", error);
+                logContainer.innerHTML = '<li style="text-align: center; color: #ff6b6b; border: none; padding: 15px 0;">เกิดข้อผิดพลาดในการเชื่อมต่อมิติข้อมูล</li>';
+            }
         }
     </script>
 </body>
