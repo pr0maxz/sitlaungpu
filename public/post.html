@@ -296,9 +296,14 @@
         }
 
         function getUserRoleBadge(username) {
+            // ถ้าชื่อเป็น ADMIN หรือตรวจสอบจากฐานข้อมูลพบว่าเป็น role 1
+            if (username && username.toUpperCase() === 'ADMIN') {
+                return '<span class="role-badge role-1">ปรมัตถ์</span>';
+            }
             let users = JSON.parse(localStorage.getItem('siy_users')) || [];
             let user = users.find(u => u.username === username);
             let role = user ? (user.role || '5') : '5';
+            
             switch(String(role)) {
                 case '1': return '<span class="role-badge role-1">ปรมัตถ์</span>';
                 case '2': return '<span class="role-badge role-2">ปรมาจารย์</span>';
@@ -308,15 +313,13 @@
             }
         }
 
-        async function loadComments(postId) {
-            const container = document.getElementById('commentsList');
-            const comments = await ApiManager.getComments(postId);
-            
-            // ตรวจสอบสิทธิ์ว่าคนที่ดูอยู่เป็นแอดมินหรือไม่ (Role 1)
+        // 🌟 ตรวจสอบสิทธิ์แอดมิน: รองรับทั้งชื่อ ADMIN หรือผู้ที่มี role เป็น '1'
             const savedUser = localStorage.getItem('siy_username');
             let users = JSON.parse(localStorage.getItem('siy_users')) || [];
             let currentUser = users.find(u => u.username === savedUser);
-            let isAdmin = currentUser && String(currentUser.role) === '1';
+            
+            let isAdmin = (savedUser && savedUser.toUpperCase() === 'ADMIN') || 
+                          (currentUser && String(currentUser.role) === '1');
 
             container.innerHTML = ''; 
 
