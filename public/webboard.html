@@ -162,7 +162,7 @@
             <div class="form-group">
                 <label id="usernameLabel">นามแฝง (Username)</label>
                 <!-- บล็อกไม่ให้พิมพ์ภาษาอังกฤษ -->
-                <input type="text" id="regUsername" class="form-input" placeholder="ภาษาไทยเท่านั้น" oninput="this.value = this.value.replace(/[^\u0E00-\u0E7F]/g, '')" onpaste="setTimeout(() => { this.value = this.value.replace(/[a-zA-Z]/g, ''); }, 10)">
+                <input type="text" id="regUsername" class="form-input" placeholder="ภาษาไทยเท่านั้น" oninput="this.value = this.value.replace(/[a-zA-Z]/g, '')" onpaste="setTimeout(() => { this.value = this.value.replace(/[a-zA-Z]/g, ''); }, 10)">
             </div>
             <div class="form-group">
                 <label>รหัสผ่านลับ (Password)</label>
@@ -172,7 +172,7 @@
                 </div>
             </div>
             <div class="captcha-box" id="captchaBoxContainer">
-                <p><strong>จงพิมพ์คำว่า:</strong> "สัตยาสาบาน"</p>
+                <p><strong>ด่านทดสอบสัจจะ:</strong> จงพิมพ์คำว่า "สัตยาสาบาน"</p>
                 <input type="text" id="regCaptchaInput" class="form-input" style="text-align: center;">
             </div>
             <div class="modal-actions">
@@ -223,30 +223,26 @@
             BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
         };
 
-        function getUserRole(username) {
-            if (!username) return '5';
-            if (username.toUpperCase() === 'ADMIN') return '1';
-            return '5';
-        }
-
-        function getUserRoleBadge(username) {
-            if (username && username.toUpperCase() === 'ADMIN') {
+        // 🌟 ฟังก์ชันดึงป้ายยศเชื่อมโยงฐานข้อมูลจริงสำหรับแสดงในรายการกระทู้ 🌟
+        async function getRoleBadgeFromAPI(username) {
+            if (!username) return '<span class="role-badge role-5">เด็กวัด</span>';
+            if (username.toUpperCase() === 'ADMIN') {
                 return '<span class="role-badge role-1">ปรมัตถ์</span>';
             }
-            if (username && username.includes('ผู้ไม่ประสงค์ออกนาม')) {
-                return '<span class="role-badge role-guest">วิญญาณเร่ร่อน</span>';
-            }
+            try {
+                const res = await fetch(`${API_CONFIG.BASE_URL}/users`);
+                const usersDB = await res.json();
+                const user = usersDB.find(u => u.username === username);
+                if (user) {
+                    let role = String(user.role || '5');
+                    let rank = user.rank_name || 'เด็กวัด';
+                    if (role === '1') {
+                        return '<span class="role-badge role-1">ปรมัตถ์</span>';
+                    }
+                    return `<span class="role-badge role-${role}">${rank}</span>`;
+                }
+            } catch (e) {}
             return '<span class="role-badge role-5">เด็กวัด</span>';
-        }
-
-        function getRoleTitleName(role) {
-            switch(String(role)) {
-                case '1': return 'ปรมัตถ์';
-                case '2': return 'ปรมาจารย์';
-                case '3': return 'ผู้สำเร็จวิชา';
-                case '4': return 'ขั้นปฐมภูมิ';
-                default: return 'เด็กวัด';
-            }
         }
 
         const ApiManager = {
@@ -265,7 +261,6 @@
             }
         };
 
-        // 🌟 รองรับการค้นหากระทู้ผ่าน searchQuery 🌟
         async function loadAndRenderPosts(searchQuery = '') {
             const cat1Container = document.getElementById('dynamic-category-1');
             const cat2Container = document.getElementById('dynamic-category-2');
@@ -279,7 +274,6 @@
                 return;
             }
 
-            // กรองข้อมูลตามคำค้นหา
             if (searchQuery && searchQuery.trim() !== '') {
                 const q = searchQuery.toLowerCase().trim();
                 posts = posts.filter(p => 
@@ -301,9 +295,10 @@
                 return b.id - a.id; 
             });
 
-            posts.forEach(post => {
+            // วนลูปสร้างรายการกระทู้พร้อมดึงยศจริงจากฐานข้อมูล
+            for (let post of posts) {
                 const pinTag = post.pinned ? '<span class="wb-tag wb-tag-pin">📌 ปักหมุด</span> ' : '';
-                const authorBadge = getUserRoleBadge(post.author);
+                const authorBadge = await getRoleBadgeFromAPI(post.author);
 
                 const postHTML = `
                     <div class="thread-item">
@@ -319,7 +314,7 @@
                 `;
                 if (post.category === "1") cat1Container.innerHTML += postHTML;
                 else if (post.category === "2") cat2Container.innerHTML += postHTML;
-            });
+            }
 
             if(cat1Container.innerHTML === '') cat1Container.innerHTML = '<div style="padding: 20px; color: var(--gold-dark); text-align:center;">ยังไม่มีจารึกในหมวดนี้</div>';
             if(cat2Container.innerHTML === '') cat2Container.innerHTML = '<div style="padding: 20px; color: var(--gold-dark); text-align:center;">ยังไม่มีจารึกในหมวดนี้</div>';
@@ -329,7 +324,6 @@
             loadAndRenderPosts();
             checkUserLoginStatus();
 
-            // 🌟 ผูกเหตุการณ์ปุ่มค้นหาและกด Enter 🌟
             const searchInput = document.querySelector('.search-input');
             const searchBtn = document.querySelector('.search-btn');
 
@@ -381,10 +375,10 @@
                             document.getElementById('displayUserBadge').innerHTML = 
                                 `<span class="role-badge ${roleClass}">${roleTitle}</span>`;
                         } else {
-                            document.getElementById('displayUserBadge').innerHTML = getUserRoleBadge(savedUser);
+                            document.getElementById('displayUserBadge').innerHTML = await getRoleBadgeFromAPI(savedUser);
                         }
                     } catch (e) {
-                        document.getElementById('displayUserBadge').innerHTML = getUserRoleBadge(savedUser);
+                        document.getElementById('displayUserBadge').innerHTML = await getRoleBadgeFromAPI(savedUser);
                     }
                 }
                 
@@ -457,7 +451,6 @@
                 return; 
             }
 
-            // ป้องกันภาษาอังกฤษหลุดรอด
             if (/[a-zA-Z]/.test(usernameInput)) {
                 showCustomAlert('นามแฝง (Username) ห้ามมีอักษรภาษาอังกฤษเด็ดขาด!');
                 return;
