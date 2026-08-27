@@ -216,33 +216,46 @@
 
     <script>
        // 🌟 1. ฟังก์ชันตรวจเช็กสิทธิ์แอดมิน (ปรับให้ Redirect เงียบๆ ไร้รอยต่อ) 🌟
-function checkAdminAuth() {
-    initAdminDB(); // มั่นใจว่ามีฐานข้อมูลเบื้องต้นก่อนตรวจ
+// 🌟 1. ปรับปรุงฟังก์ชันตรวจเช็กสิทธิ์แอดมินให้เช็กจาก Session หรือ API ของ D1
+async function checkAdminAuth() {
     const savedUsername = localStorage.getItem('siy_username');
-    const users = JSON.parse(localStorage.getItem('siy_users')) || [];
+    const userType = localStorage.getItem('siy_usertype');
 
-    // ค้นหาบัญชีผู้ใช้ในระบบ
-    const currentUser = users.find(u => u.username === savedUsername);
-
-    // เงื่อนไข: ถ้าไม่ได้ล็อคอิน หรือ ไม่มีบัญชี หรือ ไม่ใช่ระดับ 1 (ปรมัตถ์)
-    if (!savedUsername || !currentUser || String(currentUser.role) !== '1') {
-        // เด้งไปหน้าล็อคอินของแอดมินทันทีโดยไม่เตือนให้รำคาญ
-        window.location.replace('admin-login.html'); 
+    // ถ้าไม่ได้ล็อกอิน หรือไม่ใช่สถานะ admin ให้เด้งออกทันที
+    if (!savedUsername || userType !== 'admin') {
+        window.location.replace('admin_login.html');
         return false;
     }
 
-    // แสดงชื่อผู้ใช้งานที่ Header
-    const nameDisplay = document.getElementById('currentAdminName');
-    if (nameDisplay) nameDisplay.textContent = `👤 ${currentUser.username}`;
+    // ตรวจสอบกับ API จริง (D1) เพื่อความชัวร์ว่ายังมีสิทธิ์เป็นแอดมินจริง
+    try {
+        const res = await fetch(`${API_CONFIG.BASE_URL}/users`);
+        const usersDB = await res.json();
+        const currentUser = usersDB.find(u => u.username === savedUsername);
+
+        if (!currentUser || String(currentUser.role) !== '1') {
+            window.location.replace('admin_login.html');
+            return false;
+        }
+
+        // แสดงชื่อผู้ใช้งานที่ Header
+        const nameDisplay = document.getElementById('currentAdminName');
+        if (nameDisplay) nameDisplay.textContent = `👤 ${currentUser.username} (${currentUser.rank_name || 'ปรมัตถ์'})`;
+    } catch (e) {
+        // เผื่อกรณีออฟไลน์ ให้ใช้ชื่อจาก localStorage แสดงผลชั่วคราว
+        const nameDisplay = document.getElementById('currentAdminName');
+        if (nameDisplay) nameDisplay.textContent = `👤 ${savedUsername}`;
+    }
+
     return true;
 }
 
-        // 🌟 2. ฟังก์ชันออกจากระบบ 🌟
-        function handleAdminLogout() {
-            localStorage.removeItem('siy_username');
-            localStorage.removeItem('siy_usertype');
-            window.location.href = 'index.html';
-        }
+// 🌟 ปรับตอนเรียกใช้งานใน DOMContentLoaded ให้รองรับแบบ Async
+document.addEventListener('DOMContentLoaded', async () => {
+    if (await checkAdminAuth()) {
+        loadAdminData();
+    }
+});
 
         const API_CONFIG = { 
     USE_REAL_API: true, 
