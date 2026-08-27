@@ -38,7 +38,6 @@
 
         @keyframes floatCharacter { 0% { transform: translateY(0px); } 50% { transform: translateY(-15px); } 100% { transform: translateY(0px); } } .hero-image { flex: 1; text-align: center; position: relative; } .hero-center-img { max-width: 100%; height: auto; max-height: 480px; position: relative; z-index: 5; filter: drop-shadow(0 0 30px rgba(212, 175, 55, 0.2)); animation: floatCharacter 4s ease-in-out infinite; }
 
-        /* ===== CSS สำหรับ Webboard List (แนวนอน) ===== */
         .card { background: rgba(12, 7, 4, 0.7); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 12px; padding: 45px 30px 30px 30px; position: relative; margin-top: 50px; box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 10px 20px rgba(0,0,0,0.5); }
         .section-title { text-align: center; background: linear-gradient(180deg, #3a2511 0%, #150a03 100%); color: var(--gold-light); padding: 10px 40px; border: 1px solid var(--gold-main); border-radius: 8px; display: inline-block; position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-size: 1.25rem; font-weight: 700; white-space: nowrap; box-shadow: 0 8px 16px rgba(0,0,0,0.9), inset 0 1px 2px rgba(255,255,255,0.15); text-shadow: 0 2px 4px rgba(0,0,0,0.8); letter-spacing: 1px; } 
 
@@ -96,11 +95,8 @@
             </div>
         </section>
 
-        <!-- 🌟 นำ Content Grid ออกทั้งหมดตามที่ขอ 🌟 -->
-
         <div class="mystic-divider" style="margin-top: 50px;"><span>❖</span></div>
 
-        <!-- 🌟 อัปเกรด กระทู้ล่าสุด ให้เป็นแนวนอนเรียงบรรทัด 🌟 -->
         <section class="card reveal" id="webboard">
             <h3 class="section-title">ศิลาจารึกจากลานเสวนา</h3>
             
@@ -122,7 +118,6 @@
         </section>
     </div>
 
-    <!-- Custom Alert Modal -->
     <div class="sect-modal-overlay" id="customAlertModal" style="z-index: 9999;">
         <div class="sect-modal-content" style="max-width: 350px; text-align: center; padding: 30px 20px 40px 20px;">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-left" alt="">
@@ -136,7 +131,6 @@
     </div>
 
     <script>
-        // 🌟 1. เพิ่มตั้งค่าการเชื่อมต่อ API ตรงนี้ 🌟
         const API_CONFIG = { 
             USE_REAL_API: true, 
             BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
@@ -153,8 +147,11 @@
             let cms = {};
             if (API_CONFIG.USE_REAL_API) {
                 try {
+                    // 🌟 แก้ไขให้เรียกผ่าน ${API_CONFIG.BASE_URL}/cms ตามเส้นทาง Backend 🌟
                     const response = await fetch(`${API_CONFIG.BASE_URL}/cms`);
-                    cms = await response.json() || {};
+                    if (response.ok) {
+                        cms = await response.json() || {};
+                    }
                 } catch (error) { console.error('CMS Error:', error); }
             } else {
                 cms = JSON.parse(localStorage.getItem('siy_index_cms')) || {};
@@ -184,23 +181,23 @@
             if (API_CONFIG.USE_REAL_API) {
                 try {
                     const response = await fetch(`${API_CONFIG.BASE_URL}/posts`);
-                    posts = await response.json();
+                    if (response.ok) {
+                        posts = await response.json();
+                    }
                 } catch (error) { console.error('Posts Error:', error); }
             } else {
                 posts = JSON.parse(localStorage.getItem('siy_posts')) || [];
             }
             
-            if (posts.length === 0) { container.innerHTML = '<div style="text-align: center; color: var(--gold-dark); padding: 20px;">ยังไม่มีจารึกในลานเสวนา</div>'; return; }
+            if (!posts || posts.length === 0) { container.innerHTML = '<div style="text-align: center; color: var(--gold-dark); padding: 20px;">ยังไม่มีจารึกในลานเสวนา</div>'; return; }
             container.innerHTML = '';
             
-            // เรียงลำดับ: ปักหมุด (pinned) ขึ้นก่อน ตามด้วยกระทู้ล่าสุด
             posts.sort((a, b) => {
                 if (a.pinned && !b.pinned) return -1;
                 if (!a.pinned && b.pinned) return 1;
                 return b.id - a.id; 
             });
 
-            // ดึงมาแสดง 12 กระทู้ (แถว)
             posts.slice(0, 12).forEach((post, index) => {
                 let tagHtml = '';
                 if (post.pinned) {
@@ -219,8 +216,8 @@
                         </div>
                         <div class="wb-meta">
                             <span>👤 ${post.author}</span>
-                            <span>💬 ${post.replies} ตอบ</span>
-                            <span style="color: #6b5a45;">${post.timestamp.split('|')[0].trim()}</span>
+                            <span>💬 ${post.replies || 0} ตอบ</span>
+                            <span style="color: #6b5a45;">${post.timestamp ? post.timestamp.split('|')[0].trim() : ''}</span>
                         </div>
                     </a>
                 `;
