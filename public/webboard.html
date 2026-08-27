@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ลานเสวนา - ศิษย์หลวงปู่</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;700&family=Sarabun:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        html { scroll-behavior: smooth; overflow-x: hidden; width: 100%; } * { box-sizing: border-box; }
+        :root { --bg-deep: #070402; --bg-glow: #2a1805; --gold-light: #f5d77f; --gold-main: #d4af37; --gold-dark: #8a6315; --text-muted: #8a7761; }
+        body { margin: 0; padding: 0; width: 100%; min-height: 100vh; background-color: var(--bg-deep); background-image: radial-gradient(circle at 50% 50%, var(--bg-glow) 0%, var(--bg-deep) 90%); background-attachment: fixed; color: #d1bfae; font-family: 'Sarabun', sans-serif; overflow-x: hidden; }
+        
+        body::before { content: ""; position: fixed; top: -50vh; left: -50vw; width: 200vw; height: 200vh; z-index: -2; pointer-events: none; background-image: radial-gradient(2px 2px at 40px 60px, var(--gold-light), transparent), radial-gradient(1.5px 1.5px at 150px 120px, var(--gold-main), transparent), radial-gradient(2.5px 2.5px at 90px 200px, var(--gold-light), transparent), radial-gradient(1.5px 1.5px at 110px 90px, var(--gold-light), transparent); background-size: 200px 200px; opacity: 0.4; animation: floatingMagic 15s linear infinite; will-change: transform; }
+        body::after { content: ""; position: fixed; top: -50vh; left: -50vw; width: 200vw; height: 200vh; z-index: -1; pointer-events: none; background-image: radial-gradient(3px 3px at 20px 30px, var(--gold-main), transparent), radial-gradient(2px 2px at 120px 80px, var(--gold-light), transparent), radial-gradient(3px 3px at 220px 150px, var(--gold-dark), transparent); background-size: 350px 350px; opacity: 0.25; animation: floatingMagic2 22s linear infinite; will-change: transform; }
+        @keyframes floatingMagic { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(200px, -200px, 0); } } @keyframes floatingMagic2 { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-350px, -350px, 0); } }
+
+        h1, h2, h3, h4 { font-family: 'Prompt', sans-serif; margin: 0; }
+        @property --ring-angle { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+        @keyframes containerPulse { 0% { box-shadow: 0 0 30px rgba(0,0,0,0.8), inset 0 0 20px rgba(212,175,55,0.02); } 50% { box-shadow: 0 0 50px rgba(212,175,55,0.15), inset 0 0 40px rgba(212,175,55,0.08); } 100% { box-shadow: 0 0 30px rgba(0,0,0,0.8), inset 0 0 20px rgba(212,175,55,0.02); } }
+        @keyframes ringRotate { to { --ring-angle: 360deg; } }
+        .main-container { position: relative; isolation: isolate; max-width: 1200px; width: 92%; margin: 40px auto; padding: 40px 30px; background-color: rgba(7, 4, 2, 0.85); border: 1px solid var(--gold-dark); border-radius: 16px; backdrop-filter: blur(10px); animation: containerPulse 6s infinite alternate; }
+        .main-container::before { content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1px; background: conic-gradient(from var(--ring-angle), transparent 0deg, var(--gold-main) 25deg, transparent 70deg, transparent 180deg, var(--gold-light) 205deg, transparent 250deg, transparent 360deg); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: ringRotate 10s linear infinite; pointer-events: none; z-index: -1; }
+        @keyframes bracketGlow { 0%, 100% { opacity: 0.7; filter: drop-shadow(0 0 2px rgba(212,175,55,0.3)); } 50% { opacity: 1; filter: drop-shadow(0 0 8px rgba(212,175,55,0.7)); } }
+        .corner-decor { position: absolute; width: clamp(60px, 8vw, 110px); z-index: 20; pointer-events: none; animation: bracketGlow 3s ease-in-out infinite; }
+        .corner-top-left { top: 12px; left: 12px; transform: scaleX(-1); } .corner-top-right { top: 12px; right: 12px; } .corner-bottom-left { bottom: 12px; left: 12px; transform: scaleX(-1) scaleY(-1); } .corner-bottom-right { bottom: 12px; right: 12px; transform: scaleY(-1); }
+        header { text-align: center; margin-bottom: 40px; position: relative; z-index: 10; } .site-title img { height: clamp(60px, 8vw, 100px); filter: drop-shadow(0 5px 15px rgba(0,0,0,1)) drop-shadow(0 0 20px rgba(212,175,55,0.4)); }
+        nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; background: linear-gradient(to bottom, #1f1107, #070402); border: 1px solid var(--gold-dark); border-radius: 50px; padding: 10px 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.9); max-width: 800px; margin: 0 auto; }
+        nav a { color: var(--gold-light); text-decoration: none; font-size: clamp(0.9rem, 1.8vw, 1rem); padding: 5px 15px; transition: all 0.3s; position: relative; } nav a:hover, nav a.active { color: #fff; text-shadow: 0 0 10px var(--gold-main); } nav a::after { content: ''; position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); width: 0; height: 2px; background-color: var(--gold-main); transition: width 0.3s; } nav a:hover::after, nav a.active::after { width: 100%; }
+        .board-layout { display: grid; grid-template-columns: 2.2fr 1fr; gap: 25px; margin-top: 10px; }
+        .section-title { text-align: center; background: linear-gradient(180deg, #3a2511 0%, #150a03 100%); color: var(--gold-light); padding: 8px 30px; border: 1px solid var(--gold-main); border-radius: 8px; display: inline-block; position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-size: 1.15rem; font-weight: 700; white-space: nowrap; box-shadow: 0 8px 16px rgba(0,0,0,0.9), inset 0 1px 2px rgba(255,255,255,0.15); text-shadow: 0 2px 4px rgba(0,0,0,0.8); letter-spacing: 1px; margin: 0; z-index: 5; }
+        .category-block { background: rgba(12, 7, 4, 0.7); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 8px; margin-top: 35px; margin-bottom: 40px; padding-top: 35px; box-shadow: inset 0 0 15px rgba(0,0,0,0.8), 0 5px 15px rgba(0,0,0,0.5); position: relative; }
+        .thread-item { padding: 15px 20px; border-bottom: 1px solid rgba(138, 99, 21, 0.2); display: flex; align-items: center; gap: 15px; transition: background 0.3s; } .thread-item:last-child { border-bottom: none; } .thread-item:hover { background: rgba(212, 175, 55, 0.05); } .thread-content { flex: 1; } 
+        
+        .thread-title { color: var(--gold-light); font-family: 'Prompt', sans-serif; font-size: 1.05rem; font-weight: 500; text-decoration: none; display: block; margin-bottom: 5px; cursor: pointer; } .thread-title:hover { color: #fff; text-shadow: 0 0 8px var(--gold-main); } 
+        
+        /* 🌟 CSS ป้ายยศ (ตัดไอคอนออกแล้ว) 🌟 */
+        .role-badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 0.75rem; font-family: 'Prompt', sans-serif; font-weight: 600; letter-spacing: 0.5px; box-shadow: 0 2px 4px rgba(0,0,0,0.6); vertical-align: middle; margin-left: 4px; }
+        .role-1 { background: linear-gradient(135deg, #4a0e0e, #2e0808); color: #f5d77f; border: 1px solid #d4af37; text-shadow: 0 0 5px rgba(212,175,55,0.5); }
+        .role-2 { background: linear-gradient(135deg, #3a1c4a, #1f0f29); color: #e5b3ff; border: 1px solid #a86bd1; }
+        .role-3 { background: linear-gradient(135deg, #3a2e0a, #1c1503); color: #f5d77f; border: 1px solid #d4af37; }
+        .role-4 { background: linear-gradient(135deg, #1c2630, #0a1117); color: #c0c8d1; border: 1px solid #8a96a6; }
+        .role-5 { background: linear-gradient(135deg, #2b1f14, #120c0a); color: #a69477; border: 1px solid #8a6315; }
+        .role-guest { background: rgba(168, 46, 46, 0.15); color: #ff6b6b; border: 1px dashed #a82e2e; }
+
+        .wb-tag { font-size: 0.75rem; padding: 2px 6px; border-radius: 4px; border: 1px solid; margin-right: 6px; display: inline-block; vertical-align: middle; margin-top: -2px; }
+        .wb-tag-pin { border-color: #d4af37; color: #150a03; background: var(--gold-main); font-weight: bold; }
+        
+        .thread-details { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; } .thread-details span { color: #a69477; } .thread-stats { display: flex; gap: 15px; font-size: 0.85rem; color: #a69477; text-align: right; align-items: center; } .thread-stats .stat-box { display: flex; align-items: center; gap: 5px; min-width: 80px; justify-content: flex-start; }
+        .widget { background: rgba(12, 7, 4, 0.7); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 8px; padding: 40px 20px 20px 20px; margin-top: 35px; margin-bottom: 40px; box-shadow: inset 0 0 15px rgba(0,0,0,0.8), 0 5px 15px rgba(0,0,0,0.5); position: relative; }
+        .user-status-box { text-align: center; } .user-logged-in-profile { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; background: rgba(212, 175, 55, 0.05); padding: 12px; border-radius: 8px; border: 1px dashed var(--gold-dark); } .user-info-text { text-align: left; flex: 1; } .user-info-text h4 { color: var(--gold-light); font-size: 1.05rem; margin-bottom: 2px; text-shadow: 0 0 8px rgba(212,175,55,0.4); } .user-info-text p { color: var(--text-muted); font-size: 0.75rem; margin: 0; }
+        
+        .btn-logout { display: block; width: 100%; background: transparent; color: #ff6b6b; border: 1px solid rgba(168, 46, 46, 0.5); padding: 10px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-size: 0.95rem; cursor: pointer; transition: all 0.3s; } .btn-logout:hover { background: rgba(168, 46, 46, 0.1); border-color: #ff6b6b; }
+        .search-wrapper { display: flex; gap: 8px; margin-bottom: 20px; } .search-input { flex: 1; background: rgba(0,0,0,0.5); border: 1px solid var(--gold-dark); color: var(--gold-light); padding: 10px 15px; border-radius: 25px; font-family: 'Sarabun', sans-serif; } .search-input:focus { outline: none; border-color: var(--gold-main); box-shadow: 0 0 8px rgba(212,175,55,0.3); } .search-btn { background: transparent; border: 1px solid var(--gold-dark); color: var(--gold-main); padding: 0 15px; border-radius: 25px; cursor: pointer; transition: all 0.3s; font-family: 'Prompt', sans-serif; } .search-btn:hover { background: var(--gold-dark); color: #fff; }
+        .btn-primary { display: block; width: 100%; text-align: center; background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; font-family: 'Prompt', sans-serif; font-weight: bold; padding: 12px; border-radius: 25px; font-size: 1.1rem; box-shadow: 0 5px 15px rgba(0,0,0,0.6), inset 0 2px 4px rgba(255,255,255,0.4); border: 1px solid #ffeba9; cursor: pointer; transition: all 0.3s; text-decoration: none; } .btn-primary:hover { filter: brightness(1.15); transform: translateY(-2px); }
+        .visitor-log { list-style: none; padding: 0; margin: 0; } .visitor-log li { display: flex; align-items: flex-start; gap: 10px; padding: 12px 0; border-bottom: 1px dashed rgba(138, 99, 21, 0.2); } .visitor-log li:last-child { border-bottom: none; } .w-content h4 { font-family: 'Prompt', sans-serif; font-size: 1.1rem; font-weight: 600; margin-bottom: 3px; cursor: pointer; transition: all 0.3s; } .w-content p { margin: 0; font-size: 0.85rem; }
+        .visitor-log li:nth-child(1) h4 { color: #f5d77f; text-shadow: 0 0 10px #d4af37; } .visitor-log li:nth-child(1) p { color: #d1bfae; } .visitor-log li:nth-child(2) h4 { color: #d4af37; text-shadow: 0 0 4px rgba(212, 175, 55, 0.5); } .visitor-log li:nth-child(2) p { color: #a69477; } .visitor-log li:nth-child(3) h4 { color: #a69477; } .visitor-log li:nth-child(3) p { color: #6b5a45; } .visitor-log li:nth-child(n+4) h4 { color: #7a6855; } .visitor-log li:nth-child(n+4) p { color: #524433; }
+        .sect-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(7, 4, 2, 0.9); backdrop-filter: blur(8px); z-index: 1000; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; } .sect-modal-overlay.active { display: flex; opacity: 1; }
+        .sect-modal-content { position: relative; background: linear-gradient(135deg, #1a120b, #0a0603); border: 1px solid var(--gold-main); border-radius: 12px; width: 90%; max-width: 450px; padding: 40px 30px 60px 30px; box-shadow: 0 15px 40px rgba(0,0,0,0.9), inset 0 0 20px rgba(212,175,55,0.1); transform: translateY(-20px); transition: transform 0.3s ease; } .sect-modal-overlay.active .sect-modal-content { transform: translateY(0); }
+        .modal-corner { position: absolute; width: 60px; pointer-events: none; opacity: 0.8; } .mc-top-left { top: 12px; left: 12px; transform: scaleX(-1); } .mc-top-right { top: 12px; right: 12px; } .mc-bottom-left { bottom: 12px; left: 12px; transform: scaleX(-1) scaleY(-1); } .mc-bottom-right { bottom: 12px; right: 12px; transform: scaleY(-1); }
+        .modal-header { text-align: center; margin-bottom: 25px; } .modal-header h3 { color: var(--gold-light); font-size: 1.6rem; margin-bottom: 5px; text-shadow: 0 2px 5px rgba(0,0,0,0.8); } .modal-header p { color: var(--gold-dark); font-size: 0.9rem; margin: 0; }
+        .form-group { margin-bottom: 20px; } .form-group label { display: block; color: var(--gold-main); font-size: 0.95rem; margin-bottom: 8px; } .form-input { width: 100%; background: rgba(0,0,0,0.6); border: 1px solid rgba(138, 99, 21, 0.5); color: #fff; padding: 12px 15px; border-radius: 6px; font-family: 'Sarabun', sans-serif; font-size: 1rem; } .form-input:focus { outline: none; border-color: var(--gold-light); }
+        .password-wrapper { position: relative; display: flex; align-items: center; } .password-wrapper .form-input { padding-right: 60px; } .toggle-password { position: absolute; right: 15px; cursor: pointer; font-size: 0.9rem; color: var(--gold-main); opacity: 0.8; } .toggle-password:hover { opacity: 1; }
+        .privacy-warning { background: rgba(168, 46, 46, 0.1); border-left: 3px solid #a82e2e; padding: 12px 15px; font-size: 0.8rem; color: #d1bfae; line-height: 1.5; margin-bottom: 25px; border-radius: 0 4px 4px 0; } .privacy-warning strong { color: #ff6b6b; }
+        .modal-actions { display: flex; gap: 10px; } .btn-submit { flex: 1; background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; border: none; padding: 12px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-weight: bold; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: all 0.3s; } .btn-submit:hover { filter: brightness(1.2); transform: translateY(-2px); } .btn-cancel { background: transparent; color: var(--text-muted); border: 1px solid var(--text-muted); padding: 12px 20px; border-radius: 25px; font-family: 'Prompt', sans-serif; cursor: pointer; transition: all 0.3s; } .btn-cancel:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        @media (max-width: 950px) { .board-layout { grid-template-columns: 1fr; } .thread-stats { display: none; } }
+        @media (max-width: 600px) { .main-container { padding: 30px 20px; width: 95%; margin-top: 30px; } nav { flex-wrap: nowrap; justify-content: flex-start; overflow-x: auto; scrollbar-width: none; gap: 10px; padding: 12px 20px; } nav::-webkit-scrollbar { display: none; } nav a { white-space: nowrap; flex-shrink: 0; } }
+        .loading-text { font-family: 'Prompt', sans-serif; color: var(--gold-main); animation: pulse 1.5s infinite alternate; text-align: center; padding: 40px; }
+        @keyframes pulse { from { opacity: 0.5; } to { opacity: 1; text-shadow: 0 0 10px var(--gold-main); } }
+        .captcha-box { background: rgba(212,175,55,0.05); border: 1px dashed var(--gold-dark); padding: 15px; border-radius: 6px; text-align: center; margin-bottom: 20px; } .captcha-box p { color: #e6dac3; margin: 0 0 10px 0; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="corner-decor corner-top-left" alt="">
+        <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="corner-decor corner-top-right" alt="">
+        <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="corner-decor corner-bottom-left" alt="">
+        <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="corner-decor corner-bottom-right" alt="">
+
+        <header>
+            <div class="site-title"><img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493028/logo.png" alt="ศิษย์หลวงปู่"></div>
+            <nav>
+                <a href="index.html">หน้าแรก</a>
+                <a href="index.html#story">สัตยาสาบาน</a>
+                <a href="webboard.html" class="active">ลานเสวนา</a>
+                <a href="index.html#contact">ติดต่อเรา</a>
+                <a href="admin_login.html" style="color: var(--gold-dark);">ประตูสู่เมืองลับแล</a>
+            </nav>
+        </header>
+
+        <div class="board-layout">
+            <div class="board-main">
+                <div class="category-block">
+                    <h3 class="section-title">นิยายสัตยาสาบาน</h3>
+                    <div id="dynamic-category-1"><div class="loading-text">กำลังอัญเชิญจารึก...</div></div>
+                </div>
+
+                <div class="category-block">
+                    <h3 class="section-title">คุยกับศิษย์หลวงปู่</h3>
+                    <div id="dynamic-category-2"><div class="loading-text">กำลังอัญเชิญจารึก...</div></div>
+                </div>
+            </div>
+
+            <div class="board-sidebar">
+                <div class="widget user-status-box">
+                    <h4 class="section-title">สถานะสำนัก</h4>
+                    <div id="loggedInView" style="display: none;">
+                        <div class="user-logged-in-profile">
+                            <div class="user-info-text" style="text-align: center;">
+                                <h4 id="displayUsername" style="text-align: center; margin-bottom: 5px;">นามแฝง</h4>
+                                <div id="displayUserBadge" style="margin-bottom: 8px;"></div>
+                            </div>
+                        </div>
+                        <button onclick="handleLogout()" class="btn-logout" id="logoutBtnText">ออกจากระบบ (ลบตัวตน)</button>
+                    </div>
+
+                    <div id="guestView">
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">ท่านยังไม่ได้ลงนามเข้าสู่ลานเสวนา</p>
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <button onclick="openRegisterModal('register')" class="btn-primary">สมัครเข้าลานเสวนา</button>
+                            <button onclick="openRegisterModal('login')" class="btn-primary">เข้าสู่ระบบ</button>
+                            <button onclick="openGuestCaptchaModal()" class="btn-primary" style="background: linear-gradient(180deg, #1a120b 0%, #0a0603 100%); color: #a69477; border: 1px dashed var(--gold-dark); box-shadow: none;">เข้าใช้งานแบบไม่ระบุตัวตน</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="widget">
+                    <h4 class="section-title">เมนูหลัก</h4>
+                    <div class="search-wrapper">
+                        <input type="text" class="search-input" placeholder="พิมพ์คำค้นหา...">
+                        <button class="search-btn">ค้นหา</button>
+                    </div>
+                    <div>
+                        <button onclick="checkAccessAndGo('create_post.html')" class="btn-primary">ตั้งกระทู้ใหม่</button>
+                    </div>
+                </div>
+
+                <div class="widget">
+                    <h4 class="section-title">สมุดเยี่ยมชานเรือน</h4>
+                    <ul class="visitor-log" id="dynamicVisitorLog">
+                        <li style="text-align: center; color: var(--gold-dark); border: none;">กำลังสัมผัสร่องรอย...</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="sect-modal-overlay" id="registerModal">
+        <div class="sect-modal-content">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-left" alt="">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-right" alt="">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-bottom-left" alt="">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-bottom-right" alt="">
+            <div class="modal-header">
+                <h3 id="modalTitle">ใบสัตยาบัน</h3>
+                <p id="modalSubTitle">ลงนามเพื่อเข้าร่วมลานเสวนา</p>
+            </div>
+            <div class="privacy-warning" id="modalWarning">
+                <strong>❖ กฎแห่งลานเสวนา:</strong> เพื่อป้องกันการสวมรอย ระบบจะไม่บันทึกข้อมูลส่วนตัวใดๆ ของท่าน ข้อมูลนี้ใช้เพื่อยืนยันตัวตนในเว็บนี้ <strong>เท่านั้น</strong> <br><br>
+                โปรดตั้งรหัสผ่านให้ <strong>แตกต่าง</strong> จากเว็บไซต์อื่นที่ท่านเคยใช้งาน และหากลืมรหัสผ่าน ท่านต้องสร้างนามแฝงใหม่เท่านั้น
+            </div>
+            <div class="form-group">
+                <label id="usernameLabel">นามแฝง (Username)</label>
+                <input type="text" id="regUsername" class="form-input" placeholder="ภาษาไทยเท่านั้น">
+            </div>
+            <div class="form-group">
+                <label>รหัสผ่านลับ (Password)</label>
+                <div class="password-wrapper">
+                    <input type="password" id="regPassword" class="form-input" placeholder="ภาษาอังกฤษและตัวเลข">
+                    <span class="toggle-password" onclick="togglePasswordVisibility()" id="togglePwdBtn">แสดง</span>
+                </div>
+            </div>
+            <div class="captcha-box" id="captchaBoxContainer">
+                <p><strong>ด่านทดสอบสัจจะ:</strong> จงพิมพ์คำว่า "สัตยาสาบาน"</p>
+                <input type="text" id="regCaptchaInput" class="form-input" style="text-align: center;">
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeRegisterModal()">ถอยกลับ</button>
+                <button type="button" class="btn-submit" id="modalSubmitBtn" onclick="handleSubmitAction()">ลงนาม</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="sect-modal-overlay" id="guestCaptchaModal">
+        <div class="sect-modal-content">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-left" alt="">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-right" alt="">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-bottom-left" alt="">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-bottom-right" alt="">
+            <div class="modal-header">
+                <h3>พิธีกรรมเปิดทางวิญญาณ</h3>
+                <p>พิสูจน์ตนก่อนเข้าสู่โหมดไร้ร่าง</p>
+            </div>
+            <div class="captcha-box" style="margin-top: 15px;">
+                <p><strong>ด่านทดสอบกันผี:</strong> จงพิมพ์คำว่า "ไร้เงา"</p>
+                <input type="text" id="guestCaptchaInput" class="form-input" style="text-align: center;">
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeGuestCaptchaModal()">ถอยกลับ</button>
+                <button type="button" class="btn-submit" onclick="verifyGuestCaptcha()">เข้าลานเสวนา</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="sect-modal-overlay" id="customAlertModal" style="z-index: 9999;">
+        <div class="sect-modal-content" style="max-width: 350px; text-align: center; padding: 30px 20px 40px 20px;">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-left" alt="">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-right" alt="">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-bottom-left" alt="">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-bottom-right" alt="">
+            <div class="modal-header" style="margin-bottom: 15px;"><h3 style="font-size: 1.4rem;">ประกาศสำนัก</h3></div>
+            <p id="customAlertMessage" style="color: #e2d4c3; font-size: 1.05rem; margin-bottom: 25px; line-height: 1.5;">ข้อความแจ้งเตือน</p>
+            <button type="button" class="btn-submit" onclick="closeCustomAlert()" id="customAlertBtn" style="width: 80%; margin: 0 auto; display: block;">รับทราบ</button>
+        </div>
+    </div>
+    
+    <script>
+        let currentModalMode = 'register';
+
+        const API_CONFIG = { 
+    USE_REAL_API: true, 
+    BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
+};
+
+        // 🌟 Helper ดึงยศและป้ายยศ 🌟
+        function getUserRole(username) {
+            if (!username) return '5';
+            let users = JSON.parse(localStorage.getItem('siy_users')) || [];
+            let user = users.find(u => u.username === username);
+            return user ? (user.role || '5') : '5';
+        }
+
+        function getUserRoleBadge(username) {
+            const userType = localStorage.getItem('siy_usertype');
+            if (userType === 'guest') {
+                return '<span class="role-badge role-guest">วิญญาณเร่ร่อน</span>';
+            }
+            const role = getUserRole(username);
+            switch(String(role)) {
+                case '1': return '<span class="role-badge role-1">ปรมัตถ์</span>';
+                case '2': return '<span class="role-badge role-2">ปรมาจารย์</span>';
+                case '3': return '<span class="role-badge role-3">ผู้สำเร็จวิชา</span>';
+                case '4': return '<span class="role-badge role-4">ขั้นปฐมภูมิ</span>';
+                default: return '<span class="role-badge role-5">เด็กวัด</span>';
+            }
+        }
+
+        function getRoleTitleName(role) {
+            switch(String(role)) {
+                case '1': return 'ปรมัตถ์';
+                case '2': return 'ปรมาจารย์';
+                case '3': return 'ผู้สำเร็จวิชา';
+                case '4': return 'ขั้นปฐมภูมิ';
+                default: return 'เด็กวัด';
+            }
+        }
+
+        // ⚡ ระบบตรวจและเลื่อนยศอัตโนมัติ (เปลี่ยนเป็นนับยอดคอมเมนต์) ⚡
+function checkAndApplyAutoPromotion(username) {
+    if (!username || localStorage.getItem('siy_usertype') === 'guest') return;
+    
+    let users = JSON.parse(localStorage.getItem('siy_users')) || [];
+    let userIndex = users.findIndex(u => u.username === username);
+    if (userIndex === -1) return;
+
+    let user = users[userIndex];
+    if (user.role === '1') return; // สิทธิ์แอดมินสูงสุด ไม่ปรับลด
+
+    // ดึงฐานข้อมูลคอมเมนต์มานับจำนวน
+    let comments = JSON.parse(localStorage.getItem('siy_comments')) || [];
+    let userCommentCount = comments.filter(c => c.author === username).length;
+
+    // เช็กเงื่อนไขเลื่อนยศแบบใหม่
+    let newRole = '5';
+    if (userCommentCount >= 100) { newRole = '2'; }
+    else if (userCommentCount >= 50) { newRole = '3'; }
+    else if (userCommentCount >= 20) { newRole = '4'; }
+    else { newRole = '5'; }
+
+    if ((user.role || '5') !== newRole) {
+        let oldRoleTitle = getRoleTitleName(user.role || '5');
+        let newRoleTitle = getRoleTitleName(newRole);
+        user.role = newRole;
+        users[userIndex] = user;
+        localStorage.setItem('siy_users', JSON.stringify(users));
+        
+        showCustomAlert(`🎉 ยินดีด้วย! ท่านได้รับการเลื่อนยศจาก <strong>${oldRoleTitle}</strong> เป็น <strong>${newRoleTitle}</strong><br>(จากการร่วมตอบสนทนาครบ ${userCommentCount} ครั้ง)`);
+    }
+}
+
+        const ApiManager = {
+            async fetchPosts() {
+                if (API_CONFIG.USE_REAL_API) {
+                    try {
+                        const response = await fetch(`${API_CONFIG.BASE_URL}/posts`);
+                        return await response.json();
+                    } catch (error) { return []; }
+                } else {
+                    return new Promise((resolve) => {
+                        setTimeout(() => {
+                            if (!localStorage.getItem('siy_posts')) {
+                                const defaultPosts = [
+                                    { id: "1001", category: "1", title: "สัตยาสาบาน ตอนที่ 1: รอยยันต์สีเลือด", author: "ADMIN", timestamp: "25 สิงหาคม 2569 | 15:00 น.", views: 240, replies: 4, pinned: true },
+                                    { id: "1002", category: "1", title: "สัตยาสาบาน ตอนที่ 2: เสียงเพรียกจากป่าช้า", author: "ADMIN", timestamp: "25 สิงหาคม 2569 | 10:00 น.", views: 150, replies: 10, pinned: false },
+                                    { id: "2001", category: "2", title: "อาถรรพ์ป่าช้าเก่าหลังวัด (โปรดใช้วิจารณญาณ)", author: "ศิษย์ใหม่", timestamp: "26 สิงหาคม 2569 | 03:00 น.", views: 560, replies: 42, pinned: false }
+                                ];
+                                localStorage.setItem('siy_posts', JSON.stringify(defaultPosts));
+                            }
+                            resolve(JSON.parse(localStorage.getItem('siy_posts')));
+                        }, 800); 
+                    });
+                }
+            }
+        };
+
+        async function loadAndRenderPosts() {
+            const cat1Container = document.getElementById('dynamic-category-1');
+            const cat2Container = document.getElementById('dynamic-category-2');
+
+            let posts = await ApiManager.fetchPosts();
+            cat1Container.innerHTML = ''; cat2Container.innerHTML = '';
+
+            posts.sort((a, b) => {
+                if (a.pinned && !b.pinned) return -1;
+                if (!a.pinned && b.pinned) return 1;
+                return b.id - a.id; 
+            });
+
+            posts.forEach(post => {
+                const pinTag = post.pinned ? '<span class="wb-tag wb-tag-pin">📌 ปักหมุด</span> ' : '';
+                const authorBadge = getUserRoleBadge(post.author);
+
+                const postHTML = `
+                    <div class="thread-item">
+                        <div class="thread-content">
+                            <a onclick="checkAccessAndGo('post.html?id=${post.id}')" class="thread-title">${pinTag}${post.title}</a>
+                            <div class="thread-details">โดย <span>${post.author}</span> ${authorBadge} | อัปเดตล่าสุด: ${post.timestamp.split('|')[0].trim()}</div>
+                        </div>
+                        <div class="thread-stats">
+                            <div class="stat-box">👤 ${post.author}</div>
+                            <div class="stat-box">💬 ${post.replies} ตอบ</div>
+                        </div>
+                    </div>
+                `;
+                if (post.category === "1") cat1Container.innerHTML += postHTML;
+                else if (post.category === "2") cat2Container.innerHTML += postHTML;
+            });
+
+            if(cat1Container.innerHTML === '') cat1Container.innerHTML = '<div style="padding: 20px; color: #8a6315;">ยังไม่มีจารึกในหมวดนี้</div>';
+            if(cat2Container.innerHTML === '') cat2Container.innerHTML = '<div style="padding: 20px; color: #8a6315;">ยังไม่มีจารึกในหมวดนี้</div>';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAndRenderPosts();
+            checkUserLoginStatus();
+            setTimeout(fetchRecentLogins, 800);
+        });
+
+        function showCustomAlert(message, redirectUrl = null) {
+            document.getElementById('customAlertMessage').innerHTML = message;
+            const modal = document.getElementById('customAlertModal');
+            modal.classList.add('active');
+            document.getElementById('customAlertBtn').onclick = function() {
+                modal.classList.remove('active');
+                if (redirectUrl) window.location.href = redirectUrl;
+            };
+        }
+        function closeCustomAlert() { document.getElementById('customAlertModal').classList.remove('active'); }
+
+        function checkUserLoginStatus() {
+            const savedUser = localStorage.getItem('siy_username');
+            const userType = localStorage.getItem('siy_usertype'); 
+            const guestView = document.getElementById('guestView');
+            const loggedInView = document.getElementById('loggedInView');
+            
+            if (savedUser) {
+                // เช็กการเลื่อนยศออโต้เมื่อเปิดหน้า
+                checkAndApplyAutoPromotion(savedUser);
+
+                document.getElementById('displayUsername').textContent = savedUser;
+                document.getElementById('displayUserBadge').innerHTML = getUserRoleBadge(savedUser);
+                
+                guestView.style.display = 'none';
+                loggedInView.style.display = 'block';
+
+                if (userType === 'guest') {
+                    document.getElementById('logoutBtnText').textContent = 'ลบตัวตน (สละร่าง)';
+                } else {
+                    document.getElementById('logoutBtnText').textContent = 'ออกจากระบบ';
+                }
+            } else {
+                guestView.style.display = 'block';
+                loggedInView.style.display = 'none';
+            }
+        }
+
+        function checkAccessAndGo(targetUrl) {
+            if (!localStorage.getItem('siy_username')) {
+                showCustomAlert('เขตหวงห้าม! ท่านยังไม่ได้เลือกสถานะเข้าถึง');
+                return;
+            }
+            window.location.href = targetUrl;
+        }
+
+        function openRegisterModal(mode) {
+            currentModalMode = mode;
+            if (mode === 'login') {
+                document.getElementById('modalTitle').textContent = 'เข้าสู่ลานเสวนา';
+                document.getElementById('modalSubTitle').textContent = 'กรอกนามแฝงและรหัสผ่านเพื่อสืบทอดตัวตน';
+                document.getElementById('modalWarning').style.display = 'none';
+                document.getElementById('captchaBoxContainer').style.display = 'none';
+                document.getElementById('modalSubmitBtn').textContent = 'เข้าสู่ระบบ';
+            } else {
+                document.getElementById('modalTitle').textContent = 'ใบสัตยาบัน';
+                document.getElementById('modalSubTitle').textContent = 'ลงนามเพื่อเข้าร่วมลานเสวนา';
+                document.getElementById('modalWarning').style.display = 'block';
+                document.getElementById('captchaBoxContainer').style.display = 'block';
+                document.getElementById('modalSubmitBtn').textContent = 'ลงนาม';
+            }
+            document.getElementById('regUsername').value = '';
+            document.getElementById('regPassword').value = '';
+            document.getElementById('regCaptchaInput').value = ''; 
+            document.getElementById('registerModal').classList.add('active');
+        }
+
+        function closeRegisterModal() { document.getElementById('registerModal').classList.remove('active'); }
+
+        function openGuestCaptchaModal() { 
+            document.getElementById('guestCaptchaInput').value = ''; 
+            document.getElementById('guestCaptchaModal').classList.add('active'); 
+        }
+
+        function closeGuestCaptchaModal() { document.getElementById('guestCaptchaModal').classList.remove('active'); }
+
+        function verifyGuestCaptcha() {
+            if (document.getElementById('guestCaptchaInput').value.trim() !== 'ไร้เงา') {
+                showCustomAlert('ตอบคำถามกันผีไม่ถูกต้อง (ต้องพิมพ์คำว่า "ไร้เงา")'); return;
+            }
+            closeGuestCaptchaModal();
+            enterAsAnonymous();
+        }
+
+        function handleSubmitAction() {
+            const usernameInput = document.getElementById('regUsername').value.trim();
+            const passwordInput = document.getElementById('regPassword').value.trim();
+
+            if (!usernameInput || !passwordInput) { showCustomAlert('กรุณากรอกนามแฝงและรหัสผ่านลับให้ครบถ้วน'); return; }
+
+            let usersDB = JSON.parse(localStorage.getItem('siy_users')) || [];
+
+            if (currentModalMode === 'register') {
+                if (document.getElementById('regCaptchaInput').value.trim() !== 'สัตยาสาบาน') { showCustomAlert('ตอบคำถามกันผีไม่ถูกต้อง! (ต้องพิมพ์คำว่า "สัตยาสาบาน")'); return; }
+                const userExists = usersDB.find(u => u.username === usernameInput);
+                if (userExists) { showCustomAlert('นามแฝงนี้มีผู้ใช้งานแล้ว โปรดใช้นามแฝงอื่น หรือเลือกเข้าสู่ระบบ'); return; }
+
+                // สมาชิกใหม่จะได้รับยศ 5 (เด็กวัด)
+                usersDB.push({ username: usernameInput, password: passwordInput, role: '5' });
+                localStorage.setItem('siy_users', JSON.stringify(usersDB));
+                showCustomAlert('ลงนามสำเร็จ ยินดีต้อนรับสู่สำนัก, ' + usernameInput);
+            } else {
+                const user = usersDB.find(u => u.username === usernameInput);
+                if (!user) { showCustomAlert('ไม่พบนามแฝงนี้ในระบบ! โปรดสมัครเข้าสำนักก่อน'); return; }
+                if (user.password !== passwordInput) { showCustomAlert('รหัสผ่านลับไม่ถูกต้อง! อาถรรพ์กำลังสะท้อนกลับ'); return; }
+                showCustomAlert('เข้าสู่ระบบสำเร็จ, ยินดีต้อนรับกลับมา ' + usernameInput);
+            }
+            
+            localStorage.setItem('siy_username', usernameInput);
+            localStorage.setItem('siy_usertype', 'member');
+            closeRegisterModal(); 
+            checkUserLoginStatus();
+        }
+
+        function enterAsAnonymous() {
+            const guestName = `ผู้ไม่ประสงค์ออกนาม#${Math.floor(1000 + Math.random() * 9000)}`;
+            localStorage.setItem('siy_username', guestName);
+            localStorage.setItem('siy_usertype', 'guest');
+            checkUserLoginStatus();
+            showCustomAlert('ท่านได้เข้าสู่ลานเสวนาในฐานะวิญญาณเร่ร่อน: ' + guestName);
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('siy_username'); localStorage.removeItem('siy_usertype');
+            checkUserLoginStatus(); showCustomAlert('ท่านได้ออกจากระบบเรียบร้อยแล้ว');
+        }
+
+        function togglePasswordVisibility() {
+            const pwdInput = document.getElementById('regPassword');
+            const toggleIcon = document.getElementById('togglePwdBtn');
+            if (pwdInput.type === 'password') { pwdInput.type = 'text'; toggleIcon.textContent = 'ซ่อน'; } 
+            else { pwdInput.type = 'password'; toggleIcon.textContent = 'แสดง'; }
+        }
+
+        async function fetchRecentLogins() {
+            const mockApiData = [{ username: "Niran" }, { username: "Jenny" }, { username: "สายมูตัวจริง" }];
+            const logContainer = document.getElementById('dynamicVisitorLog');
+            logContainer.innerHTML = ''; 
+            mockApiData.forEach(user => {
+                logContainer.innerHTML += `<li><div class="w-content"><h4 style="margin:0;">${user.username}</h4><p>ฝากรอยเท้าไว้</p></div></li>`;
+            });
+        }
+    </script>
+</body>
+</html>

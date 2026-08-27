@@ -29,21 +29,29 @@
         .table-responsive { width: 100%; overflow-x: auto; }
         .data-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; text-align: left; }
         .data-table th, .data-table td { padding: 14px 18px; border-bottom: 1px solid rgba(138, 99, 21, 0.2); }
-        .data-table th { background: rgba(31, 17, 7, 0.8); color: var(--gold-main); font-family: 'Prompt', sans-serif; font-weight: 600; }
+        .data-table th { background: rgba(31, 17, 7, 0.8); color: var(--gold-main); font-family: 'Prompt', sans-serif; font-weight: 600; white-space: nowrap; }
         .data-table tr:hover { background: rgba(212, 175, 55, 0.04); }
-        .btn { padding: 8px 18px; border-radius: 20px; font-family: 'Prompt', sans-serif; font-size: 0.88rem; cursor: pointer; border: none; transition: all 0.3s; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+        .btn { padding: 8px 18px; border-radius: 20px; font-family: 'Prompt', sans-serif; font-size: 0.88rem; cursor: pointer; border: none; transition: all 0.3s; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
         .btn-gold { background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; font-weight: bold; } .btn-gold:hover { filter: brightness(1.2); }
         .btn-edit { background: rgba(212, 175, 55, 0.15); color: var(--gold-light); border: 1px solid var(--gold-dark); } .btn-edit:hover { background: var(--gold-main); color: #000; }
         .btn-delete { background: rgba(168, 46, 46, 0.15); color: var(--danger-color); border: 1px solid rgba(168, 46, 46, 0.5); } .btn-delete:hover { background: var(--danger-color); color: #fff; }
+        .btn-pin { background: rgba(115, 201, 144, 0.15); color: var(--success-color); border: 1px solid rgba(115, 201, 144, 0.5); } .btn-pin:hover { background: var(--success-color); color: #000; }
+        
+        .role-tag { padding: 4px 10px; border-radius: 6px; font-size: 0.85rem; font-family: 'Prompt', sans-serif; font-weight: bold; display: inline-block; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .role-1 { background: linear-gradient(135deg, #4a0e0e, #2e0808); color: #f5d77f; border: 1px solid #d4af37; text-shadow: 0 0 5px rgba(212,175,55,0.5); } 
+        .role-2 { background: linear-gradient(135deg, #3a1c4a, #1f0f29); color: #e5b3ff; border: 1px solid #a86bd1; } 
+        .role-3 { background: rgba(212, 175, 55, 0.15); color: #f5d77f; border: 1px solid #d4af37; } 
+        .role-4 { background: rgba(138, 150, 166, 0.15); color: #c0c8d1; border: 1px solid #8a96a6; } 
+        .role-5 { background: rgba(138, 99, 21, 0.1); color: #a69477; border: 1px solid #8a6315; } 
+
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
         .form-group { margin-bottom: 18px; } .form-group label { display: block; color: var(--gold-light); font-size: 0.9rem; margin-bottom: 6px; font-family: 'Prompt', sans-serif; }
         .form-control { width: 100%; background: rgba(0,0,0,0.6); border: 1px solid rgba(138, 99, 21, 0.5); color: #fff; padding: 10px 14px; border-radius: 8px; font-family: 'Sarabun', sans-serif; font-size: 0.95rem; }
         .form-control:focus { outline: none; border-color: var(--gold-main); box-shadow: 0 0 8px rgba(212,175,55,0.3); }
+        .form-select option { background: #1a120b; color: #d1bfae; }
         textarea.form-control { resize: vertical; min-height: 100px; }
-        .news-slot { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border-left: 3px solid var(--gold-main); margin-bottom: 15px; }
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(7, 4, 2, 0.85); backdrop-filter: blur(8px); z-index: 999; justify-content: center; align-items: center; } .modal-overlay.active { display: flex; }
         .modal-box { background: linear-gradient(135deg, #1a120b, #0a0603); border: 1px solid var(--gold-main); border-radius: 12px; width: 90%; max-width: 600px; padding: 30px; position: relative; box-shadow: 0 15px 40px rgba(0,0,0,0.9); max-height: 90vh; overflow-y: auto; }
-        .modal-corner { position: absolute; width: 50px; pointer-events: none; opacity: 0.8; } .mc-top-left { top: 10px; left: 10px; transform: scaleX(-1); } .mc-top-right { top: 10px; right: 10px; } .mc-bottom-left { bottom: 10px; left: 10px; transform: scaleX(-1) scaleY(-1); } .mc-bottom-right { bottom: 10px; right: 10px; transform: scaleY(-1); }
         @media (max-width: 850px) { .admin-layout { grid-template-columns: 1fr; } .admin-sidebar { flex-direction: row; overflow-x: auto; padding: 10px; } .nav-btn { white-space: nowrap; } }
     </style>
 </head>
@@ -52,11 +60,13 @@
     <header class="admin-header">
         <div class="admin-title">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493028/logo.png" alt="ศิษย์หลวงปู่">
-            <h3>ระบบพระอาจารย์ (Admin CMS)</h3>
+            <h3>ระบบเมืองลับแล (Admin CMS)</h3>
         </div>
-        <div>
+        <div style="display: flex; align-items: center; gap: 10px;">
             <span class="admin-badge">🛡️ โหมดเชื่อมต่อ API</span>
-            <a href="index.html" class="btn btn-gold" style="margin-left: 10px;">เปิดหน้าเว็บหลัก ↗</a>
+            <span id="currentAdminName" style="color: var(--gold-light); font-weight: bold; font-family: 'Prompt', sans-serif;"></span>
+            <a href="index.html" class="btn btn-gold">เปิดหน้าเว็บหลัก ↗</a>
+            <button onclick="handleAdminLogout()" class="btn btn-delete">ออกจากระบบ</button>
         </div>
     </header>
 
@@ -76,15 +86,36 @@
                     <div class="stat-card"><h4>สมาชิกที่ลงนามทั้งหมด</h4><div class="number" id="stat-users-count">0</div></div>
                     <div class="stat-card"><h4>สถานะ Database</h4><div class="number" style="font-size: 1.2rem; color: var(--gold-main);" id="stat-api-mode">ตรวจสอบ...</div></div>
                 </div>
+                <div class="panel-card">
+                    <div class="panel-header"><h3>⚡ คีย์ลัดการจัดการด่วน</h3></div>
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                        <button class="btn btn-gold" onclick="openPostModal()">+ เพิ่มกระทู้ใหม่</button>
+                        <button class="btn btn-gold" onclick="openUserModal()">+ เพิ่มสมาชิกใหม่</button>
+                        <button class="btn btn-edit" onclick="resetDefaultMockData()">🔄 รีเซ็ตข้อมูลตั้งต้น</button>
+                    </div>
+                </div>
             </div>
 
             <div id="tab-posts" class="tab-pane">
                 <div class="panel-card">
-                    <div class="panel-header"><h3>📜 รายการกระทู้ในลานเสวนา</h3><button class="btn btn-gold" onclick="openPostModal()">+ สลักกระทู้ใหม่</button></div>
+                    <div class="panel-header">
+                        <h3>📜 รายการกระทู้ในลานเสวนา</h3>
+                        <button class="btn btn-gold" onclick="openPostModal()">+ สลักกระทู้ใหม่</button>
+                    </div>
+
+                    <h4 style="margin-bottom: 12px; color: var(--gold-main); font-size: 1.1rem;">❖ หมวดหมู่: นิยาย "สัตยาสาบาน"</h4>
+                    <div class="table-responsive" style="margin-bottom: 30px;">
+                        <table class="data-table">
+                            <thead><tr><th>ID</th><th>หัวข้อเรื่อง</th><th>สถานะปักหมุด</th><th>ผู้เขียน</th><th>จัดการ</th></tr></thead>
+                            <tbody id="posts-table-body-cat1"><tr><td colspan="5" style="text-align:center;">กำลังโหลดข้อมูล...</td></tr></tbody>
+                        </table>
+                    </div>
+
+                    <h4 style="margin-bottom: 12px; color: var(--gold-main); font-size: 1.1rem;">❖ หมวดหมู่: คุยกับศิษย์หลวงปู่</h4>
                     <div class="table-responsive">
                         <table class="data-table">
-                            <thead><tr><th>ID</th><th>หมวดหมู่</th><th>หัวข้อเรื่อง</th><th>ผู้เขียน</th><th>อัปเดตล่าสุด</th><th>จัดการ</th></tr></thead>
-                            <tbody id="posts-table-body"><tr><td colspan="6" style="text-align:center;">กำลังโหลดข้อมูล...</td></tr></tbody>
+                            <thead><tr><th>ID</th><th>หัวข้อเรื่อง</th><th>สถานะปักหมุด</th><th>ผู้เขียน</th><th>จัดการ</th></tr></thead>
+                            <tbody id="posts-table-body-cat2"><tr><td colspan="5" style="text-align:center;">กำลังโหลดข้อมูล...</td></tr></tbody>
                         </table>
                     </div>
                 </div>
@@ -95,8 +126,8 @@
                     <div class="panel-header"><h3>👥 บัญชีรายชื่อผู้สมัครเข้าสำนัก</h3><button class="btn btn-gold" onclick="openUserModal()">+ เพิ่มบัญชีศิษย์</button></div>
                     <div class="table-responsive">
                         <table class="data-table">
-                            <thead><tr><th>ลำดับ</th><th>นามแฝง (Username)</th><th>รหัสผ่านลับ (Password)</th><th>จัดการ</th></tr></thead>
-                            <tbody id="users-table-body"><tr><td colspan="4" style="text-align:center;">กำลังโหลดข้อมูล...</td></tr></tbody>
+                            <thead><tr><th>ลำดับ</th><th>นามแฝง (Username)</th><th>รหัสผ่านลับ (Password)</th><th>ระดับขั้น (Rank)</th><th>จัดการ</th></tr></thead>
+                            <tbody id="users-table-body"><tr><td colspan="5" style="text-align:center;">กำลังโหลดข้อมูล...</td></tr></tbody>
                         </table>
                     </div>
                 </div>
@@ -104,85 +135,16 @@
 
             <div id="tab-cms-index" class="tab-pane">
                 <div class="panel-card">
-                    <div class="panel-header"><h3>🗡️ จัดการข้อมูลส่วน Hero (หน้าแรก)</h3></div>
+                    <div class="panel-header"><h3>🗡️ จัดการข้อมูลส่วน Hero (หน้าแรกบนสุด)</h3></div>
                     <form id="hero-cms-form" onsubmit="saveHeroCMS(event)">
                         <div class="form-group"><label>สโลแกนหลัก (Hero Subtitle)</label><input type="text" id="cms-hero-subtitle" class="form-control" required></div>
                         <div class="form-group"><label>ข้อความเกริ่นนำ (Hero Description)</label><textarea id="cms-hero-desc" class="form-control" rows="3" required></textarea></div>
                         <div class="form-grid">
                             <div class="form-group"><label>รูปลิงก์ตัวละคร (Image URL)</label><input type="text" id="cms-hero-img" class="form-control" required></div>
                             <div class="form-group"><label>ข้อความปุ่มกด (Button Text)</label><input type="text" id="cms-hero-btn-text" class="form-control" required></div>
-                            <div class="form-group"><label>ลิงก์ปุ่มกด (Button URL)</label><input type="text" id="cms-hero-btn-url" class="form-control" placeholder="เช่น webboard.html หรือ #story" required></div>
+                            <div class="form-group"><label>ลิงก์ปุ่มกด (Button URL)</label><input type="text" id="cms-hero-btn-url" class="form-control" placeholder="เช่น webboard.html" required></div>
                         </div>
                         <button type="submit" class="btn btn-gold" style="margin-top: 10px;">💾 บันทึกส่วน Hero</button>
-                    </form>
-                </div>
-
-                <div class="panel-card">
-                    <div class="panel-header"><h3>🧱 จัดการข้อมูลส่วน Content Grid</h3></div>
-                    <form id="grid-cms-form" onsubmit="saveGridCMS(event)">
-                        
-                        <h4 style="margin-bottom: 12px; color: var(--gold-main);">การ์ดที่ 1: ปฐมบท / แนะนำตัวละคร</h4>
-                        <div class="form-grid">
-                            <div class="form-group"><label>หัวข้อการ์ดที่ 1</label><input type="text" id="cms-card1-title" class="form-control" required></div>
-                            <div class="form-group"><label>ลิงก์การ์ด (URL)</label><input type="text" id="cms-card1-url" class="form-control" placeholder="ใส่ # หากไม่อยากให้กดได้" required></div>
-                        </div>
-                        <div class="form-group">
-                            <label>รูปลิงก์วงกลม (Image URL) - ขนาด 150px</label>
-                            <input type="text" id="cms-card1-img" class="form-control" placeholder="วางลิงก์รูปภาพของคุณ" required>
-                        </div>
-                        <div class="form-group"><label>เนื้อหาการ์ดที่ 1</label><textarea id="cms-card1-desc" class="form-control" rows="3" required></textarea></div>
-
-                        <hr style="border-color: rgba(138, 99, 21, 0.3); margin: 25px 0;">
-
-                        <h4 style="margin-bottom: 12px; color: var(--gold-main);">การ์ดที่ 2: ข่าวสารและประกาศ</h4>
-                        <div class="form-grid">
-                            <div class="form-group"><label>หัวข้อการ์ดที่ 2</label><input type="text" id="cms-card2-title" class="form-control" required></div>
-                            <div class="form-group"><label>ลิงก์การ์ด (URL)</label><input type="text" id="cms-card2-url" class="form-control" placeholder="ใส่ # หากไม่อยากให้กดได้" required></div>
-                        </div>
-
-                        <div class="news-slot">
-                            <label style="color: var(--gold-light); margin-bottom: 10px; display: block; font-weight: bold;">ข่าวที่ 1</label>
-                            <div class="form-grid">
-                                <div class="form-group"><input type="text" id="cms-n1-title" class="form-control" placeholder="หัวข้อข่าว"></div>
-                                <div class="form-group"><input type="text" id="cms-n1-img" class="form-control" placeholder="ลิงก์รูปภาพ (URL)"></div>
-                                <div class="form-group"><input type="text" id="cms-n1-url" class="form-control" placeholder="ลิงก์อ่านข่าว (URL)"></div>
-                            </div>
-                        </div>
-                        <div class="news-slot">
-                            <label style="color: var(--gold-light); margin-bottom: 10px; display: block; font-weight: bold;">ข่าวที่ 2</label>
-                            <div class="form-grid">
-                                <div class="form-group"><input type="text" id="cms-n2-title" class="form-control" placeholder="หัวข้อข่าว"></div>
-                                <div class="form-group"><input type="text" id="cms-n2-img" class="form-control" placeholder="ลิงก์รูปภาพ (URL)"></div>
-                                <div class="form-group"><input type="text" id="cms-n2-url" class="form-control" placeholder="ลิงก์อ่านข่าว (URL)"></div>
-                            </div>
-                        </div>
-                        <div class="news-slot">
-                            <label style="color: var(--gold-light); margin-bottom: 10px; display: block; font-weight: bold;">ข่าวที่ 3</label>
-                            <div class="form-grid">
-                                <div class="form-group"><input type="text" id="cms-n3-title" class="form-control" placeholder="หัวข้อข่าว"></div>
-                                <div class="form-group"><input type="text" id="cms-n3-img" class="form-control" placeholder="ลิงก์รูปภาพ (URL)"></div>
-                                <div class="form-group"><input type="text" id="cms-n3-url" class="form-control" placeholder="ลิงก์อ่านข่าว (URL)"></div>
-                            </div>
-                        </div>
-                        <div class="news-slot">
-                            <label style="color: var(--gold-light); margin-bottom: 10px; display: block; font-weight: bold;">ข่าวที่ 4</label>
-                            <div class="form-grid">
-                                <div class="form-group"><input type="text" id="cms-n4-title" class="form-control" placeholder="หัวข้อข่าว"></div>
-                                <div class="form-group"><input type="text" id="cms-n4-img" class="form-control" placeholder="ลิงก์รูปภาพ (URL)"></div>
-                                <div class="form-group"><input type="text" id="cms-n4-url" class="form-control" placeholder="ลิงก์อ่านข่าว (URL)"></div>
-                            </div>
-                        </div>
-
-                        <hr style="border-color: rgba(138, 99, 21, 0.3); margin: 25px 0;">
-
-                        <h4 style="margin-bottom: 12px; color: var(--gold-main);">การ์ดที่ 3: คาถาอาคมโบราณ</h4>
-                        <div class="form-grid">
-                            <div class="form-group"><label>หัวข้อการ์ดที่ 3</label><input type="text" id="cms-card3-title" class="form-control" required></div>
-                            <div class="form-group"><label>ลิงก์การ์ด (URL)</label><input type="text" id="cms-card3-url" class="form-control" placeholder="ใส่ # หากไม่อยากให้กดได้" required></div>
-                        </div>
-                        <div class="form-group"><label>รายการคาถา (คั่นแต่ละคาถาด้วย ,)</label><input type="text" id="cms-spells-list" class="form-control" required></div>
-
-                        <button type="submit" class="btn btn-gold" style="margin-top: 15px;">💾 บันทึกส่วน Content Grid</button>
                     </form>
                 </div>
             </div>
@@ -195,7 +157,14 @@
             <h3 id="postModalTitle" style="margin-bottom: 20px; text-align: center;">เพิ่มกระทู้ใหม่</h3>
             <form id="postForm" onsubmit="submitPostForm(event)">
                 <input type="hidden" id="edit-post-id">
-                <div class="form-group"><label>หมวดหมู่</label><select id="edit-post-category" class="form-control" required><option value="1">ธรรมะ & ธรรมาลัย</option><option value="2">เรื่องเล่า & ตำนาน</option></select></div>
+                <input type="hidden" id="edit-post-pinned">
+                <div class="form-group">
+                    <label>หมวดหมู่</label>
+                    <select id="edit-post-category" class="form-control form-select" required>
+                        <option value="1">นิยาย "สัตยาสาบาน"</option>
+                        <option value="2">คุยกับศิษย์หลวงปู่</option>
+                    </select>
+                </div>
                 <div class="form-group"><label>หัวข้อเรื่อง</label><input type="text" id="edit-post-title" class="form-control" required></div>
                 <div class="form-group"><label>ผู้เขียน</label><input type="text" id="edit-post-author" class="form-control" required></div>
                 <div class="form-group"><label>เนื้อหา</label><textarea id="edit-post-content" class="form-control" rows="5" required></textarea></div>
@@ -211,6 +180,16 @@
                 <input type="hidden" id="edit-user-old-username">
                 <div class="form-group"><label>นามแฝง (Username)</label><input type="text" id="edit-user-name" class="form-control" required></div>
                 <div class="form-group"><label>รหัสผ่านลับ (Password)</label><input type="text" id="edit-user-password" class="form-control" required></div>
+                <div class="form-group">
+                    <label>ระดับขั้น (Rank)</label>
+                    <select id="edit-user-role" class="form-control form-select" required>
+                        <option value="5">เด็กวัด (ระดับ 5)</option>
+                        <option value="4">ขั้นปฐมภูมิ (ระดับ 4)</option>
+                        <option value="3">ผู้สำเร็จวิชา (ระดับ 3)</option>
+                        <option value="2">ปรมาจารย์ (ระดับ 2)</option>
+                        <option value="1">ปรมัตถ์ (แอดมิน)</option>
+                    </select>
+                </div>
                 <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;"><button type="button" class="btn btn-edit" onclick="closeModal('userModal')">ยกเลิก</button><button type="submit" class="btn btn-gold" id="btnSaveUser">บันทึกสมาชิก</button></div>
             </form>
         </div>
@@ -224,16 +203,61 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="customConfirmModal" style="z-index: 9999;">
+        <div class="modal-box" style="max-width: 380px; text-align: center;">
+            <h3 style="font-size: 1.4rem; margin-bottom: 15px; color: var(--danger-color);">ยืนยันการทำลาย</h3>
+            <p id="customConfirmMessage" style="color: #e2d4c3; font-size: 1rem; margin-bottom: 25px; line-height: 1.5;"></p>
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button type="button" class="btn btn-edit" onclick="closeModal('customConfirmModal')" style="width: 45%; justify-content: center;">ถอยกลับ</button>
+                <button type="button" class="btn btn-delete" id="customConfirmBtn" style="width: 45%; justify-content: center;">ยืนยันลบ</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        const API_CONFIG = { USE_REAL_API: false, BASE_URL: "https://your-d1-worker-url.workers.dev/api" };
+       // 🌟 1. ฟังก์ชันตรวจเช็กสิทธิ์แอดมิน (ปรับให้ Redirect เงียบๆ ไร้รอยต่อ) 🌟
+function checkAdminAuth() {
+    initAdminDB(); // มั่นใจว่ามีฐานข้อมูลเบื้องต้นก่อนตรวจ
+    const savedUsername = localStorage.getItem('siy_username');
+    const users = JSON.parse(localStorage.getItem('siy_users')) || [];
+
+    // ค้นหาบัญชีผู้ใช้ในระบบ
+    const currentUser = users.find(u => u.username === savedUsername);
+
+    // เงื่อนไข: ถ้าไม่ได้ล็อคอิน หรือ ไม่มีบัญชี หรือ ไม่ใช่ระดับ 1 (ปรมัตถ์)
+    if (!savedUsername || !currentUser || String(currentUser.role) !== '1') {
+        // เด้งไปหน้าล็อคอินของแอดมินทันทีโดยไม่เตือนให้รำคาญ
+        window.location.replace('admin-login.html'); 
+        return false;
+    }
+
+    // แสดงชื่อผู้ใช้งานที่ Header
+    const nameDisplay = document.getElementById('currentAdminName');
+    if (nameDisplay) nameDisplay.textContent = `👤 ${currentUser.username}`;
+    return true;
+}
+
+        // 🌟 2. ฟังก์ชันออกจากระบบ 🌟
+        function handleAdminLogout() {
+            localStorage.removeItem('siy_username');
+            localStorage.removeItem('siy_usertype');
+            window.location.href = 'index.html';
+        }
+
+        const API_CONFIG = { 
+    USE_REAL_API: true, 
+    BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
+};
 
         const AdminAPI = {
             async getPosts() { if (API_CONFIG.USE_REAL_API) { try { const res = await fetch(`${API_CONFIG.BASE_URL}/posts`); return await res.json(); } catch(e){ return []; } } else { return JSON.parse(localStorage.getItem('siy_posts')) || []; } },
-            async savePost(postData) { if (API_CONFIG.USE_REAL_API) { await fetch(`${API_CONFIG.BASE_URL}/posts`, { method: postData.id ? 'PUT' : 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(postData) }); } else { let posts = await this.getPosts(); if (postData.id) { const idx = posts.findIndex(p => p.id === postData.id); if (idx > -1) posts[idx] = { ...posts[idx], ...postData }; } else { const now = new Date(); const timeStr = '25 ส.ค. 2569 | ' + now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0') + ' น.'; posts.unshift({ ...postData, id: Date.now().toString(), timestamp: timeStr, views: 0, replies: 0 }); } localStorage.setItem('siy_posts', JSON.stringify(posts)); } },
+            async savePost(postData) { if (API_CONFIG.USE_REAL_API) { await fetch(`${API_CONFIG.BASE_URL}/posts`, { method: postData.id ? 'PUT' : 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(postData) }); } else { let posts = await this.getPosts(); if (postData.id) { const idx = posts.findIndex(p => p.id === postData.id); if (idx > -1) posts[idx] = { ...posts[idx], ...postData }; } else { const now = new Date(); const timeStr = '26 ส.ค. 2569 | ' + now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0') + ' น.'; posts.unshift({ ...postData, id: Date.now().toString(), timestamp: timeStr, views: 0, replies: 0, pinned: false }); } localStorage.setItem('siy_posts', JSON.stringify(posts)); } },
             async deletePost(id) { if (API_CONFIG.USE_REAL_API) { await fetch(`${API_CONFIG.BASE_URL}/posts/${id}`, { method: 'DELETE' }); } else { let posts = await this.getPosts(); localStorage.setItem('siy_posts', JSON.stringify(posts.filter(p => p.id !== id))); } },
+            
             async getUsers() { if (API_CONFIG.USE_REAL_API) { try { const res = await fetch(`${API_CONFIG.BASE_URL}/users`); return await res.json(); } catch(e){ return []; } } else { return JSON.parse(localStorage.getItem('siy_users')) || []; } },
             async saveUser(userData, oldUsername) { if (API_CONFIG.USE_REAL_API) { await fetch(`${API_CONFIG.BASE_URL}/users`, { method: oldUsername ? 'PUT' : 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({...userData, oldUsername}) }); } else { let users = await this.getUsers(); if (oldUsername) { const idx = users.findIndex(u => u.username === oldUsername); if (idx > -1) users[idx] = userData; } else { if (users.find(u => u.username === userData.username)) throw new Error('DUPLICATE'); users.push(userData); } localStorage.setItem('siy_users', JSON.stringify(users)); } },
             async deleteUser(username) { if (API_CONFIG.USE_REAL_API) { await fetch(`${API_CONFIG.BASE_URL}/users/${username}`, { method: 'DELETE' }); } else { let users = await this.getUsers(); localStorage.setItem('siy_users', JSON.stringify(users.filter(u => u.username !== username))); } },
+            
             async getCMS() { if (API_CONFIG.USE_REAL_API) { try { const res = await fetch(`${API_CONFIG.BASE_URL}/cms`); return await res.json(); } catch(e){ return {}; } } else { return JSON.parse(localStorage.getItem('siy_index_cms')) || {}; } },
             async saveCMS(cmsData) { if (API_CONFIG.USE_REAL_API) { await fetch(`${API_CONFIG.BASE_URL}/cms`, { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(cmsData) }); } else { let current = await this.getCMS(); localStorage.setItem('siy_index_cms', JSON.stringify({ ...current, ...cmsData })); } }
         };
@@ -242,22 +266,52 @@
         function showCustomAlert(msg) { document.getElementById('customAlertMessage').textContent = msg; document.getElementById('customAlertModal').classList.add('active'); }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
+        let pendingConfirmAction = null;
+        function showCustomConfirm(message, callback) {
+            document.getElementById('customConfirmMessage').innerHTML = message;
+            document.getElementById('customConfirmModal').classList.add('active');
+            pendingConfirmAction = callback;
+        }
+
+        document.getElementById('customConfirmBtn').addEventListener('click', async () => {
+            closeModal('customConfirmModal');
+            if (pendingConfirmAction) {
+                await pendingConfirmAction();
+                pendingConfirmAction = null;
+            }
+        });
+
         function initAdminDB() {
+            if (!localStorage.getItem('siy_posts')) {
+                const defaultPosts = [
+                    { id: "1001", category: "1", title: "สัตยาสาบาน ตอนที่ 1: รอยยันต์สีเลือด", content: "ปฐมบทแห่งความแค้น...", author: "ADMIN", timestamp: "25 สิงหาคม 2569 | 15:00 น.", views: 240, replies: 4, pinned: true },
+                    { id: "1002", category: "1", title: "สัตยาสาบาน ตอนที่ 2: เสียงเพรียกจากป่าช้า", content: "เสียงหวีดร้องในยามค่ำคืน...", author: "ADMIN", timestamp: "25 สิงหาคม 2569 | 10:00 น.", views: 150, replies: 10, pinned: false },
+                    { id: "2001", category: "2", title: "สงสัยเรื่องสถานที่ในการสวดมนต์ครับ", content: "ควรสวดที่ไหนดี...", author: "ศิษย์ใหม่", timestamp: "26 สิงหาคม 2569 | 03:00 น.", views: 560, replies: 42, pinned: false }
+                ];
+                localStorage.setItem('siy_posts', JSON.stringify(defaultPosts));
+            }
+            if (!localStorage.getItem('siy_users')) { 
+                localStorage.setItem('siy_users', JSON.stringify([
+                    { username: "ศิษย์ใหม่", password: "123", role: "5" },
+                    { username: "ADMIN", password: "password", role: "1" }
+                ])); 
+            }
             if (!localStorage.getItem('siy_index_cms')) {
                 const defaultCMS = {
                     heroSubtitle: "สืบสานตำนานอาคมโบราณ", heroDesc: "เมื่อรอยยันต์สลักเลือดถูกปลุกขึ้น... คำสาบานที่ถูกลืมเลือนนับพันปี จะหวนกลับมาทวงคืนทุกลมหายใจของผู้ตระบัดสัตย์",
-                    heroImg: "https://res.cloudinary.com/kjdb7wyp/image/upload/v1787422431/small.png", heroBtnText: "เริ่มอ่านตำนาน", heroBtnUrl: "#story",
-                    card1Title: "ปฐมบทเรื่องราว / แนะนำตัวละคร", card1Url: "#", 
-                    card1Img: "https://placehold.co/150x150/1a120b/f5d77f?text=❖", // ใส่ Default ของการ์ด 1
-                    card1Desc: "เรื่องราวเริ่มต้นขึ้นเมื่อคำสาบานที่เคยให้ไว้ในอดีตชาติถูกทวงถาม...",
-                    card2Title: "ข่าวสารและประกาศ", card2Url: "#",
-                    news: [
-                        { title: "มีดหมอลงอาคม", img: "https://placehold.co/150x100/1a120b/d4af37?text=มีดหมอ", url: "#" }, { title: "ตะกรุดหนังเสือ", img: "https://placehold.co/150x100/1a120b/d4af37?text=ตะกรุด", url: "#" },
-                        { title: "ผ้ายันต์กันภัย", img: "https://placehold.co/150x100/1a120b/d4af37?text=ผ้ายันต์", url: "#" }, { title: "แหวนพิรอด", img: "https://placehold.co/150x100/1a120b/d4af37?text=แหวน", url: "#" }
-                    ],
-                    card3Title: "คาถาอาคมโบราณ", card3Url: "#", spells: ["คาถาเบิกเนตร", "คาถาผูกวิญญาณ", "คาถาสะกดนาคา", "มนต์มหาอุด", "คาถาถอนคุณไสย"]
+                    heroImg: "https://res.cloudinary.com/kjdb7wyp/image/upload/v1787422431/small.png", heroBtnText: "เข้าสู่ลานเสวนา", heroBtnUrl: "webboard.html"
                 };
                 localStorage.setItem('siy_index_cms', JSON.stringify(defaultCMS));
+            }
+        }
+
+        function getRoleBadge(roleValue) {
+            switch(String(roleValue)) {
+                case '1': return '<span class="role-tag role-1">ปรมัตถ์</span>';
+                case '2': return '<span class="role-tag role-2">ปรมาจารย์</span>';
+                case '3': return '<span class="role-tag role-3">ผู้สำเร็จวิชา</span>';
+                case '4': return '<span class="role-tag role-4">ขั้นปฐมภูมิ</span>';
+                default: return '<span class="role-tag role-5">เด็กวัด</span>'; 
             }
         }
 
@@ -268,41 +322,60 @@
 
             const posts = await AdminAPI.getPosts();
             document.getElementById('stat-posts-count').textContent = posts.length;
-            const postsTbody = document.getElementById('posts-table-body'); postsTbody.innerHTML = '';
-            posts.forEach(p => { postsTbody.innerHTML += `<tr><td>${p.id.substring(0, 6)}...</td><td><span class="admin-badge">${p.category === "1" ? "ธรรมะ" : "เรื่องเล่า"}</span></td><td><strong>${p.title}</strong></td><td>${p.author}</td><td>${p.timestamp || '-'}</td><td><button class="btn btn-edit" onclick="editPost('${p.id}')">แก้ไข</button> <button class="btn btn-delete" onclick="deletePost('${p.id}')">ลบ</button></td></tr>`; });
+            
+            const tbCat1 = document.getElementById('posts-table-body-cat1');
+            const tbCat2 = document.getElementById('posts-table-body-cat2');
+            tbCat1.innerHTML = '';
+            tbCat2.innerHTML = '';
+            
+            posts.sort((a, b) => {
+                if (a.pinned && !b.pinned) return -1;
+                if (!a.pinned && b.pinned) return 1;
+                return b.id - a.id; 
+            });
+
+            let countCat1 = 0; let countCat2 = 0;
+
+            posts.forEach(p => { 
+                const pinBtnHtml = `<button class="btn ${p.pinned ? 'btn-edit' : 'btn-pin'}" onclick="togglePinPost('${p.id}')">${p.pinned ? '📍 ปลดหมุด' : '📌 ปักหมุด'}</button>`;
+                const rowHtml = `<tr><td>${p.id.substring(0, 6)}...</td><td><strong>${p.title}</strong></td><td>${p.pinned ? '<span style="color:var(--gold-main);">📌 ปักหมุด</span>' : 'ปกติ'}</td><td>${p.author}</td><td>${pinBtnHtml} <button class="btn btn-edit" onclick="editPost('${p.id}')">แก้ไข</button> <button class="btn btn-delete" onclick="deletePost('${p.id}')">ลบ</button></td></tr>`; 
+                
+                if (p.category === "1") { tbCat1.innerHTML += rowHtml; countCat1++; } 
+                else { tbCat2.innerHTML += rowHtml; countCat2++; }
+            });
+
+            if (countCat1 === 0) tbCat1.innerHTML = '<tr><td colspan="5" style="text-align:center;">ยังไม่มีกระทู้ในหมวดนี้</td></tr>';
+            if (countCat2 === 0) tbCat2.innerHTML = '<tr><td colspan="5" style="text-align:center;">ยังไม่มีกระทู้ในหมวดนี้</td></tr>';
 
             const users = await AdminAPI.getUsers();
             document.getElementById('stat-users-count').textContent = users.length;
             const usersTbody = document.getElementById('users-table-body'); usersTbody.innerHTML = '';
-            users.forEach((u, i) => { usersTbody.innerHTML += `<tr><td>${i + 1}</td><td><strong>${u.username}</strong></td><td><code>${u.password}</code></td><td><button class="btn btn-edit" onclick="editUser('${u.username}')">แก้ไข</button> <button class="btn btn-delete" onclick="deleteUser('${u.username}')">ลบ</button></td></tr>`; });
+            users.forEach((u, i) => { 
+                const displayRole = getRoleBadge(u.role);
+                usersTbody.innerHTML += `<tr><td>${i + 1}</td><td><strong>${u.username}</strong></td><td><code>${u.password}</code></td><td>${displayRole}</td><td><button class="btn btn-edit" onclick="editUser('${u.username}')">แก้ไข</button> <button class="btn btn-delete" onclick="deleteUser('${u.username}')">ลบ</button></td></tr>`; 
+            });
 
             const cms = await AdminAPI.getCMS();
             if (cms.heroSubtitle) {
                 document.getElementById('cms-hero-subtitle').value = cms.heroSubtitle || ''; document.getElementById('cms-hero-desc').value = cms.heroDesc || ''; document.getElementById('cms-hero-img').value = cms.heroImg || ''; document.getElementById('cms-hero-btn-text').value = cms.heroBtnText || ''; document.getElementById('cms-hero-btn-url').value = cms.heroBtnUrl || '#';
-                
-                document.getElementById('cms-card1-title').value = cms.card1Title || ''; 
-                document.getElementById('cms-card1-desc').value = cms.card1Desc || ''; 
-                document.getElementById('cms-card1-url').value = cms.card1Url || '#'; 
-                document.getElementById('cms-card1-img').value = cms.card1Img || 'https://placehold.co/150x150/1a120b/f5d77f?text=❖'; // ดึงรูปลง Card 1
-                
-                document.getElementById('cms-card2-title').value = cms.card2Title || ''; document.getElementById('cms-card2-url').value = cms.card2Url || '#';
-                if (cms.news) {
-                    document.getElementById('cms-n1-title').value = cms.news[0]?.title || ''; document.getElementById('cms-n1-img').value = cms.news[0]?.img || ''; document.getElementById('cms-n1-url').value = cms.news[0]?.url || '';
-                    document.getElementById('cms-n2-title').value = cms.news[1]?.title || ''; document.getElementById('cms-n2-img').value = cms.news[1]?.img || ''; document.getElementById('cms-n2-url').value = cms.news[1]?.url || '';
-                    document.getElementById('cms-n3-title').value = cms.news[2]?.title || ''; document.getElementById('cms-n3-img').value = cms.news[2]?.img || ''; document.getElementById('cms-n3-url').value = cms.news[2]?.url || '';
-                    document.getElementById('cms-n4-title').value = cms.news[3]?.title || ''; document.getElementById('cms-n4-img').value = cms.news[3]?.img || ''; document.getElementById('cms-n4-url').value = cms.news[3]?.url || '';
-                }
-                
-                document.getElementById('cms-card3-title').value = cms.card3Title || ''; document.getElementById('cms-card3-url').value = cms.card3Url || '#';
-                if (cms.spells) document.getElementById('cms-spells-list').value = cms.spells.join(', ');
+            }
+        }
+
+        async function togglePinPost(id) {
+            let posts = await AdminAPI.getPosts();
+            let postIndex = posts.findIndex(p => p.id === id);
+            if(postIndex > -1) {
+                posts[postIndex].pinned = !posts[postIndex].pinned;
+                if (!API_CONFIG.USE_REAL_API) { localStorage.setItem('siy_posts', JSON.stringify(posts)); } else { await AdminAPI.savePost(posts[postIndex]); }
+                loadAdminData();
             }
         }
 
         async function openPostModal(id = null) {
-            document.getElementById('postForm').reset(); document.getElementById('edit-post-id').value = '';
+            document.getElementById('postForm').reset(); document.getElementById('edit-post-id').value = ''; document.getElementById('edit-post-pinned').value = 'false';
             if (id) {
                 const posts = await AdminAPI.getPosts(); const p = posts.find(x => x.id === id);
-                if (p) { document.getElementById('edit-post-id').value = p.id; document.getElementById('edit-post-category').value = p.category; document.getElementById('edit-post-title').value = p.title; document.getElementById('edit-post-author').value = p.author; document.getElementById('edit-post-content').value = p.content.replace(/<br>/g, '\n'); }
+                if (p) { document.getElementById('edit-post-id').value = p.id; document.getElementById('edit-post-category').value = p.category; document.getElementById('edit-post-title').value = p.title; document.getElementById('edit-post-author').value = p.author; document.getElementById('edit-post-content').value = p.content.replace(/<br>/g, '\n'); document.getElementById('edit-post-pinned').value = p.pinned || false; }
                 document.getElementById('postModalTitle').textContent = 'แก้ไขกระทู้';
             } else { document.getElementById('postModalTitle').textContent = 'สลักกระทู้ใหม่'; }
             document.getElementById('postModal').classList.add('active');
@@ -310,16 +383,28 @@
         function editPost(id) { openPostModal(id); }
         async function submitPostForm(e) {
             e.preventDefault(); document.getElementById('btnSavePost').textContent = 'กำลังบันทึก...';
-            const data = { id: document.getElementById('edit-post-id').value, category: document.getElementById('edit-post-category').value, title: document.getElementById('edit-post-title').value.trim(), author: document.getElementById('edit-post-author').value.trim(), content: document.getElementById('edit-post-content').value.trim().replace(/\n/g, '<br>') };
+            const data = { id: document.getElementById('edit-post-id').value, category: document.getElementById('edit-post-category').value, title: document.getElementById('edit-post-title').value.trim(), author: document.getElementById('edit-post-author').value.trim(), content: document.getElementById('edit-post-content').value.trim().replace(/\n/g, '<br>'), pinned: (document.getElementById('edit-post-pinned').value === 'true') };
             await AdminAPI.savePost(data); document.getElementById('btnSavePost').textContent = 'บันทึกกระทู้'; closeModal('postModal'); loadAdminData(); showCustomAlert('บันทึกข้อมูลกระทู้เรียบร้อยแล้ว');
         }
-        async function deletePost(id) { if (confirm('คุณแน่ใจหรือว่าต้องการลบกระทู้นี้?')) { await AdminAPI.deletePost(id); loadAdminData(); showCustomAlert('ลบกระทู้เรียบร้อยแล้ว'); } }
+
+        function deletePost(id) { 
+            showCustomConfirm('ท่านแน่ใจหรือไม่ว่าต้องการ <strong>ทำลาย</strong> ศิลาจารึกนี้ทิ้งไปตลอดกาล?', async () => {
+                await AdminAPI.deletePost(id); 
+                loadAdminData(); 
+                showCustomAlert('ทำลายศิลาจารึกเรียบร้อยแล้ว'); 
+            });
+        }
 
         async function openUserModal(username = null) {
             document.getElementById('userForm').reset(); document.getElementById('edit-user-old-username').value = '';
             if (username) {
                 const users = await AdminAPI.getUsers(); const u = users.find(x => x.username === username);
-                if (u) { document.getElementById('edit-user-old-username').value = u.username; document.getElementById('edit-user-name').value = u.username; document.getElementById('edit-user-password').value = u.password; }
+                if (u) { 
+                    document.getElementById('edit-user-old-username').value = u.username; 
+                    document.getElementById('edit-user-name').value = u.username; 
+                    document.getElementById('edit-user-password').value = u.password; 
+                    document.getElementById('edit-user-role').value = u.role || '5'; 
+                }
                 document.getElementById('userModalTitle').textContent = 'แก้ไขข้อมูลสมาชิก';
             } else { document.getElementById('userModalTitle').textContent = 'เพิ่มสมาชิกใหม่'; }
             document.getElementById('userModal').classList.add('active');
@@ -328,11 +413,22 @@
         async function submitUserForm(e) {
             e.preventDefault(); document.getElementById('btnSaveUser').textContent = 'กำลังบันทึก...';
             const oldUsername = document.getElementById('edit-user-old-username').value;
-            const data = { username: document.getElementById('edit-user-name').value.trim(), password: document.getElementById('edit-user-password').value.trim() };
+            const data = { 
+                username: document.getElementById('edit-user-name').value.trim(), 
+                password: document.getElementById('edit-user-password').value.trim(),
+                role: document.getElementById('edit-user-role').value 
+            };
             try { await AdminAPI.saveUser(data, oldUsername); closeModal('userModal'); loadAdminData(); showCustomAlert('บันทึกข้อมูลสมาชิกเรียบร้อยแล้ว'); } catch (err) { showCustomAlert('นามแฝงนี้มีผู้ใช้งานอยู่แล้ว'); }
             document.getElementById('btnSaveUser').textContent = 'บันทึกสมาชิก';
         }
-        async function deleteUser(username) { if (confirm(`คุณแน่ใจหรือว่าต้องการลบบัญชีผู้ใช้ "${username}" ?`)) { await AdminAPI.deleteUser(username); loadAdminData(); showCustomAlert('ลบบัญชีผู้ใช้งานเรียบร้อยแล้ว'); } }
+
+        function deleteUser(username) { 
+            showCustomConfirm(`ท่านแน่ใจหรือไม่ว่าต้องการขับไล่ <strong>"${username}"</strong> ออกจากสำนัก?`, async () => {
+                await AdminAPI.deleteUser(username); 
+                loadAdminData(); 
+                showCustomAlert('ขับไล่ศิษย์ออกจากสำนักเรียบร้อยแล้ว'); 
+            });
+        }
 
         async function saveHeroCMS(e) {
             e.preventDefault();
@@ -340,29 +436,22 @@
             await AdminAPI.saveCMS(data); showCustomAlert('บันทึกข้อมูลส่วน Hero เรียบร้อยแล้ว');
         }
         
-        async function saveGridCMS(e) {
-            e.preventDefault();
-            const data = {
-                card1Title: document.getElementById('cms-card1-title').value.trim(), 
-                card1Desc: document.getElementById('cms-card1-desc').value.trim(), 
-                card1Url: document.getElementById('cms-card1-url').value.trim(), 
-                card1Img: document.getElementById('cms-card1-img').value.trim(), // บันทึกรูปลง Card 1
-                
-                card2Title: document.getElementById('cms-card2-title').value.trim(), card2Url: document.getElementById('cms-card2-url').value.trim(),
-                news: [
-                    { title: document.getElementById('cms-n1-title').value.trim(), img: document.getElementById('cms-n1-img').value.trim(), url: document.getElementById('cms-n1-url').value.trim() },
-                    { title: document.getElementById('cms-n2-title').value.trim(), img: document.getElementById('cms-n2-img').value.trim(), url: document.getElementById('cms-n2-url').value.trim() },
-                    { title: document.getElementById('cms-n3-title').value.trim(), img: document.getElementById('cms-n3-img').value.trim(), url: document.getElementById('cms-n3-url').value.trim() },
-                    { title: document.getElementById('cms-n4-title').value.trim(), img: document.getElementById('cms-n4-img').value.trim(), url: document.getElementById('cms-n4-url').value.trim() }
-                ],
-                
-                card3Title: document.getElementById('cms-card3-title').value.trim(), card3Url: document.getElementById('cms-card3-url').value.trim(), 
-                spells: document.getElementById('cms-spells-list').value.split(',').map(s => s.trim()).filter(s => s !== '')
-            };
-            await AdminAPI.saveCMS(data); showCustomAlert('บันทึกข้อมูลส่วน Content Grid เรียบร้อยแล้ว');
+        function resetDefaultMockData() { 
+            showCustomConfirm('คำเตือน: หากท่านดำเนินการนี้ ข้อมูลทั้งหมดจะถูกล้างและกลับไปเป็นค่าเริ่มต้น ท่านแน่ใจหรือไม่?', () => {
+                localStorage.removeItem('siy_posts'); 
+                localStorage.removeItem('siy_users'); 
+                localStorage.removeItem('siy_index_cms'); 
+                loadAdminData(); 
+                showCustomAlert('รีเซ็ตข้อมูลระบบกลับสู่ค่าเริ่มต้นเรียบร้อยแล้ว'); 
+            });
         }
-        
-        document.addEventListener('DOMContentLoaded', loadAdminData);
+
+        // 🌟 เรียกใช้การเช็กสิทธิ์แอดมินก่อนเริ่มโหลดข้อมูล 🌟
+        document.addEventListener('DOMContentLoaded', () => {
+            if (checkAdminAuth()) {
+                loadAdminData();
+            }
+        });
     </script>
 </body>
 </html>

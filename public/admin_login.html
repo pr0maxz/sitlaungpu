@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ประตูสู่เมืองลับแล - เฉพาะผู้คุมกฎ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;700&family=Sarabun:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root { 
+            --bg-deep: #070402; --bg-glow: #2a1805; 
+            --gold-light: #f5d77f; --gold-main: #d4af37; --gold-dark: #8a6315; 
+            --text-muted: #8a7761; --danger-color: #ff6b6b; 
+        }
+        
+        body { 
+            background-color: var(--bg-deep); 
+            background-image: radial-gradient(circle at 50% 50%, var(--bg-glow) 0%, var(--bg-deep) 90%); 
+            color: #d1bfae; 
+            font-family: 'Sarabun', sans-serif; 
+            min-height: 100vh; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            overflow: hidden; 
+            position: relative;
+        }
+        
+        /* พื้นหลังละอองเวทย์แบบเดียวกับลานเสวนา */
+        body::before { content: ""; position: fixed; top: -50vh; left: -50vw; width: 200vw; height: 200vh; z-index: -2; pointer-events: none; background-image: radial-gradient(2px 2px at 40px 60px, var(--gold-light), transparent), radial-gradient(1.5px 1.5px at 150px 120px, var(--gold-main), transparent), radial-gradient(2.5px 2.5px at 90px 200px, var(--gold-light), transparent), radial-gradient(1.5px 1.5px at 110px 90px, var(--gold-light), transparent); background-size: 200px 200px; opacity: 0.4; animation: floatingMagic 15s linear infinite; will-change: transform; }
+        body::after { content: ""; position: fixed; top: -50vh; left: -50vw; width: 200vw; height: 200vh; z-index: -1; pointer-events: none; background-image: radial-gradient(3px 3px at 20px 30px, var(--gold-main), transparent), radial-gradient(2px 2px at 120px 80px, var(--gold-light), transparent), radial-gradient(3px 3px at 220px 150px, var(--gold-dark), transparent); background-size: 350px 350px; opacity: 0.25; animation: floatingMagic2 22s linear infinite; will-change: transform; }
+        @keyframes floatingMagic { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(200px, -200px, 0); } } 
+        @keyframes floatingMagic2 { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-350px, -350px, 0); } }
+
+        /* เอฟเฟกต์ชีพจรกล่อง Login */
+        @keyframes containerPulse { 
+            0% { box-shadow: 0 0 30px rgba(0,0,0,0.9), inset 0 0 20px rgba(212,175,55,0.02); } 
+            50% { box-shadow: 0 0 60px rgba(212,175,55,0.2), inset 0 0 40px rgba(212,175,55,0.1); } 
+            100% { box-shadow: 0 0 30px rgba(0,0,0,0.9), inset 0 0 20px rgba(212,175,55,0.02); } 
+        }
+
+        .login-box {
+            position: relative;
+            background: linear-gradient(135deg, rgba(26, 18, 11, 0.95), rgba(10, 6, 3, 0.95));
+            border: 1px solid var(--gold-main);
+            border-radius: 12px;
+            width: 90%;
+            max-width: 420px;
+            padding: 50px 40px;
+            backdrop-filter: blur(10px);
+            animation: containerPulse 5s infinite alternate;
+            z-index: 10;
+        }
+
+        /* มุมยันต์ 4 ด้าน */
+        .corner-decor { position: absolute; width: 60px; pointer-events: none; opacity: 0.8; } 
+        .mc-top-left { top: 12px; left: 12px; transform: scaleX(-1); } 
+        .mc-top-right { top: 12px; right: 12px; } 
+        .mc-bottom-left { bottom: 12px; left: 12px; transform: scaleX(-1) scaleY(-1); } 
+        .mc-bottom-right { bottom: 12px; right: 12px; transform: scaleY(-1); }
+
+        .login-header { text-align: center; margin-bottom: 30px; }
+        .login-header img { height: 70px; margin-bottom: 15px; filter: drop-shadow(0 0 15px rgba(212,175,55,0.5)); }
+        .login-header h1 { color: var(--gold-light); font-family: 'Prompt', sans-serif; font-size: 1.8rem; margin-bottom: 5px; text-shadow: 0 2px 5px rgba(0,0,0,0.9); }
+        .login-header p { color: var(--gold-dark); font-size: 0.95rem; }
+
+        .form-group { margin-bottom: 25px; position: relative; } 
+        .form-group label { display: block; color: var(--gold-main); font-family: 'Prompt', sans-serif; font-size: 0.95rem; margin-bottom: 8px; } 
+        
+        .form-input { 
+            width: 100%; 
+            background: rgba(0,0,0,0.7); 
+            border: 1px solid rgba(138, 99, 21, 0.5); 
+            color: #fff; 
+            padding: 14px 15px; 
+            border-radius: 8px; 
+            font-family: 'Sarabun', sans-serif; 
+            font-size: 1.05rem; 
+            transition: all 0.3s;
+        } 
+        .form-input:focus { outline: none; border-color: var(--gold-light); box-shadow: 0 0 15px rgba(212,175,55,0.3); }
+
+        .toggle-password { position: absolute; right: 15px; top: 42px; cursor: pointer; font-size: 0.9rem; color: var(--gold-main); opacity: 0.8; } 
+        .toggle-password:hover { opacity: 1; text-shadow: 0 0 5px var(--gold-main); }
+
+        .btn-submit { 
+            width: 100%; 
+            background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); 
+            color: #150a03; 
+            border: none; 
+            padding: 14px; 
+            border-radius: 25px; 
+            font-family: 'Prompt', sans-serif; 
+            font-weight: bold; 
+            font-size: 1.1rem; 
+            cursor: pointer; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.8); 
+            transition: all 0.3s; 
+            margin-top: 10px;
+        } 
+        .btn-submit:hover { filter: brightness(1.2); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(212,175,55,0.4); }
+
+        .back-link { 
+            display: block; 
+            text-align: center; 
+            margin-top: 25px; 
+            color: var(--text-muted); 
+            text-decoration: none; 
+            font-size: 0.9rem; 
+            transition: color 0.3s; 
+        }
+        .back-link:hover { color: var(--gold-light); }
+
+        /* Custom Alert Modal จากเทมเพลตเดิม */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(7, 4, 2, 0.85); backdrop-filter: blur(8px); z-index: 999; justify-content: center; align-items: center; } 
+        .modal-overlay.active { display: flex; }
+        .modal-box { background: linear-gradient(135deg, #1a120b, #0a0603); border: 1px solid var(--danger-color); border-radius: 12px; width: 90%; max-width: 350px; padding: 30px; position: relative; box-shadow: 0 15px 40px rgba(0,0,0,0.9); text-align: center; }
+        .modal-box.success { border-color: #73c990; }
+        .modal-box h3 { font-family: 'Prompt', sans-serif; margin-bottom: 15px; color: var(--danger-color); }
+        .modal-box.success h3 { color: #73c990; }
+        .modal-box p { color: #e2d4c3; font-size: 1rem; margin-bottom: 25px; line-height: 1.5; }
+        .btn-close-modal { background: transparent; border: 1px solid var(--text-muted); color: var(--text-muted); padding: 8px 25px; border-radius: 20px; font-family: 'Prompt', sans-serif; cursor: pointer; }
+        .btn-close-modal:hover { background: rgba(255,255,255,0.1); color: #fff; }
+    </style>
+</head>
+<body>
+
+    <div class="login-box">
+        <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="corner-decor mc-top-left" alt="">
+        <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="corner-decor mc-top-right" alt="">
+        <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="corner-decor mc-bottom-left" alt="">
+        <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="corner-decor mc-bottom-right" alt="">
+
+        <div class="login-header">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493028/logo.png" alt="โลโก้สำนัก">
+            <h1>ประตูสู่เมืองลับแล</h1>
+            <p>สถานที่นี้สงวนไว้สำหรับ "จ้าวปะรำพิธี" เท่านั้น</p>
+        </div>
+
+        <form id="adminLoginForm" onsubmit="handleAdminLogin(event)">
+            <div class="form-group">
+                <label>นามแห่งเจ้า (Username)</label>
+                <input type="text" id="adminUser" class="form-input" placeholder="จงแจ้งนามของท่าน..." required>
+            </div>
+            
+            <div class="form-group">
+                <label>รหัสผ่านอาคม (Password)</label>
+                <input type="password" id="adminPass" class="form-input" placeholder="ร่ายมนตราเพื่อเปิดทาง..." required>
+                <span class="toggle-password" onclick="togglePassword()">เพ่งมอง</span>
+            </div>
+
+            <button type="submit" class="btn-submit">ล่วงล้ำเขตแดน (Login)</button>
+            <a href="index.html" class="back-link">← ถอยกลับสู่โลกเบื้องหน้า</a>
+        </form>
+    </div>
+
+    <!-- Alert Modal -->
+    <div class="modal-overlay" id="alertModal">
+        <div class="modal-box" id="alertBox">
+            <h3 id="alertTitle">อาถรรพ์ต่อต้าน!</h3>
+            <p id="alertMessage">มนตราป้องกันทำงาน... เจ้าไม่ใช่คนของเมืองนี้!</p>
+            <button type="button" class="btn-close-modal" onclick="closeAlert()">รับทราบ</button>
+        </div>
+    </div>
+
+    <script>
+        function togglePassword() {
+            const pwdInput = document.getElementById('adminPass');
+            const toggleIcon = document.querySelector('.toggle-password');
+            if (pwdInput.type === 'password') { 
+                pwdInput.type = 'text'; 
+                toggleIcon.textContent = 'หลับตา'; 
+            } else { 
+                pwdInput.type = 'password'; 
+                toggleIcon.textContent = 'เพ่งมอง'; 
+            }
+        }
+
+        function showAlert(title, message, isSuccess = false) {
+            document.getElementById('alertTitle').textContent = title;
+            document.getElementById('alertMessage').textContent = message;
+            
+            const box = document.getElementById('alertBox');
+            if(isSuccess) {
+                box.classList.add('success');
+            } else {
+                box.classList.remove('success');
+            }
+
+            document.getElementById('alertModal').classList.add('active');
+        }
+
+        function closeAlert() {
+            document.getElementById('alertModal').classList.remove('active');
+        }
+
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const user = document.getElementById('adminUser').value.trim();
+            const pass = document.getElementById('adminPass').value.trim();
+
+            // ดึงข้อมูล User จาก LocalStorage (เหมือนที่ระบบ admin.html ใช้)
+            let usersDB = JSON.parse(localStorage.getItem('siy_users')) || [];
+            
+            // กรณีไม่มี Database เลย (เข้าครั้งแรก) สร้าง Default Admin ให้
+            if (usersDB.length === 0) {
+                usersDB = [{ username: "ADMIN", password: "password", role: "1" }];
+                localStorage.setItem('siy_users', JSON.stringify(usersDB));
+            }
+
+            const foundUser = usersDB.find(u => u.username === user);
+
+            if (!foundUser) {
+                showAlert('ผู้บุกรุก!', 'มนตราป้องกันทำงาน... ไม่มีนามของเจ้าในจารึกเมืองนี้!');
+                return;
+            }
+
+            if (foundUser.password !== pass) {
+                showAlert('อาถรรพ์สะท้อนกลับ!', 'รหัสผ่านอาคมผิดเพี้ยน! จงถอยกลับไปเสีย!');
+                return;
+            }
+
+            // ตรวจสอบระดับขั้น (Role 1 = ปรมัตถ์/Admin)
+            if (foundUser.role !== '1') {
+                showAlert('เขตหวงห้าม!', 'ตบะบารมีของท่านยังไม่เพียงพอ ทวารนี้เปิดให้เฉพาะ "ปรมัตถ์" เท่านั้น!');
+                return;
+            }
+
+            // Login สำเร็จ
+            showAlert('ยินดีต้อนรับ', 'มนตราบรรลุผล... ประตูเมืองลับแลเปิดออกแล้วท่านจ้าวปะรำพิธี', true);
+            
+            // เซ็ต Session สั้นๆ (จำลอง) ให้รู้ว่า Login แล้ว
+            localStorage.setItem('siy_username', foundUser.username);
+            localStorage.setItem('siy_usertype', 'admin');
+
+            // หน่วงเวลาเล็กน้อยให้ได้อ่านข้อความ แล้วเด้งไปหน้า admin.html
+            setTimeout(() => {
+                window.location.href = 'admin.html';
+            }, 1500);
+        }
+    </script>
+</body>
+</html>
