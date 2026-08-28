@@ -32,6 +32,7 @@ app.get('/api/fix-db', async (c) => {
   const queries = [
     "ALTER TABLE posts ADD COLUMN likes INTEGER DEFAULT 0;",
     "ALTER TABLE posts ADD COLUMN views INTEGER DEFAULT 0;",
+    "ALTER TABLE posts ADD COLUMN pinned INTEGER DEFAULT 0;",
     "ALTER TABLE comments ADD COLUMN likes INTEGER DEFAULT 0;",
     `CREATE TABLE IF NOT EXISTS notifications (
         id TEXT PRIMARY KEY,
@@ -61,7 +62,7 @@ app.get('/api/fix-db', async (c) => {
 app.post('/api/admin/login', async (c) => {
   try {
     const { username, password } = await c.req.json();
-    const user = await c.env.DB.prepare("SELECT * FROM users WHERE username = ?").bind(username).first();
+    const user: any = await c.env.DB.prepare("SELECT * FROM users WHERE username = ?").bind(username).first();
     if (!user) return c.json({ success: false, error: 'ไม่พบนามของท่านในจารึกเมืองนี้' }, 400);
     if (String(user.role) !== '1') return c.json({ success: false, error: 'ตบะบารมีไม่ถึงขั้น ทวารนี้เฉพาะปรมัตถ์เท่านั้น' }, 403);
 
@@ -141,17 +142,34 @@ app.get('/api/posts', async (c) => {
 app.post('/api/posts', async (c) => {
   const body = await c.req.json()
   const safeContent = sanitize(body.content)
+  const isPinned = (body.pinned === true || body.pinned === 1 || body.pinned === '1') ? 1 : 0;
+  
   await c.env.DB.prepare(
     "INSERT INTO posts (id, category, title, content, author, timestamp, pinned) VALUES (?, ?, ?, ?, ?, ?, ?)"
-  ).bind(body.id, body.category, body.title, safeContent, body.author, body.timestamp, body.pinned ? 1 : 0).run()
+  ).bind(body.id, body.category, body.title, safeContent, body.author, body.timestamp, isPinned).run()
   return c.json({ success: true })
+})
+
+// 🌟 รองรับการอัปเดตกระทู้ (เช่น ปักหมุด หรือแก้ไขข้อมูล) ผ่าน PUT 🌟
+app.put('/api/posts', async (c) => {
+  const body = await c.req.json()
+  const safeContent = sanitize(body.content || '')
+  const isPinned = (body.pinned === true || body.pinned === 1 || body.pinned === '1') ? 1 : 0;
+
+  try {
+    await c.env.DB.prepare(
+      "UPDATE posts SET category = ?, title = ?, content = ?, author = ?, pinned = ? WHERE id = ?"
+    ).bind(body.category, body.title, safeContent, body.author, isPinned, body.id).run()
+    return c.json({ success: true })
+  } catch (e: any) {
+    return c.json({ success: false, error: e.message }, 500)
+  }
 })
 
 // 🌟🌟 ดึงข้อมูลกระทู้ + เพิ่มยอดวิวออโต้ 🌟🌟
 app.get('/api/posts/:id', async (c) => {
   const id = c.req.param('id')
   try {
-    // อัปเดตยอดวิวขึ้น 1 ทุกครั้งที่มีคนเรียกหน้านี้
     await c.env.DB.prepare("UPDATE posts SET views = COALESCE(views, 0) + 1 WHERE id = ?").bind(id).run()
   } catch (e) {}
 
@@ -229,11 +247,17 @@ app.get('/api/cms', async (c) => {
 
 app.post('/api/cms', async (c) => {
   const body = await c.req.json()
+  const sub = body.heroSubtitle || body.hero_subtitle || ''
+  const desc = body.heroDesc || body.hero_desc || ''
+  const img = body.heroImg || body.hero_img || ''
+  const btnText = body.heroBtnText || body.hero_btn_text || ''
+  const btnUrl = body.heroBtnUrl || body.hero_btn_url || ''
+
   await c.env.DB.prepare(
     "INSERT INTO cms (id, heroSubtitle, heroDesc, heroImg, heroBtnText, heroBtnUrl) VALUES (1, ?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET heroSubtitle = ?, heroDesc = ?, heroImg = ?, heroBtnText = ?, heroBtnUrl = ?"
   ).bind(
-    body.heroSubtitle, body.heroDesc, body.heroImg, body.heroBtnText, body.heroBtnUrl,
-    body.heroSubtitle, body.heroDesc, body.heroImg, body.heroBtnText, body.heroBtnUrl
+    sub, desc, img, btnText, btnUrl,
+    sub, desc, img, btnText, btnUrl
   ).run()
   return c.json({ success: true })
 })
