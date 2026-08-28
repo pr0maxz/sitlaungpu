@@ -184,25 +184,6 @@
             BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
         };
 
-        const MEMBER_SESSION_LIMIT = 24 * 60 * 60 * 1000;
-
-        function checkMemberSession() {
-            const savedUser = localStorage.getItem('siy_username');
-            if (!savedUser) return;
-            let loginTime = localStorage.getItem('siy_login_timestamp');
-            if (!loginTime) {
-                loginTime = Date.now().toString();
-                localStorage.setItem('siy_login_timestamp', loginTime);
-            }
-            const elapsed = Date.now() - parseInt(loginTime, 10);
-            if (elapsed > MEMBER_SESSION_LIMIT) {
-                localStorage.removeItem('siy_username');
-                localStorage.removeItem('siy_usertype');
-                localStorage.removeItem('siy_login_timestamp');
-                showCustomAlert('⏳ สิ้นสุดระยะเวลาสัตยาสาบาน 24 ชั่วโมง โปรดเข้าสู่ระบบใหม่อีกครั้ง', 'webboard.html');
-            }
-        }
-
         const ApiManager = {
             async getPostById(id) {
                 try {
@@ -459,7 +440,7 @@
             };
 
             const btn = document.getElementById('submitCommentBtn');
-            btn.textContent = 'กำลังส่งกระแสจิต...'; btn.disabled = true;
+            btn.textContent = 'กำลังส่ง...'; btn.disabled = true;
 
             const result = await ApiManager.saveComment(commentData);
             if(result && result.success !== false) {
@@ -504,7 +485,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', async () => {
-            checkMemberSession();
+            // ลบการเช็กเวลา Session ออกแล้ว (ไม่มีการเตะออกเองอีกต่อไป)
 
             const savedUser = localStorage.getItem('siy_username');
             const userType = localStorage.getItem('siy_usertype'); 
@@ -568,7 +549,9 @@
         });
 
         function handleLogout() {
-            localStorage.removeItem('siy_username'); localStorage.removeItem('siy_usertype'); localStorage.removeItem('siy_login_timestamp');
+            localStorage.removeItem('siy_username'); 
+            localStorage.removeItem('siy_usertype'); 
+            localStorage.removeItem('siy_login_timestamp');
             showCustomAlert('ท่านได้ออกจากระบบเรียบร้อยแล้ว', 'webboard.html');
         }
     </script>
