@@ -246,6 +246,45 @@
                 if (redirectUrl) window.location.href = redirectUrl;
             };
         }
+        // กำหนดเวลา Idle Timeout สำหรับแอดมิน = 5 นาที (5 * 60 * 1000 มิลลิวินาที)
+    const ADMIN_TIMEOUT = 5 * 60 * 1000;
+    let adminTimer = null;
+
+    function checkAdminIdle() {
+        const lastActive = localStorage.getItem('siy_admin_last_active');
+        if (lastActive) {
+            const elapsed = Date.now() - parseInt(lastActive, 10);
+            if (elapsed > ADMIN_TIMEOUT) {
+                logoutAdminSession('⏳ อาคมหลังบ้านหมดอายุ เนื่องจากการละเลยเกิน 5 นาที');
+                return;
+            }
+        }
+        resetAdminTimer();
+    }
+
+    function resetAdminTimer() {
+        localStorage.setItem('siy_admin_last_active', Date.now().toString());
+        if (adminTimer) clearTimeout(adminTimer);
+        
+        adminTimer = setTimeout(() => {
+            logoutAdminSession('⏳ อาคมหลังบ้านหมดอายุ เนื่องจากการละเลยเกิน 5 นาที');
+        }, ADMIN_TIMEOUT);
+    }
+
+    function logoutAdminSession(msg) {
+        localStorage.removeItem('siy_username');
+        localStorage.removeItem('siy_usertype');
+        localStorage.removeItem('siy_admin_last_active');
+        alert(msg);
+        window.location.replace('admin_login.html');
+    }
+
+    // ตรวจจับความเคลื่อนไหวของแอดมิน
+    window.onload = checkAdminIdle;
+    window.onmousemove = resetAdminTimer;
+    window.onkeypress = resetAdminTimer;
+    window.onclick = resetAdminTimer;
+    window.onscroll = resetAdminTimer;
     </script>
 </body>
 </html>

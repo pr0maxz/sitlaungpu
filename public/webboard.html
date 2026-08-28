@@ -52,7 +52,6 @@
         .search-wrapper { display: flex; gap: 8px; margin-bottom: 20px; } .search-input { flex: 1; background: rgba(0,0,0,0.5); border: 1px solid var(--gold-dark); color: var(--gold-light); padding: 10px 15px; border-radius: 25px; font-family: 'Sarabun', sans-serif; } .search-input:focus { outline: none; border-color: var(--gold-main); box-shadow: 0 0 8px rgba(212,175,55,0.3); } .search-btn { background: transparent; border: 1px solid var(--gold-dark); color: var(--gold-main); padding: 0 15px; border-radius: 25px; cursor: pointer; transition: all 0.3s; font-family: 'Prompt', sans-serif; } .search-btn:hover { background: var(--gold-dark); color: #fff; }
         .btn-primary { display: block; width: 100%; text-align: center; background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; font-family: 'Prompt', sans-serif; font-weight: bold; padding: 12px; border-radius: 25px; font-size: 1.1rem; box-shadow: 0 5px 15px rgba(0,0,0,0.6), inset 0 2px 4px rgba(255,255,255,0.4); border: 1px solid #ffeba9; cursor: pointer; transition: all 0.3s; text-decoration: none; } .btn-primary:hover { filter: brightness(1.15); transform: translateY(-2px); }
         
-        /* Footer อยู่ใน main-container ด้านล่างสุดตรงกลางระหว่างมุมลายไทย */
         .site-footer { text-align: center; margin-top: 50px; padding-top: 20px; border-top: 1px dashed rgba(138, 99, 21, 0.3); }
         .site-footer p { color: var(--text-muted); font-family: 'Sarabun', sans-serif; font-size: 0.85rem; letter-spacing: 0.5px; margin: 0; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9); }
 
@@ -138,7 +137,6 @@
             </div>
         </div>
 
-        <!-- Footer อยู่ด้านใน main-container ตรงกลางระหว่างมุมลายไทยด้านล่าง -->
         <footer class="site-footer">
             <p>© 2026 SitLuangPu</p>
         </footer>
@@ -161,7 +159,6 @@
             </div>
             <div class="form-group">
                 <label id="usernameLabel">นามแฝง (Username)</label>
-                <!-- บล็อกไม่ให้พิมพ์ภาษาอังกฤษ -->
                 <input type="text" id="regUsername" class="form-input" placeholder="ภาษาไทยเท่านั้น" oninput="this.value = this.value.replace(/[a-zA-Z]/g, '')" onpaste="setTimeout(() => { this.value = this.value.replace(/[a-zA-Z]/g, ''); }, 10)">
             </div>
             <div class="form-group">
@@ -223,7 +220,28 @@
             BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
         };
 
-        // 🌟 ฟังก์ชันดึงป้ายยศเชื่อมโยงฐานข้อมูลจริงสำหรับแสดงในรายการกระทู้ 🌟
+        // ⏳ ระบบตรวจสอบ Session สมาชิก (อายุ 24 ชั่วโมง)
+        const MEMBER_SESSION_LIMIT = 24 * 60 * 60 * 1000;
+
+        function checkMemberSession() {
+            const savedUser = localStorage.getItem('siy_username');
+            if (!savedUser) return;
+
+            let loginTime = localStorage.getItem('siy_login_timestamp');
+            if (!loginTime) {
+                loginTime = Date.now().toString();
+                localStorage.setItem('siy_login_timestamp', loginTime);
+            }
+
+            const elapsed = Date.now() - parseInt(loginTime, 10);
+            if (elapsed > MEMBER_SESSION_LIMIT) {
+                localStorage.removeItem('siy_username');
+                localStorage.removeItem('siy_usertype');
+                localStorage.removeItem('siy_login_timestamp');
+                showCustomAlert('⏳ สิ้นสุดระยะเวลาสัตยาสาบาน 24 ชั่วโมง โปรดเข้าสู่ระบบใหม่อีกครั้ง', 'webboard.html');
+            }
+        }
+
         async function getRoleBadgeFromAPI(username) {
             if (!username) return '<span class="role-badge role-5">เด็กวัด</span>';
             if (username.toUpperCase() === 'ADMIN') {
@@ -252,10 +270,7 @@
                         const response = await fetch(`${API_CONFIG.BASE_URL}/posts`);
                         if (!response.ok) return [];
                         return await response.json();
-                    } catch (error) { 
-                        console.error("API Error:", error);
-                        return []; 
-                    }
+                    } catch (error) { return []; }
                 }
                 return [];
             }
@@ -295,7 +310,6 @@
                 return b.id - a.id; 
             });
 
-            // วนลูปสร้างรายการกระทู้พร้อมดึงยศจริงจากฐานข้อมูล
             for (let post of posts) {
                 const pinTag = post.pinned ? '<span class="wb-tag wb-tag-pin">📌 ปักหมุด</span> ' : '';
                 const authorBadge = await getRoleBadgeFromAPI(post.author);
@@ -321,6 +335,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
+            checkMemberSession(); // ตรวจสอบอายุ Session 24 ชม.
             loadAndRenderPosts();
             checkUserLoginStatus();
 
@@ -507,6 +522,7 @@
             
             localStorage.setItem('siy_username', usernameInput);
             localStorage.setItem('siy_usertype', 'member');
+            localStorage.setItem('siy_login_timestamp', Date.now().toString()); // บันทึกเวลาเริ่มนับ 24 ชม.
             closeRegisterModal(); 
             checkUserLoginStatus();
         }
@@ -515,13 +531,17 @@
             const guestName = `ผู้ไม่ประสงค์ออกนาม#${Math.floor(1000 + Math.random() * 9000)}`;
             localStorage.setItem('siy_username', guestName);
             localStorage.setItem('siy_usertype', 'guest');
+            localStorage.setItem('siy_login_timestamp', Date.now().toString()); // บันทึกเวลาเริ่มนับ 24 ชม.
             checkUserLoginStatus();
             showCustomAlert('ท่านได้เข้าสู่ลานเสวนาในฐานะวิญญาณเร่ร่อน: ' + guestName);
         }
 
         function handleLogout() {
-            localStorage.removeItem('siy_username'); localStorage.removeItem('siy_usertype');
-            checkUserLoginStatus(); showCustomAlert('ท่านได้ออกจากระบบเรียบร้อยแล้ว');
+            localStorage.removeItem('siy_username'); 
+            localStorage.removeItem('siy_usertype');
+            localStorage.removeItem('siy_login_timestamp');
+            checkUserLoginStatus(); 
+            showCustomAlert('ท่านได้ออกจากระบบเรียบร้อยแล้ว');
         }
 
         function togglePasswordVisibility() {

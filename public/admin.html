@@ -542,13 +542,54 @@
         function handleAdminLogout() {
             localStorage.removeItem('siy_username');
             localStorage.removeItem('siy_usertype');
+            localStorage.removeItem('siy_admin_last_active');
             sessionStorage.clear();
             window.location.replace('admin_login.html');
         }
 
+        // ⏳ ระบบตัด Session แอดมินอัตโนมัติ (5 นาที)
+        const ADMIN_TIMEOUT = 5 * 60 * 1000;
+        let adminTimer = null;
+
+        function checkAdminIdle() {
+            const lastActive = localStorage.getItem('siy_admin_last_active');
+            if (lastActive) {
+                const elapsed = Date.now() - parseInt(lastActive, 10);
+                if (elapsed > ADMIN_TIMEOUT) {
+                    logoutAdminSession('⏳ อาคมหลังบ้านหมดอายุ เนื่องจากการละเลยเกิน 5 นาที');
+                    return;
+                }
+            }
+            resetAdminTimer();
+        }
+
+        function resetAdminTimer() {
+            localStorage.setItem('siy_admin_last_active', Date.now().toString());
+            if (adminTimer) clearTimeout(adminTimer);
+            
+            adminTimer = setTimeout(() => {
+                logoutAdminSession('⏳ อาคมหลังบ้านหมดอายุ เนื่องจากการละเลยเกิน 5 นาที');
+            }, ADMIN_TIMEOUT);
+        }
+
+        function logoutAdminSession(msg) {
+            localStorage.removeItem('siy_username');
+            localStorage.removeItem('siy_usertype');
+            localStorage.removeItem('siy_admin_last_active');
+            sessionStorage.clear();
+            alert(msg);
+            window.location.replace('admin_login.html');
+        }
+
+        window.addEventListener('mousemove', resetAdminTimer);
+        window.addEventListener('keypress', resetAdminTimer);
+        window.addEventListener('click', resetAdminTimer);
+        window.addEventListener('scroll', resetAdminTimer);
+
         document.addEventListener('DOMContentLoaded', async () => {
             if (await checkAdminAuth()) {
                 loadAdminData();
+                checkAdminIdle();
             }
         });
     </script>
