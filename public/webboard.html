@@ -228,29 +228,7 @@
             BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
         };
 
-        // ⏳ ระบบตรวจสอบ Session สมาชิก (อายุ 24 ชั่วโมง)
-        const MEMBER_SESSION_LIMIT = 24 * 60 * 60 * 1000;
-
-        function checkMemberSession() {
-            const savedUser = localStorage.getItem('siy_username');
-            if (!savedUser) return;
-
-            let loginTime = localStorage.getItem('siy_login_timestamp');
-            if (!loginTime) {
-                loginTime = Date.now().toString();
-                localStorage.setItem('siy_login_timestamp', loginTime);
-            }
-
-            const elapsed = Date.now() - parseInt(loginTime, 10);
-            if (elapsed > MEMBER_SESSION_LIMIT) {
-                localStorage.removeItem('siy_username');
-                localStorage.removeItem('siy_usertype');
-                localStorage.removeItem('siy_login_timestamp');
-                showCustomAlert('⏳ สิ้นสุดระยะเวลาสัตยาสาบาน 24 ชั่วโมง โปรดเข้าสู่ระบบใหม่อีกครั้ง', 'webboard.html');
-            }
-        }
-
-        async function getRoleBadgeFromAPI(username) {
+                async function getRoleBadgeFromAPI(username) {
             if (!username) return '<span class="role-badge role-5">เด็กวัด</span>';
             if (username.toUpperCase() === 'ADMIN') {
                 return '<span class="role-badge role-1">ปรมัตถ์</span>';
