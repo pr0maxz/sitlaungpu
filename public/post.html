@@ -151,6 +151,7 @@
         </div>
     </div>
 
+    <!-- Modals -->
     <div class="sect-modal-overlay" id="customAlertModal" style="z-index: 9999;">
         <div class="sect-modal-content" style="max-width: 350px; text-align: center; padding: 30px 20px 40px 20px;">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-left" alt="">
@@ -196,6 +197,7 @@
                     const response = await fetch(`${API_CONFIG.BASE_URL}/comments`);
                     if (response.ok) {
                         const comments = await response.json();
+                        // 🌟 แก้ไขให้รองรับทั้ง post_id (จากฐานข้อมูล D1) และ postId (จาก LocalStorage เดิม)
                         return comments.filter(c => String(c.post_id || c.postId) === String(postId)).sort((a, b) => parseInt(a.id) - parseInt(b.id));
                     }
                     const response2 = await fetch(`${API_CONFIG.BASE_URL}/posts/${postId}/comments`);
@@ -265,7 +267,7 @@
                 const user = usersDB.find(u => u.username === username);
                 if (user) {
                     let role = String(user.role || '5');
-                    let rank = user.rank_name || getRoleTitleName(role); // 🌟 บังคับดึงชื่อยศตามระดับขั้น
+                    let rank = getRoleTitleName(role); // 🌟 บังคับดึงชื่อยศตามระดับขั้นที่ถูกต้อง (ละทิ้งของเดิมใน DB)
                     if (role === '1') { return '<span class="role-badge role-1">ปรมัตถ์</span>'; }
                     return `<span class="role-badge role-${role}">${rank}</span>`;
                 }
@@ -509,14 +511,14 @@
                 const foundUser = usersDB.find(u => u.username === savedUser);
                 if (foundUser) {
                     currentUserRole = String(foundUser.role || '5');
-                    currentUserRank = foundUser.rank_name || getRoleTitleName(currentUserRole); // 🌟 บังคับดึงชื่อยศตามระดับขั้น
+                    currentUserRank = getRoleTitleName(currentUserRole); // 🌟 บังคับดึงชื่อยศตามระดับขั้นที่ถูกต้อง (ละทิ้งของเดิมใน DB)
                 }
             } catch (e) {}
 
             document.getElementById('displayUsername').textContent = savedUser;
             let myBadgeHtml = '';
             if (savedUser.toUpperCase() === 'ADMIN' || currentUserRole === '1') { myBadgeHtml = '<span class="role-badge role-1">ปรมัตถ์</span>'; } 
-            else if (userType === 'guest') { myBadgeHtml = '<span class="role-badge role-guest">วิญญาณเร่ร่อน</span>'; } 
+            else if (userType === 'guest' || savedUser.includes('ผู้ไม่ประสงค์ออกนาม')) { myBadgeHtml = '<span class="role-badge role-guest">วิญญาณเร่ร่อน</span>'; } 
             else { myBadgeHtml = `<span class="role-badge role-${currentUserRole}">${currentUserRank}</span>`; }
             document.getElementById('displayUserBadge').innerHTML = myBadgeHtml;
 
