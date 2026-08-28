@@ -592,6 +592,63 @@
                 checkAdminIdle();
             }
         });
+
+        function checkIsPinned(val) {
+    return val === true || val === 1 || val === '1' || val === 'true';
+}
+
+async function loadAdminData() {
+    initAdminDB();
+    document.getElementById('stat-api-mode').textContent = API_CONFIG.USE_REAL_API ? "Cloudflare D1 (API)" : "LocalStorage (Mock)";
+    document.getElementById('stat-api-mode').style.color = API_CONFIG.USE_REAL_API ? "#73c990" : "var(--gold-main)";
+
+    const posts = await AdminAPI.getPosts();
+    document.getElementById('stat-posts-count').textContent = posts.length;
+    
+    const tbCat1 = document.getElementById('posts-table-body-cat1');
+    const tbCat2 = document.getElementById('posts-table-body-cat2');
+    tbCat1.innerHTML = '';
+    tbCat2.innerHTML = '';
+    
+    posts.sort((a, b) => {
+        const aPin = checkIsPinned(a.pinned) ? 1 : 0;
+        const bPin = checkIsPinned(b.pinned) ? 1 : 0;
+        if (aPin !== bPin) return bPin - aPin;
+        return b.id - a.id; 
+    });
+
+    let countCat1 = 0; let countCat2 = 0;
+
+    posts.forEach(p => { 
+        const isPinned = checkIsPinned(p.pinned);
+        const pinBtnHtml = `<button class="btn ${isPinned ? 'btn-edit' : 'btn-pin'}" onclick="togglePinPost('${p.id}')">${isPinned ? '📍 ถอดหมุด' : '📌 ปักหมุด'}</button>`;
+        const rowHtml = `<tr><td>${p.id.substring(0, 6)}...</td><td><strong>${p.title}</strong></td><td>${isPinned ? '<span style="color:var(--gold-main);">📌 ปักหมุด</span>' : 'ปกติ'}</td><td>${p.author}</td><td><div style="display:flex; gap:5px; flex-wrap:wrap;">${pinBtnHtml} <button class="btn btn-edit" onclick="editPost('${p.id}')">แก้ไข</button> <button class="btn btn-delete" onclick="deletePost('${p.id}')">ลบ</button></div></td></tr>`; 
+        
+        if (p.category === "1") { tbCat1.innerHTML += rowHtml; countCat1++; } 
+        else { tbCat2.innerHTML += rowHtml; countCat2++; }
+    });
+
+    if (countCat1 === 0) tbCat1.innerHTML = '<tr><td colspan="5" style="text-align:center;">ยังไม่มีกระทู้ในหมวดนี้</td></tr>';
+    if (countCat2 === 0) tbCat2.innerHTML = '<tr><td colspan="5" style="text-align:center;">ยังไม่มีกระทู้ในหมวดนี้</td></tr>';
+    // ... (โค้ดส่วนอื่นคงเดิม)
+}
+
+async function togglePinPost(id) {
+    let posts = await AdminAPI.getPosts();
+    let postIndex = posts.findIndex(p => p.id === id);
+    if(postIndex > -1) {
+        const currentPinned = checkIsPinned(posts[postIndex].pinned);
+        // สลับค่าเป็น 1 (ปักหมุด) หรือ 0 (ไม่ปักหมุด)
+        posts[postIndex].pinned = currentPinned ? 0 : 1; 
+        
+        if (!API_CONFIG.USE_REAL_API) { 
+            localStorage.setItem('siy_posts', JSON.stringify(posts)); 
+        } else { 
+            await AdminAPI.savePost(posts[postIndex]); 
+        }
+        loadAdminData();
+    }
+}
     </script>
 </body>
 </html>

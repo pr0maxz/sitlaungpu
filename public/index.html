@@ -285,6 +285,63 @@
     window.onkeypress = resetAdminTimer;
     window.onclick = resetAdminTimer;
     window.onscroll = resetAdminTimer;
+
+    function checkIsPinned(val) {
+    return val === true || val === 1 || val === '1' || val === 'true';
+}
+
+async function renderIndexPosts() {
+    const container = document.getElementById('dynamicIndexPosts');
+    container.innerHTML = '<div style="text-align: center; color: var(--gold-dark); padding: 20px;">กำลังอัญเชิญจารึก...</div>';
+    
+    let posts = [];
+    if (API_CONFIG.USE_REAL_API) {
+        try {
+            const response = await fetch(`${API_CONFIG.BASE_URL}/posts`);
+            if (response.ok) {
+                posts = await response.json();
+            }
+        } catch (error) { console.error('Posts Error:', error); }
+    } else {
+        posts = JSON.parse(localStorage.getItem('siy_posts')) || [];
+    }
+    
+    if (!posts || posts.length === 0) { container.innerHTML = '<div style="text-align: center; color: var(--gold-dark); padding: 20px;">ยังไม่มีจารึกในลานเสวนา</div>'; return; }
+    container.innerHTML = '';
+    
+    // 🌟 จัดเรียงระบบปักหมุด
+    posts.sort((a, b) => {
+        const aPin = checkIsPinned(a.pinned) ? 1 : 0;
+        const bPin = checkIsPinned(b.pinned) ? 1 : 0;
+        if (aPin !== bPin) return bPin - aPin;
+        return b.id - a.id; 
+    });
+
+    posts.slice(0, 12).forEach((post, index) => {
+        let tagHtml = '';
+        if (checkIsPinned(post.pinned)) {
+            tagHtml = '<span class="wb-tag wb-tag-pin">📌 ปักหมุด</span>';
+        } else if (index === 0) {
+            tagHtml = '<span class="wb-tag wb-tag-new">NEW</span>';
+        } else if (post.views >= 200 || post.replies >= 20) {
+            tagHtml = '<span class="wb-tag wb-tag-hot">HOT</span>';
+        }
+        
+        container.innerHTML += `
+            <a href="post.html?id=${post.id}" class="wb-row">
+                <div class="wb-title-group">
+                    ${tagHtml}
+                    <span class="wb-title">${post.title}</span>
+                </div>
+                <div class="wb-meta">
+                    <span>👤 ${post.author}</span>
+                    <span>💬 ${post.replies || 0} ตอบ</span>
+                    <span style="color: #6b5a45;">${post.timestamp ? post.timestamp.split('|')[0].trim() : ''}</span>
+                </div>
+            </a>
+        `;
+    });
+}
     </script>
 </body>
 </html>
