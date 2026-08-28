@@ -144,6 +144,12 @@ app.post('/api/posts', async (c) => {
 
 app.get('/api/posts/:id', async (c) => {
   const id = c.req.param('id')
+  
+  // 🌟 เพิ่มยอดเข้าชม +1 ก่อนดึงข้อมูลไปโชว์
+  try {
+    await c.env.DB.prepare("UPDATE posts SET views = COALESCE(views, 0) + 1 WHERE id = ?").bind(id).run()
+  } catch (e) {}
+
   const post = await c.env.DB.prepare("SELECT * FROM posts WHERE id = ?").bind(id).first()
   return c.json(post)
 })
