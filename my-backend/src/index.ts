@@ -9,7 +9,6 @@ const app = new Hono<{ Bindings: Bindings }>()
 
 app.use('/api/*', cors())
 
-// ฟังก์ชัน Hash รหัสผ่าน
 async function hashPassword(password: string, salt: string) {
   const encoder = new TextEncoder()
   const data = encoder.encode(password + salt)
@@ -26,56 +25,64 @@ function sanitize(text: string) {
 }
 
 // ==========================================
-// 🔑 ระบบตรวจสอบสิทธิ์แอดมิน (Admin Login แบบยืดหยุ่น)
+// 🛠️ เครื่องมือเสกฐานข้อมูล (Magic Fix DB)
+// ==========================================
+app.get('/api/fix-db', async (c) => {
+  let logs = []
+  const queries = [
+    "ALTER TABLE posts ADD COLUMN likes INTEGER DEFAULT 0;",
+    "ALTER TABLE posts ADD COLUMN views INTEGER DEFAULT 0;",
+    "ALTER TABLE comments ADD COLUMN likes INTEGER DEFAULT 0;",
+    `CREATE TABLE IF NOT EXISTS notifications (
+        id TEXT PRIMARY KEY,
+        recipient TEXT NOT NULL,
+        actor TEXT NOT NULL,
+        action_type TEXT NOT NULL,
+        post_id TEXT NOT NULL,
+        is_read INTEGER DEFAULT 0,
+        timestamp TEXT NOT NULL
+    );`
+  ]
+
+  for (let q of queries) {
+    try {
+      await c.env.DB.prepare(q).run()
+      logs.push(`✅ สำเร็จ: ${q.split(' ')[0]} ${q.split(' ')[1]} ${q.split(' ')[2] || ''}`)
+    } catch (e: any) {
+      logs.push(`⚠️ ข้าม (มีอยู่แล้วหรือขัดข้อง): ${e.message}`)
+    }
+  }
+  return c.json({ message: "อัปเกรดฐานข้อมูลเรียบร้อยแล้ว!", logs })
+})
+
+// ==========================================
+// 🔑 ระบบตรวจสอบสิทธิ์แอดมิน 
 // ==========================================
 app.post('/api/admin/login', async (c) => {
   try {
     const { username, password } = await c.req.json();
-
-    const user = await c.env.DB.prepare(
-      "SELECT * FROM users WHERE username = ?"
-    ).bind(username).first();
-
-    if (!user) {
-      return c.json({ success: false, error: 'ไม่พบนามของท่านในจารึกเมืองนี้' }, 400);
-    }
-
-    if (String(user.role) !== '1') {
-      return c.json({ success: false, error: 'ตบะบารมีไม่ถึงขั้น ทวารนี้เฉพาะปรมัตถ์เท่านั้น' }, 403);
-    }
+    const user = await c.env.DB.prepare("SELECT * FROM users WHERE username = ?").bind(username).first();
+    if (!user) return c.json({ success: false, error: 'ไม่พบนามของท่านในจารึกเมืองนี้' }, 400);
+    if (String(user.role) !== '1') return c.json({ success: false, error: 'ตบะบารมีไม่ถึงขั้น ทวารนี้เฉพาะปรมัตถ์เท่านั้น' }, 403);
 
     let isValid = false;
     if (user.password_hash && user.salt) {
       const computedHash = await hashPassword(password, user.salt);
-      if (user.password_hash === computedHash) {
-        isValid = true;
-      }
+      if (user.password_hash === computedHash) isValid = true;
     }
+    if (!isValid && user.password === password) isValid = true;
+    if (!isValid && user.password_hash === password) isValid = true;
 
-    // รองรับรหัสผ่านแบบ Plain Text ตรงๆ หรือรหัสจาก CMS เก่า
-    if (!isValid && user.password && user.password === password) {
-      isValid = true;
-    }
-    if (!isValid && user.password_hash === password) {
-      isValid = true;
-    }
+    if (!isValid) return c.json({ success: false, error: 'รหัสผ่านอาคมผิดเพี้ยน!' }, 400);
 
-    if (!isValid) {
-      return c.json({ success: false, error: 'รหัสผ่านอาคมผิดเพี้ยน!' }, 400);
-    }
-
-    return c.json({ 
-      success: true, 
-      username: user.username,
-      rank_name: user.rank_name || 'วิญญาณเร่ร่อน'
-    });
+    return c.json({ success: true, username: user.username, rank_name: user.rank_name || 'วิญญาณเร่ร่อน' });
   } catch (err) {
     return c.json({ success: false, error: 'เกิดข้อผิดพลาดที่แก่นเซิร์ฟเวอร์' }, 500);
   }
 });
 
 // ==========================================
-// 🚪 จัดการสมาชิก (Users & CMS Update)
+// 🚪 จัดการสมาชิก 
 // ==========================================
 app.get('/api/users', async (c) => {
   const { results } = await c.env.DB.prepare("SELECT username, role, rank_name, password FROM users").all()
@@ -86,7 +93,6 @@ app.post('/api/users', async (c) => {
   const { username, password, role, rank_name } = await c.req.json()
   const salt = crypto.randomUUID()
   const hashed = await hashPassword(password, salt)
-
   try {
     await c.env.DB.prepare(
       "INSERT INTO users (username, password_hash, salt, role, rank_name, password) VALUES (?, ?, ?, ?, ?, ?)"
@@ -100,7 +106,6 @@ app.post('/api/users', async (c) => {
 app.put('/api/users', async (c) => {
   const { username, oldUsername, password, role, rank_name } = await c.req.json()
   const targetName = oldUsername || username
-
   try {
     if (password) {
       const salt = crypto.randomUUID()
@@ -126,7 +131,7 @@ app.delete('/api/users/:username', async (c) => {
 })
 
 // ==========================================
-// 📜 หมวดหมู่ API: จัดการกระทู้และคอมเมนต์ (Posts & Comments)
+// 📜 จัดการกระทู้และคอมเมนต์ (Posts & Comments)
 // ==========================================
 app.get('/api/posts', async (c) => {
   const { results } = await c.env.DB.prepare("SELECT * FROM posts ORDER BY id DESC").all()
@@ -142,11 +147,11 @@ app.post('/api/posts', async (c) => {
   return c.json({ success: true })
 })
 
+// 🌟🌟 ดึงข้อมูลกระทู้ + เพิ่มยอดวิวออโต้ 🌟🌟
 app.get('/api/posts/:id', async (c) => {
   const id = c.req.param('id')
-  
-  // 🌟 เพิ่มยอดเข้าชม +1 ก่อนดึงข้อมูลไปโชว์
   try {
+    // อัปเดตยอดวิวขึ้น 1 ทุกครั้งที่มีคนเรียกหน้านี้
     await c.env.DB.prepare("UPDATE posts SET views = COALESCE(views, 0) + 1 WHERE id = ?").bind(id).run()
   } catch (e) {}
 
@@ -161,7 +166,6 @@ app.delete('/api/posts/:id', async (c) => {
   return c.json({ success: true })
 })
 
-// 🌟 [เพิ่มใหม่] กดไลก์กระทู้
 app.post('/api/posts/:postId/like', async (c) => {
   const postId = c.req.param('postId')
   try {
@@ -173,7 +177,6 @@ app.post('/api/posts/:postId/like', async (c) => {
   }
 })
 
-// 🌟 [เพิ่มใหม่] ดึงคอมเมนต์ทั้งหมดรวดเดียว (ใช้สำหรับหน้า Webboard ที่อัปเกรดแล้ว)
 app.get('/api/comments', async (c) => {
   const { results } = await c.env.DB.prepare("SELECT * FROM comments ORDER BY id ASC").all()
   return c.json(results)
@@ -205,7 +208,6 @@ app.delete('/api/comments/:id', async (c) => {
   return c.json({ success: true })
 })
 
-// 🌟 [เพิ่มใหม่] กดไลก์คอมเมนต์
 app.post('/api/comments/:commentId/like', async (c) => {
   const commentId = c.req.param('commentId')
   try {
@@ -247,18 +249,14 @@ app.get('/api/notifications/:username', async (c) => {
     ).bind(username).all()
     return c.json(results || [])
   } catch (e) {
-    return c.json([]) // ส่ง Array ว่างกลับไปถ้าตารางยังไม่พร้อมเพื่อกันเว็บพัง
+    return c.json([]) 
   }
 })
 
 app.post('/api/notifications', async (c) => {
   const body = await c.req.json()
   const { id, recipient, actor, action_type, post_id, timestamp } = body
-  
-  // ป้องกันไม่ให้ส่งแจ้งเตือนหาตัวเอง
-  if (recipient === actor) {
-      return c.json({ success: true, ignored: true })
-  }
+  if (recipient === actor) { return c.json({ success: true, ignored: true }) }
 
   try {
       await c.env.DB.prepare(
@@ -273,9 +271,7 @@ app.post('/api/notifications', async (c) => {
 app.put('/api/notifications/:id/read', async (c) => {
   const id = c.req.param('id')
   try {
-      await c.env.DB.prepare(
-        "UPDATE notifications SET is_read = 1 WHERE id = ?"
-      ).bind(id).run()
+      await c.env.DB.prepare("UPDATE notifications SET is_read = 1 WHERE id = ?").bind(id).run()
       return c.json({ success: true })
   } catch (error: any) {
       return c.json({ success: false, error: error.message }, 500)
