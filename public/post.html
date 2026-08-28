@@ -246,13 +246,13 @@
 
         const ApiManager = {
             async getPostById(id) {
-                try {
-                    const response = await fetch(`${API_CONFIG.BASE_URL}/posts`);
-                    if (!response.ok) return null;
-                    const posts = await response.json();
-                    return posts.find(p => String(p.id) === String(id)) || null;
-                } catch (error) { return null; }
-            },
+    try {
+        // 🌟 ยิงไปที่ /posts/:id ตรงๆ เพื่อสะกิดให้หลังบ้าน +1 ยอดวิว
+        const response = await fetch(`${API_CONFIG.BASE_URL}/posts/${id}`);
+        if (!response.ok) return null;
+        return await response.json();
+    } catch (error) { return null; }
+},
             async getComments(postId) {
                 try {
                     const response = await fetch(`${API_CONFIG.BASE_URL}/comments`);
