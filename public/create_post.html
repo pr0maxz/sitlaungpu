@@ -30,7 +30,6 @@
         .form-group { margin-bottom: 20px; width: 100%; max-width: 100%; box-sizing: border-box; } .form-group label { display: block; color: var(--gold-light); margin-bottom: 8px; font-family: 'Prompt', sans-serif; }
         .form-input, .form-select { width: 100%; max-width: 100%; background: rgba(0,0,0,0.6); border: 1px solid rgba(138, 99, 21, 0.5); color: #fff; padding: 12px 15px; border-radius: 6px; font-size: 1.05rem; box-sizing: border-box; } .form-select option { background: #1a120b; }
         
-        /* ล็อกขนาดกล่องเนื้อหาไม่ให้ล้นหน้าจอ และบังคับตัดคำ */
         .form-textarea {
             width: 100% !important;
             max-width: 100% !important;
@@ -51,7 +50,6 @@
         }
         .form-textarea:focus { outline: none; border-color: var(--gold-main); box-shadow: 0 0 8px rgba(212,175,55,0.3); }
 
-        /* ปุ่มแนบรูปภาพ */
         .btn-attach-img {
             background: linear-gradient(135deg, #8a6315, #d4af37);
             color: #070402;
@@ -161,7 +159,7 @@
                     <h4 class="widget-title">ผู้ลงนาม</h4>
                     <div style="display: flex; align-items: center; gap: 12px;">
                         <div>
-                            <div style="display: flex; align-items: center; gap: 6px;">
+                            <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
                                 <h4 id="authorName" style="color: var(--gold-light); margin: 0; font-family: 'Prompt', sans-serif;">นามแฝง</h4>
                                 <span id="authorRoleBadge"></span>
                             </div>
@@ -201,17 +199,22 @@
             BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
         };
 
-        function getUserRoleBadge(username) {
-            let users = JSON.parse(localStorage.getItem('siy_users')) || [];
-            let user = users.find(u => u.username === username);
-            let role = user ? (user.role || '5') : '5';
-            switch(String(role)) {
-                case '1': return '<span class="role-badge role-1">ปรมัตถ์</span>';
-                case '2': return '<span class="role-badge role-2">ปรมาจารย์</span>';
-                case '3': return '<span class="role-badge role-3">ผู้สำเร็จวิชา</span>';
-                case '4': return '<span class="role-badge role-4">ขั้นปฐมภูมิ</span>';
-                default: return '<span class="role-badge role-5">เด็กวัด</span>';
-            }
+        // 🌟 ดึงยศจริงจาก API D1 แบบสมบูรณ์
+        async function getRoleBadgeFromAPI(username) {
+            if (!username) return '<span class="role-badge role-5">เด็กวัด</span>';
+            if (username.toUpperCase() === 'ADMIN') { return '<span class="role-badge role-1">ปรมัตถ์</span>'; }
+            try {
+                const res = await fetch(`${API_CONFIG.BASE_URL}/users`);
+                const usersDB = await res.json();
+                const user = usersDB.find(u => u.username === username);
+                if (user) {
+                    let role = String(user.role || '5');
+                    let rank = user.rank_name || 'เด็กวัด';
+                    if (role === '1') { return '<span class="role-badge role-1">ปรมัตถ์</span>'; }
+                    return `<span class="role-badge role-${role}">${rank}</span>`;
+                }
+            } catch (e) {}
+            return '<span class="role-badge role-5">เด็กวัด</span>';
         }
 
         const ApiManager = {
@@ -245,58 +248,50 @@
             };
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             const savedUser = localStorage.getItem('siy_username');
             const userType = localStorage.getItem('siy_usertype'); 
             
-            setTimeout(() => {
+            setTimeout(async () => {
                 document.getElementById('guardOverlay').style.display = 'none';
 
                 if (!savedUser || userType === 'guest') {
                     showCustomAlert('เขตหวงห้าม! วิญญาณเร่ร่อนไม่อาจสร้างศิลาจารึกใหม่ได้ ต้องฝากตัวเป็นศิษย์ก่อน', 'webboard.html');
                 } else {
                     document.getElementById('authorName').textContent = savedUser;
-                    document.getElementById('authorRoleBadge').innerHTML = getUserRoleBadge(savedUser);
+                    // 🌟 ใช้ฟังก์ชันดึงยศจาก API D1 แทนที่ของเดิม
+                    document.getElementById('authorRoleBadge').innerHTML = await getRoleBadgeFromAPI(savedUser);
                     document.getElementById('mainContent').style.display = 'block';
                 }
             }, 800);
         });
 
-        // ฟังก์ชันแทรกโค้ดรูปภาพ <img src="..."> อัตโนมัติเมื่อกดปุ่มแนบรูป (แทรกได้หลายครั้งตามต้องการ)
-        // ฟังก์ชันสำหรับคอมพิวเตอร์: กดปุ่มแล้วแทรกโครงสร้าง <img src=""> พร้อมเลื่อนเคอร์เซอร์ไปรอรับลิงก์ด้านใน
-function insertImageTag() {
-    const textarea = document.getElementById('postContent');
-    const startPos = textarea.selectionStart;
-    const endPos = textarea.selectionEnd;
-    const textVal = textarea.value;
+        function insertImageTag() {
+            const textarea = document.getElementById('postContent');
+            const startPos = textarea.selectionStart;
+            const endPos = textarea.selectionEnd;
+            const textVal = textarea.value;
 
-    // โครงสร้างโค้ดที่ต้องการแทรก
-    const imgCode = '<img src="">';
+            const imgCode = '<img src="">';
 
-    // นำโค้ดไปแทรก ณ ตำแหน่งเคอร์เซอร์ปัจจุบัน
-    textarea.value = textVal.substring(0, startPos) + imgCode + textVal.substring(endPos, textVal.length);
-    
-    // ดึงโฟกัสกลับมาที่กล่องข้อความ และเลื่อนเคอร์เซอร์ไปไว้ข้างในเครื่องหมายคำพูด src="" พอดี
-    textarea.focus();
-    const cursorTarget = startPos + 10; // ตำแหน่งอยู่พอดีระหว่างเครื่องหมายคำพูด (src="[วางลิงก์ตรงนี้]")
-    textarea.setSelectionRange(cursorTarget, cursorTarget);
-}
+            textarea.value = textVal.substring(0, startPos) + imgCode + textVal.substring(endPos, textVal.length);
+            
+            textarea.focus();
+            const cursorTarget = startPos + 10; 
+            textarea.setSelectionRange(cursorTarget, cursorTarget);
+        }
 
-        // ฟังก์ชันตรวจสอบความปลอดภัย: อนุญาตเฉพาะโค้ดรูปภาพ <img src="..."> เท่านั้น ห้ามมีแท็ก HTML อื่นหรือลิงก์ภายนอกอื่นๆ
         function validatePostContent(content) {
-            // ค้นหาแท็ก HTML ทุกตัวในข้อความ
             const htmlTags = content.match(/<\/?[a-z][a-z0-9]*\b[^>]*>/gi);
             if (htmlTags) {
                 for (let tag of htmlTags) {
                     const lowerTag = tag.toLowerCase();
-                    // บังคับให้เป็นแท็ก <img> และต้องมีคำว่า src= เท่านั้น
                     if (!lowerTag.startsWith('<img') || !lowerTag.includes('src=')) {
                         return { valid: false, error: '⚠️ อาถรรพ์สะท้อนกลับ!<br>ไม่อนุญาตให้ใช้แท็ก HTML หรือโค้ดอื่นๆ (อนุญาตเฉพาะรูปภาพ <img src="..."> เท่านั้น)' };
                     }
                 }
             }
 
-            // ตรวจสอบลิงก์ภายนอก (URL) ที่อยู่นอกเหนือจาก attribute src ของแท็ก img
             let textWithoutImgs = content.replace(/<img\s+[^>]*src="[^"]*"[^>]*>/gi, '');
             textWithoutImgs = textWithoutImgs.replace(/<img\s+[^>]*src=[^\s>]+[^>]*>/gi, '');
 
@@ -318,7 +313,6 @@ function insertImageTag() {
                 return; 
             }
 
-            // ตรวจสอบความถูกต้องของเนื้อหาตามกฎสำนัก
             const validation = validatePostContent(content);
             if (!validation.valid) {
                 showCustomAlert(validation.error);
@@ -337,12 +331,12 @@ function insertImageTag() {
                 id: Date.now().toString(),
                 category: document.getElementById('postCategory').value,
                 title: title,
-                content: content.replace(/\n/g, '<br>'), // แปลงการเว้นบรรทัดเป็น <br>
+                content: content.replace(/\n/g, '<br>'), 
                 author: author,
                 timestamp: timeStr,
                 views: 0,
                 replies: 0,
-                pinned: false
+                pinned: 0
             };
 
             const result = await ApiManager.createPost(newPost);
