@@ -82,6 +82,46 @@
         .novel-body-text p { margin-bottom: 22px; text-indent: 2.5em; }
         .scene-divider { text-align: center; color: var(--gold-main); margin: 45px 0; font-size: 1.2rem; letter-spacing: 8px; }
 
+        /* 🌟 สไตล์รูปภาพรองรับ Responsive และคลิกขยาย 🌟 */
+        .novel-body-text img {
+            max-width: 100% !important;
+            height: auto !important;
+            display: block;
+            margin: 25px auto;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s ease, opacity 0.2s ease;
+        }
+        .novel-body-text img:hover {
+            opacity: 0.9;
+            transform: scale(1.01);
+        }
+
+        /* 🌟 Modal สำหรับขยายรูปภาพ (Lightbox) 🌟 */
+        .image-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 99999;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            padding: 20px;
+        }
+        .image-modal-overlay.active {
+            display: flex;
+        }
+        .image-modal-content {
+            max-width: 95vw;
+            max-height: 95vh;
+            border-radius: 6px;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+            object-fit: contain;
+            cursor: default;
+        }
+
         /* การจัดรูปแบบกลอน (Poem) */
         .poem-box {
             text-align: center; color: var(--gold-light); margin: 50px auto; 
@@ -110,13 +150,11 @@
 <body>
 
     <div class="main-container">
-        <!-- ลายกนก 4 มุม -->
         <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="corner-decor corner-top-left" alt="">
         <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="corner-decor corner-top-right" alt="">
         <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="corner-decor corner-bottom-left" alt="">
         <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="corner-decor corner-bottom-right" alt="">
 
-        <!-- ส่วนหัวเว็บ -->
         <header>
             <div class="site-title"><img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493028/logo.png" alt="ศิษย์หลวงปู่"></div>
             <nav>
@@ -135,9 +173,8 @@
                 </div>
 
                 <div class="category-block">
-                    <h3 class="section-title">สัตยาสาบาน</h3>
+                    <h3 class="section-title">คัมภีร์นิยายสัตยาสาบาน</h3>
 
-                    <!-- แถบเครื่องมืออ่าน -->
                     <div class="reader-controls">
                         <div class="font-btn-group">
                             <span style="font-size: 0.85rem; color: var(--gold-light);">ปรับขนาดอักษร:</span>
@@ -147,14 +184,12 @@
                         </div>
                     </div>
 
-                    <!-- หัวเรื่อง -->
-                    <h1 class="novel-title-text" id="chapterTitle">สัตยาสาบาน - คืนสู่แดนมนุษย์ สิ้นสุดสัตยาสาบาน</h1>
-                    <div class="novel-chapter-sub" id="chapterSub">สลักเรื่องราวโดย: ศิษย์หลวงปู่</div>
+                    <h1 class="novel-title-text" id="chapterTitle">สัตยาสาบาน - บทส่งท้าย: ภวังค์จิต</h1>
+                    <div class="novel-chapter-sub" id="chapterSub">สลักเรื่องราวโดย: ADMIN</div>
 
-                    <!-- เนื้อหาบทอ่าน -->
                     <div class="novel-body-text" id="novelContent">
-
-                        <img src="https://cdn.readawrite.com/publicassets/16068824/images/8217596525_P2_Ep_5-1.jpg" alt="ฉากเปลี่ยน" class="scene-divider">
+                        
+                        <img src="https://cdn.readawrite.com/publicassets/16068824/images/8217596525_P2_Ep_5-1.jpg" alt="ฉากเปลี่ยน">
 
                         <p>เสียงคลื่นน้ำซัดสาดกระทบฝั่งดังก้องแข่งกับเสียงหอบหายใจของทุกคนบนเรือ เรือหางยาวลำน้อยที่ผ่านพ้นมรสุมแห่งบาดาลค่อยๆ เทียบท่าอย่างทุลักทุเล ณ ลานหน้าองค์พระธาตุกลางน้ำองค์จำลองที่สร้างขึ้นบนฝั่งเมืองหนองคาย บรรยากาศยามค่ำคืนเงียบสงัดจนน่าขนลุก มีเพียงแสงไฟสลัวจากริมทางและแสงจันทร์ที่ส่องกระทบผิวน้ำสีหมึก</p>
                         
@@ -198,9 +233,9 @@
                         
                         <p>พญาตยาคนาคราชไม่ได้มองไปที่ท้องฟ้า แต่ท่านกลับก้าวเดินอย่างเชื่องช้าเข้ามาหาป้ารีและลุงด๊วด ก่อนที่ร่างสูงสง่านั้นจะ ทรุดเข่าลงกับพื้นปูน อย่างหมดมาดกษัตริย์ สองมือหนาที่เคยทรงอำนาจปกครองวังบาดาลอันกว้างใหญ่ พนมขึ้นแนบหว่างอก แล้วก้มลงกราบจรดหน้าผากแทบเท้าของป้ารี แต่ป้ารีรับการกราบของท่านไว้ก่อนที่จะถึงเท้าป้ารี น้ำตาของกษัตริย์ผู้ยิ่งใหญ่ไหลรินลงมากระทบพื้นดินหยดแล้วหยดเล่า เสียงสะอื้นไห้ของบุรุษผู้มีอายุขัยนับพันปีดังก้องลานพระธาตุ มันระงมและแตกร้าวขื่นขมจนฟังแทบไม่เป็นศัพท์</p>
                         
-                        <p><b>"ข้าพเจ้า... ขอสมาลาโทษ..."</b> เสียงทุ้มลึกที่เคยทรงอำนาจ บัดนี้สั่นเครือและเอ่ยขึ้นอย่างยากลำบาก</p>
+                        <p>"ข้าพเจ้า... ขอสมาลาโทษ..." เสียงทุ้มลึกที่เคยทรงอำนาจ บัดนี้สั่นเครือและเอ่ยขึ้นอย่างยากลำบาก</p>
                         
-                        <p><b>"ข้าพเจ้ามิเคยมีจิตคิดร้ายต่อสายเลือดของท่านเลยแม้แต่น้อย เหตุการณ์ที่เรือแทบอับปางและทำให้แม่หญิงผู้นี้ต้องหลั่งเลือด เป็นเพราะความโกรธาของเหล่าบริวารข้าพเจ้าที่มิอาจยอมรับการสูญเสียครั้งนี้ได้... ข้าผู้เป็นนาย มิอาจควบคุมพวกเขาได้ทันกาล จึงขอรับผิดชอบและกราบขอขมาต่อหัวใจของคนเป็นแม่...และกราบขอบพระคุณที่ท่านอนุญาตให้ข้าได้มาร่ำลาเป็นครั้งสุดท้าย ขอท่านโปรดอโหสิกรรมให้แก่ข้าพเจ้าและบริวารด้วยเถิด"</b></p>
+                        <p>"ข้าพเจ้ามิเคยมีจิตคิดร้ายต่อสายเลือดของท่านเลยแม้แต่น้อย เหตุการณ์ที่เรือแทบอับปางและทำให้แม่หญิงผู้นี้ต้องหลั่งเลือด เป็นเพราะความโกรธาของเหล่าบริวารข้าพเจ้าที่มิอาจยอมรับการสูญเสียครั้งนี้ได้... ข้าผู้เป็นนาย มิอาจควบคุมพวกเขาได้ทันกาล จึงขอรับผิดชอบและกราบขอขมาต่อหัวใจของคนเป็นแม่...และกราบขอบพระคุณที่ท่านอนุญาตให้ข้าได้มาร่ำลาเป็นครั้งสุดท้าย ขอท่านโปรดอโหสิกรรมให้แก่ข้าพเจ้าและบริวารด้วยเถิด"</p>
                         
                         <p>ป้ารียืนนิ่งงันราวกับถูกมนต์สะกด น้ำตาของคนเป็นแม่ไหลพรากอาบสองแก้มเมื่อเห็นความถ่อมตนของสิ่งศักดิ์สิทธิ์ตรงหน้า ท่านเป็นถึงกษัตริย์บาดาล มีฤทธานุภาพล้นฟ้า สามารถบันดาลลมฝนหรือจมเมืองทั้งเมืองได้ในพริบตา แต่กลับยอมคุกเข่า ทิ้งศักดิ์ศรีทั้งหมดเพื่อหลั่งน้ำตาขอโทษมนุษย์ธรรมดา เพียงเพราะความห่วงใยที่แม่มีต่อลูกสาว</p>
                         
@@ -358,11 +393,11 @@
                         <p style="text-align: center; font-style: italic; color: var(--gold-light); margin-top: 40px;">"หากคราหน้ามีโอกาส... กลับมาเยี่ยมพี่บ้าง ธารนภาเทวีของพี่... พี่จักอยู่ตรงนี้นับอีกนานนับพันปี... และบำเพ็ญเพียรตบะต่อไป... โดยที่ไร้เจ้าเคียงคู่ตลอดกาล..."</p>
                         
                         <p style="text-align: center; color: var(--gold-main); font-weight: bold; margin-top: 60px; letter-spacing: 2px;">♪ ภวังค์จิต ♪</p>
-                        
+
                         <div style="display: flex; justify-content: center; width: 100%;">
     <iframe width="720" height="405" src="https://www.youtube.com/embed/YHIaY2JYmh0?si=1IeaX9bCnhyxIwD7" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 </div>
-                        <!-- ปุ่มเชิญชวนไปสนทนาต่อที่ลานเสวนาแทนระบบคอมเมนต์ -->
+                        
                         <div style="text-align: center; margin-top: 60px; border-top: 1px dashed rgba(138, 99, 21, 0.3); padding-top: 40px;">
                             <p style="color: var(--text-muted); font-family: 'Prompt', sans-serif; text-indent: 0; margin-bottom: 20px;">จบบทส่งท้าย... ร่วมสนทนาตีความเรื่องราวได้ที่ลานเสวนา</p>
                             <a href="webboard.html" class="btn-primary">เข้าสู่ลานเสวนา</a>
@@ -375,6 +410,10 @@
         <footer class="site-footer">
             <p>© 2026 SitLuangPu</p>
         </footer>
+    </div>
+
+    <div class="image-modal-overlay" id="imageModal" onclick="closeImageModal()">
+        <img class="image-modal-content" id="modalImage" alt="ขยายรูปภาพ">
     </div>
 
     <script>
@@ -390,6 +429,24 @@
         function resetFontSize() {
             currentFontSizeRem = 1.1;
             document.getElementById('novelContent').style.fontSize = '1.1rem';
+        }
+
+        // 🌟 ฟังก์ชันจัดการคลิกขยายรูปภาพ 🌟
+        document.addEventListener('DOMContentLoaded', () => {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            const novelImages = document.querySelectorAll('.novel-body-text img');
+
+            novelImages.forEach(img => {
+                img.addEventListener('click', () => {
+                    modal.classList.add('active');
+                    modalImg.src = img.src;
+                });
+            });
+        });
+
+        function closeImageModal() {
+            document.getElementById('imageModal').classList.remove('active');
         }
     </script>
 </body>
