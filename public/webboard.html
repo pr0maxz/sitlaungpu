@@ -228,7 +228,7 @@
             BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
         };
 
-        // 📌 ฟังก์ชันตรวจสอบสถานะปักหมุดแบบปลอดภัย (รองรับทั้ง boolean, number, string)
+        // 📌 ฟังก์ชันตรวจสอบสถานะปักหมุดแบบปลอดภัย
         function checkIsPinned(val) {
             return val === true || val === 1 || val === '1' || val === 'true';
         }
@@ -255,7 +255,7 @@
                 const user = usersDB.find(u => u.username === username);
                 if (user) {
                     let role = String(user.role || '5');
-                    let rank = user.rank_name || getRoleTitleName(role); // 🌟 ดึงค่า rank หรือแปลงอัตโนมัติ
+                    let rank = getRoleTitleName(role); // บังคับดึงชื่อยศตามระดับขั้นที่ถูกต้อง
                     if (role === '1') {
                         return '<span class="role-badge role-1">ปรมัตถ์</span>';
                     }
@@ -280,10 +280,9 @@
             }
         };
 
-        // 🌟 ตัวแปรเก็บข้อมูลสำหรับระบบแบ่งหน้า (Pagination)
         let globalPostsCat1 = [];
         let globalPostsCat2 = [];
-        const POSTS_PER_PAGE = 10; // กำหนดโชว์หน้าละ 10 กระทู้
+        const POSTS_PER_PAGE = 10; 
 
         async function loadAndRenderPosts(searchQuery = '') {
             const cat1Container = document.getElementById('dynamic-category-1');
@@ -292,7 +291,6 @@
             cat1Container.innerHTML = '<div class="loading-text">กำลังอัญเชิญจารึก...</div>';
             cat2Container.innerHTML = '<div class="loading-text">กำลังอัญเชิญจารึก...</div>';
             
-            // ล้างหน้าต่างปุ่ม Pagination ก่อน
             document.getElementById('pagination-cat-1').innerHTML = '';
             document.getElementById('pagination-cat-2').innerHTML = '';
 
@@ -319,7 +317,6 @@
                 return;
             }
 
-            // 🌟 จัดเรียงโดยให้กระทู้ที่ปักหมุดขึ้นก่อนเสมอ (ใช้ checkIsPinned ตรวจสอบ)
             posts.sort((a, b) => {
                 const aPin = checkIsPinned(a.pinned) ? 1 : 0;
                 const bPin = checkIsPinned(b.pinned) ? 1 : 0;
@@ -327,16 +324,13 @@
                 return parseInt(b.id) - parseInt(a.id); 
             });
 
-            // แยกกระทู้ตามหมวดหมู่เพื่อส่งให้ระบบแบ่งหน้า
             globalPostsCat1 = posts.filter(p => p.category === "1");
             globalPostsCat2 = posts.filter(p => p.category === "2");
 
-            // สั่งเรนเดอร์หมวดหมู่ทั้งคู่ในหน้าที่ 1 ทันที
             renderCategoryPage(1, 1);
             renderCategoryPage(2, 1);
         }
 
-        // 🌟 ฟังก์ชันจัดการเรนเดอร์ข้อมูลแยกตามหน้า 🌟
         async function renderCategoryPage(categoryId, page) {
             const container = document.getElementById(`dynamic-category-${categoryId}`);
             const posts = categoryId === 1 ? globalPostsCat1 : globalPostsCat2;
@@ -379,11 +373,9 @@
             renderPaginationControls(categoryId, page, totalPages);
         }
 
-        // 🌟 ฟังก์ชันสร้างปุ่มตัวเลขแบ่งหน้า (Pagination Buttons) 🌟
         function renderPaginationControls(categoryId, currentPage, totalPages) {
             const paginationContainer = document.getElementById(`pagination-cat-${categoryId}`);
             
-            // ถ้ามีแค่หน้าเดียว ไม่ต้องแสดงปุ่ม
             if (totalPages <= 1) {
                 paginationContainer.innerHTML = '';
                 return;
@@ -391,12 +383,10 @@
 
             let html = '<div class="pagination">';
             
-            // ปุ่ม ย้อนกลับ
             html += `<button class="page-btn" ${currentPage === 1 ? 'disabled' : ''} onclick="renderCategoryPage(${categoryId}, ${currentPage - 1})">« ย้อนกลับ</button>`;
             
             let lastPage = 0;
             for (let i = 1; i <= totalPages; i++) {
-                // โชว์แค่หน้าแรก, หน้าสุดท้าย, และหน้าที่ใกล้เคียงกับหน้าปัจจุบัน (โชว์ ... ถ้าหน้าเยอะ)
                 if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
                     if (lastPage && i - lastPage > 1) {
                         html += `<span style="color: var(--gold-dark); align-self: center;">...</span>`;
@@ -406,7 +396,6 @@
                 }
             }
             
-            // ปุ่ม ถัดไป
             html += `<button class="page-btn" ${currentPage === totalPages ? 'disabled' : ''} onclick="renderCategoryPage(${categoryId}, ${currentPage + 1})">ถัดไป »</button>`;
             html += '</div>';
 
@@ -462,7 +451,7 @@
                         const currentUser = usersDB.find(u => u.username === savedUser);
 
                         if (currentUser) {
-                            let roleTitle = currentUser.rank_name || getRoleTitleName(currentUser.role);
+                            let roleTitle = getRoleTitleName(currentUser.role); // บังคับดึงชื่อยศตามระดับขั้นที่ถูกต้อง
                             let roleClass = 'role-' + (currentUser.role || '5');
                             
                             document.getElementById('displayUserBadge').innerHTML = 
