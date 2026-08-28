@@ -33,11 +33,6 @@
         .post-body { line-height: 1.8; color: #e2d4c3; font-size: 1.05rem; margin-bottom: 30px; word-wrap: break-word; overflow-wrap: break-word; } 
         .post-body img, .comment-body img { max-width: 100% !important; height: auto !important; box-sizing: border-box; }
 
-        .btn-like { background: rgba(212, 175, 55, 0.1); border: 1px solid var(--gold-dark); color: var(--gold-light); padding: 5px 15px; border-radius: 20px; font-family: 'Prompt', sans-serif; font-size: 0.9rem; cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
-        .btn-like:hover, .btn-like.liked { background: var(--gold-main); color: #150a03; box-shadow: 0 0 10px rgba(212,175,55,0.4); }
-        .btn-like-comment { background: transparent; border: 1px solid var(--gold-dark); color: var(--gold-light); padding: 3px 10px; border-radius: 12px; font-family: 'Prompt', sans-serif; font-size: 0.75rem; cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; gap: 4px; }
-        .btn-like-comment:hover, .btn-like-comment.liked { background: var(--gold-main); color: #150a03; }
-
         .comment-section-title { color: var(--gold-main); font-size: 1.3rem; margin-bottom: 20px; border-left: 4px solid var(--gold-main); padding-left: 10px; }
         .comment-card { background: rgba(10, 5, 2, 0.6); border: 1px solid rgba(138, 99, 21, 0.2); border-radius: 8px; padding: 20px; margin-bottom: 15px; width: 100%; box-sizing: border-box; word-break: break-word; } 
         .comment-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 5px; } 
@@ -131,12 +126,6 @@
                                 </div>
                                 <div class="post-time" id="dyn-time">โพสต์เมื่อ: -</div>
                             </div>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 15px;">
-                            <div style="color: var(--text-muted); font-size: 0.9rem;" id="dyn-views">เข้าชม - ครั้ง</div>
-                            <button class="btn-like" id="btnLikePost" onclick="likePost()">
-                                ❤️ <span id="dyn-likes">0</span>
-                            </button>
                         </div>
                     </div>
 
@@ -246,13 +235,12 @@
 
         const ApiManager = {
             async getPostById(id) {
-    try {
-        // 🌟 ยิงไปที่ /posts/:id ตรงๆ เพื่อสะกิดให้หลังบ้าน +1 ยอดวิว
-        const response = await fetch(`${API_CONFIG.BASE_URL}/posts/${id}`);
-        if (!response.ok) return null;
-        return await response.json();
-    } catch (error) { return null; }
-},
+                try {
+                    const response = await fetch(`${API_CONFIG.BASE_URL}/posts/${id}`);
+                    if (!response.ok) return null;
+                    return await response.json();
+                } catch (error) { return null; }
+            },
             async getComments(postId) {
                 try {
                     const response = await fetch(`${API_CONFIG.BASE_URL}/comments`);
@@ -282,20 +270,6 @@
                     if (!response.ok) return { success: false };
                     return await response.json();
                 } catch (error) { return { success: false }; }
-            },
-            async likePost(postId) {
-                try {
-                    const res = await fetch(`${API_CONFIG.BASE_URL}/posts/${postId}/like`, { method: 'POST' });
-                    if (!res.ok) return { success: false };
-                    return await res.json();
-                } catch(e) { return { success: false }; }
-            },
-            async likeComment(commentId) {
-                try {
-                    const res = await fetch(`${API_CONFIG.BASE_URL}/comments/${commentId}/like`, { method: 'POST' });
-                    if (!res.ok) return { success: false };
-                    return await res.json();
-                } catch(e) { return { success: false }; }
             }
         };
 
@@ -360,8 +334,6 @@
             } else {
                 notis.forEach(n => {
                     let actionText = '';
-                    if (n.action_type === 'like_post') actionText = 'รู้สึกถูกใจจารึกของคุณ';
-                    if (n.action_type === 'like_comment') actionText = 'รู้สึกถูกใจความคิดเห็นของคุณ';
                     if (n.action_type === 'comment') actionText = 'ได้ร่วมแสดงความเห็นในจารึกของคุณ';
                     if (n.action_type === 'reply') actionText = 'ได้ตอบกลับความคิดเห็นของคุณ';
                     
@@ -475,8 +447,6 @@
                 const badge = await getRoleBadgeFromAPI(c.author);
                 let cleanMainContent = c.content.replace(/^\[REPLY_TO:[^\]]+\](?:\[AUTHOR:[^\]]+\])?/, '');
 
-                // ส่ง commentAuthor ไปด้วยเพื่อดึงไปแจ้งเตือน
-                let likeBtn = `<button class="btn-like-comment" id="btnLikeComment-${c.id}" onclick="likeComment('${c.id}', '${c.author}')">❤️ <span id="comment-likes-${c.id}">${c.likes || 0}</span></button>`;
                 let adminControls = isUserAdmin ? `<button type="button" class="btn-delete-comment" onclick="deleteCommentAction('${c.id}', '${postId}')">🗑️ ทำลาย</button>` : '';
                 let replyBtn = (userType !== 'guest') ? `<button type="button" class="btn-reply-comment" onclick="toggleReplyBox('${c.id}')">💬 ตอบกลับ</button>` : '';
 
@@ -491,8 +461,6 @@
                     repliesHtml += `<div class="replies-container">`; 
                     for (const r of childReplies) {
                         const rBadge = await getRoleBadgeFromAPI(r.author);
-                        // ส่ง author ไปด้วย
-                        let rLikeBtn = `<button class="btn-like-comment" id="btnLikeComment-${r.id}" onclick="likeComment('${r.id}', '${r.author}')">❤️ <span id="comment-likes-${r.id}">${r.likes || 0}</span></button>`;
                         let rAdminControls = isUserAdmin ? `<button type="button" class="btn-delete-comment" onclick="deleteCommentAction('${r.id}', '${postId}')">🗑️ ทำลาย</button>` : '';
                         
                         let authorMatch = r.content.match(/\[AUTHOR:([^\]]+)\]/);
@@ -513,7 +481,6 @@
                                 </div>
                                 <div class="comment-body">${cleanReplyContent}</div>
                                 <div class="comment-actions">
-                                    ${rLikeBtn}
                                     ${rAdminControls}
                                 </div>
                             </div>
@@ -545,7 +512,6 @@
                         </div>
                         <div class="comment-body">${cleanMainContent}</div>
                         <div class="comment-actions">
-                            ${likeBtn}
                             ${replyBtn}
                             ${adminControls}
                         </div>
@@ -553,43 +519,6 @@
                     </div>
                     ${repliesHtml}
                 `;
-            }
-        }
-
-        async function likePost() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const postId = urlParams.get('id');
-            const btn = document.getElementById('btnLikePost');
-            const counter = document.getElementById('dyn-likes');
-            
-            if (btn.classList.contains('liked')) return;
-            const currentLikes = parseInt(counter.innerText) || 0;
-            counter.innerText = currentLikes + 1; 
-            btn.classList.add('liked'); 
-
-            await sendNotification(currentPostAuthor, 'like_post', postId); // 🔔 ยิงแจ้งเตือน
-
-            const result = await ApiManager.likePost(postId);
-            if (result && result.success !== false && result.likes !== undefined) {
-                counter.innerText = result.likes;
-            }
-        }
-
-        async function likeComment(commentId, commentAuthor) {
-            const btn = document.getElementById(`btnLikeComment-${commentId}`);
-            const counter = document.getElementById(`comment-likes-${commentId}`);
-            
-            if (btn.classList.contains('liked')) return;
-            const currentLikes = parseInt(counter.innerText) || 0;
-            counter.innerText = currentLikes + 1;
-            btn.classList.add('liked');
-
-            const urlParams = new URLSearchParams(window.location.search);
-            await sendNotification(commentAuthor, 'like_comment', urlParams.get('id')); // 🔔 ยิงแจ้งเตือน
-
-            const result = await ApiManager.likeComment(commentId);
-            if (result && result.success !== false && result.likes !== undefined) {
-                counter.innerText = result.likes;
             }
         }
 
@@ -737,8 +666,6 @@
             document.getElementById('dyn-author').textContent = postData.author;
             document.getElementById('dyn-author-badge').innerHTML = await getRoleBadgeFromAPI(postData.author);
             document.getElementById('dyn-time').textContent = 'โพสต์เมื่อ: ' + postData.timestamp;
-            document.getElementById('dyn-views').textContent = 'เข้าชม ' + (postData.views || 0) + ' ครั้ง';
-            document.getElementById('dyn-likes').textContent = postData.likes || 0;
 
             loadComments(postId);
 
