@@ -233,6 +233,17 @@
             return val === true || val === 1 || val === '1' || val === 'true';
         }
 
+        // 📌 ฟังก์ชันแปลตัวเลขระดับขั้นเป็นชื่อยศ
+        function getRoleTitleName(role) {
+            switch(String(role)) {
+                case '1': return 'ปรมัตถ์';
+                case '2': return 'ปรมาจารย์';
+                case '3': return 'ผู้สำเร็จวิชา';
+                case '4': return 'ขั้นปฐมภูมิ';
+                default: return 'เด็กวัด';
+            }
+        }
+
         async function getRoleBadgeFromAPI(username) {
             if (!username) return '<span class="role-badge role-5">เด็กวัด</span>';
             if (username.toUpperCase() === 'ADMIN') {
@@ -244,7 +255,7 @@
                 const user = usersDB.find(u => u.username === username);
                 if (user) {
                     let role = String(user.role || '5');
-                    let rank = user.rank_name || 'เด็กวัด';
+                    let rank = user.rank_name || getRoleTitleName(role); // 🌟 ดึงค่า rank หรือแปลงอัตโนมัติ
                     if (role === '1') {
                         return '<span class="role-badge role-1">ปรมัตถ์</span>';
                     }
