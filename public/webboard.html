@@ -55,6 +55,13 @@
         .site-footer { text-align: center; margin-top: 50px; padding-top: 20px; border-top: 1px dashed rgba(138, 99, 21, 0.3); }
         .site-footer p { color: var(--text-muted); font-family: 'Sarabun', sans-serif; font-size: 0.85rem; letter-spacing: 0.5px; margin: 0; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9); }
 
+        /* 🌟 ระบบแบ่งหน้า (Pagination) CSS */
+        .pagination { display: flex; justify-content: center; align-items: center; gap: 6px; margin-top: 25px; padding-bottom: 25px; flex-wrap: wrap; }
+        .page-btn { background: rgba(0,0,0,0.5); border: 1px solid rgba(138, 99, 21, 0.5); color: var(--gold-light); padding: 6px 14px; border-radius: 6px; cursor: pointer; transition: all 0.3s; font-family: 'Prompt', sans-serif; font-size: 0.9rem; min-width: 35px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .page-btn:hover:not(:disabled) { background: rgba(212,175,55,0.15); border-color: var(--gold-main); box-shadow: 0 0 10px rgba(212,175,55,0.3); color: #fff; }
+        .page-btn.active { background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; font-weight: bold; border-color: var(--gold-light); box-shadow: 0 0 12px rgba(212,175,55,0.5); }
+        .page-btn:disabled { opacity: 0.4; cursor: not-allowed; border-color: rgba(138, 99, 21, 0.2); }
+
         .sect-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(7, 4, 2, 0.9); backdrop-filter: blur(8px); z-index: 1000; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; } .sect-modal-overlay.active { display: flex; opacity: 1; }
         .sect-modal-content { position: relative; background: linear-gradient(135deg, #1a120b, #0a0603); border: 1px solid var(--gold-main); border-radius: 12px; width: 90%; max-width: 450px; padding: 40px 30px 60px 30px; box-shadow: 0 15px 40px rgba(0,0,0,0.9), inset 0 0 20px rgba(212,175,55,0.1); transform: translateY(-20px); transition: transform 0.3s ease; } .sect-modal-overlay.active .sect-modal-content { transform: translateY(0); }
         .modal-corner { position: absolute; width: 60px; pointer-events: none; opacity: 0.8; } .mc-top-left { top: 12px; left: 12px; transform: scaleX(-1); } .mc-top-right { top: 12px; right: 12px; } .mc-bottom-left { bottom: 12px; left: 12px; transform: scaleX(-1) scaleY(-1); } .mc-bottom-right { bottom: 12px; right: 12px; transform: scaleY(-1); }
@@ -93,11 +100,13 @@
                 <div class="category-block">
                     <h3 class="section-title">นิยายสัตยาสาบาน</h3>
                     <div id="dynamic-category-1"><div class="loading-text">กำลังอัญเชิญจารึก...</div></div>
+                    <div id="pagination-cat-1"></div>
                 </div>
 
                 <div class="category-block">
                     <h3 class="section-title">คุยกับศิษย์หลวงปู่</h3>
                     <div id="dynamic-category-2"><div class="loading-text">กำลังอัญเชิญจารึก...</div></div>
+                    <div id="pagination-cat-2"></div>
                 </div>
             </div>
 
@@ -127,8 +136,8 @@
                 <div class="widget">
                     <h4 class="section-title">เมนูหลัก</h4>
                     <div class="search-wrapper">
-                        <input type="text" class="search-input" placeholder="พิมพ์คำค้นหา...">
-                        <button class="search-btn">ค้นหา</button>
+                        <input type="text" class="search-input" id="searchInputField" placeholder="พิมพ์คำค้นหา...">
+                        <button class="search-btn" id="searchBtnSubmit">ค้นหา</button>
                     </div>
                     <div>
                         <button onclick="checkAccessAndGo('create_post.html')" class="btn-primary">ตั้งกระทู้ใหม่</button>
@@ -142,7 +151,6 @@
         </footer>
     </div>
 
-    <!-- Modals -->
     <div class="sect-modal-overlay" id="registerModal">
         <div class="sect-modal-content">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-left" alt="">
@@ -270,18 +278,31 @@
                         const response = await fetch(`${API_CONFIG.BASE_URL}/posts`);
                         if (!response.ok) return [];
                         return await response.json();
-                    } catch (error) { return []; }
+                    } catch (error) { 
+                        return []; 
+                    }
                 }
                 return [];
             }
         };
 
+        // 🌟 ตัวแปรเก็บข้อมูลสำหรับระบบแบ่งหน้า (Pagination)
+        let globalPostsCat1 = [];
+        let globalPostsCat2 = [];
+        const POSTS_PER_PAGE = 10; // กำหนดโชว์หน้าละ 10 กระทู้
+
         async function loadAndRenderPosts(searchQuery = '') {
             const cat1Container = document.getElementById('dynamic-category-1');
             const cat2Container = document.getElementById('dynamic-category-2');
 
+            cat1Container.innerHTML = '<div class="loading-text">กำลังอัญเชิญจารึก...</div>';
+            cat2Container.innerHTML = '<div class="loading-text">กำลังอัญเชิญจารึก...</div>';
+            
+            // ล้างหน้าต่างปุ่ม Pagination ก่อน
+            document.getElementById('pagination-cat-1').innerHTML = '';
+            document.getElementById('pagination-cat-2').innerHTML = '';
+
             let posts = await ApiManager.fetchPosts();
-            cat1Container.innerHTML = ''; cat2Container.innerHTML = '';
 
             if (!posts || posts.length === 0) {
                 cat1Container.innerHTML = '<div style="padding: 20px; color: var(--gold-dark); text-align:center;">ยังไม่มีจารึกในหมวดนี้</div>';
@@ -304,13 +325,44 @@
                 return;
             }
 
+            // เรียงลำดับ ปักหมุดขึ้นก่อน และตามด้วย ID ใหม่ไปเก่า
             posts.sort((a, b) => {
                 if (a.pinned && !b.pinned) return -1;
                 if (!a.pinned && b.pinned) return 1;
-                return b.id - a.id; 
+                return parseInt(b.id) - parseInt(a.id); 
             });
 
-            for (let post of posts) {
+            // แยกกระทู้ตามหมวดหมู่เพื่อส่งให้ระบบแบ่งหน้า
+            globalPostsCat1 = posts.filter(p => p.category === "1");
+            globalPostsCat2 = posts.filter(p => p.category === "2");
+
+            // สั่งเรนเดอร์หมวดหมู่ทั้งคู่ในหน้าที่ 1 ทันที
+            renderCategoryPage(1, 1);
+            renderCategoryPage(2, 1);
+        }
+
+        // 🌟 ฟังก์ชันจัดการเรนเดอร์ข้อมูลแยกตามหน้า 🌟
+        async function renderCategoryPage(categoryId, page) {
+            const container = document.getElementById(`dynamic-category-${categoryId}`);
+            const posts = categoryId === 1 ? globalPostsCat1 : globalPostsCat2;
+            
+            if (posts.length === 0) {
+                container.innerHTML = '<div style="padding: 20px; color: var(--gold-dark); text-align:center;">ยังไม่มีจารึกในหมวดนี้</div>';
+                document.getElementById(`pagination-cat-${categoryId}`).innerHTML = '';
+                return;
+            }
+
+            const totalPages = Math.ceil(posts.length / POSTS_PER_PAGE);
+            if (page < 1) page = 1;
+            if (page > totalPages) page = totalPages;
+
+            const startIndex = (page - 1) * POSTS_PER_PAGE;
+            const endIndex = startIndex + POSTS_PER_PAGE;
+            const postsToShow = posts.slice(startIndex, endIndex);
+
+            container.innerHTML = '';
+
+            for (let post of postsToShow) {
                 const pinTag = post.pinned ? '<span class="wb-tag wb-tag-pin">📌 ปักหมุด</span> ' : '';
                 const authorBadge = await getRoleBadgeFromAPI(post.author);
 
@@ -326,21 +378,53 @@
                         </div>
                     </div>
                 `;
-                if (post.category === "1") cat1Container.innerHTML += postHTML;
-                else if (post.category === "2") cat2Container.innerHTML += postHTML;
+                container.innerHTML += postHTML;
             }
 
-            if(cat1Container.innerHTML === '') cat1Container.innerHTML = '<div style="padding: 20px; color: var(--gold-dark); text-align:center;">ยังไม่มีจารึกในหมวดนี้</div>';
-            if(cat2Container.innerHTML === '') cat2Container.innerHTML = '<div style="padding: 20px; color: var(--gold-dark); text-align:center;">ยังไม่มีจารึกในหมวดนี้</div>';
+            renderPaginationControls(categoryId, page, totalPages);
+        }
+
+        // 🌟 ฟังก์ชันสร้างปุ่มตัวเลขแบ่งหน้า (Pagination Buttons) 🌟
+        function renderPaginationControls(categoryId, currentPage, totalPages) {
+            const paginationContainer = document.getElementById(`pagination-cat-${categoryId}`);
+            
+            // ถ้ามีแค่หน้าเดียว ไม่ต้องแสดงปุ่ม
+            if (totalPages <= 1) {
+                paginationContainer.innerHTML = '';
+                return;
+            }
+
+            let html = '<div class="pagination">';
+            
+            // ปุ่ม ย้อนกลับ
+            html += `<button class="page-btn" ${currentPage === 1 ? 'disabled' : ''} onclick="renderCategoryPage(${categoryId}, ${currentPage - 1})">« ย้อนกลับ</button>`;
+            
+            let lastPage = 0;
+            for (let i = 1; i <= totalPages; i++) {
+                // โชว์แค่หน้าแรก, หน้าสุดท้าย, และหน้าที่ใกล้เคียงกับหน้าปัจจุบัน (โชว์ ... ถ้าหน้าเยอะ)
+                if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                    if (lastPage && i - lastPage > 1) {
+                        html += `<span style="color: var(--gold-dark); align-self: center;">...</span>`;
+                    }
+                    html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="renderCategoryPage(${categoryId}, ${i})">${i}</button>`;
+                    lastPage = i;
+                }
+            }
+            
+            // ปุ่ม ถัดไป
+            html += `<button class="page-btn" ${currentPage === totalPages ? 'disabled' : ''} onclick="renderCategoryPage(${categoryId}, ${currentPage + 1})">ถัดไป »</button>`;
+            html += '</div>';
+
+            paginationContainer.innerHTML = html;
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            checkMemberSession(); // ตรวจสอบอายุ Session 24 ชม.
+            checkMemberSession(); 
             loadAndRenderPosts();
             checkUserLoginStatus();
 
-            const searchInput = document.querySelector('.search-input');
-            const searchBtn = document.querySelector('.search-btn');
+            const searchInput = document.getElementById('searchInputField');
+            const searchBtn = document.getElementById('searchBtnSubmit');
 
             if (searchBtn && searchInput) {
                 searchBtn.addEventListener('click', () => {
@@ -522,7 +606,7 @@
             
             localStorage.setItem('siy_username', usernameInput);
             localStorage.setItem('siy_usertype', 'member');
-            localStorage.setItem('siy_login_timestamp', Date.now().toString()); // บันทึกเวลาเริ่มนับ 24 ชม.
+            localStorage.setItem('siy_login_timestamp', Date.now().toString()); 
             closeRegisterModal(); 
             checkUserLoginStatus();
         }
@@ -531,7 +615,7 @@
             const guestName = `ผู้ไม่ประสงค์ออกนาม#${Math.floor(1000 + Math.random() * 9000)}`;
             localStorage.setItem('siy_username', guestName);
             localStorage.setItem('siy_usertype', 'guest');
-            localStorage.setItem('siy_login_timestamp', Date.now().toString()); // บันทึกเวลาเริ่มนับ 24 ชม.
+            localStorage.setItem('siy_login_timestamp', Date.now().toString());
             checkUserLoginStatus();
             showCustomAlert('ท่านได้เข้าสู่ลานเสวนาในฐานะวิญญาณเร่ร่อน: ' + guestName);
         }

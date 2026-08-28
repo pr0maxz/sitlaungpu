@@ -155,6 +155,24 @@ app.delete('/api/posts/:id', async (c) => {
   return c.json({ success: true })
 })
 
+// 🌟 [เพิ่มใหม่] กดไลก์กระทู้
+app.post('/api/posts/:postId/like', async (c) => {
+  const postId = c.req.param('postId')
+  try {
+    await c.env.DB.prepare("UPDATE posts SET likes = COALESCE(likes, 0) + 1 WHERE id = ?").bind(postId).run()
+    const post: any = await c.env.DB.prepare("SELECT likes FROM posts WHERE id = ?").bind(postId).first()
+    return c.json({ success: true, likes: post?.likes || 0 })
+  } catch (e: any) {
+    return c.json({ success: false, error: e.message }, 500)
+  }
+})
+
+// 🌟 [เพิ่มใหม่] ดึงคอมเมนต์ทั้งหมดรวดเดียว (ใช้สำหรับหน้า Webboard ที่อัปเกรดแล้ว)
+app.get('/api/comments', async (c) => {
+  const { results } = await c.env.DB.prepare("SELECT * FROM comments ORDER BY id ASC").all()
+  return c.json(results)
+})
+
 app.get('/api/posts/:postId/comments', async (c) => {
   const postId = c.req.param('postId')
   const { results } = await c.env.DB.prepare("SELECT * FROM comments WHERE post_id = ? ORDER BY id ASC").bind(postId).all()
@@ -181,7 +199,21 @@ app.delete('/api/comments/:id', async (c) => {
   return c.json({ success: true })
 })
 
-// CMS Index
+// 🌟 [เพิ่มใหม่] กดไลก์คอมเมนต์
+app.post('/api/comments/:commentId/like', async (c) => {
+  const commentId = c.req.param('commentId')
+  try {
+    await c.env.DB.prepare("UPDATE comments SET likes = COALESCE(likes, 0) + 1 WHERE id = ?").bind(commentId).run()
+    const comment: any = await c.env.DB.prepare("SELECT likes FROM comments WHERE id = ?").bind(commentId).first()
+    return c.json({ success: true, likes: comment?.likes || 0 })
+  } catch (e: any) {
+    return c.json({ success: false, error: e.message }, 500)
+  }
+})
+
+// ==========================================
+// 🏠 CMS Index
+// ==========================================
 app.get('/api/cms', async (c) => {
   const cms = await c.env.DB.prepare("SELECT * FROM cms WHERE id = 1").first()
   return c.json(cms || {})
@@ -196,6 +228,52 @@ app.post('/api/cms', async (c) => {
     body.heroSubtitle, body.heroDesc, body.heroImg, body.heroBtnText, body.heroBtnUrl
   ).run()
   return c.json({ success: true })
+})
+
+// ==========================================
+// 🔔 ระบบกระแสจิต (Notifications)
+// ==========================================
+app.get('/api/notifications/:username', async (c) => {
+  const username = c.req.param('username')
+  try {
+    const { results } = await c.env.DB.prepare(
+      "SELECT * FROM notifications WHERE recipient = ? ORDER BY id DESC LIMIT 30"
+    ).bind(username).all()
+    return c.json(results || [])
+  } catch (e) {
+    return c.json([]) // ส่ง Array ว่างกลับไปถ้าตารางยังไม่พร้อมเพื่อกันเว็บพัง
+  }
+})
+
+app.post('/api/notifications', async (c) => {
+  const body = await c.req.json()
+  const { id, recipient, actor, action_type, post_id, timestamp } = body
+  
+  // ป้องกันไม่ให้ส่งแจ้งเตือนหาตัวเอง
+  if (recipient === actor) {
+      return c.json({ success: true, ignored: true })
+  }
+
+  try {
+      await c.env.DB.prepare(
+        "INSERT INTO notifications (id, recipient, actor, action_type, post_id, is_read, timestamp) VALUES (?, ?, ?, ?, ?, 0, ?)"
+      ).bind(id, recipient, actor, action_type, post_id, timestamp).run()
+      return c.json({ success: true })
+  } catch (error: any) {
+      return c.json({ success: false, error: error.message }, 500)
+  }
+})
+
+app.put('/api/notifications/:id/read', async (c) => {
+  const id = c.req.param('id')
+  try {
+      await c.env.DB.prepare(
+        "UPDATE notifications SET is_read = 1 WHERE id = ?"
+      ).bind(id).run()
+      return c.json({ success: true })
+  } catch (error: any) {
+      return c.json({ success: false, error: error.message }, 500)
+  }
 })
 
 export default app

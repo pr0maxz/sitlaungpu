@@ -33,14 +33,11 @@
         .post-body { line-height: 1.8; color: #e2d4c3; font-size: 1.05rem; margin-bottom: 30px; word-wrap: break-word; overflow-wrap: break-word; } 
         .post-body img, .comment-body img { max-width: 100% !important; height: auto !important; box-sizing: border-box; }
 
-        /* 🌟 ปุ่มกดหัวใจ (Like) */
         .btn-like { background: rgba(212, 175, 55, 0.1); border: 1px solid var(--gold-dark); color: var(--gold-light); padding: 5px 15px; border-radius: 20px; font-family: 'Prompt', sans-serif; font-size: 0.9rem; cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
         .btn-like:hover, .btn-like.liked { background: var(--gold-main); color: #150a03; box-shadow: 0 0 10px rgba(212,175,55,0.4); }
-        
         .btn-like-comment { background: transparent; border: 1px solid var(--gold-dark); color: var(--gold-light); padding: 3px 10px; border-radius: 12px; font-family: 'Prompt', sans-serif; font-size: 0.75rem; cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; gap: 4px; }
         .btn-like-comment:hover, .btn-like-comment.liked { background: var(--gold-main); color: #150a03; }
 
-        /* 🌟 สไตล์คอมเมนต์หลัก */
         .comment-section-title { color: var(--gold-main); font-size: 1.3rem; margin-bottom: 20px; border-left: 4px solid var(--gold-main); padding-left: 10px; }
         .comment-card { background: rgba(10, 5, 2, 0.6); border: 1px solid rgba(138, 99, 21, 0.2); border-radius: 8px; padding: 20px; margin-bottom: 15px; width: 100%; box-sizing: border-box; word-break: break-word; } 
         .comment-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 5px; } 
@@ -48,22 +45,16 @@
         .comment-body { color: #d1bfae; line-height: 1.6; word-break: break-word; margin-bottom: 12px; }
         
         .comment-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-        
-        /* 🌟 ระบบตอบกลับ UI แบบเยื้องขวา + มีเส้นเชื่อม */
         .btn-reply-comment { background: rgba(212, 175, 55, 0.1); border: 1px solid var(--gold-dark); color: var(--gold-light); padding: 3px 10px; border-radius: 12px; font-family: 'Prompt', sans-serif; font-size: 0.75rem; cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; gap: 4px; }
         .btn-reply-comment:hover { background: var(--gold-main); color: #000; }
-        
         .btn-delete-comment { background: transparent; border: 1px solid rgba(168, 46, 46, 0.3); color: var(--danger-color); padding: 3px 10px; border-radius: 12px; font-family: 'Prompt', sans-serif; font-size: 0.75rem; cursor: pointer; transition: all 0.3s; opacity: 0.7; }
         .btn-delete-comment:hover { background: rgba(168, 46, 46, 0.15); opacity: 1; border-color: var(--danger-color); }
 
         .replies-container { margin-left: 30px; padding-left: 15px; border-left: 2px solid rgba(212, 175, 55, 0.2); margin-top: -5px; margin-bottom: 20px; }
-        
         .comment-card.is-reply { background: rgba(15, 8, 3, 0.8); border: 1px solid rgba(138, 99, 21, 0.15); border-radius: 6px; padding: 15px; margin-bottom: 10px; width: 100%; position: relative; }
         .comment-card.is-reply::before { content: ''; position: absolute; top: 25px; left: -17px; width: 15px; height: 2px; background: rgba(212, 175, 55, 0.2); }
-        
         .reply-badge { display: inline-block; font-size: 0.75rem; color: var(--gold-main); background: rgba(212, 175, 55, 0.1); padding: 2px 10px; border-radius: 12px; margin-bottom: 10px; border: 1px solid rgba(212, 175, 55, 0.2); font-family: 'Prompt', sans-serif; font-weight: bold; }
 
-        /* กล่องฟอร์มตอบกลับ (โผล่มาเมื่อกดตอบ) */
         .reply-form-container { margin-top: 15px; padding: 15px; background: rgba(0,0,0,0.5); border-radius: 8px; border: 1px dashed rgba(212, 175, 55, 0.3); display: none; transition: all 0.3s; }
         .reply-form-container.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
@@ -89,6 +80,15 @@
         .role-4 { background: linear-gradient(135deg, #1c2630, #0a1117); color: #c0c8d1; border: 1px solid #8a96a6; }
         .role-5 { background: linear-gradient(135deg, #2b1f14, #120c0a); color: #a69477; border: 1px solid #8a6315; }
         .role-guest { background: rgba(168, 46, 46, 0.15); color: #ff6b6b; border: 1px dashed #a82e2e; }
+
+        /* 🔔 สไตล์สำหรับระบบแจ้งเตือน */
+        .noti-badge { background: #ff6b6b; color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.7rem; position: absolute; top: -5px; right: -5px; font-weight: bold; box-shadow: 0 0 5px rgba(255,107,107,0.5); }
+        .noti-item { padding: 12px; border-bottom: 1px solid rgba(138, 99, 21, 0.2); cursor: pointer; transition: background 0.3s; line-height: 1.4; }
+        .noti-item:hover { background: rgba(212, 175, 55, 0.1); }
+        .noti-item.unread { background: rgba(212, 175, 55, 0.08); border-left: 3px solid var(--gold-main); }
+        .noti-time { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; }
+        #notiList::-webkit-scrollbar { width: 6px; } 
+        #notiList::-webkit-scrollbar-thumb { background: var(--gold-dark); border-radius: 10px; }
 
         .sect-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(7, 4, 2, 0.9); backdrop-filter: blur(8px); z-index: 1000; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; } .sect-modal-overlay.active { display: flex; opacity: 1; }
         .sect-modal-content { position: relative; background: linear-gradient(135deg, #1a120b, #0a0603); border: 1px solid var(--gold-main); border-radius: 12px; width: 90%; max-width: 450px; padding: 40px 30px 60px 30px; box-shadow: 0 15px 40px rgba(0,0,0,0.9), inset 0 0 20px rgba(212,175,55,0.1); transform: translateY(-20px); transition: transform 0.3s ease; } .sect-modal-overlay.active .sect-modal-content { transform: translateY(0); }
@@ -134,7 +134,6 @@
                         </div>
                         <div style="display: flex; align-items: center; gap: 15px;">
                             <div style="color: var(--text-muted); font-size: 0.9rem;" id="dyn-views">เข้าชม - ครั้ง</div>
-                            <!-- 🌟 ปุ่ม Like กระทู้ -->
                             <button class="btn-like" id="btnLikePost" onclick="likePost()">
                                 ❤️ <span id="dyn-likes">0</span>
                             </button>
@@ -165,6 +164,12 @@
                             <div id="displayUserBadge" style="margin-bottom: 8px;"></div>
                         </div>
                     </div>
+                    
+                    <!-- 🔔 ปุ่มแจ้งเตือน -->
+                    <button class="btn-submit-modal" id="notiBtn" style="display:none; margin-bottom: 10px; width: 100%; background: rgba(212,175,55,0.1); border: 1px solid var(--gold-dark); color: var(--gold-light); box-shadow: none; position: relative;" onclick="openNotiModal()">
+                        กระแสจิต 🔔 <span id="notiBadge" class="noti-badge" style="display:none;">0</span>
+                    </button>
+                    
                     <button onclick="handleLogout()" class="btn-logout" id="logoutBtnText">ออกจากระบบ (ลบตัวตน)</button>
                 </div>
             </div>
@@ -199,12 +204,28 @@
         </div>
     </div>
 
+    <!-- 🔔 Notification Modal -->
+    <div class="sect-modal-overlay" id="notiModal" style="z-index: 9999;">
+        <div class="sect-modal-content" style="max-width: 400px; padding: 30px 20px;">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-left" alt="">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-right" alt="">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-bottom-left" alt="">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-bottom-right" alt="">
+            <div class="modal-header"><h3 style="font-size: 1.4rem;">🔔 กระแสจิต (แจ้งเตือน)</h3></div>
+            <div id="notiList" style="max-height: 350px; overflow-y: auto; text-align: left; margin-bottom: 20px;">
+                <!-- แจ้งเตือนจะมาอยู่ตรงนี้ -->
+            </div>
+            <button type="button" class="btn-submit-modal" style="width: 100%;" onclick="closeNotiModal()">ปิดหน้าต่าง</button>
+        </div>
+    </div>
+
     <script>
         const API_CONFIG = { 
             BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
         };
 
         const MEMBER_SESSION_LIMIT = 24 * 60 * 60 * 1000;
+        let currentPostAuthor = ''; // เก็บเจ้าของกระทู้เพื่อส่งแจ้งเตือน
 
         function checkMemberSession() {
             const savedUser = localStorage.getItem('siy_username');
@@ -278,6 +299,93 @@
             }
         };
 
+        // 🌟 ฟังก์ชันส่งกระแสจิต 🌟
+        async function sendNotification(recipient, action_type, post_id) {
+            const actor = localStorage.getItem('siy_username');
+            if(!actor || actor === recipient || !recipient) return; 
+            
+            const now = new Date();
+            const timeStr = now.getDate() + ' ส.ค. 2569 | ' + now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0') + ' น.';
+            
+            try {
+                await fetch(`${API_CONFIG.BASE_URL}/notifications`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        id: Date.now().toString() + Math.floor(Math.random()*1000),
+                        recipient: recipient,
+                        actor: actor,
+                        action_type: action_type,
+                        post_id: post_id,
+                        timestamp: timeStr
+                    })
+                });
+            } catch(e) {}
+        }
+
+        // 🌟 ดึงข้อมูลกระแสจิต 🌟
+        async function checkNotifications() {
+            const username = localStorage.getItem('siy_username');
+            if (!username || localStorage.getItem('siy_usertype') === 'guest') return;
+
+            const notiBtn = document.getElementById('notiBtn');
+            if(notiBtn) notiBtn.style.display = 'inline-block';
+            
+            try {
+                const res = await fetch(`${API_CONFIG.BASE_URL}/notifications/${encodeURIComponent(username)}`);
+                if (res.ok) {
+                    const notis = await res.json();
+                    const unreadCount = notis.filter(n => n.is_read === 0).length;
+                    const badge = document.getElementById('notiBadge');
+                    
+                    if (unreadCount > 0) {
+                        badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+                        badge.style.display = 'inline-block';
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                    window.userNotifications = notis;
+                }
+            } catch (e) {}
+        }
+
+        function openNotiModal() {
+            const modal = document.getElementById('notiModal');
+            const listContainer = document.getElementById('notiList');
+            const notis = window.userNotifications || [];
+            listContainer.innerHTML = '';
+            
+            if (notis.length === 0) {
+                listContainer.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 20px;">ลานจิตว่างเปล่า... ยังไม่มีผู้ใดส่งกระแสจิตถึงท่าน</p>';
+            } else {
+                notis.forEach(n => {
+                    let actionText = '';
+                    if (n.action_type === 'like_post') actionText = 'รู้สึกถูกใจจารึกของคุณ';
+                    if (n.action_type === 'like_comment') actionText = 'รู้สึกถูกใจความคิดเห็นของคุณ';
+                    if (n.action_type === 'comment') actionText = 'ได้ร่วมแสดงความเห็นในจารึกของคุณ';
+                    if (n.action_type === 'reply') actionText = 'ได้ตอบกลับความคิดเห็นของคุณ';
+                    
+                    const isUnread = n.is_read === 0 ? 'unread' : '';
+                    listContainer.innerHTML += `
+                        <div class="noti-item ${isUnread}" onclick="readNotification('${n.id}', '${n.post_id}')">
+                            <div style="color: var(--gold-light); font-family: 'Prompt', sans-serif;">
+                                <strong>${n.actor}</strong> ${actionText}
+                            </div>
+                            <div class="noti-time">${n.timestamp}</div>
+                        </div>
+                    `;
+                });
+            }
+            modal.classList.add('active');
+        }
+
+        function closeNotiModal() { document.getElementById('notiModal').classList.remove('active'); }
+
+        async function readNotification(notiId, postId) {
+            await fetch(`${API_CONFIG.BASE_URL}/notifications/${notiId}/read`, { method: 'PUT' });
+            window.location.href = `post.html?id=${postId}`;
+        }
+
         let pendingConfirmAction = null;
         function showCustomConfirm(message, callback) {
             document.getElementById('customConfirmMessage').innerHTML = message;
@@ -317,7 +425,6 @@
             return '<span class="role-badge role-5">เด็กวัด</span>';
         }
 
-        // เปิด/ปิด กล่องพิมพ์ตอบกลับ
         function toggleReplyBox(commentId) {
             document.querySelectorAll('.reply-form-container').forEach(el => {
                 if(el.id !== `reply-box-${commentId}`) el.classList.remove('active');
@@ -352,37 +459,27 @@
                 return;
             }
 
-            // 🌟 แก้ปัญหา Backend ไม่จำ parent_id ด้วยการซ่อนแท็กตอบกลับไว้ใน content เลย
             const mainComments = [];
             const replyComments = [];
 
-            // คัดแยกคอมเมนต์จากการเช็คแท็ก [REPLY_TO:xxx] ที่ซ่อนอยู่ในเนื้อหา
             comments.forEach(c => {
                 const match = c.content.match(/^\[REPLY_TO:([^\]]+)\]/);
                 if (match) {
                     const parentId = match[1];
                     const parentExists = comments.some(p => String(p.id) === parentId && !p.content.startsWith('[REPLY_TO:'));
-                    if (parentExists) {
-                        replyComments.push(c);
-                    } else {
-                        mainComments.push(c); // ถ้าคอมเมนต์แม่โดนลบไปแล้ว ให้แสดงเป็นคอมเมนต์ปกติ (เด็กกำพร้า)
-                    }
-                } else {
-                    mainComments.push(c);
-                }
+                    if (parentExists) { replyComments.push(c); } else { mainComments.push(c); }
+                } else { mainComments.push(c); }
             });
 
             for (const c of mainComments) {
                 const badge = await getRoleBadgeFromAPI(c.author);
-                
-                // ล้างแท็กซ่อนก่อนแสดงผล (เผื่อกรณีเป็นเด็กกำพร้า)
                 let cleanMainContent = c.content.replace(/^\[REPLY_TO:[^\]]+\](?:\[AUTHOR:[^\]]+\])?/, '');
 
-                let likeBtn = `<button class="btn-like-comment" id="btnLikeComment-${c.id}" onclick="likeComment('${c.id}')">❤️ <span id="comment-likes-${c.id}">${c.likes || 0}</span></button>`;
+                // ส่ง commentAuthor ไปด้วยเพื่อดึงไปแจ้งเตือน
+                let likeBtn = `<button class="btn-like-comment" id="btnLikeComment-${c.id}" onclick="likeComment('${c.id}', '${c.author}')">❤️ <span id="comment-likes-${c.id}">${c.likes || 0}</span></button>`;
                 let adminControls = isUserAdmin ? `<button type="button" class="btn-delete-comment" onclick="deleteCommentAction('${c.id}', '${postId}')">🗑️ ทำลาย</button>` : '';
                 let replyBtn = (userType !== 'guest') ? `<button type="button" class="btn-reply-comment" onclick="toggleReplyBox('${c.id}')">💬 ตอบกลับ</button>` : '';
 
-                // หาคอมเมนต์ย่อยของคอมเมนต์นี้
                 const childReplies = replyComments.filter(r => {
                     const match = r.content.match(/^\[REPLY_TO:([^\]]+)\]/);
                     return match && match[1] === String(c.id);
@@ -391,13 +488,13 @@
                 let repliesHtml = '';
 
                 if (childReplies.length > 0) {
-                    repliesHtml += `<div class="replies-container">`; // กล่องหุ้มสร้างเส้นเชื่อม
+                    repliesHtml += `<div class="replies-container">`; 
                     for (const r of childReplies) {
                         const rBadge = await getRoleBadgeFromAPI(r.author);
-                        let rLikeBtn = `<button class="btn-like-comment" id="btnLikeComment-${r.id}" onclick="likeComment('${r.id}')">❤️ <span id="comment-likes-${r.id}">${r.likes || 0}</span></button>`;
+                        // ส่ง author ไปด้วย
+                        let rLikeBtn = `<button class="btn-like-comment" id="btnLikeComment-${r.id}" onclick="likeComment('${r.id}', '${r.author}')">❤️ <span id="comment-likes-${r.id}">${r.likes || 0}</span></button>`;
                         let rAdminControls = isUserAdmin ? `<button type="button" class="btn-delete-comment" onclick="deleteCommentAction('${r.id}', '${postId}')">🗑️ ทำลาย</button>` : '';
                         
-                        // ดึงชื่อคนที่ถูกตอบกลับ กับ ล้างเนื้อหาแท็กซ่อน
                         let authorMatch = r.content.match(/\[AUTHOR:([^\]]+)\]/);
                         let repliedTo = authorMatch ? authorMatch[1] : c.author;
                         let cleanReplyContent = r.content.replace(/^\[REPLY_TO:[^\]]+\](?:\[AUTHOR:[^\]]+\])?/, '');
@@ -425,7 +522,6 @@
                     repliesHtml += `</div>`;
                 }
 
-                // กล่องฟอร์มตอบกลับ (ซ่อนอยู่)
                 let replyFormHtml = (userType !== 'guest') ? `
                     <div id="reply-box-${c.id}" class="reply-form-container">
                         <textarea id="replyInput-${c.id}" class="form-textarea" placeholder="พิมพ์ข้อความตอบกลับคุณ ${c.author}..."></textarea>
@@ -471,13 +567,15 @@
             counter.innerText = currentLikes + 1; 
             btn.classList.add('liked'); 
 
+            await sendNotification(currentPostAuthor, 'like_post', postId); // 🔔 ยิงแจ้งเตือน
+
             const result = await ApiManager.likePost(postId);
             if (result && result.success !== false && result.likes !== undefined) {
                 counter.innerText = result.likes;
             }
         }
 
-        async function likeComment(commentId) {
+        async function likeComment(commentId, commentAuthor) {
             const btn = document.getElementById(`btnLikeComment-${commentId}`);
             const counter = document.getElementById(`comment-likes-${commentId}`);
             
@@ -485,6 +583,9 @@
             const currentLikes = parseInt(counter.innerText) || 0;
             counter.innerText = currentLikes + 1;
             btn.classList.add('liked');
+
+            const urlParams = new URLSearchParams(window.location.search);
+            await sendNotification(commentAuthor, 'like_comment', urlParams.get('id')); // 🔔 ยิงแจ้งเตือน
 
             const result = await ApiManager.likeComment(commentId);
             if (result && result.success !== false && result.likes !== undefined) {
@@ -505,40 +606,30 @@
         }
 
         function validateComment(content) {
-            if (content.includes('[REPLY_TO:')) {
-                return { valid: false, error: '⚠️ อาถรรพ์สะท้อนกลับ!<br>ไม่อนุญาตให้พิมพ์แท็กระบบลงในข้อความโดยตรง' };
-            }
+            if (content.includes('[REPLY_TO:')) return { valid: false, error: '⚠️ ไม่อนุญาตให้พิมพ์แท็กระบบ' };
             const htmlTags = content.match(/<\/?[a-z][a-z0-9]*\b[^>]*>/gi);
             if (htmlTags) {
                 for (let tag of htmlTags) {
                     const lowerTag = tag.toLowerCase();
-                    if (!lowerTag.startsWith('<img') && lowerTag !== '<br>' && lowerTag !== '<br/>') {
-                        return { valid: false, error: '⚠️ อาถรรพ์สะท้อนกลับ!<br>ไม่อนุญาตให้ใช้แท็ก HTML หรือโค้ดอื่นๆ ในความคิดเห็น' };
-                    }
+                    if (!lowerTag.startsWith('<img') && lowerTag !== '<br>' && lowerTag !== '<br/>') return { valid: false, error: '⚠️ ไม่อนุญาตให้ใช้แท็ก HTML' };
                 }
             }
             if (htmlTags) {
                 for (let tag of htmlTags) {
-                    if (tag.toLowerCase().startsWith('<img') && !tag.toLowerCase().includes('src=')) {
-                        return { valid: false, error: '⚠️ อาถรรพ์สะท้อนกลับ!<br>โครงสร้างรูปภาพไม่ถูกต้อง (<img src="...">)' };
-                    }
+                    if (tag.toLowerCase().startsWith('<img') && !tag.toLowerCase().includes('src=')) return { valid: false, error: '⚠️ โครงสร้างรูปภาพไม่ถูกต้อง' };
                 }
             }
             let textWithoutImgs = content.replace(/<img\s+[^>]*src="[^"]*"[^>]*>/gi, '');
             textWithoutImgs = textWithoutImgs.replace(/<img\s+[^>]*src=[^\s>]+[^>]*>/gi, '');
             const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+)/i;
-            if (urlRegex.test(textWithoutImgs)) {
-                return { valid: false, error: '⚠️ อาถรรพ์สะท้อนกลับ!<br>ไม่อนุญาตให้วางลิงก์ (URL) ภายนอกในความคิดเห็น' };
-            }
+            if (urlRegex.test(textWithoutImgs)) return { valid: false, error: '⚠️ ไม่อนุญาตให้วางลิงก์ (URL)' };
             return { valid: true };
         }
 
         async function submitComment() {
             const textarea = document.getElementById('commentInput');
             const content = textarea.value.trim();
-
-            if(!content) { showCustomAlert('ท่านต้องเปล่งวาจาเสียก่อนถึงจะสลักข้อความได้'); return; }
-
+            if(!content) { showCustomAlert('ท่านต้องเปล่งวาจาเสียก่อน'); return; }
             const validation = validateComment(content);
             if (!validation.valid) { showCustomAlert(validation.error); return; }
 
@@ -549,55 +640,40 @@
             const timeStr = now.getDate() + ' ส.ค. 2569 | ' + now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0') + ' น.';
 
             const commentData = {
-                id: Date.now().toString(),
-                postId: postId,
-                author: author,
-                content: content.replace(/\n/g, '<br>'),
-                timestamp: timeStr,
-                likes: 0
+                id: Date.now().toString(), postId: postId, parent_id: "0", author: author,
+                content: content.replace(/\n/g, '<br>'), timestamp: timeStr, likes: 0
             };
 
             const btn = document.getElementById('submitCommentBtn');
-            btn.textContent = 'กำลังส่งกระแสจิต...';
-            btn.disabled = true;
+            btn.textContent = 'กำลังส่งกระแสจิต...'; btn.disabled = true;
 
             const result = await ApiManager.saveComment(commentData);
             if(result && result.success !== false) {
+                await sendNotification(currentPostAuthor, 'comment', postId); // 🔔 ยิงแจ้งเตือน
                 textarea.value = ''; 
                 showCustomAlert('บันทึกจารึกสำเร็จ!');
                 loadComments(postId); 
             } else { showCustomAlert('เกิดอาถรรพ์ขัดข้อง ส่งข้อความไม่สำเร็จ'); }
-
-            btn.textContent = 'ส่งความคิดเห็น';
-            btn.disabled = false;
+            btn.textContent = 'ส่งความคิดเห็น'; btn.disabled = false;
         }
 
-        // 🌟 ฟังก์ชันตอบกลับ (ฝังแท็กระบบแบบซ่อนตัวในเนื้อหา)
         async function submitReply(parentId, parentAuthor, postId) {
             const textarea = document.getElementById(`replyInput-${parentId}`);
             if (!textarea) return;
             const content = textarea.value.trim();
-
             if(!content) { showCustomAlert('ท่านต้องพิมพ์ข้อความตอบกลับเสียก่อน'); return; }
-
             const validation = validateComment(content);
             if (!validation.valid) { showCustomAlert(validation.error); return; }
 
             const author = localStorage.getItem('siy_username');
             const now = new Date();
             const timeStr = now.getDate() + ' ส.ค. 2569 | ' + now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0') + ' น.';
-
-            // ✨ ท่าไม้ตาย! แปะแท็กซ่อนบอกตัวตน เพื่อให้ระบบดึงไปทำเส้นโยงเยื้องขวาได้โดยไม่ต้องแก้ฐานข้อมูล
             const hiddenPrefix = `[REPLY_TO:${parentId}][AUTHOR:${parentAuthor}]`;
             const finalContent = hiddenPrefix + content.replace(/\n/g, '<br>');
 
             const commentData = {
-                id: Date.now().toString(),
-                postId: postId,
-                author: author,
-                content: finalContent,
-                timestamp: timeStr,
-                likes: 0
+                id: Date.now().toString(), postId: postId, author: author,
+                content: finalContent, timestamp: timeStr, likes: 0
             };
 
             const btn = textarea.nextElementSibling.querySelector('.btn-submit-comment');
@@ -605,6 +681,7 @@
 
             const result = await ApiManager.saveComment(commentData);
             if(result && result.success !== false) {
+                await sendNotification(parentAuthor, 'reply', postId); // 🔔 ยิงแจ้งเตือน
                 textarea.value = '';
                 showCustomAlert('ส่งคำตอบกลับสำเร็จ!');
                 loadComments(postId);
@@ -616,17 +693,16 @@
 
         document.addEventListener('DOMContentLoaded', async () => {
             checkMemberSession();
+            checkNotifications(); // 🔔 โหลดแจ้งเตือนเมื่อเปิดหน้าเว็บ
 
             const savedUser = localStorage.getItem('siy_username');
             const userType = localStorage.getItem('siy_usertype'); 
             
             if (!savedUser) {
-                showCustomAlert('เขตหวงห้าม! ท่านยังไม่ได้เลือกสถานะทางเข้า', 'webboard.html');
-                return;
+                showCustomAlert('เขตหวงห้าม! ท่านยังไม่ได้เลือกสถานะทางเข้า', 'webboard.html'); return;
             }
 
-            let currentUserRole = '5';
-            let currentUserRank = 'เด็กวัด';
+            let currentUserRole = '5'; let currentUserRank = 'เด็กวัด';
             try {
                 const userRes = await fetch(`${API_CONFIG.BASE_URL}/users`);
                 const usersDB = await userRes.json();
@@ -638,25 +714,21 @@
             } catch (e) {}
 
             document.getElementById('displayUsername').textContent = savedUser;
-            
             let myBadgeHtml = '';
-            if (savedUser.toUpperCase() === 'ADMIN' || currentUserRole === '1') {
-                myBadgeHtml = '<span class="role-badge role-1">ปรมัตถ์</span>';
-            } else if (userType === 'guest') {
-                myBadgeHtml = '<span class="role-badge role-guest">วิญญาณเร่ร่อน</span>';
-            } else {
-                myBadgeHtml = `<span class="role-badge role-${currentUserRole}">${currentUserRank}</span>`;
-            }
+            if (savedUser.toUpperCase() === 'ADMIN' || currentUserRole === '1') { myBadgeHtml = '<span class="role-badge role-1">ปรมัตถ์</span>'; } 
+            else if (userType === 'guest') { myBadgeHtml = '<span class="role-badge role-guest">วิญญาณเร่ร่อน</span>'; } 
+            else { myBadgeHtml = `<span class="role-badge role-${currentUserRole}">${currentUserRank}</span>`; }
             document.getElementById('displayUserBadge').innerHTML = myBadgeHtml;
 
             const urlParams = new URLSearchParams(window.location.search);
             const postId = urlParams.get('id');
-
             const postData = await ApiManager.getPostById(postId);
+            
             if(!postData) {
-                showCustomAlert('อาถรรพ์บังตา... ไม่พบศิลาจารึกที่คุณค้นหา อาจถูกลบไปแล้ว', 'webboard.html');
-                return;
+                showCustomAlert('อาถรรพ์บังตา... ไม่พบศิลาจารึกที่คุณค้นหา อาจถูกลบไปแล้ว', 'webboard.html'); return;
             }
+
+            currentPostAuthor = postData.author; // 🔔 จำชื่อเจ้าของกระทู้เพื่อไว้แจ้งเตือน
 
             document.getElementById('pageTitle').textContent = postData.title + ' - ศิษย์หลวงปู่';
             document.getElementById('dyn-category').textContent = (postData.category === "1" ? "นิยายสัตยาสาบาน" : "คุยกับศิษย์หลวงปู่");
@@ -666,29 +738,20 @@
             document.getElementById('dyn-author-badge').innerHTML = await getRoleBadgeFromAPI(postData.author);
             document.getElementById('dyn-time').textContent = 'โพสต์เมื่อ: ' + postData.timestamp;
             document.getElementById('dyn-views').textContent = 'เข้าชม ' + (postData.views || 0) + ' ครั้ง';
-            
             document.getElementById('dyn-likes').textContent = postData.likes || 0;
 
             loadComments(postId);
 
             const commentArea = document.getElementById('commentAreaContainer');
-
             if (userType === 'guest') {
                 document.getElementById('logoutBtnText').textContent = 'ลบตัวตน (สละร่าง)';
-                commentArea.innerHTML = `
-                    <div class="ghost-warning">
-                        สถานะปัจจุบัน: <strong>${savedUser}</strong><br>
-                        ท่านอยู่ในร่างวิญญาณเร่ร่อน <strong>ไม่อาจฝากข้อความหรือคอมเมนต์ได้</strong>
-                    </div>
-                `;
+                commentArea.innerHTML = `<div class="ghost-warning">สถานะปัจจุบัน: <strong>${savedUser}</strong><br>ท่านอยู่ในร่างวิญญาณเร่ร่อน <strong>ไม่อาจฝากข้อความหรือคอมเมนต์ได้</strong></div>`;
             } else {
                 document.getElementById('logoutBtnText').textContent = 'ออกจากระบบ';
                 commentArea.innerHTML = `
                     <div class="comment-form-box">
                         <h4 style="margin-bottom: 18px; display: flex; align-items: center; flex-wrap: wrap; gap: 5px;">
-                            ร่วมแสดงความคิดเห็นในนาม: 
-                            <span style="color: var(--gold-light); margin-left: 5px;">${savedUser}</span> 
-                            ${myBadgeHtml}
+                            ร่วมแสดงความคิดเห็นในนาม: <span style="color: var(--gold-light); margin-left: 5px;">${savedUser}</span> ${myBadgeHtml}
                         </h4>
                         <textarea id="commentInput" class="form-textarea" placeholder="พิมพ์ความคิดเห็นของคุณที่นี่..."></textarea>
                         <button type="button" id="submitCommentBtn" class="btn-submit-comment" onclick="submitComment()">ส่งความคิดเห็น</button>
@@ -698,9 +761,7 @@
         });
 
         function handleLogout() {
-            localStorage.removeItem('siy_username');
-            localStorage.removeItem('siy_usertype');
-            localStorage.removeItem('siy_login_timestamp');
+            localStorage.removeItem('siy_username'); localStorage.removeItem('siy_usertype'); localStorage.removeItem('siy_login_timestamp');
             showCustomAlert('ท่านได้ออกจากระบบเรียบร้อยแล้ว', 'webboard.html');
         }
     </script>
