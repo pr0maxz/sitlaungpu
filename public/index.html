@@ -42,20 +42,82 @@
         .section-title { text-align: center; background: linear-gradient(180deg, #3a2511 0%, #150a03 100%); color: var(--gold-light); padding: 10px 40px; border: 1px solid var(--gold-main); border-radius: 8px; display: inline-block; position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-size: 1.25rem; font-weight: 700; white-space: nowrap; box-shadow: 0 8px 16px rgba(0,0,0,0.9), inset 0 1px 2px rgba(255,255,255,0.15); text-shadow: 0 2px 4px rgba(0,0,0,0.8); letter-spacing: 1px; } 
 
         .webboard-list-container { display: flex; flex-direction: column; gap: 12px; margin-top: 15px; }
-        .wb-row { background: rgba(10, 5, 2, 0.6); border: 1px solid rgba(138, 99, 21, 0.2); border-radius: 8px; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; transition: all 0.3s ease; text-decoration: none; border-left: 4px solid transparent; }
-        .wb-row:hover { background: rgba(212, 175, 55, 0.08); border-color: var(--gold-main); border-left-color: var(--gold-light); transform: translateX(5px); box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
-        .wb-title-group { display: flex; align-items: center; gap: 12px; flex: 1; }
-        .wb-title { font-family: 'Prompt', sans-serif; font-size: 1.05rem; color: var(--gold-light); line-height: 1.4; transition: color 0.3s; }
-        .wb-row:hover .wb-title { color: #fff; text-shadow: 0 0 8px var(--gold-main); }
-        .wb-meta { font-size: 0.85rem; color: var(--text-muted); display: flex; gap: 20px; white-space: nowrap; }
-        .wb-tag { font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; border: 1px solid; } 
-        .wb-tag-pin { border-color: #d4af37; color: #150a03; background: var(--gold-main); font-weight: bold; }
-        .wb-tag-hot { border-color: #a82e2e; color: #ff6b6b; background: rgba(168, 46, 46, 0.1); } 
-        .wb-tag-new { border-color: #2e8b57; color: #73c990; background: rgba(46, 139, 87, 0.1); }
+        
+        /* 🌟 ปรับแต่งกล่องกระทู้ให้ข้อความเรียงตัวธรรมชาติและสวยงาม */
+        .wb-row { 
+            background: rgba(10, 5, 2, 0.6); 
+            border: 1px solid rgba(138, 99, 21, 0.2); 
+            border-radius: 8px; 
+            padding: 16px 20px; 
+            display: block; 
+            transition: all 0.3s ease; 
+            text-decoration: none; 
+            margin-bottom: 10px;
+        }
+        .wb-row:hover { 
+            background: rgba(212, 175, 55, 0.08); 
+            border-color: var(--gold-main); 
+            transform: translateX(5px); 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5); 
+        }
+        .wb-title-group { 
+            display: block; 
+            margin-bottom: 10px; 
+        }
+        .wb-title { 
+            font-family: 'Prompt', sans-serif; 
+            font-size: 1.05rem; 
+            color: var(--gold-light); 
+            line-height: 1.5; 
+            transition: color 0.3s; 
+            display: inline;
+        }
+        .wb-row:hover .wb-title { 
+            color: #fff; 
+            text-shadow: 0 0 8px var(--gold-main); 
+        }
+        .wb-meta { 
+            font-size: 0.85rem; 
+            color: var(--text-muted); 
+            display: flex; 
+            gap: 20px; 
+            border-top: 1px dashed rgba(138, 99, 21, 0.2); 
+            padding-top: 8px; 
+        }
+
+        /* 📌 ป้ายปักหมุดแบบแนวนอน วางไว้หน้าหัวข้อ */
+        .wb-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 8px;
+            font-size: 0.75rem;
+            font-family: 'Prompt', sans-serif;
+            font-weight: bold;
+            border-radius: 4px;
+            text-transform: uppercase;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        .wb-tag-pin {
+            background: linear-gradient(135deg, #ffe885, #d4af37, #996515);
+            color: #1a0f02;
+            border: 1px solid #fff2a3;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+        }
+        .wb-tag-new {
+            background: rgba(46, 139, 87, 0.15);
+            color: #73c990;
+            border: 1px solid #2e8b57;
+        }
+        .wb-tag-hot {
+            background: rgba(168, 46, 46, 0.15);
+            color: #ff6b6b;
+            border: 1px solid #a82e2e;
+        }
 
         .wb-action-container { text-align: center; margin-top: 35px; } .action-btn { background: linear-gradient(180deg, #3a2511 0%, #150a03 100%); color: var(--gold-light); font-family: 'Prompt', sans-serif; padding: 12px 30px; border: 1px solid var(--gold-main); border-radius: 30px; font-size: 1.05rem; font-weight: 600; cursor: pointer; text-decoration: none; box-shadow: 0 4px 10px rgba(0,0,0,0.9), inset 0 1px 2px rgba(255,255,255,0.15); transition: all 0.3s; display: inline-block; letter-spacing: 0.5px; } .action-btn:hover { filter: brightness(1.2); transform: translateY(-3px); box-shadow: 0 6px 15px rgba(212, 175, 55, 0.3); color: #fff; }
 
-        /* Footer อยู่ใน main-container ด้านล่างสุดตรงกลางระหว่างมุมลายไทย */
         .site-footer { text-align: center; margin-top: 50px; padding-top: 20px; border-top: 1px dashed rgba(138, 99, 21, 0.3); }
         .site-footer p { color: var(--text-muted); font-family: 'Sarabun', sans-serif; font-size: 0.85rem; letter-spacing: 0.5px; margin: 0; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9); }
 
@@ -120,7 +182,6 @@
             <a href="mailto:contact@example.com" style="color: var(--gold-light);">sitluangpu@proton.me</a></p>
         </section>
 
-        <!-- Footer ย้ายมาอยู่ด้านใน main-container ตรงกลางระหว่างมุมลายไทยล่าง -->
         <footer class="site-footer">
             <p>© 2026 SitLuangPu</p>
         </footer>
@@ -178,6 +239,10 @@
             } else { heroBtn.removeAttribute('href'); heroBtn.classList.add('disabled'); heroBtn.onclick = (e) => e.preventDefault(); }
         }
 
+        function checkIsPinned(val) {
+            return val === true || val === 1 || val === '1' || val === 'true';
+        }
+
         // ==========================================
         // 2. ระบบดึงกระทู้ล่าสุดจาก API
         // ==========================================
@@ -201,14 +266,15 @@
             container.innerHTML = '';
             
             posts.sort((a, b) => {
-                if (a.pinned && !b.pinned) return -1;
-                if (!a.pinned && b.pinned) return 1;
+                const aPin = checkIsPinned(a.pinned) ? 1 : 0;
+                const bPin = checkIsPinned(b.pinned) ? 1 : 0;
+                if (aPin !== bPin) return bPin - aPin;
                 return b.id - a.id; 
             });
 
             posts.slice(0, 12).forEach((post, index) => {
                 let tagHtml = '';
-                if (post.pinned) {
+                if (checkIsPinned(post.pinned)) {
                     tagHtml = '<span class="wb-tag wb-tag-pin">📌 ปักหมุด</span>';
                 } else if (index === 0) {
                     tagHtml = '<span class="wb-tag wb-tag-new">NEW</span>';
@@ -246,102 +312,6 @@
                 if (redirectUrl) window.location.href = redirectUrl;
             };
         }
-        // กำหนดเวลา Idle Timeout สำหรับแอดมิน = 5 นาที (5 * 60 * 1000 มิลลิวินาที)
-    const ADMIN_TIMEOUT = 5 * 60 * 1000;
-    let adminTimer = null;
-
-    function checkAdminIdle() {
-        const lastActive = localStorage.getItem('siy_admin_last_active');
-        if (lastActive) {
-            const elapsed = Date.now() - parseInt(lastActive, 10);
-            if (elapsed > ADMIN_TIMEOUT) {
-                logoutAdminSession('⏳ อาคมหลังบ้านหมดอายุ เนื่องจากการละเลยเกิน 5 นาที');
-                return;
-            }
-        }
-        resetAdminTimer();
-    }
-
-    function resetAdminTimer() {
-        localStorage.setItem('siy_admin_last_active', Date.now().toString());
-        if (adminTimer) clearTimeout(adminTimer);
-        
-        adminTimer = setTimeout(() => {
-            logoutAdminSession('⏳ อาคมหลังบ้านหมดอายุ เนื่องจากการละเลยเกิน 5 นาที');
-        }, ADMIN_TIMEOUT);
-    }
-
-    function logoutAdminSession(msg) {
-        localStorage.removeItem('siy_username');
-        localStorage.removeItem('siy_usertype');
-        localStorage.removeItem('siy_admin_last_active');
-        alert(msg);
-        window.location.replace('admin_login.html');
-    }
-
-    // ตรวจจับความเคลื่อนไหวของแอดมิน
-    window.onload = checkAdminIdle;
-    window.onmousemove = resetAdminTimer;
-    window.onkeypress = resetAdminTimer;
-    window.onclick = resetAdminTimer;
-    window.onscroll = resetAdminTimer;
-
-    function checkIsPinned(val) {
-    return val === true || val === 1 || val === '1' || val === 'true';
-}
-
-async function renderIndexPosts() {
-    const container = document.getElementById('dynamicIndexPosts');
-    container.innerHTML = '<div style="text-align: center; color: var(--gold-dark); padding: 20px;">กำลังอัญเชิญจารึก...</div>';
-    
-    let posts = [];
-    if (API_CONFIG.USE_REAL_API) {
-        try {
-            const response = await fetch(`${API_CONFIG.BASE_URL}/posts`);
-            if (response.ok) {
-                posts = await response.json();
-            }
-        } catch (error) { console.error('Posts Error:', error); }
-    } else {
-        posts = JSON.parse(localStorage.getItem('siy_posts')) || [];
-    }
-    
-    if (!posts || posts.length === 0) { container.innerHTML = '<div style="text-align: center; color: var(--gold-dark); padding: 20px;">ยังไม่มีจารึกในลานเสวนา</div>'; return; }
-    container.innerHTML = '';
-    
-    // 🌟 จัดเรียงระบบปักหมุด
-    posts.sort((a, b) => {
-        const aPin = checkIsPinned(a.pinned) ? 1 : 0;
-        const bPin = checkIsPinned(b.pinned) ? 1 : 0;
-        if (aPin !== bPin) return bPin - aPin;
-        return b.id - a.id; 
-    });
-
-    posts.slice(0, 12).forEach((post, index) => {
-        let tagHtml = '';
-        if (checkIsPinned(post.pinned)) {
-            tagHtml = '<span class="wb-tag wb-tag-pin">📌 ปักหมุด</span>';
-        } else if (index === 0) {
-            tagHtml = '<span class="wb-tag wb-tag-new">NEW</span>';
-        } else if (post.views >= 200 || post.replies >= 20) {
-            tagHtml = '<span class="wb-tag wb-tag-hot">HOT</span>';
-        }
-        
-        container.innerHTML += `
-            <a href="post.html?id=${post.id}" class="wb-row">
-                <div class="wb-title-group">
-                    ${tagHtml}
-                    <span class="wb-title">${post.title}</span>
-                </div>
-                <div class="wb-meta">
-                    <span>👤 ${post.author}</span>
-                    <span>💬 ${post.replies || 0} ตอบ</span>
-                    <span style="color: #6b5a45;">${post.timestamp ? post.timestamp.split('|')[0].trim() : ''}</span>
-                </div>
-            </a>
-        `;
-    });
-}
     </script>
 </body>
 </html>
