@@ -197,7 +197,8 @@
                     const response = await fetch(`${API_CONFIG.BASE_URL}/comments`);
                     if (response.ok) {
                         const comments = await response.json();
-                        return comments.filter(c => String(c.postId) === String(postId)).sort((a, b) => parseInt(a.id) - parseInt(b.id));
+                        // 🌟 แก้ไขให้รองรับทั้ง post_id (จากฐานข้อมูล D1) และ postId (จาก LocalStorage เดิม)
+                        return comments.filter(c => String(c.post_id || c.postId) === String(postId)).sort((a, b) => parseInt(a.id) - parseInt(b.id));
                     }
                     const response2 = await fetch(`${API_CONFIG.BASE_URL}/posts/${postId}/comments`);
                     if (!response2.ok) return [];
@@ -485,8 +486,6 @@
         }
 
         document.addEventListener('DOMContentLoaded', async () => {
-            // ลบการเช็กเวลา Session ออกแล้ว (ไม่มีการเตะออกเองอีกต่อไป)
-
             const savedUser = localStorage.getItem('siy_username');
             const userType = localStorage.getItem('siy_usertype'); 
             
