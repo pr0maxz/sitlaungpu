@@ -76,15 +76,6 @@
         .role-5 { background: linear-gradient(135deg, #2b1f14, #120c0a); color: #a69477; border: 1px solid #8a6315; }
         .role-guest { background: rgba(168, 46, 46, 0.15); color: #ff6b6b; border: 1px dashed #a82e2e; }
 
-        /* 🔔 สไตล์สำหรับระบบแจ้งเตือน */
-        .noti-badge { background: #ff6b6b; color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.7rem; position: absolute; top: -5px; right: -5px; font-weight: bold; box-shadow: 0 0 5px rgba(255,107,107,0.5); }
-        .noti-item { padding: 12px; border-bottom: 1px solid rgba(138, 99, 21, 0.2); cursor: pointer; transition: background 0.3s; line-height: 1.4; }
-        .noti-item:hover { background: rgba(212, 175, 55, 0.1); }
-        .noti-item.unread { background: rgba(212, 175, 55, 0.08); border-left: 3px solid var(--gold-main); }
-        .noti-time { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; }
-        #notiList::-webkit-scrollbar { width: 6px; } 
-        #notiList::-webkit-scrollbar-thumb { background: var(--gold-dark); border-radius: 10px; }
-
         .sect-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(7, 4, 2, 0.9); backdrop-filter: blur(8px); z-index: 1000; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; } .sect-modal-overlay.active { display: flex; opacity: 1; }
         .sect-modal-content { position: relative; background: linear-gradient(135deg, #1a120b, #0a0603); border: 1px solid var(--gold-main); border-radius: 12px; width: 90%; max-width: 450px; padding: 40px 30px 60px 30px; box-shadow: 0 15px 40px rgba(0,0,0,0.9), inset 0 0 20px rgba(212,175,55,0.1); transform: translateY(-20px); transition: transform 0.3s ease; } .sect-modal-overlay.active .sect-modal-content { transform: translateY(0); }
         .modal-corner { position: absolute; width: 60px; pointer-events: none; opacity: 0.8; } .mc-top-left { top: 12px; left: 12px; transform: scaleX(-1); } .mc-top-right { top: 12px; right: 12px; } .mc-bottom-left { bottom: 12px; left: 12px; transform: scaleX(-1) scaleY(-1); } .mc-bottom-right { bottom: 12px; right: 12px; transform: scaleY(-1); }
@@ -154,11 +145,6 @@
                         </div>
                     </div>
                     
-                    <!-- 🔔 ปุ่มแจ้งเตือน -->
-                    <button class="btn-submit-modal" id="notiBtn" style="display:none; margin-bottom: 10px; width: 100%; background: rgba(212,175,55,0.1); border: 1px solid var(--gold-dark); color: var(--gold-light); box-shadow: none; position: relative;" onclick="openNotiModal()">
-                        กระแสจิต 🔔 <span id="notiBadge" class="noti-badge" style="display:none;">0</span>
-                    </button>
-                    
                     <button onclick="handleLogout()" class="btn-logout" id="logoutBtnText">ออกจากระบบ (ลบตัวตน)</button>
                 </div>
             </div>
@@ -193,28 +179,12 @@
         </div>
     </div>
 
-    <!-- 🔔 Notification Modal -->
-    <div class="sect-modal-overlay" id="notiModal" style="z-index: 9999;">
-        <div class="sect-modal-content" style="max-width: 400px; padding: 30px 20px;">
-            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-left" alt="">
-            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-right" alt="">
-            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-bottom-left" alt="">
-            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-bottom-right" alt="">
-            <div class="modal-header"><h3 style="font-size: 1.4rem;">🔔 กระแสจิต (แจ้งเตือน)</h3></div>
-            <div id="notiList" style="max-height: 350px; overflow-y: auto; text-align: left; margin-bottom: 20px;">
-                <!-- แจ้งเตือนจะมาอยู่ตรงนี้ -->
-            </div>
-            <button type="button" class="btn-submit-modal" style="width: 100%;" onclick="closeNotiModal()">ปิดหน้าต่าง</button>
-        </div>
-    </div>
-
     <script>
         const API_CONFIG = { 
             BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
         };
 
         const MEMBER_SESSION_LIMIT = 24 * 60 * 60 * 1000;
-        let currentPostAuthor = ''; // เก็บเจ้าของกระทู้เพื่อส่งแจ้งเตือน
 
         function checkMemberSession() {
             const savedUser = localStorage.getItem('siy_username');
@@ -272,91 +242,6 @@
                 } catch (error) { return { success: false }; }
             }
         };
-
-        // 🌟 ฟังก์ชันส่งกระแสจิต 🌟
-        async function sendNotification(recipient, action_type, post_id) {
-            const actor = localStorage.getItem('siy_username');
-            if(!actor || actor === recipient || !recipient) return; 
-            
-            const now = new Date();
-            const timeStr = now.getDate() + ' ส.ค. 2569 | ' + now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0') + ' น.';
-            
-            try {
-                await fetch(`${API_CONFIG.BASE_URL}/notifications`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        id: Date.now().toString() + Math.floor(Math.random()*1000),
-                        recipient: recipient,
-                        actor: actor,
-                        action_type: action_type,
-                        post_id: post_id,
-                        timestamp: timeStr
-                    })
-                });
-            } catch(e) {}
-        }
-
-        // 🌟 ดึงข้อมูลกระแสจิต 🌟
-        async function checkNotifications() {
-            const username = localStorage.getItem('siy_username');
-            if (!username || localStorage.getItem('siy_usertype') === 'guest') return;
-
-            const notiBtn = document.getElementById('notiBtn');
-            if(notiBtn) notiBtn.style.display = 'inline-block';
-            
-            try {
-                const res = await fetch(`${API_CONFIG.BASE_URL}/notifications/${encodeURIComponent(username)}`);
-                if (res.ok) {
-                    const notis = await res.json();
-                    const unreadCount = notis.filter(n => n.is_read === 0).length;
-                    const badge = document.getElementById('notiBadge');
-                    
-                    if (unreadCount > 0) {
-                        badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
-                        badge.style.display = 'inline-block';
-                    } else {
-                        badge.style.display = 'none';
-                    }
-                    window.userNotifications = notis;
-                }
-            } catch (e) {}
-        }
-
-        function openNotiModal() {
-            const modal = document.getElementById('notiModal');
-            const listContainer = document.getElementById('notiList');
-            const notis = window.userNotifications || [];
-            listContainer.innerHTML = '';
-            
-            if (notis.length === 0) {
-                listContainer.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 20px;">ลานจิตว่างเปล่า... ยังไม่มีผู้ใดส่งกระแสจิตถึงท่าน</p>';
-            } else {
-                notis.forEach(n => {
-                    let actionText = '';
-                    if (n.action_type === 'comment') actionText = 'ได้ร่วมแสดงความเห็นในจารึกของคุณ';
-                    if (n.action_type === 'reply') actionText = 'ได้ตอบกลับความคิดเห็นของคุณ';
-                    
-                    const isUnread = n.is_read === 0 ? 'unread' : '';
-                    listContainer.innerHTML += `
-                        <div class="noti-item ${isUnread}" onclick="readNotification('${n.id}', '${n.post_id}')">
-                            <div style="color: var(--gold-light); font-family: 'Prompt', sans-serif;">
-                                <strong>${n.actor}</strong> ${actionText}
-                            </div>
-                            <div class="noti-time">${n.timestamp}</div>
-                        </div>
-                    `;
-                });
-            }
-            modal.classList.add('active');
-        }
-
-        function closeNotiModal() { document.getElementById('notiModal').classList.remove('active'); }
-
-        async function readNotification(notiId, postId) {
-            await fetch(`${API_CONFIG.BASE_URL}/notifications/${notiId}/read`, { method: 'PUT' });
-            window.location.href = `post.html?id=${postId}`;
-        }
 
         let pendingConfirmAction = null;
         function showCustomConfirm(message, callback) {
@@ -578,7 +463,6 @@
 
             const result = await ApiManager.saveComment(commentData);
             if(result && result.success !== false) {
-                await sendNotification(currentPostAuthor, 'comment', postId); // 🔔 ยิงแจ้งเตือน
                 textarea.value = ''; 
                 showCustomAlert('บันทึกจารึกสำเร็จ!');
                 loadComments(postId); 
@@ -610,7 +494,6 @@
 
             const result = await ApiManager.saveComment(commentData);
             if(result && result.success !== false) {
-                await sendNotification(parentAuthor, 'reply', postId); // 🔔 ยิงแจ้งเตือน
                 textarea.value = '';
                 showCustomAlert('ส่งคำตอบกลับสำเร็จ!');
                 loadComments(postId);
@@ -622,7 +505,6 @@
 
         document.addEventListener('DOMContentLoaded', async () => {
             checkMemberSession();
-            checkNotifications(); // 🔔 โหลดแจ้งเตือนเมื่อเปิดหน้าเว็บ
 
             const savedUser = localStorage.getItem('siy_username');
             const userType = localStorage.getItem('siy_usertype'); 
@@ -656,8 +538,6 @@
             if(!postData) {
                 showCustomAlert('อาถรรพ์บังตา... ไม่พบศิลาจารึกที่คุณค้นหา อาจถูกลบไปแล้ว', 'webboard.html'); return;
             }
-
-            currentPostAuthor = postData.author; // 🔔 จำชื่อเจ้าของกระทู้เพื่อไว้แจ้งเตือน
 
             document.getElementById('pageTitle').textContent = postData.title + ' - ศิษย์หลวงปู่';
             document.getElementById('dyn-category').textContent = (postData.category === "1" ? "นิยายสัตยาสาบาน" : "คุยกับศิษย์หลวงปู่");
