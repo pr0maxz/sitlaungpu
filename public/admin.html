@@ -281,13 +281,31 @@
             },
             async savePost(postData) { 
                 if (API_CONFIG.USE_REAL_API) { 
-                    await fetch(`${API_CONFIG.BASE_URL}/posts`, { method: postData.id ? 'PUT' : 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(postData) }); 
+                    const res = await fetch(`${API_CONFIG.BASE_URL}/posts`, { 
+                        method: postData.id ? 'PUT' : 'POST', 
+                        headers: {'Content-Type': 'application/json'}, 
+                        body: JSON.stringify(postData) 
+                    });
+                    if (!res.ok) {
+                        const errText = await res.text();
+                        throw new Error(errText || 'Failed to save post');
+                    }
+                    return await res.json();
                 } else { 
-                    let posts = await this.getPosts(); if (postData.id) { const idx = posts.findIndex(p => p.id === postData.id); if (idx > -1) posts[idx] = { ...posts[idx], ...postData }; } else { const now = new Date(); const timeStr = '26 ส.ค. 2569 | ' + now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0') + ' น.'; posts.unshift({ ...postData, id: Date.now().toString(), timestamp: timeStr, views: 0, replies: 0, pinned: 0 }); } localStorage.setItem('siy_posts', JSON.stringify(posts)); 
+                    let posts = await this.getPosts(); 
+                    if (postData.id) { 
+                        const idx = posts.findIndex(p => String(p.id) === String(postData.id)); 
+                        if (idx > -1) posts[idx] = { ...posts[idx], ...postData }; 
+                    } else { 
+                        const now = new Date(); 
+                        const timeStr = '26 ส.ค. 2569 | ' + now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0') + ' น.'; 
+                        posts.unshift({ ...postData, id: Date.now().toString(), timestamp: timeStr, views: 0, replies: 0, pinned: 0 }); 
+                    } 
+                    localStorage.setItem('siy_posts', JSON.stringify(posts)); 
                 } 
             },
             async deletePost(id) { 
-                if (API_CONFIG.USE_REAL_API) { await fetch(`${API_CONFIG.BASE_URL}/posts/${id}`, { method: 'DELETE' }); } else { let posts = await this.getPosts(); localStorage.setItem('siy_posts', JSON.stringify(posts.filter(p => p.id !== id))); } 
+                if (API_CONFIG.USE_REAL_API) { await fetch(`${API_CONFIG.BASE_URL}/posts/${id}`, { method: 'DELETE' }); } else { let posts = await this.getPosts(); localStorage.setItem('siy_posts', JSON.stringify(posts.filter(p => String(p.id) !== String(id)))); } 
             },
             
             async getUsers() { 
@@ -414,9 +432,9 @@
             posts.forEach(p => { 
                 const isPinned = checkIsPinned(p.pinned);
                 const pinBtnHtml = `<button class="btn ${isPinned ? 'btn-edit' : 'btn-pin'}" onclick="togglePinPost('${p.id}')">${isPinned ? '📍 ถอดหมุด' : '📌 ปักหมุด'}</button>`;
-                const rowHtml = `<tr><td>${p.id.substring(0, 6)}...</td><td><strong>${p.title}</strong></td><td>${isPinned ? '<span style="color:var(--gold-main);">📌 ปักหมุด</span>' : 'ปกติ'}</td><td>${p.author}</td><td><div style="display:flex; gap:5px; flex-wrap:wrap;">${pinBtnHtml} <button class="btn btn-edit" onclick="editPost('${p.id}')">แก้ไข</button> <button class="btn btn-delete" onclick="deletePost('${p.id}')">ลบ</button></div></td></tr>`; 
+                const rowHtml = `<tr><td>${String(p.id).substring(0, 6)}...</td><td><strong>${p.title}</strong></td><td>${isPinned ? '<span style="color:var(--gold-main);">📌 ปักหมุด</span>' : 'ปกติ'}</td><td>${p.author}</td><td><div style="display:flex; gap:5px; flex-wrap:wrap;">${pinBtnHtml} <button class="btn btn-edit" onclick="editPost('${p.id}')">แก้ไข</button> <button class="btn btn-delete" onclick="deletePost('${p.id}')">ลบ</button></div></td></tr>`; 
                 
-                if (p.category === "1") { tbCat1.innerHTML += rowHtml; countCat1++; } 
+                if (String(p.category) === "1") { tbCat1.innerHTML += rowHtml; countCat1++; } 
                 else { tbCat2.innerHTML += rowHtml; countCat2++; }
             });
 
@@ -431,7 +449,6 @@
                 usersTbody.innerHTML += `<tr><td>${i + 1}</td><td><strong>${u.username}</strong></td><td><code>${u.password || '-'}</code></td><td>${displayRole}</td><td><div style="display:flex; gap:5px; flex-wrap:wrap;"><button class="btn btn-edit" onclick="editUser('${u.username}')">แก้ไข</button> <button class="btn btn-delete" onclick="deleteUser('${u.username}')">ลบ</button></div></td></tr>`; 
             });
 
-            // 🌟 โหลดข้อมูล CMS Hero แบบรองรับทุกรูปแบบคีย์
             const cms = await AdminAPI.getCMS();
             if (cms) {
                 document.getElementById('cms-hero-subtitle').value = cms.heroSubtitle || cms.hero_subtitle || cms.subtitle || ''; 
@@ -442,26 +459,28 @@
             }
         }
 
+        // 🌟 ปรับปรุง togglePinPost ให้ปลอดภัยและมีระบบแจ้งเตือนข้อผิดพลาด
         async function togglePinPost(id) {
-            let posts = await AdminAPI.getPosts();
-            let postIndex = posts.findIndex(p => p.id === id);
-            if(postIndex > -1) {
-                const currentPinned = checkIsPinned(posts[postIndex].pinned);
-                posts[postIndex].pinned = currentPinned ? 0 : 1; 
-                
-                if (!API_CONFIG.USE_REAL_API) { 
-                    localStorage.setItem('siy_posts', JSON.stringify(posts)); 
-                } else { 
-                    await AdminAPI.savePost(posts[postIndex]); 
+            try {
+                let posts = await AdminAPI.getPosts();
+                let postIndex = posts.findIndex(p => String(p.id) === String(id));
+                if(postIndex > -1) {
+                    const currentPinned = checkIsPinned(posts[postIndex].pinned);
+                    posts[postIndex].pinned = currentPinned ? 0 : 1; 
+                    
+                    await AdminAPI.savePost(posts[postIndex]);
+                    await loadAdminData();
+                    showCustomAlert(currentPinned ? '📍 ถอดหมุดกระทู้สำเร็จ' : '📌 ปักหมุดกระทู้สำเร็จ');
                 }
-                loadAdminData();
+            } catch (err) {
+                showCustomAlert('⚠️ เกิดอาถรรพ์ขัดข้องในการปักหมุด: ' + err.message);
             }
         }
 
         async function openPostModal(id = null) {
             document.getElementById('postForm').reset(); document.getElementById('edit-post-id').value = ''; document.getElementById('edit-post-pinned').value = '0';
             if (id) {
-                const posts = await AdminAPI.getPosts(); const p = posts.find(x => x.id === id);
+                const posts = await AdminAPI.getPosts(); const p = posts.find(x => String(x.id) === String(id));
                 if (p) { 
                     document.getElementById('edit-post-id').value = p.id; 
                     document.getElementById('edit-post-category').value = p.category; 
@@ -477,15 +496,24 @@
         function editPost(id) { openPostModal(id); }
         async function submitPostForm(e) {
             e.preventDefault(); document.getElementById('btnSavePost').textContent = 'กำลังบันทึก...';
-            const data = { 
-                id: document.getElementById('edit-post-id').value, 
-                category: document.getElementById('edit-post-category').value, 
-                title: document.getElementById('edit-post-title').value.trim(), 
-                author: document.getElementById('edit-post-author').value.trim(), 
-                content: document.getElementById('edit-post-content').value.trim().replace(/\n/g, '<br>'), 
-                pinned: parseInt(document.getElementById('edit-post-pinned').value) || 0 
-            };
-            await AdminAPI.savePost(data); document.getElementById('btnSavePost').textContent = 'บันทึก'; closeModal('postModal'); loadAdminData(); showCustomAlert('บันทึกข้อมูลกระทู้เรียบร้อยแล้ว');
+            try {
+                const data = { 
+                    id: document.getElementById('edit-post-id').value, 
+                    category: document.getElementById('edit-post-category').value, 
+                    title: document.getElementById('edit-post-title').value.trim(), 
+                    author: document.getElementById('edit-post-author').value.trim(), 
+                    content: document.getElementById('edit-post-content').value.trim().replace(/\n/g, '<br>'), 
+                    pinned: parseInt(document.getElementById('edit-post-pinned').value) || 0 
+                };
+                await AdminAPI.savePost(data); 
+                document.getElementById('btnSavePost').textContent = 'บันทึก'; 
+                closeModal('postModal'); 
+                loadAdminData(); 
+                showCustomAlert('บันทึกข้อมูลกระทู้เรียบร้อยแล้ว');
+            } catch (err) {
+                document.getElementById('btnSavePost').textContent = 'บันทึก';
+                showCustomAlert('เกิดข้อผิดพลาด: ' + err.message);
+            }
         }
 
         function deletePost(id) { 
@@ -531,7 +559,6 @@
             });
         }
 
-        // 🌟 บันทึก CMS Hero รองรับทั้ง camelCase และ snake_case
         async function saveHeroCMS(e) {
             e.preventDefault();
             const subtitleVal = document.getElementById('cms-hero-subtitle').value.trim();
