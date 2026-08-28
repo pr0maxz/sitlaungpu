@@ -228,7 +228,7 @@
             BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
         };
 
-                async function getRoleBadgeFromAPI(username) {
+        async function getRoleBadgeFromAPI(username) {
             if (!username) return '<span class="role-badge role-5">เด็กวัด</span>';
             if (username.toUpperCase() === 'ADMIN') {
                 return '<span class="role-badge role-1">ปรมัตถ์</span>';
@@ -397,7 +397,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            checkMemberSession(); 
+            // เอา checkMemberSession ออกแล้ว เพื่อไม่ให้ระบบเตะผู้ใช้ออกเองอีกต่อไป
             loadAndRenderPosts();
             checkUserLoginStatus();
 
