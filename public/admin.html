@@ -12,7 +12,6 @@
         body { background-color: var(--bg-deep); background-image: radial-gradient(circle at 50% 50%, var(--bg-glow) 0%, var(--bg-deep) 90%); background-attachment: fixed; color: #d1bfae; font-family: 'Sarabun', sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
         h1, h2, h3, h4 { font-family: 'Prompt', sans-serif; color: var(--gold-light); }
         
-        /* Header Responsive */
         .admin-header { background: linear-gradient(180deg, #1f1107 0%, #070402 100%); border-bottom: 1px solid var(--gold-dark); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.8); width: 100%; }
         .admin-title { display: flex; align-items: center; gap: 10px; min-width: 0; } 
         .admin-title img { height: 35px; flex-shrink: 0; }
@@ -20,42 +19,34 @@
         .admin-header-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
         .admin-badge { background: rgba(212, 175, 55, 0.15); border: 1px solid var(--gold-main); color: var(--gold-light); padding: 3px 8px; border-radius: 20px; font-size: 0.7rem; font-family: 'Prompt', sans-serif; white-space: nowrap; }
         
-        /* Layout Grid */
         .admin-layout { display: grid; grid-template-columns: 240px 1fr; flex: 1; width: 100%; min-height: calc(100vh - 65px); }
-        
-        /* Sidebar / Tabs Navigation Responsive */
         .admin-sidebar { background: rgba(10, 5, 2, 0.9); border-right: 1px solid rgba(138, 99, 21, 0.3); padding: 15px 10px; display: flex; flex-direction: column; gap: 6px; width: 100%; }
         .nav-btn { background: transparent; border: 1px solid transparent; color: #a69477; padding: 10px 14px; border-radius: 8px; font-family: 'Prompt', sans-serif; font-size: 0.9rem; text-align: left; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px; width: 100%; white-space: nowrap; }
         .nav-btn:hover, .nav-btn.active { background: rgba(212, 175, 55, 0.1); border-color: var(--gold-dark); color: var(--gold-light); text-shadow: 0 0 8px rgba(212,175,55,0.3); }
         .nav-btn.active { font-weight: bold; border-color: var(--gold-main); }
         
-        /* Content Area */
         .admin-content { padding: 20px; overflow-y: auto; width: 100%; max-width: 100%; min-width: 0; }
         .tab-pane { display: none; width: 100%; } .tab-pane.active { display: block; }
         .panel-card { background: rgba(12, 7, 4, 0.8); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 25px; box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 5px 20px rgba(0,0,0,0.5); width: 100%; }
         .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(138, 99, 21, 0.3); padding-bottom: 12px; flex-wrap: wrap; gap: 10px; width: 100%; }
         .panel-header h3 { font-size: clamp(1.05rem, 1.8vw, 1.25rem); }
         
-        /* Stats Grid */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 25px; width: 100%; }
         .stat-card { background: linear-gradient(135deg, rgba(42, 24, 5, 0.6), rgba(10, 5, 2, 0.8)); border: 1px solid var(--gold-dark); border-radius: 10px; padding: 15px; text-align: center; }
         .stat-card h4 { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px; } .stat-card .number { font-size: 1.8rem; color: var(--gold-light); font-weight: bold; font-family: 'Prompt', sans-serif; }
         
-        /* Table Responsive */
         .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 8px; border: 1px solid rgba(138, 99, 21, 0.2); margin-bottom: 10px; }
         .data-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; text-align: left; min-width: 500px; }
         .data-table th, .data-table td { padding: 10px 14px; border-bottom: 1px solid rgba(138, 99, 21, 0.2); }
         .data-table th { background: rgba(31, 17, 7, 0.9); color: var(--gold-main); font-family: 'Prompt', sans-serif; font-weight: 600; white-space: nowrap; }
         .data-table tr:hover { background: rgba(212, 175, 55, 0.04); }
         
-        /* Buttons */
         .btn { padding: 7px 14px; border-radius: 20px; font-family: 'Prompt', sans-serif; font-size: 0.8rem; cursor: pointer; border: none; transition: all 0.3s; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
         .btn-gold { background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; font-weight: bold; } .btn-gold:hover { filter: brightness(1.2); }
         .btn-edit { background: rgba(212, 175, 55, 0.15); color: var(--gold-light); border: 1px solid var(--gold-dark); } .btn-edit:hover { background: var(--gold-main); color: #000; }
         .btn-delete { background: rgba(168, 46, 46, 0.15); color: var(--danger-color); border: 1px solid rgba(168, 46, 46, 0.5); } .btn-delete:hover { background: var(--danger-color); color: #fff; }
         .btn-pin { background: rgba(115, 201, 144, 0.15); color: var(--success-color); border: 1px solid rgba(115, 201, 144, 0.5); } .btn-pin:hover { background: var(--success-color); color: #000; }
         
-        /* Role Badges */
         .role-tag { padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; font-family: 'Prompt', sans-serif; font-weight: bold; display: inline-block; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.5); }
         .role-1 { background: linear-gradient(135deg, #4a0e0e, #2e0808); color: #f5d77f; border: 1px solid #d4af37; text-shadow: 0 0 5px rgba(212,175,55,0.5); } 
         .role-2 { background: linear-gradient(135deg, #3a1c4a, #1f0f29); color: #e5b3ff; border: 1px solid #a86bd1; } 
@@ -63,7 +54,6 @@
         .role-4 { background: rgba(138, 150, 166, 0.15); color: #c0c8d1; border: 1px solid #8a96a6; } 
         .role-5 { background: rgba(138, 99, 21, 0.1); color: #a69477; border: 1px solid #8a6315; } 
 
-        /* Form Grid */
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; width: 100%; }
         .form-group { margin-bottom: 14px; width: 100%; } .form-group label { display: block; color: var(--gold-light); font-size: 0.85rem; margin-bottom: 5px; font-family: 'Prompt', sans-serif; }
         .form-control { width: 100%; background: rgba(0,0,0,0.6); border: 1px solid rgba(138, 99, 21, 0.5); color: #fff; padding: 9px 12px; border-radius: 8px; font-family: 'Sarabun', sans-serif; font-size: 0.9rem; }
@@ -71,11 +61,9 @@
         .form-select option { background: #1a120b; color: #d1bfae; }
         textarea.form-control { resize: vertical; min-height: 90px; }
         
-        /* Modals */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(7, 4, 2, 0.85); backdrop-filter: blur(8px); z-index: 999; justify-content: center; align-items: center; padding: 12px; } .modal-overlay.active { display: flex; }
         .modal-box { background: linear-gradient(135deg, #1a120b, #0a0603); border: 1px solid var(--gold-main); border-radius: 12px; width: 100%; max-width: 500px; padding: 20px; position: relative; box-shadow: 0 15px 40px rgba(0,0,0,0.9); max-height: 90vh; overflow-y: auto; }
         
-        /* Responsive Breakpoints (มือถือและแท็บเล็ต) */
         @media (max-width: 850px) { 
             .admin-header { padding: 10px 12px; flex-direction: column; align-items: stretch; gap: 8px; }
             .admin-header-actions { width: 100%; justify-content: space-between; gap: 6px; }
@@ -252,6 +240,10 @@
             BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
         };
 
+        function checkIsPinned(val) {
+            return val === true || val === 1 || val === '1' || val === 'true';
+        }
+
         async function checkAdminAuth() {
             const savedUsername = localStorage.getItem('siy_username');
             const userType = localStorage.getItem('siy_usertype');
@@ -291,7 +283,7 @@
                 if (API_CONFIG.USE_REAL_API) { 
                     await fetch(`${API_CONFIG.BASE_URL}/posts`, { method: postData.id ? 'PUT' : 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(postData) }); 
                 } else { 
-                    let posts = await this.getPosts(); if (postData.id) { const idx = posts.findIndex(p => p.id === postData.id); if (idx > -1) posts[idx] = { ...posts[idx], ...postData }; } else { const now = new Date(); const timeStr = '26 ส.ค. 2569 | ' + now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0') + ' น.'; posts.unshift({ ...postData, id: Date.now().toString(), timestamp: timeStr, views: 0, replies: 0, pinned: false }); } localStorage.setItem('siy_posts', JSON.stringify(posts)); 
+                    let posts = await this.getPosts(); if (postData.id) { const idx = posts.findIndex(p => p.id === postData.id); if (idx > -1) posts[idx] = { ...posts[idx], ...postData }; } else { const now = new Date(); const timeStr = '26 ส.ค. 2569 | ' + now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0') + ' น.'; posts.unshift({ ...postData, id: Date.now().toString(), timestamp: timeStr, views: 0, replies: 0, pinned: 0 }); } localStorage.setItem('siy_posts', JSON.stringify(posts)); 
                 } 
             },
             async deletePost(id) { 
@@ -366,9 +358,9 @@
         function initAdminDB() {
             if (!localStorage.getItem('siy_posts')) {
                 const defaultPosts = [
-                    { id: "1001", category: "1", title: "สัตยาสาบาน ตอนที่ 1: รอยยันต์สีเลือด", content: "ปฐมบทแห่งความแค้น...", author: "ADMIN", timestamp: "25 สิงหาคม 2569 | 15:00 น.", views: 240, replies: 4, pinned: true },
-                    { id: "1002", category: "1", title: "สัตยาสาบาน ตอนที่ 2: เสียงเพรียกจากป่าช้า", content: "เสียงหวีดร้องในยามค่ำคืน...", author: "ADMIN", timestamp: "25 สิงหาคม 2569 | 10:00 น.", views: 150, replies: 10, pinned: false },
-                    { id: "2001", category: "2", title: "สงสัยเรื่องสถานที่ในการสวดมนต์ครับ", content: "ควรสวดที่ไหนดี...", author: "ศิษย์ใหม่", timestamp: "26 สิงหาคม 2569 | 03:00 น.", views: 560, replies: 42, pinned: false }
+                    { id: "1001", category: "1", title: "สัตยาสาบาน ตอนที่ 1: รอยยันต์สีเลือด", content: "ปฐมบทแห่งความแค้น...", author: "ADMIN", timestamp: "25 สิงหาคม 2569 | 15:00 น.", views: 240, replies: 4, pinned: 1 },
+                    { id: "1002", category: "1", title: "สัตยาสาบาน ตอนที่ 2: เสียงเพรียกจากป่าช้า", content: "เสียงหวีดร้องในยามค่ำคืน...", author: "ADMIN", timestamp: "25 สิงหาคม 2569 | 10:00 น.", views: 150, replies: 10, pinned: 0 },
+                    { id: "2001", category: "2", title: "สงสัยเรื่องสถานที่ในการสวดมนต์ครับ", content: "ควรสวดที่ไหนดี...", author: "ศิษย์ใหม่", timestamp: "26 สิงหาคม 2569 | 03:00 น.", views: 560, replies: 42, pinned: 0 }
                 ];
                 localStorage.setItem('siy_posts', JSON.stringify(defaultPosts));
             }
@@ -411,16 +403,18 @@
             tbCat2.innerHTML = '';
             
             posts.sort((a, b) => {
-                if (a.pinned && !b.pinned) return -1;
-                if (!a.pinned && b.pinned) return 1;
-                return b.id - a.id; 
+                const aPin = checkIsPinned(a.pinned) ? 1 : 0;
+                const bPin = checkIsPinned(b.pinned) ? 1 : 0;
+                if (aPin !== bPin) return bPin - aPin;
+                return parseInt(b.id) - parseInt(a.id); 
             });
 
             let countCat1 = 0; let countCat2 = 0;
 
             posts.forEach(p => { 
-                const pinBtnHtml = `<button class="btn ${p.pinned ? 'btn-edit' : 'btn-pin'}" onclick="togglePinPost('${p.id}')">${p.pinned ? '📍 ถอดหมุด' : '📌 ปักหมุด'}</button>`;
-                const rowHtml = `<tr><td>${p.id.substring(0, 6)}...</td><td><strong>${p.title}</strong></td><td>${p.pinned ? '<span style="color:var(--gold-main);">📌 ปักหมุด</span>' : 'ปกติ'}</td><td>${p.author}</td><td><div style="display:flex; gap:5px; flex-wrap:wrap;">${pinBtnHtml} <button class="btn btn-edit" onclick="editPost('${p.id}')">แก้ไข</button> <button class="btn btn-delete" onclick="deletePost('${p.id}')">ลบ</button></div></td></tr>`; 
+                const isPinned = checkIsPinned(p.pinned);
+                const pinBtnHtml = `<button class="btn ${isPinned ? 'btn-edit' : 'btn-pin'}" onclick="togglePinPost('${p.id}')">${isPinned ? '📍 ถอดหมุด' : '📌 ปักหมุด'}</button>`;
+                const rowHtml = `<tr><td>${p.id.substring(0, 6)}...</td><td><strong>${p.title}</strong></td><td>${isPinned ? '<span style="color:var(--gold-main);">📌 ปักหมุด</span>' : 'ปกติ'}</td><td>${p.author}</td><td><div style="display:flex; gap:5px; flex-wrap:wrap;">${pinBtnHtml} <button class="btn btn-edit" onclick="editPost('${p.id}')">แก้ไข</button> <button class="btn btn-delete" onclick="deletePost('${p.id}')">ลบ</button></div></td></tr>`; 
                 
                 if (p.category === "1") { tbCat1.innerHTML += rowHtml; countCat1++; } 
                 else { tbCat2.innerHTML += rowHtml; countCat2++; }
@@ -437,13 +431,14 @@
                 usersTbody.innerHTML += `<tr><td>${i + 1}</td><td><strong>${u.username}</strong></td><td><code>${u.password || '-'}</code></td><td>${displayRole}</td><td><div style="display:flex; gap:5px; flex-wrap:wrap;"><button class="btn btn-edit" onclick="editUser('${u.username}')">แก้ไข</button> <button class="btn btn-delete" onclick="deleteUser('${u.username}')">ลบ</button></div></td></tr>`; 
             });
 
+            // 🌟 โหลดข้อมูล CMS Hero แบบรองรับทุกรูปแบบคีย์
             const cms = await AdminAPI.getCMS();
             if (cms) {
-                document.getElementById('cms-hero-subtitle').value = cms.heroSubtitle || ''; 
-                document.getElementById('cms-hero-desc').value = cms.heroDesc || ''; 
-                document.getElementById('cms-hero-img').value = cms.heroImg || ''; 
-                document.getElementById('cms-hero-btn-text').value = cms.heroBtnText || ''; 
-                document.getElementById('cms-hero-btn-url').value = cms.heroBtnUrl || '#';
+                document.getElementById('cms-hero-subtitle').value = cms.heroSubtitle || cms.hero_subtitle || cms.subtitle || ''; 
+                document.getElementById('cms-hero-desc').value = cms.heroDesc || cms.hero_desc || cms.description || cms.desc || ''; 
+                document.getElementById('cms-hero-img').value = cms.heroImg || cms.hero_img || cms.image || cms.img || ''; 
+                document.getElementById('cms-hero-btn-text').value = cms.heroBtnText || cms.hero_btn_text || cms.btn_text || cms.btnText || ''; 
+                document.getElementById('cms-hero-btn-url').value = cms.heroBtnUrl || cms.hero_btn_url || cms.btn_url || cms.btnUrl || '#';
             }
         }
 
@@ -451,17 +446,30 @@
             let posts = await AdminAPI.getPosts();
             let postIndex = posts.findIndex(p => p.id === id);
             if(postIndex > -1) {
-                posts[postIndex].pinned = !posts[postIndex].pinned;
-                if (!API_CONFIG.USE_REAL_API) { localStorage.setItem('siy_posts', JSON.stringify(posts)); } else { await AdminAPI.savePost(posts[postIndex]); }
+                const currentPinned = checkIsPinned(posts[postIndex].pinned);
+                posts[postIndex].pinned = currentPinned ? 0 : 1; 
+                
+                if (!API_CONFIG.USE_REAL_API) { 
+                    localStorage.setItem('siy_posts', JSON.stringify(posts)); 
+                } else { 
+                    await AdminAPI.savePost(posts[postIndex]); 
+                }
                 loadAdminData();
             }
         }
 
         async function openPostModal(id = null) {
-            document.getElementById('postForm').reset(); document.getElementById('edit-post-id').value = ''; document.getElementById('edit-post-pinned').value = 'false';
+            document.getElementById('postForm').reset(); document.getElementById('edit-post-id').value = ''; document.getElementById('edit-post-pinned').value = '0';
             if (id) {
                 const posts = await AdminAPI.getPosts(); const p = posts.find(x => x.id === id);
-                if (p) { document.getElementById('edit-post-id').value = p.id; document.getElementById('edit-post-category').value = p.category; document.getElementById('edit-post-title').value = p.title; document.getElementById('edit-post-author').value = p.author; document.getElementById('edit-post-content').value = p.content.replace(/<br>/g, '\n'); document.getElementById('edit-post-pinned').value = p.pinned || false; }
+                if (p) { 
+                    document.getElementById('edit-post-id').value = p.id; 
+                    document.getElementById('edit-post-category').value = p.category; 
+                    document.getElementById('edit-post-title').value = p.title; 
+                    document.getElementById('edit-post-author').value = p.author; 
+                    document.getElementById('edit-post-content').value = p.content.replace(/<br>/g, '\n'); 
+                    document.getElementById('edit-post-pinned').value = checkIsPinned(p.pinned) ? '1' : '0'; 
+                }
                 document.getElementById('postModalTitle').textContent = 'แก้ไขกระทู้';
             } else { document.getElementById('postModalTitle').textContent = 'สลักกระทู้ใหม่'; }
             document.getElementById('postModal').classList.add('active');
@@ -469,7 +477,14 @@
         function editPost(id) { openPostModal(id); }
         async function submitPostForm(e) {
             e.preventDefault(); document.getElementById('btnSavePost').textContent = 'กำลังบันทึก...';
-            const data = { id: document.getElementById('edit-post-id').value, category: document.getElementById('edit-post-category').value, title: document.getElementById('edit-post-title').value.trim(), author: document.getElementById('edit-post-author').value.trim(), content: document.getElementById('edit-post-content').value.trim().replace(/\n/g, '<br>'), pinned: (document.getElementById('edit-post-pinned').value === 'true') };
+            const data = { 
+                id: document.getElementById('edit-post-id').value, 
+                category: document.getElementById('edit-post-category').value, 
+                title: document.getElementById('edit-post-title').value.trim(), 
+                author: document.getElementById('edit-post-author').value.trim(), 
+                content: document.getElementById('edit-post-content').value.trim().replace(/\n/g, '<br>'), 
+                pinned: parseInt(document.getElementById('edit-post-pinned').value) || 0 
+            };
             await AdminAPI.savePost(data); document.getElementById('btnSavePost').textContent = 'บันทึก'; closeModal('postModal'); loadAdminData(); showCustomAlert('บันทึกข้อมูลกระทู้เรียบร้อยแล้ว');
         }
 
@@ -516,14 +531,26 @@
             });
         }
 
+        // 🌟 บันทึก CMS Hero รองรับทั้ง camelCase และ snake_case
         async function saveHeroCMS(e) {
             e.preventDefault();
+            const subtitleVal = document.getElementById('cms-hero-subtitle').value.trim();
+            const descVal = document.getElementById('cms-hero-desc').value.trim();
+            const imgVal = document.getElementById('cms-hero-img').value.trim();
+            const btnTextVal = document.getElementById('cms-hero-btn-text').value.trim();
+            const btnUrlVal = document.getElementById('cms-hero-btn-url').value.trim();
+
             const data = { 
-                heroSubtitle: document.getElementById('cms-hero-subtitle').value.trim(), 
-                heroDesc: document.getElementById('cms-hero-desc').value.trim(), 
-                heroImg: document.getElementById('cms-hero-img').value.trim(), 
-                heroBtnText: document.getElementById('cms-hero-btn-text').value.trim(), 
-                heroBtnUrl: document.getElementById('cms-hero-btn-url').value.trim() 
+                heroSubtitle: subtitleVal, 
+                heroDesc: descVal, 
+                heroImg: imgVal, 
+                heroBtnText: btnTextVal, 
+                heroBtnUrl: btnUrlVal,
+                hero_subtitle: subtitleVal,
+                hero_desc: descVal,
+                hero_img: imgVal,
+                hero_btn_text: btnTextVal,
+                hero_btn_url: btnUrlVal
             };
             await AdminAPI.saveCMS(data); 
             showCustomAlert('บันทึกข้อมูลส่วน Hero เรียบร้อยแล้ว');
@@ -547,7 +574,6 @@
             window.location.replace('admin_login.html');
         }
 
-        // ⏳ ระบบตัด Session แอดมินอัตโนมัติ (5 นาที)
         const ADMIN_TIMEOUT = 5 * 60 * 1000;
         let adminTimer = null;
 
@@ -592,63 +618,6 @@
                 checkAdminIdle();
             }
         });
-
-        function checkIsPinned(val) {
-    return val === true || val === 1 || val === '1' || val === 'true';
-}
-
-async function loadAdminData() {
-    initAdminDB();
-    document.getElementById('stat-api-mode').textContent = API_CONFIG.USE_REAL_API ? "Cloudflare D1 (API)" : "LocalStorage (Mock)";
-    document.getElementById('stat-api-mode').style.color = API_CONFIG.USE_REAL_API ? "#73c990" : "var(--gold-main)";
-
-    const posts = await AdminAPI.getPosts();
-    document.getElementById('stat-posts-count').textContent = posts.length;
-    
-    const tbCat1 = document.getElementById('posts-table-body-cat1');
-    const tbCat2 = document.getElementById('posts-table-body-cat2');
-    tbCat1.innerHTML = '';
-    tbCat2.innerHTML = '';
-    
-    posts.sort((a, b) => {
-        const aPin = checkIsPinned(a.pinned) ? 1 : 0;
-        const bPin = checkIsPinned(b.pinned) ? 1 : 0;
-        if (aPin !== bPin) return bPin - aPin;
-        return b.id - a.id; 
-    });
-
-    let countCat1 = 0; let countCat2 = 0;
-
-    posts.forEach(p => { 
-        const isPinned = checkIsPinned(p.pinned);
-        const pinBtnHtml = `<button class="btn ${isPinned ? 'btn-edit' : 'btn-pin'}" onclick="togglePinPost('${p.id}')">${isPinned ? '📍 ถอดหมุด' : '📌 ปักหมุด'}</button>`;
-        const rowHtml = `<tr><td>${p.id.substring(0, 6)}...</td><td><strong>${p.title}</strong></td><td>${isPinned ? '<span style="color:var(--gold-main);">📌 ปักหมุด</span>' : 'ปกติ'}</td><td>${p.author}</td><td><div style="display:flex; gap:5px; flex-wrap:wrap;">${pinBtnHtml} <button class="btn btn-edit" onclick="editPost('${p.id}')">แก้ไข</button> <button class="btn btn-delete" onclick="deletePost('${p.id}')">ลบ</button></div></td></tr>`; 
-        
-        if (p.category === "1") { tbCat1.innerHTML += rowHtml; countCat1++; } 
-        else { tbCat2.innerHTML += rowHtml; countCat2++; }
-    });
-
-    if (countCat1 === 0) tbCat1.innerHTML = '<tr><td colspan="5" style="text-align:center;">ยังไม่มีกระทู้ในหมวดนี้</td></tr>';
-    if (countCat2 === 0) tbCat2.innerHTML = '<tr><td colspan="5" style="text-align:center;">ยังไม่มีกระทู้ในหมวดนี้</td></tr>';
-    // ... (โค้ดส่วนอื่นคงเดิม)
-}
-
-async function togglePinPost(id) {
-    let posts = await AdminAPI.getPosts();
-    let postIndex = posts.findIndex(p => p.id === id);
-    if(postIndex > -1) {
-        const currentPinned = checkIsPinned(posts[postIndex].pinned);
-        // สลับค่าเป็น 1 (ปักหมุด) หรือ 0 (ไม่ปักหมุด)
-        posts[postIndex].pinned = currentPinned ? 0 : 1; 
-        
-        if (!API_CONFIG.USE_REAL_API) { 
-            localStorage.setItem('siy_posts', JSON.stringify(posts)); 
-        } else { 
-            await AdminAPI.savePost(posts[postIndex]); 
-        }
-        loadAdminData();
-    }
-}
     </script>
 </body>
 </html>

@@ -228,6 +228,11 @@
             BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
         };
 
+        // 📌 ฟังก์ชันตรวจสอบสถานะปักหมุดแบบปลอดภัย (รองรับทั้ง boolean, number, string)
+        function checkIsPinned(val) {
+            return val === true || val === 1 || val === '1' || val === 'true';
+        }
+
         async function getRoleBadgeFromAPI(username) {
             if (!username) return '<span class="role-badge role-5">เด็กวัด</span>';
             if (username.toUpperCase() === 'ADMIN') {
@@ -303,10 +308,11 @@
                 return;
             }
 
-            // เรียงลำดับ ปักหมุดขึ้นก่อน และตามด้วย ID ใหม่ไปเก่า
+            // 🌟 จัดเรียงโดยให้กระทู้ที่ปักหมุดขึ้นก่อนเสมอ (ใช้ checkIsPinned ตรวจสอบ)
             posts.sort((a, b) => {
-                if (a.pinned && !b.pinned) return -1;
-                if (!a.pinned && b.pinned) return 1;
+                const aPin = checkIsPinned(a.pinned) ? 1 : 0;
+                const bPin = checkIsPinned(b.pinned) ? 1 : 0;
+                if (aPin !== bPin) return bPin - aPin;
                 return parseInt(b.id) - parseInt(a.id); 
             });
 
@@ -341,7 +347,7 @@
             container.innerHTML = '';
 
             for (let post of postsToShow) {
-                const pinTag = post.pinned ? '<span class="wb-tag wb-tag-pin">📌 ปักหมุด</span> ' : '';
+                const pinTag = checkIsPinned(post.pinned) ? '<span class="wb-tag wb-tag-pin">📌 ปักหมุด</span> ' : '';
                 const authorBadge = await getRoleBadgeFromAPI(post.author);
 
                 const postHTML = `
@@ -397,7 +403,6 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            // เอา checkMemberSession ออกแล้ว เพื่อไม่ให้ระบบเตะผู้ใช้ออกเองอีกต่อไป
             loadAndRenderPosts();
             checkUserLoginStatus();
 
@@ -612,101 +617,6 @@
             if (pwdInput.type === 'password') { pwdInput.type = 'text'; toggleIcon.textContent = 'ซ่อน'; } 
             else { pwdInput.type = 'password'; toggleIcon.textContent = 'แสดง'; }
         }
-
-        // 📌 ฟังก์ชันตรวจสอบสถานะปักหมุดแบบปลอดภัย (รองรับทั้ง boolean, number, string)
-function checkIsPinned(val) {
-    return val === true || val === 1 || val === '1' || val === 'true';
-}
-
-async function loadAndRenderPosts(searchQuery = '') {
-    const cat1Container = document.getElementById('dynamic-category-1');
-    const cat2Container = document.getElementById('dynamic-category-2');
-
-    cat1Container.innerHTML = '<div class="loading-text">กำลังอัญเชิญจารึก...</div>';
-    cat2Container.innerHTML = '<div class="loading-text">กำลังอัญเชิญจารึก...</div>';
-    
-    document.getElementById('pagination-cat-1').innerHTML = '';
-    document.getElementById('pagination-cat-2').innerHTML = '';
-
-    let posts = await ApiManager.fetchPosts();
-
-    if (!posts || posts.length === 0) {
-        cat1Container.innerHTML = '<div style="padding: 20px; color: var(--gold-dark); text-align:center;">ยังไม่มีจารึกในหมวดนี้</div>';
-        cat2Container.innerHTML = '<div style="padding: 20px; color: var(--gold-dark); text-align:center;">ยังไม่มีจารึกในหมวดนี้</div>';
-        return;
-    }
-
-    if (searchQuery && searchQuery.trim() !== '') {
-        const q = searchQuery.toLowerCase().trim();
-        posts = posts.filter(p => 
-            (p.title && p.title.toLowerCase().includes(q)) || 
-            (p.content && p.content.toLowerCase().includes(q)) || 
-            (p.author && p.author.toLowerCase().includes(q))
-        );
-    }
-
-    if (posts.length === 0) {
-        cat1Container.innerHTML = '<div style="padding: 20px; color: var(--gold-dark); text-align:center;">ไม่พบจารึกที่ค้นหา</div>';
-        cat2Container.innerHTML = '<div style="padding: 20px; color: var(--gold-dark); text-align:center;">ไม่พบจารึกที่ค้นหา</div>';
-        return;
-    }
-
-    // 🌟 จัดเรียงโดยให้กระทู้ที่ปักหมุดขึ้นก่อนเสมอ
-    posts.sort((a, b) => {
-        const aPin = checkIsPinned(a.pinned) ? 1 : 0;
-        const bPin = checkIsPinned(b.pinned) ? 1 : 0;
-        if (aPin !== bPin) return bPin - aPin;
-        return parseInt(b.id) - parseInt(a.id); 
-    });
-
-    globalPostsCat1 = posts.filter(p => p.category === "1");
-    globalPostsCat2 = posts.filter(p => p.category === "2");
-
-    renderCategoryPage(1, 1);
-    renderCategoryPage(2, 1);
-}
-
-async function renderCategoryPage(categoryId, page) {
-    const container = document.getElementById(`dynamic-category-${categoryId}`);
-    const posts = categoryId === 1 ? globalPostsCat1 : globalPostsCat2;
-    
-    if (posts.length === 0) {
-        container.innerHTML = '<div style="padding: 20px; color: var(--gold-dark); text-align:center;">ยังไม่มีจารึกในหมวดนี้</div>';
-        document.getElementById(`pagination-cat-${categoryId}`).innerHTML = '';
-        return;
-    }
-
-    const totalPages = Math.ceil(posts.length / POSTS_PER_PAGE);
-    if (page < 1) page = 1;
-    if (page > totalPages) page = totalPages;
-
-    const startIndex = (page - 1) * POSTS_PER_PAGE;
-    const endIndex = startIndex + POSTS_PER_PAGE;
-    const postsToShow = posts.slice(startIndex, endIndex);
-
-    container.innerHTML = '';
-
-    for (let post of postsToShow) {
-        const pinTag = checkIsPinned(post.pinned) ? '<span class="wb-tag wb-tag-pin">📌 ปักหมุด</span> ' : '';
-        const authorBadge = await getRoleBadgeFromAPI(post.author);
-
-        const postHTML = `
-            <div class="thread-item">
-                <div class="thread-content">
-                    <a onclick="checkAccessAndGo('post.html?id=${post.id}')" class="thread-title">${pinTag}${post.title}</a>
-                    <div class="thread-details">โดย <span>${post.author}</span> ${authorBadge} | อัปเดตล่าสุด: ${post.timestamp ? post.timestamp.split('|')[0].trim() : '-'}</div>
-                </div>
-                <div class="thread-stats">
-                    <div class="stat-box">👤 ${post.author}</div>
-                    <div class="stat-box">💬 ${post.replies || 0} ตอบ</div>
-                </div>
-            </div>
-        `;
-        container.innerHTML += postHTML;
-    }
-
-    renderPaginationControls(categoryId, page, totalPages);
-}
     </script>
 </body>
 </html>
