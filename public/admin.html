@@ -12,7 +12,6 @@
         body { background-color: var(--bg-deep); background-image: radial-gradient(circle at 50% 50%, var(--bg-glow) 0%, var(--bg-deep) 90%); background-attachment: fixed; color: #d1bfae; font-family: 'Sarabun', sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
         h1, h2, h3, h4 { font-family: 'Prompt', sans-serif; color: var(--gold-light); }
         
-        /* Header Responsive */
         .admin-header { background: linear-gradient(180deg, #1f1107 0%, #070402 100%); border-bottom: 1px solid var(--gold-dark); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.8); width: 100%; }
         .admin-title { display: flex; align-items: center; gap: 10px; min-width: 0; } 
         .admin-title img { height: 35px; flex-shrink: 0; }
@@ -20,42 +19,34 @@
         .admin-header-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
         .admin-badge { background: rgba(212, 175, 55, 0.15); border: 1px solid var(--gold-main); color: var(--gold-light); padding: 3px 8px; border-radius: 20px; font-size: 0.7rem; font-family: 'Prompt', sans-serif; white-space: nowrap; }
         
-        /* Layout Grid */
         .admin-layout { display: grid; grid-template-columns: 240px 1fr; flex: 1; width: 100%; min-height: calc(100vh - 65px); }
-        
-        /* Sidebar / Tabs Navigation Responsive */
         .admin-sidebar { background: rgba(10, 5, 2, 0.9); border-right: 1px solid rgba(138, 99, 21, 0.3); padding: 15px 10px; display: flex; flex-direction: column; gap: 6px; width: 100%; }
         .nav-btn { background: transparent; border: 1px solid transparent; color: #a69477; padding: 10px 14px; border-radius: 8px; font-family: 'Prompt', sans-serif; font-size: 0.9rem; text-align: left; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px; width: 100%; white-space: nowrap; }
         .nav-btn:hover, .nav-btn.active { background: rgba(212, 175, 55, 0.1); border-color: var(--gold-dark); color: var(--gold-light); text-shadow: 0 0 8px rgba(212,175,55,0.3); }
         .nav-btn.active { font-weight: bold; border-color: var(--gold-main); }
         
-        /* Content Area */
         .admin-content { padding: 20px; overflow-y: auto; width: 100%; max-width: 100%; min-width: 0; }
         .tab-pane { display: none; width: 100%; } .tab-pane.active { display: block; }
         .panel-card { background: rgba(12, 7, 4, 0.8); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 25px; box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 5px 20px rgba(0,0,0,0.5); width: 100%; }
         .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(138, 99, 21, 0.3); padding-bottom: 12px; flex-wrap: wrap; gap: 10px; width: 100%; }
         .panel-header h3 { font-size: clamp(1.05rem, 1.8vw, 1.25rem); }
         
-        /* Stats Grid */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 25px; width: 100%; }
         .stat-card { background: linear-gradient(135deg, rgba(42, 24, 5, 0.6), rgba(10, 5, 2, 0.8)); border: 1px solid var(--gold-dark); border-radius: 10px; padding: 15px; text-align: center; }
         .stat-card h4 { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px; } .stat-card .number { font-size: 1.8rem; color: var(--gold-light); font-weight: bold; font-family: 'Prompt', sans-serif; }
         
-        /* Table Responsive */
         .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 8px; border: 1px solid rgba(138, 99, 21, 0.2); margin-bottom: 10px; }
         .data-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; text-align: left; min-width: 500px; }
         .data-table th, .data-table td { padding: 10px 14px; border-bottom: 1px solid rgba(138, 99, 21, 0.2); }
         .data-table th { background: rgba(31, 17, 7, 0.9); color: var(--gold-main); font-family: 'Prompt', sans-serif; font-weight: 600; white-space: nowrap; }
         .data-table tr:hover { background: rgba(212, 175, 55, 0.04); }
         
-        /* Buttons */
         .btn { padding: 7px 14px; border-radius: 20px; font-family: 'Prompt', sans-serif; font-size: 0.8rem; cursor: pointer; border: none; transition: all 0.3s; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
         .btn-gold { background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; font-weight: bold; } .btn-gold:hover { filter: brightness(1.2); }
         .btn-edit { background: rgba(212, 175, 55, 0.15); color: var(--gold-light); border: 1px solid var(--gold-dark); } .btn-edit:hover { background: var(--gold-main); color: #000; }
         .btn-delete { background: rgba(168, 46, 46, 0.15); color: var(--danger-color); border: 1px solid rgba(168, 46, 46, 0.5); } .btn-delete:hover { background: var(--danger-color); color: #fff; }
         .btn-pin { background: rgba(115, 201, 144, 0.15); color: var(--success-color); border: 1px solid rgba(115, 201, 144, 0.5); } .btn-pin:hover { background: var(--success-color); color: #000; }
         
-        /* Role Badges */
         .role-tag { padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; font-family: 'Prompt', sans-serif; font-weight: bold; display: inline-block; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.5); }
         .role-1 { background: linear-gradient(135deg, #4a0e0e, #2e0808); color: #f5d77f; border: 1px solid #d4af37; text-shadow: 0 0 5px rgba(212,175,55,0.5); } 
         .role-2 { background: linear-gradient(135deg, #3a1c4a, #1f0f29); color: #e5b3ff; border: 1px solid #a86bd1; } 
@@ -63,19 +54,25 @@
         .role-4 { background: rgba(138, 150, 166, 0.15); color: #c0c8d1; border: 1px solid #8a96a6; } 
         .role-5 { background: rgba(138, 99, 21, 0.1); color: #a69477; border: 1px solid #8a6315; } 
 
-        /* Form Grid */
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; width: 100%; }
         .form-group { margin-bottom: 14px; width: 100%; } .form-group label { display: block; color: var(--gold-light); font-size: 0.85rem; margin-bottom: 5px; font-family: 'Prompt', sans-serif; }
         .form-control { width: 100%; background: rgba(0,0,0,0.6); border: 1px solid rgba(138, 99, 21, 0.5); color: #fff; padding: 9px 12px; border-radius: 8px; font-family: 'Sarabun', sans-serif; font-size: 0.9rem; }
         .form-control:focus { outline: none; border-color: var(--gold-main); box-shadow: 0 0 8px rgba(212,175,55,0.3); }
         .form-select option { background: #1a120b; color: #d1bfae; }
         textarea.form-control { resize: vertical; min-height: 90px; }
+
+        /* ระบบค้นหาและ Pagination */
+        .search-container { display: flex; gap: 10px; margin-bottom: 15px; }
+        .search-input { flex: 1; padding: 8px 15px; border-radius: 20px; border: 1px solid var(--gold-dark); background: rgba(0,0,0,0.5); color: #fff; font-family: 'Sarabun', sans-serif; outline: none; }
+        .search-input:focus { border-color: var(--gold-main); }
+        .pagination { display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 15px; flex-wrap: wrap; }
+        .page-btn { padding: 5px 12px; background: rgba(0,0,0,0.5); border: 1px solid rgba(138, 99, 21, 0.5); border-radius: 6px; color: var(--gold-light); cursor: pointer; transition: 0.3s; }
+        .page-btn:hover { background: rgba(212,175,55,0.2); }
+        .page-btn.active { background: var(--gold-main); color: #000; font-weight: bold; border-color: var(--gold-light); }
         
-        /* Modals */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(7, 4, 2, 0.85); backdrop-filter: blur(8px); z-index: 999; justify-content: center; align-items: center; padding: 12px; } .modal-overlay.active { display: flex; }
         .modal-box { background: linear-gradient(135deg, #1a120b, #0a0603); border: 1px solid var(--gold-main); border-radius: 12px; width: 100%; max-width: 500px; padding: 20px; position: relative; box-shadow: 0 15px 40px rgba(0,0,0,0.9); max-height: 90vh; overflow-y: auto; }
         
-        /* Responsive Breakpoints */
         @media (max-width: 850px) { 
             .admin-header { padding: 10px 12px; flex-direction: column; align-items: stretch; gap: 8px; }
             .admin-header-actions { width: 100%; justify-content: space-between; gap: 6px; }
@@ -155,13 +152,23 @@
 
             <div id="tab-users" class="tab-pane">
                 <div class="panel-card">
-                    <div class="panel-header"><h3>👥 บัญชีรายชื่อสมาชิก</h3><button class="btn btn-gold" onclick="openUserModal()">+ เพิ่มศิษย์</button></div>
+                    <div class="panel-header">
+                        <h3>👥 บัญชีรายชื่อสมาชิก</h3>
+                        <button class="btn btn-gold" onclick="openUserModal()">+ เพิ่มศิษย์</button>
+                    </div>
+                    
+                    <div class="search-container">
+                        <input type="text" id="searchUserField" class="search-input" placeholder="พิมพ์ชื่อนามแฝงเพื่อค้นหา..." oninput="handleUserSearch()">
+                        <button class="btn btn-gold" onclick="handleUserSearch()">ค้นหา</button>
+                    </div>
+
                     <div class="table-responsive">
                         <table class="data-table">
                             <thead><tr><th>ลำดับ</th><th>นามแฝง (Username)</th><th>รหัสผ่านลับ</th><th>ระดับขั้น</th><th>จัดการ</th></tr></thead>
                             <tbody id="users-table-body"><tr><td colspan="5" style="text-align:center;">กำลังโหลดข้อมูล...</td></tr></tbody>
                         </table>
                     </div>
+                    <div id="userPagination" class="pagination"></div>
                 </div>
             </div>
 
@@ -253,6 +260,12 @@
             BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
         };
 
+        // ตัวแปรสำหรับระบบ Pagination และ Search ของ User
+        let globalUsersData = [];
+        let filteredUsersData = [];
+        let currentUserPage = 1;
+        const USERS_PER_PAGE = 10;
+
         function checkIsPinned(val) {
             return val === true || val === 1 || val === '1' || val === 'true';
         }
@@ -295,7 +308,7 @@
             async savePost(postData) { 
                 if (API_CONFIG.USE_REAL_API) { 
                     const res = await fetch(`${API_CONFIG.BASE_URL}/posts`, { 
-                        method: postData.id && postData.id.length < 15 ? 'PUT' : 'POST', // ตรวจสอบสถานะว่าสร้างใหม่หรือแก้ไข
+                        method: postData.id && postData.id.length < 15 ? 'PUT' : 'POST',
                         headers: {'Content-Type': 'application/json'}, 
                         body: JSON.stringify(postData) 
                     });
@@ -326,7 +339,6 @@
             },
             async saveUser(userData, oldUsername) { 
                 if (API_CONFIG.USE_REAL_API) { 
-                    // 🌟 แก้ไขให้ใช้ POST เมื่อเป็นการสร้างผู้ใช้ใหม่ และ PUT เมื่อเป็นการอัปเดตสมาชิกเดิม
                     const method = oldUsername ? 'PUT' : 'POST';
                     const res = await fetch(`${API_CONFIG.BASE_URL}/users`, { 
                         method: method, 
@@ -476,14 +488,12 @@
             if (countCat1 === 0) tbCat1.innerHTML = '<tr><td colspan="5" style="text-align:center;">ยังไม่มีกระทู้ในหมวดนี้</td></tr>';
             if (countCat2 === 0) tbCat2.innerHTML = '<tr><td colspan="5" style="text-align:center;">ยังไม่มีกระทู้ในหมวดนี้</td></tr>';
 
-            const users = await AdminAPI.getUsers();
-            document.getElementById('stat-users-count').textContent = users.length;
-            const usersTbody = document.getElementById('users-table-body'); usersTbody.innerHTML = '';
-            users.forEach((u, i) => { 
-                const displayRole = getRoleBadge(u.role);
-                usersTbody.innerHTML += `<tr><td>${i + 1}</td><td><strong>${u.username}</strong></td><td><code>${u.password || '-'}</code></td><td>${displayRole}</td><td><div style="display:flex; gap:5px; flex-wrap:wrap;"><button class="btn btn-edit" onclick="editUser('${u.username}')">แก้ไข</button> <button class="btn btn-delete" onclick="deleteUser('${u.username}')">ลบ</button></div></td></tr>`; 
-            });
-
+            // โหลดข้อมูล User ทั้งหมดเก็บไว้ใน Global
+            globalUsersData = await AdminAPI.getUsers();
+            document.getElementById('stat-users-count').textContent = globalUsersData.length;
+            
+            handleUserSearch(); // เริ่มต้นด้วยการโชว์ทั้งหมดหน้าแรก
+            
             const cms = await AdminAPI.getCMS();
             if (cms) {
                 document.getElementById('cms-hero-subtitle').value = cms.heroSubtitle || cms.hero_subtitle || cms.subtitle || ''; 
@@ -492,6 +502,82 @@
                 document.getElementById('cms-hero-btn-text').value = cms.heroBtnText || cms.hero_btn_text || cms.btn_text || cms.btnText || ''; 
                 document.getElementById('cms-hero-btn-url').value = cms.heroBtnUrl || cms.hero_btn_url || cms.btn_url || cms.btnUrl || '#';
             }
+        }
+
+        // 🌟 ฟังก์ชันจัดการค้นหาสมาชิก
+        function handleUserSearch() {
+            const query = document.getElementById('searchUserField').value.toLowerCase().trim();
+            if (query) {
+                filteredUsersData = globalUsersData.filter(u => u.username.toLowerCase().includes(query));
+            } else {
+                filteredUsersData = [...globalUsersData];
+            }
+            renderUsersPage(1);
+        }
+
+        // 🌟 ฟังก์ชันเรนเดอร์รายชื่อสมาชิกแบ่งหน้า
+        function renderUsersPage(page) {
+            const tbody = document.getElementById('users-table-body');
+            tbody.innerHTML = '';
+            
+            if (filteredUsersData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">ไม่พบข้อมูลสมาชิก</td></tr>';
+                document.getElementById('userPagination').innerHTML = '';
+                return;
+            }
+
+            const totalPages = Math.ceil(filteredUsersData.length / USERS_PER_PAGE);
+            if (page < 1) page = 1;
+            if (page > totalPages) page = totalPages;
+            currentUserPage = page;
+
+            const startIndex = (page - 1) * USERS_PER_PAGE;
+            const endIndex = startIndex + USERS_PER_PAGE;
+            const usersToShow = filteredUsersData.slice(startIndex, endIndex);
+
+            usersToShow.forEach((u, i) => {
+                const globalIndex = globalUsersData.findIndex(g => g.username === u.username) + 1;
+                const displayRole = getRoleBadge(u.role);
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${globalIndex}</td>
+                        <td><strong>${u.username}</strong></td>
+                        <td><code>${u.password || '-'}</code></td>
+                        <td>${displayRole}</td>
+                        <td>
+                            <div style="display:flex; gap:5px; flex-wrap:wrap;">
+                                <button class="btn btn-edit" onclick="editUser('${u.username}')">แก้ไข</button> 
+                                <button class="btn btn-delete" onclick="deleteUser('${u.username}')">ลบ</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            renderUserPaginationControls(totalPages);
+        }
+
+        // 🌟 ฟังก์ชันสร้างปุ่มแบ่งหน้า (Pagination) สำหรับผู้ใช้
+        function renderUserPaginationControls(totalPages) {
+            const container = document.getElementById('userPagination');
+            if (totalPages <= 1) {
+                container.innerHTML = '';
+                return;
+            }
+
+            let html = `<button class="page-btn" ${currentUserPage === 1 ? 'disabled' : ''} onclick="renderUsersPage(${currentUserPage - 1})">« ย้อนกลับ</button>`;
+            
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentUserPage - 1 && i <= currentUserPage + 1)) {
+                    html += `<button class="page-btn ${i === currentUserPage ? 'active' : ''}" onclick="renderUsersPage(${i})">${i}</button>`;
+                } else if (i === currentUserPage - 2 || i === currentUserPage + 2) {
+                    html += `<span style="color: var(--gold-dark);">...</span>`;
+                }
+            }
+            
+            html += `<button class="page-btn" ${currentUserPage === totalPages ? 'disabled' : ''} onclick="renderUsersPage(${currentUserPage + 1})">ถัดไป »</button>`;
+            
+            container.innerHTML = html;
         }
 
         async function togglePinPost(id) {
