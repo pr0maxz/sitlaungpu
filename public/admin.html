@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>พระอาจารย์ (CMS) - ศิษย์หลวงปู่</title>
+    <title>เมืองลับแล - ศิษย์หลวงปู่</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;700&family=Sarabun:wght@400;600&display=swap" rel="stylesheet">
     <style>
         html, body { scroll-behavior: smooth; overflow-x: hidden; width: 100%; max-width: 100vw; margin: 0; padding: 0; }
@@ -28,10 +28,8 @@
         .admin-content { padding: 20px; overflow-y: auto; width: 100%; max-width: 100%; min-width: 0; }
         .tab-pane { display: none; width: 100%; } .tab-pane.active { display: block; }
         
-        /* 🌟 Panel Card พร้อมรองรับลายไทยและป้องกัน CLS */
         .panel-card { background: rgba(12, 7, 4, 0.8); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 12px; padding: 25px 20px; margin-bottom: 25px; box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 5px 20px rgba(0,0,0,0.5); width: 100%; position: relative; min-height: 180px; }
         
-        /* ลายไทยมุมกล่อง */
         .corner-decor { position: absolute; width: 50px; height: 50px; pointer-events: none; opacity: 0.7; z-index: 10; }
         .mc-top-left { top: 10px; left: 10px; transform: scaleX(-1); }
         .mc-top-right { top: 10px; right: 10px; }
@@ -73,7 +71,6 @@
         .form-select option { background: #1a120b; color: #d1bfae; }
         textarea.form-control { resize: vertical; min-height: 90px; }
 
-        /* แผงฟิลเตอร์และจัดเรียงสมาชิก */
         .filter-toolbar { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
         .search-input { flex: 2; min-width: 180px; padding: 8px 15px; border-radius: 20px; border: 1px solid var(--gold-dark); background: rgba(0,0,0,0.5); color: #fff; font-family: 'Sarabun', sans-serif; outline: none; }
         .search-input:focus { border-color: var(--gold-main); }
@@ -175,7 +172,6 @@
                 </div>
             </div>
 
-            <!-- 🌟 แถบจัดการสมาชิก พร้อมระบบฟิลเตอร์ค้นหาชื่อ, ยศ และจัดเรียงลำดับเองได้ -->
             <div id="tab-users" class="tab-pane">
                 <div class="panel-card">
                     <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-top-left" alt="" width="50" height="50">
@@ -188,7 +184,6 @@
                         <button class="btn btn-gold" onclick="openUserModal()">+ เพิ่มศิษย์</button>
                     </div>
                     
-                    <!-- 🔍 ช่องฟิลเตอร์ค้นหาชื่อ, กรองตามยศ และตั้งค่าเรียงลำดับ -->
                     <div class="filter-toolbar">
                         <input type="text" id="searchUserField" class="search-input" placeholder="🔍 ค้นหาตามนามแฝง (Username)..." oninput="handleUserSearch()">
                         
@@ -443,7 +438,7 @@
                 } 
             },
             async deleteUser(username) { 
-                if (API_CONFIG.USE_REAL_API) { await fetch(`${API_CONFIG.BASE_URL}/users/${username}`, { method: 'DELETE' }); } else { let users = await this.getUsers(); localStorage.setItem('siy_users', JSON.stringify(users.filter(u => u.username !== username)))); } 
+                if (API_CONFIG.USE_REAL_API) { await fetch(`${API_CONFIG.BASE_URL}/users/${username}`, { method: 'DELETE' }); } else { let users = await this.getUsers(); localStorage.setItem('siy_users', JSON.stringify(users.filter(u => u.username !== username))); } 
             },
             
             async getCMS() { 
@@ -584,7 +579,6 @@
             }
         }
 
-        // 🌟 ระบบฟิลเตอร์ค้นหาชื่อ, ยศ และจัดเรียงลำดับ
         function handleUserSearch() {
             const query = document.getElementById('searchUserField').value.toLowerCase().trim();
             const roleFilter = document.getElementById('filterRoleField').value;
@@ -610,7 +604,6 @@
             renderUsersPage(1);
         }
 
-        // 🌟 ระบบเลื่อนลำดับขึ้น-ลงด้วยตนเอง (Custom Manual Reordering)
         function moveUserRow(indexInFiltered, direction) {
             const currentItem = filteredUsersData[indexInFiltered];
             const targetItem = filteredUsersData[indexInFiltered + direction];
@@ -651,7 +644,6 @@
                 const globalIndex = globalUsersData.findIndex(g => g.username === u.username) + 1;
                 const displayRole = getRoleBadge(u.role);
                 
-                // ปุ่มสลับลำดับขึ้นลงเอง
                 let reorderBtns = `<div style="display:flex; gap:3px;">`;
                 if (absoluteIndex > 0) {
                     reorderBtns += `<button class="btn btn-reorder" onclick="moveUserRow(${absoluteIndex}, -1)" title="เลื่อนขึ้น">▲</button>`;
