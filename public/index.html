@@ -44,7 +44,6 @@
 
         .webboard-list-container { display: flex; flex-direction: column; gap: 12px; margin-top: 15px; }
         
-        /* 🌟 ปรับแต่งกล่องกระทู้ให้ข้อความเรียงตัวธรรมชาติและสวยงาม */
         .wb-row { 
             background: rgba(10, 5, 2, 0.6); 
             border: 1px solid rgba(138, 99, 21, 0.2); 
@@ -86,7 +85,6 @@
             padding-top: 8px; 
         }
 
-        /* 📌 ป้ายปักหมุดแบบแนวนอน วางไว้หน้าหัวข้อ */
         .wb-tag {
             display: inline-flex;
             align-items: center;
@@ -162,6 +160,14 @@
         </section>
 
         <div class="mystic-divider" style="margin-top: 50px;"><span>❖</span></div>
+
+        <!-- 🌟 ส่วนแสดงกระทู้ยอดฮิต (Trending Board) ที่เพิ่มเข้ามาใหม่ -->
+        <section class="card reveal" id="trending-board">
+            <h3 class="section-title">อัคคีจารึกเรืองรอง</h3>
+            <div class="webboard-list-container" id="trendingPostsContainer">
+                <div style="text-align: center; color: var(--gold-dark); padding: 20px;">กำลังคำนวณกระแสความฮิต...</div>
+            </div>
+        </section>
 
         <section class="card reveal" id="webboard">
             <h3 class="section-title">ศิลาจารึกจากลานเสวนา</h3>
@@ -299,9 +305,73 @@
             });
         }
 
+        // ==========================================
+        // 3. ระบบแสดงกระทู้ยอดฮิต (Trending Board)
+        // ==========================================
+        async function renderTrendingPosts() {
+            const container = document.getElementById('trendingPostsContainer');
+            if (!container) return;
+
+            let posts = [];
+            if (API_CONFIG.USE_REAL_API) {
+                try {
+                    const response = await fetch(`${API_CONFIG.BASE_URL}/posts`);
+                    if (response.ok) {
+                        posts = await response.json();
+                    }
+                } catch (error) { console.error('Trending Error:', error); }
+            } else {
+                posts = JSON.parse(localStorage.getItem('siy_posts')) || [];
+            }
+
+            if (!posts || posts.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: var(--gold-dark); padding: 20px;">ยังไม่มีข้อมูลกระทู้ยอดฮิต</div>';
+                return;
+            }
+
+            // คำนวณความฮิต: ยอดวิว + (ยอดตอบคอมเมนต์ × 5)
+            posts.sort((a, b) => {
+                const scoreA = (parseInt(a.views) || 0) + ((parseInt(a.replies) || 0) * 5);
+                const scoreB = (parseInt(b.views) || 0) + ((parseInt(b.replies) || 0) * 5);
+                return scoreB - scoreA;
+            });
+
+            container.innerHTML = '';
+            
+            posts.slice(0, 5).forEach((post, index) => {
+                const rank = index + 1;
+                let rankBadge = '';
+                
+                if (rank === 1) {
+                    rankBadge = '<span class="wb-tag" style="background: linear-gradient(135deg, #ff5e5e, #c0392b); color: #fff; border: 1px solid #ff9999;">🔥 อันดับ 1</span>';
+                } else if (rank === 2) {
+                    rankBadge = '<span class="wb-tag" style="background: linear-gradient(135deg, #ff9933, #d35400); color: #fff; border: 1px solid #ffcc80;">⭐ อันดับ 2</span>';
+                } else if (rank === 3) {
+                    rankBadge = '<span class="wb-tag" style="background: linear-gradient(135deg, #ffe885, #d4af37, #996515); color: #1a0f02; border: 1px solid #fff2a3;">✨ อันดับ 3</span>';
+                } else {
+                    rankBadge = `<span class="wb-tag" style="background: rgba(212,175,55,0.1); color: var(--gold-light); border: 1px solid var(--gold-dark);">#${rank}</span>`;
+                }
+
+                container.innerHTML += `
+                    <a href="post.html?id=${post.id}" class="wb-row">
+                        <div class="wb-title-group">
+                            ${rankBadge}
+                            <span class="wb-title">${post.title}</span>
+                        </div>
+                        <div class="wb-meta">
+                            <span>👤 ${post.author || 'ไม่ระบุตัวตน'}</span>
+                            <span>👀 ${post.views || 0} วิว</span>
+                            <span>💬 ${post.replies || 0} ตอบ</span>
+                        </div>
+                    </a>
+                `;
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', () => { 
             loadIndexCMSContent(); 
-            renderIndexPosts();    
+            renderIndexPosts();
+            renderTrendingPosts();    
         });
 
         function showCustomAlert(message, redirectUrl = null) {
