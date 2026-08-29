@@ -198,7 +198,6 @@
                     const response = await fetch(`${API_CONFIG.BASE_URL}/comments`);
                     if (response.ok) {
                         const comments = await response.json();
-                        // 🌟 แก้ไขให้รองรับทั้ง post_id (จากฐานข้อมูล D1) และ postId (จาก LocalStorage เดิม)
                         return comments.filter(c => String(c.post_id || c.postId) === String(postId)).sort((a, b) => parseInt(a.id) - parseInt(b.id));
                     }
                     const response2 = await fetch(`${API_CONFIG.BASE_URL}/posts/${postId}/comments`);
@@ -248,7 +247,6 @@
             };
         }
 
-        // 📌 ฟังก์ชันแปลตัวเลขระดับขั้นเป็นชื่อยศ
         function getRoleTitleName(role) {
             switch(String(role)) {
                 case '1': return 'ปรมัตถ์';
@@ -268,7 +266,7 @@
                 const user = usersDB.find(u => u.username === username);
                 if (user) {
                     let role = String(user.role || '5');
-                    let rank = getRoleTitleName(role); // 🌟 บังคับดึงชื่อยศตามระดับขั้นที่ถูกต้อง (ละทิ้งของเดิมใน DB)
+                    let rank = getRoleTitleName(role); 
                     if (role === '1') { return '<span class="role-badge role-1">ปรมัตถ์</span>'; }
                     return `<span class="role-badge role-${role}">${rank}</span>`;
                 }
@@ -444,8 +442,11 @@
             const urlParams = new URLSearchParams(window.location.search);
             const postId = urlParams.get('id');
             const author = localStorage.getItem('siy_username');
+            
+            // 🌟 แก้ไขวันที่ให้เป็นปัจจุบันตรงเป๊ะ (ภาษาไทย)
+            const thaiMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
             const now = new Date();
-            const timeStr = now.getDate() + ' ส.ค. 2569 | ' + now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0') + ' น.';
+            const timeStr = now.getDate() + ' ' + thaiMonths[now.getMonth()] + ' ' + (now.getFullYear() + 543) + ' | ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ' น.';
 
             const commentData = {
                 id: Date.now().toString(), postId: postId, parent_id: "0", author: author,
@@ -473,8 +474,12 @@
             if (!validation.valid) { showCustomAlert(validation.error); return; }
 
             const author = localStorage.getItem('siy_username');
+            
+            // 🌟 แก้ไขวันที่ให้เป็นปัจจุบันตรงเป๊ะ (ภาษาไทย)
+            const thaiMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
             const now = new Date();
-            const timeStr = now.getDate() + ' ส.ค. 2569 | ' + now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0') + ' น.';
+            const timeStr = now.getDate() + ' ' + thaiMonths[now.getMonth()] + ' ' + (now.getFullYear() + 543) + ' | ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ' น.';
+            
             const hiddenPrefix = `[REPLY_TO:${parentId}][AUTHOR:${parentAuthor}]`;
             const finalContent = hiddenPrefix + content.replace(/\n/g, '<br>');
 
@@ -512,7 +517,7 @@
                 const foundUser = usersDB.find(u => u.username === savedUser);
                 if (foundUser) {
                     currentUserRole = String(foundUser.role || '5');
-                    currentUserRank = getRoleTitleName(currentUserRole); // 🌟 บังคับดึงชื่อยศตามระดับขั้นที่ถูกต้อง (ละทิ้งของเดิมใน DB)
+                    currentUserRank = getRoleTitleName(currentUserRole); 
                 }
             } catch (e) {}
 
