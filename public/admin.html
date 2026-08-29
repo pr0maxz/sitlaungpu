@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>พระอาจารย์ (CMS) - ศิษย์หลวงปู่</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;700&family=Sarabun:wght@400;600&display=swap" rel="stylesheet">
     <style>
@@ -14,7 +14,7 @@
         
         .admin-header { background: linear-gradient(180deg, #1f1107 0%, #070402 100%); border-bottom: 1px solid var(--gold-dark); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.8); width: 100%; }
         .admin-title { display: flex; align-items: center; gap: 10px; min-width: 0; } 
-        .admin-title img { height: 35px; flex-shrink: 0; }
+        .admin-title img { height: 35px; width: auto; flex-shrink: 0; }
         .admin-title h3 { font-size: clamp(0.95rem, 1.8vw, 1.2rem); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .admin-header-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
         .admin-badge { background: rgba(212, 175, 55, 0.15); border: 1px solid var(--gold-main); color: var(--gold-light); padding: 3px 8px; border-radius: 20px; font-size: 0.7rem; font-family: 'Prompt', sans-serif; white-space: nowrap; }
@@ -27,7 +27,17 @@
         
         .admin-content { padding: 20px; overflow-y: auto; width: 100%; max-width: 100%; min-width: 0; }
         .tab-pane { display: none; width: 100%; } .tab-pane.active { display: block; }
-        .panel-card { background: rgba(12, 7, 4, 0.8); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 25px; box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 5px 20px rgba(0,0,0,0.5); width: 100%; }
+        
+        /* 🌟 เพิ่ม position: relative และ min-height เพื่อรองรับลายไทยและป้องกัน CLS */
+        .panel-card { background: rgba(12, 7, 4, 0.8); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 12px; padding: 25px 20px; margin-bottom: 25px; box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 5px 20px rgba(0,0,0,0.5); width: 100%; position: relative; min-height: 180px; }
+        
+        /* สไตล์ลายไทยมุมกล่อง */
+        .corner-decor { position: absolute; width: 50px; height: 50px; pointer-events: none; opacity: 0.7; z-index: 10; }
+        .mc-top-left { top: 10px; left: 10px; transform: scaleX(-1); }
+        .mc-top-right { top: 10px; right: 10px; }
+        .mc-bottom-left { bottom: 10px; left: 10px; transform: scaleX(-1) scaleY(-1); }
+        .mc-bottom-right { bottom: 10px; right: 10px; transform: scaleY(-1); }
+
         .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(138, 99, 21, 0.3); padding-bottom: 12px; flex-wrap: wrap; gap: 10px; width: 100%; }
         .panel-header h3 { font-size: clamp(1.05rem, 1.8vw, 1.25rem); }
         
@@ -35,7 +45,7 @@
         .stat-card { background: linear-gradient(135deg, rgba(42, 24, 5, 0.6), rgba(10, 5, 2, 0.8)); border: 1px solid var(--gold-dark); border-radius: 10px; padding: 15px; text-align: center; }
         .stat-card h4 { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px; } .stat-card .number { font-size: 1.8rem; color: var(--gold-light); font-weight: bold; font-family: 'Prompt', sans-serif; }
         
-        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 8px; border: 1px solid rgba(138, 99, 21, 0.2); margin-bottom: 10px; }
+        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 8px; border: 1px solid rgba(138, 99, 21, 0.2); margin-bottom: 10px; min-height: 120px; }
         .data-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; text-align: left; min-width: 500px; }
         .data-table th, .data-table td { padding: 10px 14px; border-bottom: 1px solid rgba(138, 99, 21, 0.2); }
         .data-table th { background: rgba(31, 17, 7, 0.9); color: var(--gold-main); font-family: 'Prompt', sans-serif; font-weight: 600; white-space: nowrap; }
@@ -61,7 +71,6 @@
         .form-select option { background: #1a120b; color: #d1bfae; }
         textarea.form-control { resize: vertical; min-height: 90px; }
 
-        /* ระบบค้นหาและ Pagination */
         .search-container { display: flex; gap: 10px; margin-bottom: 15px; }
         .search-input { flex: 1; padding: 8px 15px; border-radius: 20px; border: 1px solid var(--gold-dark); background: rgba(0,0,0,0.5); color: #fff; font-family: 'Sarabun', sans-serif; outline: none; }
         .search-input:focus { border-color: var(--gold-main); }
@@ -71,7 +80,7 @@
         .page-btn.active { background: var(--gold-main); color: #000; font-weight: bold; border-color: var(--gold-light); }
         
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(7, 4, 2, 0.85); backdrop-filter: blur(8px); z-index: 999; justify-content: center; align-items: center; padding: 12px; } .modal-overlay.active { display: flex; }
-        .modal-box { background: linear-gradient(135deg, #1a120b, #0a0603); border: 1px solid var(--gold-main); border-radius: 12px; width: 100%; max-width: 500px; padding: 20px; position: relative; box-shadow: 0 15px 40px rgba(0,0,0,0.9); max-height: 90vh; overflow-y: auto; }
+        .modal-box { background: linear-gradient(135deg, #1a120b, #0a0603); border: 1px solid var(--gold-main); border-radius: 12px; width: 100%; max-width: 500px; padding: 25px 20px; position: relative; box-shadow: 0 15px 40px rgba(0,0,0,0.9); max-height: 90vh; overflow-y: auto; }
         
         @media (max-width: 850px) { 
             .admin-header { padding: 10px 12px; flex-direction: column; align-items: stretch; gap: 8px; }
@@ -80,7 +89,7 @@
             .admin-sidebar { flex-direction: row; overflow-x: auto; padding: 8px; gap: 6px; white-space: nowrap; -webkit-overflow-scrolling: touch; border-right: none; border-bottom: 1px solid rgba(138, 99, 21, 0.3); } 
             .nav-btn { padding: 7px 12px; font-size: 0.83rem; width: auto; flex-shrink: 0; } 
             .admin-content { padding: 12px 10px; }
-            .panel-card { padding: 12px; }
+            .panel-card { padding: 15px 12px; }
         }
     </style>
 </head>
@@ -88,7 +97,8 @@
 
     <header class="admin-header">
         <div class="admin-title">
-            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019626/logo.png" alt="ศิษย์หลวงปู่">
+            <!-- 🌟 เพิ่ม width และ height ให้โลโก้เพื่อป้องกัน CLS -->
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019626/logo.png" alt="ศิษย์หลวงปู่" width="105" height="35">
             <h3>ระบบเมืองลับแล (Admin CMS)</h3>
         </div>
         <div class="admin-header-actions">
@@ -116,6 +126,12 @@
                     <div class="stat-card"><h4>สถานะ Database</h4><div class="number" style="font-size: 1rem; color: var(--gold-main); margin-top: 5px;" id="stat-api-mode">ตรวจสอบ...</div></div>
                 </div>
                 <div class="panel-card">
+                    <!-- 🌟 เพิ่มลายไทยมุมกล่องธีมสำนัก -->
+                    <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-top-left" alt="" width="50" height="50">
+                    <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-top-right" alt="" width="50" height="50">
+                    <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-bottom-left" alt="" width="50" height="50">
+                    <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-bottom-right" alt="" width="50" height="50">
+
                     <div class="panel-header"><h3>⚡ คีย์ลัดการจัดการด่วน</h3></div>
                     <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                         <button class="btn btn-gold" onclick="openPostModal()">+ เพิ่มกระทู้ใหม่</button>
@@ -127,6 +143,12 @@
 
             <div id="tab-posts" class="tab-pane">
                 <div class="panel-card">
+                    <!-- 🌟 เพิ่มลายไทยมุมกล่องธีมสำนัก -->
+                    <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-top-left" alt="" width="50" height="50">
+                    <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-top-right" alt="" width="50" height="50">
+                    <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-bottom-left" alt="" width="50" height="50">
+                    <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-bottom-right" alt="" width="50" height="50">
+
                     <div class="panel-header">
                         <h3>📜 รายการกระทู้</h3>
                         <button class="btn btn-gold" onclick="openPostModal()">+ สลักกระทู้</button>
@@ -152,6 +174,12 @@
 
             <div id="tab-users" class="tab-pane">
                 <div class="panel-card">
+                    <!-- 🌟 เพิ่มลายไทยมุมกล่องธีมสำนัก -->
+                    <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-top-left" alt="" width="50" height="50">
+                    <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-top-right" alt="" width="50" height="50">
+                    <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-bottom-left" alt="" width="50" height="50">
+                    <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-bottom-right" alt="" width="50" height="50">
+
                     <div class="panel-header">
                         <h3>👥 บัญชีรายชื่อสมาชิก</h3>
                         <button class="btn btn-gold" onclick="openUserModal()">+ เพิ่มศิษย์</button>
@@ -174,6 +202,12 @@
 
             <div id="tab-cms-index" class="tab-pane">
                 <div class="panel-card">
+                    <!-- 🌟 เพิ่มลายไทยมุมกล่องธีมสำนัก -->
+                    <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-top-left" alt="" width="50" height="50">
+                    <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-top-right" alt="" width="50" height="50">
+                    <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-bottom-left" alt="" width="50" height="50">
+                    <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-bottom-right" alt="" width="50" height="50">
+
                     <div class="panel-header"><h3>🗡️ จัดการข้อมูลส่วน Hero (หน้าแรก)</h3></div>
                     <form id="hero-cms-form" onsubmit="saveHeroCMS(event)">
                         <div class="form-group"><label>สโลแกนหลัก (Hero Subtitle)</label><input type="text" id="cms-hero-subtitle" class="form-control" required></div>
@@ -194,6 +228,12 @@
     <!-- Modals -->
     <div class="modal-overlay" id="postModal">
         <div class="modal-box">
+            <!-- 🌟 เพิ่มลายไทยมุมกล่อง Modal -->
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-top-left" alt="" width="50" height="50">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-top-right" alt="" width="50" height="50">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-bottom-left" alt="" width="50" height="50">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-bottom-right" alt="" width="50" height="50">
+
             <h3 id="postModalTitle" style="margin-bottom: 12px; text-align: center;">เพิ่มกระทู้ใหม่</h3>
             <form id="postForm" onsubmit="submitPostForm(event)">
                 <input type="hidden" id="edit-post-id">
@@ -215,6 +255,12 @@
 
     <div class="modal-overlay" id="userModal">
         <div class="modal-box" style="max-width: 400px;">
+            <!-- 🌟 เพิ่มลายไทยมุมกล่อง Modal -->
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-top-left" alt="" width="50" height="50">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-top-right" alt="" width="50" height="50">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-bottom-left" alt="" width="50" height="50">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-bottom-right" alt="" width="50" height="50">
+
             <h3 id="userModalTitle" style="margin-bottom: 12px; text-align: center;">เพิ่มสมาชิกใหม่</h3>
             <form id="userForm" onsubmit="submitUserForm(event)">
                 <input type="hidden" id="edit-user-old-username">
@@ -237,6 +283,12 @@
 
     <div class="modal-overlay" id="customAlertModal" style="z-index: 9999;">
         <div class="modal-box" style="max-width: 310px; text-align: center;">
+            <!-- 🌟 เพิ่มลายไทยมุมกล่อง Modal -->
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-top-left" alt="" width="50" height="50">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-top-right" alt="" width="50" height="50">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-bottom-left" alt="" width="50" height="50">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-bottom-right" alt="" width="50" height="50">
+
             <h3 style="font-size: 1.2rem; margin-bottom: 10px;">แจ้งเตือน</h3>
             <p id="customAlertMessage" style="color: #e2d4c3; font-size: 0.9rem; margin-bottom: 18px; line-height: 1.4;"></p>
             <button type="button" class="btn btn-gold" onclick="closeModal('customAlertModal')" style="width: 100%; justify-content: center;">รับทราบ</button>
@@ -245,6 +297,12 @@
 
     <div class="modal-overlay" id="customConfirmModal" style="z-index: 9999;">
         <div class="modal-box" style="max-width: 330px; text-align: center;">
+            <!-- 🌟 เพิ่มลายไทยมุมกล่อง Modal -->
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-top-left" alt="" width="50" height="50">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-top-right" alt="" width="50" height="50">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-bottom-left" alt="" width="50" height="50">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-bottom-right" alt="" width="50" height="50">
+
             <h3 style="font-size: 1.2rem; margin-bottom: 10px; color: var(--danger-color);">ยืนยันการทำลาย</h3>
             <p id="customConfirmMessage" style="color: #e2d4c3; font-size: 0.9rem; margin-bottom: 18px; line-height: 1.4;"></p>
             <div style="display: flex; gap: 8px; justify-content: center;">
@@ -260,7 +318,6 @@
             BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
         };
 
-        // ตัวแปรสำหรับระบบ Pagination และ Search ของ User
         let globalUsersData = [];
         let filteredUsersData = [];
         let currentUserPage = 1;
@@ -488,11 +545,10 @@
             if (countCat1 === 0) tbCat1.innerHTML = '<tr><td colspan="5" style="text-align:center;">ยังไม่มีกระทู้ในหมวดนี้</td></tr>';
             if (countCat2 === 0) tbCat2.innerHTML = '<tr><td colspan="5" style="text-align:center;">ยังไม่มีกระทู้ในหมวดนี้</td></tr>';
 
-            // โหลดข้อมูล User ทั้งหมดเก็บไว้ใน Global
             globalUsersData = await AdminAPI.getUsers();
             document.getElementById('stat-users-count').textContent = globalUsersData.length;
             
-            handleUserSearch(); // เริ่มต้นด้วยการโชว์ทั้งหมดหน้าแรก
+            handleUserSearch();
             
             const cms = await AdminAPI.getCMS();
             if (cms) {
@@ -504,7 +560,6 @@
             }
         }
 
-        // 🌟 ฟังก์ชันจัดการค้นหาสมาชิก
         function handleUserSearch() {
             const query = document.getElementById('searchUserField').value.toLowerCase().trim();
             if (query) {
@@ -515,7 +570,6 @@
             renderUsersPage(1);
         }
 
-        // 🌟 ฟังก์ชันเรนเดอร์รายชื่อสมาชิกแบ่งหน้า
         function renderUsersPage(page) {
             const tbody = document.getElementById('users-table-body');
             tbody.innerHTML = '';
@@ -557,7 +611,6 @@
             renderUserPaginationControls(totalPages);
         }
 
-        // 🌟 ฟังก์ชันสร้างปุ่มแบ่งหน้า (Pagination) สำหรับผู้ใช้
         function renderUserPaginationControls(totalPages) {
             const container = document.getElementById('userPagination');
             if (totalPages <= 1) {
