@@ -17,7 +17,7 @@
 
         h1, h2, h3, h4 { font-family: 'Prompt', sans-serif; margin: 0; }
         @property --ring-angle { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
-        @keyframes containerPulse { 0% { box-shadow: 0 0 30px rgba(0,0,0,0.8), inset 0 0 20px rgba(212,175,55,0.02); } 50% { box-shadow: 0 0 50px rgba(212,175,55,0.15), inset 0 0 40px rgba(212,175,55,0.08); } 100% { box-shadow: 0 0 30px rgba(0,0,0,0.8), inset 0 0 20px rgba(212,175,55,0.02); } }
+        @keyframes containerPulse { 0% { box-shadow: 0 0 30px rgba(0,0,0,0.8), inset 0 0 20px rgba(212, 175, 55, 0.02); } 50% { box-shadow: 0 0 50px rgba(212, 175, 55, 0.15), inset 0 0 40px rgba(212, 175, 55, 0.08); } 100% { box-shadow: 0 0 30px rgba(0,0,0,0.8), inset 0 0 20px rgba(212, 175, 55, 0.02); } }
         @keyframes ringRotate { to { --ring-angle: 360deg; } }
         .main-container { position: relative; isolation: isolate; max-width: 1200px; width: 92%; margin: 40px auto; padding: 40px 30px 60px 30px; background-color: rgba(7, 4, 2, 0.85); border: 1px solid var(--gold-dark); border-radius: 16px; backdrop-filter: blur(10px); animation: containerPulse 6s infinite alternate; }
         .main-container::before { content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1px; background: conic-gradient(from var(--ring-angle), transparent 0deg, var(--gold-main) 25deg, transparent 70deg, transparent 180deg, var(--gold-light) 205deg, transparent 250deg, transparent 360deg); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: ringRotate 10s linear infinite; pointer-events: none; z-index: -1; }
@@ -56,7 +56,6 @@
         .site-footer { text-align: center; margin-top: 50px; padding-top: 20px; border-top: 1px dashed rgba(138, 99, 21, 0.3); }
         .site-footer p { color: var(--text-muted); font-family: 'Sarabun', sans-serif; font-size: 0.85rem; letter-spacing: 0.5px; margin: 0; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9); }
 
-        /* 🌟 ระบบแบ่งหน้า (Pagination) CSS */
         .pagination { display: flex; justify-content: center; align-items: center; gap: 6px; margin-top: 25px; padding-bottom: 25px; flex-wrap: wrap; }
         .page-btn { background: rgba(0,0,0,0.5); border: 1px solid rgba(138, 99, 21, 0.5); color: var(--gold-light); padding: 6px 14px; border-radius: 6px; cursor: pointer; transition: all 0.3s; font-family: 'Prompt', sans-serif; font-size: 0.9rem; min-width: 35px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.5); }
         .page-btn:hover:not(:disabled) { background: rgba(212,175,55,0.15); border-color: var(--gold-main); box-shadow: 0 0 10px rgba(212,175,55,0.3); color: #fff; }
@@ -65,12 +64,44 @@
 
         .sect-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(7, 4, 2, 0.9); backdrop-filter: blur(8px); z-index: 1000; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; } .sect-modal-overlay.active { display: flex; opacity: 1; }
         .sect-modal-content { position: relative; background: linear-gradient(135deg, #1a120b, #0a0603); border: 1px solid var(--gold-main); border-radius: 12px; width: 90%; max-width: 450px; padding: 40px 30px 60px 30px; box-shadow: 0 15px 40px rgba(0,0,0,0.9), inset 0 0 20px rgba(212,175,55,0.1); transform: translateY(-20px); transition: transform 0.3s ease; } .sect-modal-overlay.active .sect-modal-content { transform: translateY(0); }
+        
+        /* สไตล์พิเศษสำหรับป๊อปปัปประกาศกฎสำนักตอนเข้าหน้า Webboard */
+        .rules-modal-content { max-width: 650px; max-height: 85vh; display: flex; flex-direction: column; }
+        .rules-body-box { background: rgba(0,0,0,0.5); border: 1px solid rgba(138, 99, 21, 0.4); border-radius: 8px; padding: 15px 20px; max-height: 280px; overflow-y: auto; margin-bottom: 15px; text-align: left; font-size: 0.9rem; line-height: 1.6; color: #d1bfae; }
+        .rules-body-box h4 { color: var(--gold-main); margin-top: 12px; margin-bottom: 5px; font-size: 0.95rem; }
+        .rules-body-box ul { padding-left: 20px; margin: 5px 0; }
+        .rules-body-box li { margin-bottom: 6px; }
+
+        .scroll-warning-hint { font-size: 0.8rem; color: #ff6b6b; text-align: center; margin-bottom: 10px; font-style: italic; }
+
+        .checkbox-group { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; cursor: pointer; font-size: 0.95rem; color: var(--gold-light); text-align: left; }
+        .checkbox-group input[type="checkbox"] { accent-color: var(--gold-main); width: 18px; height: 18px; cursor: pointer; }
+
         .modal-corner { position: absolute; width: 60px; pointer-events: none; opacity: 0.8; } .mc-top-left { top: 12px; left: 12px; transform: scaleX(-1); } .mc-top-right { top: 12px; right: 12px; } .mc-bottom-left { bottom: 12px; left: 12px; transform: scaleX(-1) scaleY(-1); } .mc-bottom-right { bottom: 12px; right: 12px; transform: scaleY(-1); }
-        .modal-header { text-align: center; margin-bottom: 25px; } .modal-header h3 { color: var(--gold-light); font-size: 1.6rem; margin-bottom: 5px; text-shadow: 0 2px 5px rgba(0,0,0,0.8); } .modal-header p { color: var(--gold-dark); font-size: 0.9rem; margin: 0; }
+        .modal-header { text-align: center; margin-bottom: 20px; } .modal-header h3 { color: var(--gold-light); font-size: 1.5rem; margin-bottom: 5px; text-shadow: 0 2px 5px rgba(0,0,0,0.8); } .modal-header p { color: var(--gold-dark); font-size: 0.85rem; margin: 0; }
+        
         .form-group { margin-bottom: 20px; } .form-group label { display: block; color: var(--gold-main); font-size: 0.95rem; margin-bottom: 8px; } .form-input { width: 100%; background: rgba(0,0,0,0.6); border: 1px solid rgba(138, 99, 21, 0.5); color: #fff; padding: 12px 15px; border-radius: 6px; font-family: 'Sarabun', sans-serif; font-size: 1rem; } .form-input:focus { outline: none; border-color: var(--gold-light); }
         .password-wrapper { position: relative; display: flex; align-items: center; } .password-wrapper .form-input { padding-right: 60px; } .toggle-password { position: absolute; right: 15px; cursor: pointer; font-size: 0.9rem; color: var(--gold-main); opacity: 0.8; } .toggle-password:hover { opacity: 1; }
         .privacy-warning { background: rgba(168, 46, 46, 0.1); border-left: 3px solid #a82e2e; padding: 12px 15px; font-size: 0.8rem; color: #d1bfae; line-height: 1.5; margin-bottom: 25px; border-radius: 0 4px 4px 0; } .privacy-warning strong { color: #ff6b6b; }
-        .modal-actions { display: flex; gap: 10px; } .btn-submit { flex: 1; background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; border: none; padding: 12px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-weight: bold; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: all 0.3s; } .btn-submit:hover { filter: brightness(1.2); transform: translateY(-2px); } .btn-cancel { background: transparent; color: var(--text-muted); border: 1px solid var(--text-muted); padding: 12px 20px; border-radius: 25px; font-family: 'Prompt', sans-serif; cursor: pointer; transition: all 0.3s; } .btn-cancel:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        
+        .modal-actions { display: flex; gap: 10px; } 
+        .btn-submit { flex: 1; background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; border: none; padding: 12px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-weight: bold; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: all 0.3s; } 
+        .btn-submit:hover { filter: brightness(1.2); transform: translateY(-2px); } 
+        
+        /* 🌟 สไตล์สำหรับปุ่มตกลงตอนถูกปิดใช้งาน (Disabled) ให้เป็นสีเทา */
+        .btn-submit:disabled, .btn-submit.disabled { 
+            background: linear-gradient(180deg, #4a3b1a 0%, #2a1805 100%) !important; 
+            color: #8a7761 !important; 
+            border: 1px solid #5a4f35 !important; 
+            cursor: not-allowed !important; 
+            box-shadow: none !important; 
+            filter: none !important; 
+            opacity: 0.6; 
+            transform: none !important; 
+        }
+
+        .btn-cancel { background: transparent; color: var(--text-muted); border: 1px solid var(--text-muted); padding: 12px 20px; border-radius: 25px; font-family: 'Prompt', sans-serif; cursor: pointer; transition: all 0.3s; } .btn-cancel:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        
         @media (max-width: 950px) { .board-layout { grid-template-columns: 1fr; } .thread-stats { display: none; } }
         @media (max-width: 600px) { .main-container { padding: 30px 20px; width: 95%; margin-top: 30px; } nav { flex-wrap: nowrap; justify-content: flex-start; overflow-x: auto; scrollbar-width: none; gap: 10px; padding: 12px 20px; } nav::-webkit-scrollbar { display: none; } nav a { white-space: nowrap; flex-shrink: 0; } }
         .loading-text { font-family: 'Prompt', sans-serif; color: var(--gold-main); animation: pulse 1.5s infinite alternate; text-align: center; padding: 40px; }
@@ -152,6 +183,59 @@
         </footer>
     </div>
 
+    <!-- 📜 Modal ประกาศิตกฎระเบียบ (เด้งขึ้นมาเมื่อเข้าหน้า Webboard เป็นครั้งแรก) -->
+    <div class="sect-modal-overlay" id="webboardRulesModal">
+        <div class="sect-modal-content rules-modal-content">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-left" alt="">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-right" alt="">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-bottom-left" alt="">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-bottom-right" alt="">
+            
+            <div class="modal-header">
+                <h3>ประกาศิตแห่งสำนัก</h3>
+                <p>โปรดอ่านและน้อมรับกฎเหล็กก่อนเข้าสู่ลานเสวนา</p>
+            </div>
+
+            <div class="rules-body-box" id="rulesBodyContainer">
+                <p style="color: var(--gold-light); margin-bottom: 10px;">กรุณาอ่านกฎและเงื่อนไขในการใช้งาน ลานเสวนา โดยละเอียด:</p>
+                <ul>
+                    <li><strong>ห้ามลบหลู่เบื้องสูง:</strong> ห้ามเผยแพร่ข้อความหรือภาพใดๆ ที่ลบหลู่หรือสร้างความเสื่อมเสียต่อสถาบันชาติ ศาสนา พระมหากษัตริย์ และพระบรมวงศานุวงศ์เด็ดขาด</li>
+                    <li><strong>ห้ามปล่อยคาถาหลอกลวง:</strong> ห้ามเผยแพร่กลอุบาย มนต์มายา หรือโฆษณาชวนเชื่ออันเป็นเท็จเพื่อหลอกลวงเหล่าศิษย์ในสำนัก</li>
+                    <li><strong>ห้ามสร้างความเดือดร้อนรำคาญ:</strong> ห้ามสลักถ้อยคำหรือเนื้อหาที่ก่อให้เกิดความทุกข์ระทม ความรำคาญใจ หรือสร้างมลพิษทางจิตวิญญาณแก่ผู้อื่น</li>
+                    <li><strong>ห้ามกล่าววาจาอาฆาต:</strong> ห้ามส่อเสียด ใส่ร้าย หรือกล่าวให้ร้ายศิษย์พี่ศิษย์น้องและสมาชิกในสำนัก ไม่ว่าจะเอ่ยนามตรงๆ หรือไม่ก็ตาม</li>
+                    <li><strong>ห้ามปลุกปั่นความแตกแยก:</strong> ห้ามใช้วายายุยงส่งเสริมให้เกิดความบาดหมางหรือความขัดแย้งขึ้นภายในลานเสวนา</li>
+                    <li><strong>ห้ามสิ่งอัปมงคลลามก:</strong> ห้ามเผยแพร่ภาพหรือข้อความที่แปดเปื้อนกามารมณ์ ลามกอนาจาร หรือขัดต่อศีลธรรมอันดีงาม</li>
+                    <li><strong>ห้ามโปรยข้อความขยะ:</strong> ห้ามสลักถ้อยคำไร้แก่นสาร หรือปั๊มข้อความซ้ำซากน่ารำคาญในกระทู้เดียวกันหรือหลายกระทู้</li>
+                    <li><strong>ห้ามข้องเกี่ยวกับพนันขันต่อ:</strong> ห้ห้ามเปิดประตูหรือชักชวนเล่นการพนันขันต่อในทุกรูปแบบ</li>
+                    <li><strong>ห้ามเปิดเผยความลับส่วนตัว:</strong> ห้ามโพสต์ข้อมูลลับส่วนบุคคล เช่น หมายเลขโทรศัพท์ หรือรหัสลับทางการเงิน อันจะนำภัยมาสู่ตัวท่านเองหรือผู้อื่น ฯลฯ</li>
+                    <li><strong>นามแห่งผู้คุมกฎ:</strong> ห้ามผู้ใดใช้ฉายาหรือนามแฝงของผู้ดูแลระบบ เช่น “admin”, “webmaster”, “customer service” ฯลฯ และต้องใช้นามแฝงที่สุภาพ ไม่หยาบคาย</li>
+                    <li><strong>อาญาแห่งผู้คุมกฎ:</strong> ผู้คุมกฎมีสิทธิ์ขาดในการทำลายศิลาจารึก ขับไล่สมาชิก หรือปิดประตูสำนักได้ทันทีโดยไม่ต้องแจ้งล่วงหน้า</li>
+                    <li><strong>ประกาศิตปัดความรับผิดชอบ:</strong> ถ้อยคำและภาพในลานเสวนาเป็นสิ่งที่สาธารณชนร้อยเรียงขึ้น ทางสำนักและผู้คุมกฎมิได้เห็นพ้องและ "ไม่ขอรับผิดชอบ" ต่อความเสียหายใดๆ ทั้งสิ้น ผู้เสพข้อมูลพึงใช้วิจารณญาณด้วยตนเอง</li>
+                </ul>
+                <h4>❖ คำแนะนำในการตั้งชื่อ:</h4>
+                <ul>
+                    <li>ห้ามใช้ชื่อหยาบคาย เป็นคำผวน หรือส่อไปในทางลามกอนาจาร</li>
+                    <li>ห้ามมีข้อมูลส่วนตัว เช่น ชื่อ-นามสกุล เบอร์โทร ฯลฯ</li>
+                    <li>ห้ามใช้ชื่อคล้ายสมาชิกเดิมเพื่อสร้างความสับสน (เช่น ตัวจริง ตัวปลอม)</li>
+                    <li>ห้ามใช้ตัวอักษรซ้ำๆ ไม่มีหมายความ (เช่น 5555)</li>
+                </ul>
+            </div>
+
+            <div class="scroll-warning-hint" id="scrollWarningHint">กรุณาเลื่อนอ่านกฎประกาศิตด้านบนให้ถึงบรรทัดสุดท้ายก่อน จึงจะสามารถกดยอมรับได้</div>
+
+            <label class="checkbox-group" id="rulesCheckboxWrapper" style="opacity: 0.5; pointer-events: none;">
+                <input type="checkbox" id="acceptWebboardRulesCheckbox">
+                <span>ข้าพเจ้ารับทราบ ได้อ่านกฎและเงื่อนไขโดยละเอียด และยินดีปฏิบัติตามกฎของสำนักทุกประการ</span>
+            </label>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="cancelWebboardRules()">ยกเลิก</button>
+                <button type="button" class="btn-submit" id="acceptRulesBtn" onclick="acceptWebboardRules()" disabled>ตกลง</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal สมัครสมาชิก / เข้าสู่ระบบ (รูปแบบเดิม) -->
     <div class="sect-modal-overlay" id="registerModal">
         <div class="sect-modal-content">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-left" alt="">
@@ -188,6 +272,7 @@
         </div>
     </div>
 
+    <!-- Modal เข้าใช้งานแบบไม่ระบุตัวตน -->
     <div class="sect-modal-overlay" id="guestCaptchaModal">
         <div class="sect-modal-content">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-left" alt="">
@@ -209,6 +294,7 @@
         </div>
     </div>
 
+    <!-- Modal แจ้งเตือนทั่วไป -->
     <div class="sect-modal-overlay" id="customAlertModal" style="z-index: 9999;">
         <div class="sect-modal-content" style="max-width: 350px; text-align: center; padding: 30px 20px 40px 20px;">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-left" alt="">
@@ -229,12 +315,97 @@
             BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
         };
 
-        // 📌 ฟังก์ชันตรวจสอบสถานะปักหมุดแบบปลอดภัย
+        // 🌟 ตรวจสอบและแสดงป๊อปปัปกฎเมื่อเข้าหน้า Webboard พร้อมระบบบังคับเลื่อนบรรทัดสุดท้าย
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAndRenderPosts();
+            checkUserLoginStatus();
+
+            const hasAcceptedRules = localStorage.getItem('siy_webboard_rules_accepted');
+            if (!hasAcceptedRules) {
+                const rulesModal = document.getElementById('webboardRulesModal');
+                rulesModal.classList.add('active');
+                
+                const rulesBox = document.getElementById('rulesBodyContainer');
+                const checkboxWrapper = document.getElementById('rulesCheckboxWrapper');
+                const scrollHint = document.getElementById('scrollWarningHint');
+
+                function checkRulesScroll() {
+                    if (!rulesBox) return;
+                    // เช็กว่าเลื่อนถึงด้านล่างสุดหรือยัง (เผื่อความคลาดเคลื่อน 5 พิกเซล)
+                    const isAtBottom = rulesBox.scrollTop + rulesBox.clientHeight >= rulesBox.scrollHeight - 5;
+                    const noScrollNeeded = rulesBox.scrollHeight <= rulesBox.clientHeight;
+
+                    if (isAtBottom || noScrollNeeded) {
+                        checkboxWrapper.style.opacity = '1';
+                        checkboxWrapper.style.pointerEvents = 'auto';
+                        if (scrollHint) {
+                            scrollHint.style.color = '#73c990';
+                            scrollHint.textContent = '✓ ท่านเลื่อนอ่านประกาศิตครบถ้วนแล้ว สามารถติ๊กยอมรับได้เลย';
+                        }
+                    }
+                }
+
+                if (rulesBox) {
+                    rulesBox.addEventListener('scroll', checkRulesScroll);
+                    setTimeout(checkRulesScroll, 100);
+                }
+            }
+
+            // ควบคุมการปลดล็อกปุ่มตกลงเมื่อติ๊กยินดีปฏิบัติกฎ
+            const acceptCheckbox = document.getElementById('acceptWebboardRulesCheckbox');
+            const acceptBtn = document.getElementById('acceptRulesBtn');
+
+            if (acceptCheckbox && acceptBtn) {
+                acceptCheckbox.addEventListener('change', () => {
+                    if (acceptCheckbox.checked) {
+                        acceptBtn.disabled = false;
+                        acceptBtn.classList.remove('disabled');
+                    } else {
+                        acceptBtn.disabled = true;
+                        acceptBtn.classList.add('disabled');
+                    }
+                });
+                // เริ่มต้นตั้งค่าให้ปุ่มตกลงเป็นสีเทาและกดไม่ได้
+                acceptBtn.disabled = true;
+                acceptBtn.classList.add('disabled');
+            }
+
+            const searchInput = document.getElementById('searchInputField');
+            const searchBtn = document.getElementById('searchBtnSubmit');
+
+            if (searchBtn && searchInput) {
+                searchBtn.addEventListener('click', () => {
+                    loadAndRenderPosts(searchInput.value);
+                });
+                searchInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        loadAndRenderPosts(searchInput.value);
+                    }
+                });
+            }
+        });
+
+        function acceptWebboardRules() {
+            const acceptBtn = document.getElementById('acceptRulesBtn');
+            const checkbox = document.getElementById('acceptWebboardRulesCheckbox');
+
+            if (!checkbox.checked || acceptBtn.disabled) {
+                showCustomAlert('ท่านต้องเลื่อนอ่านจนจบ และทำเครื่องหมายติ๊กยอมรับกฎของสำนักเสียก่อน จึงจะสามารถกดตกลงได้!');
+                return;
+            }
+
+            localStorage.setItem('siy_webboard_rules_accepted', 'true');
+            document.getElementById('webboardRulesModal').classList.remove('active');
+        }
+
+        function cancelWebboardRules() {
+            window.location.href = 'index.html'; // ถ้ายกเลิก จะดีดกลับหน้าแรกทันที
+        }
+
         function checkIsPinned(val) {
             return val === true || val === 1 || val === '1' || val === 'true';
         }
 
-        // 📌 ฟังก์ชันแปลตัวเลขระดับขั้นเป็นชื่อยศ
         function getRoleTitleName(role) {
             switch(String(role)) {
                 case '1': return 'ปรมัตถ์';
@@ -256,7 +427,7 @@
                 const user = usersDB.find(u => u.username === username);
                 if (user) {
                     let role = String(user.role || '5');
-                    let rank = getRoleTitleName(role); // บังคับดึงชื่อยศตามระดับขั้นที่ถูกต้อง
+                    let rank = getRoleTitleName(role);
                     if (role === '1') {
                         return '<span class="role-badge role-1">ปรมัตถ์</span>';
                     }
@@ -403,25 +574,6 @@
             paginationContainer.innerHTML = html;
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            loadAndRenderPosts();
-            checkUserLoginStatus();
-
-            const searchInput = document.getElementById('searchInputField');
-            const searchBtn = document.getElementById('searchBtnSubmit');
-
-            if (searchBtn && searchInput) {
-                searchBtn.addEventListener('click', () => {
-                    loadAndRenderPosts(searchInput.value);
-                });
-                searchInput.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') {
-                        loadAndRenderPosts(searchInput.value);
-                    }
-                });
-            }
-        });
-
         function showCustomAlert(message, redirectUrl = null) {
             document.getElementById('customAlertMessage').innerHTML = message;
             const modal = document.getElementById('customAlertModal');
@@ -452,7 +604,7 @@
                         const currentUser = usersDB.find(u => u.username === savedUser);
 
                         if (currentUser) {
-                            let roleTitle = getRoleTitleName(currentUser.role); // บังคับดึงชื่อยศตามระดับขั้นที่ถูกต้อง
+                            let roleTitle = getRoleTitleName(currentUser.role);
                             let roleClass = 'role-' + (currentUser.role || '5');
                             
                             document.getElementById('displayUserBadge').innerHTML = 
@@ -494,7 +646,7 @@
                 document.getElementById('modalSubTitle').textContent = 'กรอกนามแฝงและรหัสผ่านเพื่อสืบทอดตัวตน';
                 document.getElementById('modalWarning').style.display = 'none';
                 document.getElementById('captchaBoxContainer').style.display = 'none';
-                document.getElementById('modalSubmitBtn').textContent = 'เข้าสู่ระบบ';
+                document.getElementById('modalSubmitBtn').textContent = 'ลงนาม';
             } else {
                 document.getElementById('modalTitle').textContent = 'ใบสัตยาบัน';
                 document.getElementById('modalSubTitle').textContent = 'ลงนามเพื่อเข้าร่วมลานเสวนา';
