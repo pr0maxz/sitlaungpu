@@ -28,10 +28,10 @@
         .admin-content { padding: 20px; overflow-y: auto; width: 100%; max-width: 100%; min-width: 0; }
         .tab-pane { display: none; width: 100%; } .tab-pane.active { display: block; }
         
-        /* 🌟 เพิ่ม position: relative และ min-height เพื่อรองรับลายไทยและป้องกัน CLS */
+        /* 🌟 Panel Card พร้อมรองรับลายไทยและป้องกัน CLS */
         .panel-card { background: rgba(12, 7, 4, 0.8); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 12px; padding: 25px 20px; margin-bottom: 25px; box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 5px 20px rgba(0,0,0,0.5); width: 100%; position: relative; min-height: 180px; }
         
-        /* สไตล์ลายไทยมุมกล่อง */
+        /* ลายไทยมุมกล่อง */
         .corner-decor { position: absolute; width: 50px; height: 50px; pointer-events: none; opacity: 0.7; z-index: 10; }
         .mc-top-left { top: 10px; left: 10px; transform: scaleX(-1); }
         .mc-top-right { top: 10px; right: 10px; }
@@ -56,6 +56,8 @@
         .btn-edit { background: rgba(212, 175, 55, 0.15); color: var(--gold-light); border: 1px solid var(--gold-dark); } .btn-edit:hover { background: var(--gold-main); color: #000; }
         .btn-delete { background: rgba(168, 46, 46, 0.15); color: var(--danger-color); border: 1px solid rgba(168, 46, 46, 0.5); } .btn-delete:hover { background: var(--danger-color); color: #fff; }
         .btn-pin { background: rgba(115, 201, 144, 0.15); color: var(--success-color); border: 1px solid rgba(115, 201, 144, 0.5); } .btn-pin:hover { background: var(--success-color); color: #000; }
+        .btn-reorder { background: rgba(212, 175, 55, 0.1); color: var(--gold-light); border: 1px solid rgba(212, 175, 55, 0.3); padding: 4px 8px; font-size: 0.75rem; }
+        .btn-reorder:hover { background: var(--gold-main); color: #000; }
         
         .role-tag { padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; font-family: 'Prompt', sans-serif; font-weight: bold; display: inline-block; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.5); }
         .role-1 { background: linear-gradient(135deg, #4a0e0e, #2e0808); color: #f5d77f; border: 1px solid #d4af37; text-shadow: 0 0 5px rgba(212,175,55,0.5); } 
@@ -71,9 +73,13 @@
         .form-select option { background: #1a120b; color: #d1bfae; }
         textarea.form-control { resize: vertical; min-height: 90px; }
 
-        .search-container { display: flex; gap: 10px; margin-bottom: 15px; }
-        .search-input { flex: 1; padding: 8px 15px; border-radius: 20px; border: 1px solid var(--gold-dark); background: rgba(0,0,0,0.5); color: #fff; font-family: 'Sarabun', sans-serif; outline: none; }
+        /* แผงฟิลเตอร์และจัดเรียงสมาชิก */
+        .filter-toolbar { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
+        .search-input { flex: 2; min-width: 180px; padding: 8px 15px; border-radius: 20px; border: 1px solid var(--gold-dark); background: rgba(0,0,0,0.5); color: #fff; font-family: 'Sarabun', sans-serif; outline: none; }
         .search-input:focus { border-color: var(--gold-main); }
+        .filter-select { flex: 1; min-width: 140px; padding: 8px 12px; border-radius: 20px; border: 1px solid var(--gold-dark); background: rgba(0,0,0,0.5); color: var(--gold-light); font-family: 'Sarabun', sans-serif; outline: none; }
+        .filter-select option { background: #1a120b; color: #d1bfae; }
+
         .pagination { display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 15px; flex-wrap: wrap; }
         .page-btn { padding: 5px 12px; background: rgba(0,0,0,0.5); border: 1px solid rgba(138, 99, 21, 0.5); border-radius: 6px; color: var(--gold-light); cursor: pointer; transition: 0.3s; }
         .page-btn:hover { background: rgba(212,175,55,0.2); }
@@ -97,7 +103,6 @@
 
     <header class="admin-header">
         <div class="admin-title">
-            <!-- 🌟 เพิ่ม width และ height ให้โลโก้เพื่อป้องกัน CLS -->
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019626/logo.png" alt="ศิษย์หลวงปู่" width="105" height="35">
             <h3>ระบบเมืองลับแล (Admin CMS)</h3>
         </div>
@@ -126,7 +131,6 @@
                     <div class="stat-card"><h4>สถานะ Database</h4><div class="number" style="font-size: 1rem; color: var(--gold-main); margin-top: 5px;" id="stat-api-mode">ตรวจสอบ...</div></div>
                 </div>
                 <div class="panel-card">
-                    <!-- 🌟 เพิ่มลายไทยมุมกล่องธีมสำนัก -->
                     <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-top-left" alt="" width="50" height="50">
                     <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-top-right" alt="" width="50" height="50">
                     <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-bottom-left" alt="" width="50" height="50">
@@ -143,7 +147,6 @@
 
             <div id="tab-posts" class="tab-pane">
                 <div class="panel-card">
-                    <!-- 🌟 เพิ่มลายไทยมุมกล่องธีมสำนัก -->
                     <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-top-left" alt="" width="50" height="50">
                     <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-top-right" alt="" width="50" height="50">
                     <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-bottom-left" alt="" width="50" height="50">
@@ -172,9 +175,9 @@
                 </div>
             </div>
 
+            <!-- 🌟 แถบจัดการสมาชิก พร้อมระบบฟิลเตอร์ค้นหาชื่อ, ยศ และจัดเรียงลำดับเองได้ -->
             <div id="tab-users" class="tab-pane">
                 <div class="panel-card">
-                    <!-- 🌟 เพิ่มลายไทยมุมกล่องธีมสำนัก -->
                     <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-top-left" alt="" width="50" height="50">
                     <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-top-right" alt="" width="50" height="50">
                     <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-bottom-left" alt="" width="50" height="50">
@@ -185,15 +188,41 @@
                         <button class="btn btn-gold" onclick="openUserModal()">+ เพิ่มศิษย์</button>
                     </div>
                     
-                    <div class="search-container">
-                        <input type="text" id="searchUserField" class="search-input" placeholder="พิมพ์ชื่อนามแฝงเพื่อค้นหา..." oninput="handleUserSearch()">
-                        <button class="btn btn-gold" onclick="handleUserSearch()">ค้นหา</button>
+                    <!-- 🔍 ช่องฟิลเตอร์ค้นหาชื่อ, กรองตามยศ และตั้งค่าเรียงลำดับ -->
+                    <div class="filter-toolbar">
+                        <input type="text" id="searchUserField" class="search-input" placeholder="🔍 ค้นหาตามนามแฝง (Username)..." oninput="handleUserSearch()">
+                        
+                        <select id="filterRoleField" class="filter-select" onchange="handleUserSearch()">
+                            <option value="">🏷️ ทุกระดับยศ</option>
+                            <option value="1">ปรมัตถ์ (แอดมิน)</option>
+                            <option value="2">ปรมาจารย์</option>
+                            <option value="3">ผู้สำเร็จวิชา</option>
+                            <option value="4">ขั้นปฐมภูมิ</option>
+                            <option value="5">เด็กวัด</option>
+                        </select>
+
+                        <select id="sortOrderField" class="filter-select" onchange="handleUserSearch()">
+                            <option value="default">📊 จัดเรียงมาตรฐาน</option>
+                            <option value="name-asc">ชื่อ (ก-ฮ / A-Z)</option>
+                            <option value="name-desc">ชื่อ (ฮ-ก / Z-A)</option>
+                            <option value="role-desc">ยศ (สูงไปต่ำ)</option>
+                            <option value="role-asc">ยศ (ต่ำไปสูง)</option>
+                        </select>
                     </div>
 
                     <div class="table-responsive">
                         <table class="data-table">
-                            <thead><tr><th>ลำดับ</th><th>นามแฝง (Username)</th><th>รหัสผ่านลับ</th><th>ระดับขั้น</th><th>จัดการ</th></tr></thead>
-                            <tbody id="users-table-body"><tr><td colspan="5" style="text-align:center;">กำลังโหลดข้อมูล...</td></tr></tbody>
+                            <thead>
+                                <tr>
+                                    <th>ลำดับ</th>
+                                    <th>นามแฝง (Username)</th>
+                                    <th>รหัสผ่านลับ</th>
+                                    <th>ระดับขั้น</th>
+                                    <th>จัดเรียงลำดับเอง</th>
+                                    <th>จัดการ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-table-body"><tr><td colspan="6" style="text-align:center;">กำลังโหลดข้อมูล...</td></tr></tbody>
                         </table>
                     </div>
                     <div id="userPagination" class="pagination"></div>
@@ -202,7 +231,6 @@
 
             <div id="tab-cms-index" class="tab-pane">
                 <div class="panel-card">
-                    <!-- 🌟 เพิ่มลายไทยมุมกล่องธีมสำนัก -->
                     <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-top-left" alt="" width="50" height="50">
                     <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-top-right" alt="" width="50" height="50">
                     <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-bottom-left" alt="" width="50" height="50">
@@ -228,7 +256,6 @@
     <!-- Modals -->
     <div class="modal-overlay" id="postModal">
         <div class="modal-box">
-            <!-- 🌟 เพิ่มลายไทยมุมกล่อง Modal -->
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-top-left" alt="" width="50" height="50">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-top-right" alt="" width="50" height="50">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-bottom-left" alt="" width="50" height="50">
@@ -255,7 +282,6 @@
 
     <div class="modal-overlay" id="userModal">
         <div class="modal-box" style="max-width: 400px;">
-            <!-- 🌟 เพิ่มลายไทยมุมกล่อง Modal -->
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-top-left" alt="" width="50" height="50">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-top-right" alt="" width="50" height="50">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-bottom-left" alt="" width="50" height="50">
@@ -283,7 +309,6 @@
 
     <div class="modal-overlay" id="customAlertModal" style="z-index: 9999;">
         <div class="modal-box" style="max-width: 310px; text-align: center;">
-            <!-- 🌟 เพิ่มลายไทยมุมกล่อง Modal -->
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-top-left" alt="" width="50" height="50">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-top-right" alt="" width="50" height="50">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-bottom-left" alt="" width="50" height="50">
@@ -297,7 +322,6 @@
 
     <div class="modal-overlay" id="customConfirmModal" style="z-index: 9999;">
         <div class="modal-box" style="max-width: 330px; text-align: center;">
-            <!-- 🌟 เพิ่มลายไทยมุมกล่อง Modal -->
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-top-left" alt="" width="50" height="50">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-top-right" alt="" width="50" height="50">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-bottom-left" alt="" width="50" height="50">
@@ -419,7 +443,7 @@
                 } 
             },
             async deleteUser(username) { 
-                if (API_CONFIG.USE_REAL_API) { await fetch(`${API_CONFIG.BASE_URL}/users/${username}`, { method: 'DELETE' }); } else { let users = await this.getUsers(); localStorage.setItem('siy_users', JSON.stringify(users.filter(u => u.username !== username))); } 
+                if (API_CONFIG.USE_REAL_API) { await fetch(`${API_CONFIG.BASE_URL}/users/${username}`, { method: 'DELETE' }); } else { let users = await this.getUsers(); localStorage.setItem('siy_users', JSON.stringify(users.filter(u => u.username !== username)))); } 
             },
             
             async getCMS() { 
@@ -560,14 +584,47 @@
             }
         }
 
+        // 🌟 ระบบฟิลเตอร์ค้นหาชื่อ, ยศ และจัดเรียงลำดับ
         function handleUserSearch() {
             const query = document.getElementById('searchUserField').value.toLowerCase().trim();
-            if (query) {
-                filteredUsersData = globalUsersData.filter(u => u.username.toLowerCase().includes(query));
-            } else {
-                filteredUsersData = [...globalUsersData];
+            const roleFilter = document.getElementById('filterRoleField').value;
+            const sortOrder = document.getElementById('sortOrderField').value;
+
+            let data = globalUsersData.filter(u => {
+                const matchName = u.username.toLowerCase().includes(query);
+                const matchRole = roleFilter === "" || String(u.role) === roleFilter;
+                return matchName && matchRole;
+            });
+
+            if (sortOrder === 'name-asc') {
+                data.sort((a, b) => a.username.localeCompare(b.username, 'th'));
+            } else if (sortOrder === 'name-desc') {
+                data.sort((a, b) => b.username.localeCompare(a.username, 'th'));
+            } else if (sortOrder === 'role-desc') {
+                data.sort((a, b) => parseInt(b.role || 5) - parseInt(a.role || 5));
+            } else if (sortOrder === 'role-asc') {
+                data.sort((a, b) => parseInt(a.role || 5) - parseInt(b.role || 5));
             }
+
+            filteredUsersData = data;
             renderUsersPage(1);
+        }
+
+        // 🌟 ระบบเลื่อนลำดับขึ้น-ลงด้วยตนเอง (Custom Manual Reordering)
+        function moveUserRow(indexInFiltered, direction) {
+            const currentItem = filteredUsersData[indexInFiltered];
+            const targetItem = filteredUsersData[indexInFiltered + direction];
+            if (!targetItem) return;
+
+            const globalIdxCurrent = globalUsersData.findIndex(u => u.username === currentItem.username);
+            const globalIdxTarget = globalUsersData.findIndex(u => u.username === targetItem.username);
+
+            if (globalIdxCurrent > -1 && globalIdxTarget > -1) {
+                const temp = globalUsersData[globalIdxCurrent];
+                globalUsersData[globalIdxCurrent] = globalUsersData[globalIdxTarget];
+                globalUsersData[globalIdxTarget] = temp;
+                handleUserSearch();
+            }
         }
 
         function renderUsersPage(page) {
@@ -575,7 +632,7 @@
             tbody.innerHTML = '';
             
             if (filteredUsersData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">ไม่พบข้อมูลสมาชิก</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">ไม่พบข้อมูลสมาชิกตามเงื่อนไข</td></tr>';
                 document.getElementById('userPagination').innerHTML = '';
                 return;
             }
@@ -590,14 +647,27 @@
             const usersToShow = filteredUsersData.slice(startIndex, endIndex);
 
             usersToShow.forEach((u, i) => {
+                const absoluteIndex = startIndex + i;
                 const globalIndex = globalUsersData.findIndex(g => g.username === u.username) + 1;
                 const displayRole = getRoleBadge(u.role);
+                
+                // ปุ่มสลับลำดับขึ้นลงเอง
+                let reorderBtns = `<div style="display:flex; gap:3px;">`;
+                if (absoluteIndex > 0) {
+                    reorderBtns += `<button class="btn btn-reorder" onclick="moveUserRow(${absoluteIndex}, -1)" title="เลื่อนขึ้น">▲</button>`;
+                }
+                if (absoluteIndex < filteredUsersData.length - 1) {
+                    reorderBtns += `<button class="btn btn-reorder" onclick="moveUserRow(${absoluteIndex}, 1)" title="เลื่อนลง">▼</button>`;
+                }
+                reorderBtns += `</div>`;
+
                 tbody.innerHTML += `
                     <tr>
                         <td>${globalIndex}</td>
                         <td><strong>${u.username}</strong></td>
                         <td><code>${u.password || '-'}</code></td>
                         <td>${displayRole}</td>
+                        <td>${reorderBtns}</td>
                         <td>
                             <div style="display:flex; gap:5px; flex-wrap:wrap;">
                                 <button class="btn btn-edit" onclick="editUser('${u.username}')">แก้ไข</button> 
