@@ -44,7 +44,7 @@
         .stat-card h4 { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px; } .stat-card .number { font-size: 1.8rem; color: var(--gold-light); font-weight: bold; font-family: 'Prompt', sans-serif; }
         
         .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 8px; border: 1px solid rgba(138, 99, 21, 0.2); margin-bottom: 10px; min-height: 120px; }
-        .data-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; text-align: left; min-width: 500px; }
+        .data-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; text-align: left; min-width: 650px; }
         .data-table th, .data-table td { padding: 10px 14px; border-bottom: 1px solid rgba(138, 99, 21, 0.2); }
         .data-table th { background: rgba(31, 17, 7, 0.9); color: var(--gold-main); font-family: 'Prompt', sans-serif; font-weight: 600; white-space: nowrap; }
         .data-table tr:hover { background: rgba(212, 175, 55, 0.04); }
@@ -213,11 +213,12 @@
                                     <th>นามแฝง (Username)</th>
                                     <th>รหัสผ่านลับ</th>
                                     <th>ระดับขั้น</th>
+                                    <th>ใช้งานล่าสุด</th>
                                     <th>จัดเรียงลำดับเอง</th>
                                     <th>จัดการ</th>
                                 </tr>
                             </thead>
-                            <tbody id="users-table-body"><tr><td colspan="6" style="text-align:center;">กำลังโหลดข้อมูล...</td></tr></tbody>
+                            <tbody id="users-table-body"><tr><td colspan="7" style="text-align:center;">กำลังโหลดข้อมูล...</td></tr></tbody>
                         </table>
                     </div>
                     <div id="userPagination" class="pagination"></div>
@@ -344,6 +345,24 @@
 
         function checkIsPinned(val) {
             return val === true || val === 1 || val === '1' || val === 'true';
+        }
+
+        function timeSinceLastLogin(timestamp) {
+            if (!timestamp) return '<span style="color:#8a7761; font-size:0.8rem;">ไม่ปรากฏร่องรอย</span>';
+            
+            const now = new Date();
+            const past = new Date(Number(timestamp) || timestamp);
+            if (isNaN(past.getTime())) return '<span style="color:#8a7761; font-size:0.8rem;">ไม่ปรากฏร่องรอย</span>';
+            
+            const diffTime = Math.abs(now - past);
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
+            const diffMinutes = Math.floor(diffTime / (1000 * 60));
+            
+            if (diffDays > 0) return `<span style="color:${diffDays > 30 ? '#ff6b6b' : '#d1bfae'};">${diffDays} วันที่แล้ว</span>`;
+            if (diffHours > 0) return `<span style="color:#73c990;">${diffHours} ชั่วโมงที่แล้ว</span>`;
+            if (diffMinutes > 0) return `<span style="color:#73c990;">${diffMinutes} นาทีที่แล้ว</span>`;
+            return '<span style="color:#73c990;">เพิ่งล่วงล้ำเข้ามา</span>';
         }
 
         async function checkAdminAuth() {
@@ -506,9 +525,10 @@
                 localStorage.setItem('siy_posts', JSON.stringify(defaultPosts));
             }
             if (!localStorage.getItem('siy_users')) { 
+                const now = Date.now();
                 localStorage.setItem('siy_users', JSON.stringify([
-                    { username: "ศิษย์ใหม่", password: "123", role: "5" },
-                    { username: "ADMIN", password: "password", role: "1" }
+                    { username: "ศิษย์ใหม่", password: "123", role: "5", last_login: now - (5 * 24 * 60 * 60 * 1000) },
+                    { username: "ADMIN", password: "password", role: "1", last_login: now - (2 * 60 * 60 * 1000) }
                 ])); 
             }
             if (!localStorage.getItem('siy_index_cms')) {
@@ -625,7 +645,7 @@
             tbody.innerHTML = '';
             
             if (filteredUsersData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">ไม่พบข้อมูลสมาชิกตามเงื่อนไข</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">ไม่พบข้อมูลสมาชิกตามเงื่อนไข</td></tr>';
                 document.getElementById('userPagination').innerHTML = '';
                 return;
             }
@@ -643,6 +663,7 @@
                 const absoluteIndex = startIndex + i;
                 const globalIndex = globalUsersData.findIndex(g => g.username === u.username) + 1;
                 const displayRole = getRoleBadge(u.role);
+                const displayLastLogin = timeSinceLastLogin(u.last_login || u.login_timestamp);
                 
                 let reorderBtns = `<div style="display:flex; gap:3px;">`;
                 if (absoluteIndex > 0) {
@@ -659,6 +680,7 @@
                         <td><strong>${u.username}</strong></td>
                         <td><code>${u.password || '-'}</code></td>
                         <td>${displayRole}</td>
+                        <td>${displayLastLogin}</td>
                         <td>${reorderBtns}</td>
                         <td>
                             <div style="display:flex; gap:5px; flex-wrap:wrap;">
