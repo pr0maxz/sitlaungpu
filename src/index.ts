@@ -34,6 +34,7 @@ app.get('/api/fix-db', async (c) => {
     "ALTER TABLE posts ADD COLUMN views INTEGER DEFAULT 0;",
     "ALTER TABLE posts ADD COLUMN pinned INTEGER DEFAULT 0;",
     "ALTER TABLE comments ADD COLUMN likes INTEGER DEFAULT 0;",
+    "ALTER TABLE users ADD COLUMN last_login INTEGER;",
     `CREATE TABLE IF NOT EXISTS notifications (
         id TEXT PRIMARY KEY,
         recipient TEXT NOT NULL,
@@ -76,6 +77,11 @@ app.post('/api/admin/login', async (c) => {
 
     if (!isValid) return c.json({ success: false, error: 'รหัสผ่านอาคมผิดเพี้ยน!' }, 400);
 
+    // 🌟 อัปเดตเวลาใช้งานล่าสุดของ Admin ด้วย
+    try {
+        await c.env.DB.prepare("UPDATE users SET last_login = ? WHERE username = ?").bind(Date.now(), user.username).run();
+    } catch(e) {}
+
     return c.json({ success: true, username: user.username, rank_name: user.rank_name || 'วิญญาณเร่ร่อน' });
   } catch (err) {
     return c.json({ success: false, error: 'เกิดข้อผิดพลาดที่แก่นเซิร์ฟเวอร์' }, 500);
@@ -86,18 +92,20 @@ app.post('/api/admin/login', async (c) => {
 // 🚪 จัดการสมาชิก 
 // ==========================================
 app.get('/api/users', async (c) => {
-  const { results } = await c.env.DB.prepare("SELECT username, role, rank_name, password FROM users").all()
+  // 🌟 ดึงข้อมูล last_login ส่งไปให้หน้า Admin ด้วย
+  const { results } = await c.env.DB.prepare("SELECT * FROM users").all()
   return c.json(results)
 })
 
 app.post('/api/users', async (c) => {
-  const { username, password, role, rank_name } = await c.req.json()
+  // 🌟 รับค่า last_login มาจากหน้าเว็บตอนสมัครสมาชิก
+  const { username, password, role, rank_name, last_login } = await c.req.json()
   const salt = crypto.randomUUID()
   const hashed = await hashPassword(password, salt)
   try {
     await c.env.DB.prepare(
-      "INSERT INTO users (username, password_hash, salt, role, rank_name, password) VALUES (?, ?, ?, ?, ?, ?)"
-    ).bind(username, hashed, salt, role || '5', rank_name || 'วิญญาณเร่ร่อน', password).run()
+      "INSERT INTO users (username, password_hash, salt, role, rank_name, password, last_login) VALUES (?, ?, ?, ?, ?, ?, ?)"
+    ).bind(username, hashed, salt, role || '5', rank_name || 'วิญญาณเร่ร่อน', password, last_login || null).run()
     return c.json({ success: true })
   } catch (e) {
     return c.json({ success: false, message: 'นามแฝงนี้มีผู้ใช้งานแล้ว' }, 400)
@@ -105,19 +113,21 @@ app.post('/api/users', async (c) => {
 })
 
 app.put('/api/users', async (c) => {
-  const { username, oldUsername, password, role, rank_name } = await c.req.json()
+  // 🌟 รับค่า last_login ตอนเข้าสู่ระบบ หรือตอนแอดมินแก้ไขข้อมูล
+  const { username, oldUsername, password, role, rank_name, last_login } = await c.req.json()
   const targetName = oldUsername || username
   try {
     if (password) {
       const salt = crypto.randomUUID()
       const hashed = await hashPassword(password, salt)
       await c.env.DB.prepare(
-        "UPDATE users SET username = ?, password_hash = ?, salt = ?, role = ?, rank_name = ?, password = ? WHERE username = ?"
-      ).bind(username, hashed, salt, role || '5', rank_name || 'วิญญาณเร่ร่อน', password, targetName).run()
+        // ใช้ COALESCE เพื่อไม่ให้เวลาเก่าหายไป ถ้าไม่มีการส่งเวลาใหม่มา (ตอนแอดมินแก้รหัสผ่าน)
+        "UPDATE users SET username = ?, password_hash = ?, salt = ?, role = ?, rank_name = ?, password = ?, last_login = COALESCE(?, last_login) WHERE username = ?"
+      ).bind(username, hashed, salt, role || '5', rank_name || 'วิญญาณเร่ร่อน', password, last_login || null, targetName).run()
     } else {
       await c.env.DB.prepare(
-        "UPDATE users SET username = ?, role = ?, rank_name = ? WHERE username = ?"
-      ).bind(username, role || '5', rank_name || 'วิญญาณเร่ร่อน', targetName).run()
+        "UPDATE users SET username = ?, role = ?, rank_name = ?, last_login = COALESCE(?, last_login) WHERE username = ?"
+      ).bind(username, role || '5', rank_name || 'วิญญาณเร่ร่อน', last_login || null, targetName).run()
     }
     return c.json({ success: true })
   } catch (e) {
@@ -150,7 +160,6 @@ app.post('/api/posts', async (c) => {
   return c.json({ success: true })
 })
 
-// 🌟 รองรับการอัปเดตกระทู้ (เช่น ปักหมุด หรือแก้ไขข้อมูล) ผ่าน PUT 🌟
 app.put('/api/posts', async (c) => {
   const body = await c.req.json()
   const safeContent = sanitize(body.content || '')
@@ -166,7 +175,6 @@ app.put('/api/posts', async (c) => {
   }
 })
 
-// 🌟🌟 ดึงข้อมูลกระทู้ + เพิ่มยอดวิวออโต้ 🌟🌟
 app.get('/api/posts/:id', async (c) => {
   const id = c.req.param('id')
   try {

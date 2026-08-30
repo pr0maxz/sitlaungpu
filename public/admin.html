@@ -57,12 +57,26 @@
         .btn-reorder { background: rgba(212, 175, 55, 0.1); color: var(--gold-light); border: 1px solid rgba(212, 175, 55, 0.3); padding: 4px 8px; font-size: 0.75rem; }
         .btn-reorder:hover { background: var(--gold-main); color: #000; }
         
-        .role-tag { padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; font-family: 'Prompt', sans-serif; font-weight: bold; display: inline-block; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-        .role-1 { background: linear-gradient(135deg, #4a0e0e, #2e0808); color: #f5d77f; border: 1px solid #d4af37; text-shadow: 0 0 5px rgba(212,175,55,0.5); } 
-        .role-2 { background: linear-gradient(135deg, #3a1c4a, #1f0f29); color: #e5b3ff; border: 1px solid #a86bd1; } 
-        .role-3 { background: rgba(212, 175, 55, 0.15); color: #f5d77f; border: 1px solid #d4af37; } 
-        .role-4 { background: rgba(138, 150, 166, 0.15); color: #c0c8d1; border: 1px solid #8a96a6; } 
-        .role-5 { background: rgba(138, 99, 21, 0.1); color: #a69477; border: 1px solid #8a6315; } 
+        /* /* 🌟 โค้ดสีป้ายยศ (แก้ปัญหาสีอักษรจมด้วย !important) */
+        .role-badge, .role-tag { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 0.75rem; font-family: 'Prompt', sans-serif; font-weight: 600; letter-spacing: 0.5px; vertical-align: middle; margin-left: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.6); }
+        
+        /* 1. ปรมัตถ์ (สีทองอร่ามมีแสง - อักษรสีดำคมกริบ) */
+        .role-1 { background: linear-gradient(135deg, #f5d77f, #d4af37, #8a6315); color: #1a0f02 !important; border: 1px solid #ffeea8; box-shadow: 0 0 12px rgba(212,175,55,0.8), inset 0 0 6px rgba(255,255,255,0.6); font-weight: 700; } 
+        
+        /* 2. ตติยภูมิ (สีม่วงลึกลับ) */
+        .role-2 { background: linear-gradient(135deg, #4a1c60, #240b36); color: #e5b3ff !important; border: 1px solid #9b59b6; box-shadow: 0 0 6px rgba(155,89,182,0.4); } 
+        
+        /* 3. ทุติยภูมิ (สีเงิน) */
+        .role-3 { background: linear-gradient(135deg, #6c7a86, #262c30); color: #d6dfe5 !important; border: 1px solid #94a6b5; box-shadow: 0 0 6px rgba(148,166,181,0.4); } 
+        
+        /* 4. ปฐมภูมิ (สีทองแดง) */
+        .role-4 { background: linear-gradient(135deg, #8a4818, #422008); color: #e8a67c !important; border: 1px solid #b86226; box-shadow: 0 0 6px rgba(184,98,38,0.4); } 
+        
+        /* 5. เด็กวัด (สีเดิม) */
+        .role-5 { background: rgba(138, 99, 21, 0.1); color: #a69477 !important; border: 1px solid #8a6315; } 
+        
+        .role-guest { background: rgba(168, 46, 46, 0.15); color: #ff6b6b !important; border: 1px dashed #a82e2e; }
+        
 
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; width: 100%; }
         .form-group { margin-bottom: 14px; width: 100%; } .form-group label { display: block; color: var(--gold-light); font-size: 0.85rem; margin-bottom: 5px; font-family: 'Prompt', sans-serif; }
@@ -190,9 +204,9 @@
                         <select id="filterRoleField" class="filter-select" onchange="handleUserSearch()">
                             <option value="">🏷️ ทุกระดับยศ</option>
                             <option value="1">ปรมัตถ์ (แอดมิน)</option>
-                            <option value="2">ปรมาจารย์</option>
-                            <option value="3">ผู้สำเร็จวิชา</option>
-                            <option value="4">ขั้นปฐมภูมิ</option>
+                            <option value="2">ตติยภูมิ</option>
+                            <option value="3">ทุติยภูมิ</option>
+                            <option value="4">ปฐมภูมิ</option>
                             <option value="5">เด็กวัด</option>
                         </select>
 
@@ -292,9 +306,9 @@
                     <label>ระดับขั้น (Rank)</label>
                     <select id="edit-user-role" class="form-control form-select" required>
                         <option value="5">เด็กวัด (ระดับ 5)</option>
-                        <option value="4">ขั้นปฐมภูมิ (ระดับ 4)</option>
-                        <option value="3">ผู้สำเร็จวิชา (ระดับ 3)</option>
-                        <option value="2">ปรมาจารย์ (ระดับ 2)</option>
+                        <option value="4">ปฐมภูมิ (ระดับ 4)</option>
+                        <option value="3">ทุติยภูมิ (ระดับ 3)</option>
+                        <option value="2">ตติยภูมิ (ระดับ 2)</option>
                         <option value="1">ปรมัตถ์ (แอดมิน)</option>
                     </select>
                 </div>
@@ -543,9 +557,9 @@
         function getRoleBadge(roleValue) {
             switch(String(roleValue)) {
                 case '1': return '<span class="role-tag role-1">ปรมัตถ์</span>';
-                case '2': return '<span class="role-tag role-2">ปรมาจารย์</span>';
-                case '3': return '<span class="role-tag role-3">ผู้สำเร็จวิชา</span>';
-                case '4': return '<span class="role-tag role-4">ขั้นปฐมภูมิ</span>';
+                case '2': return '<span class="role-tag role-2">ตติยภูมิ</span>';
+                case '3': return '<span class="role-tag role-3">ทุติยภูมิ</span>';
+                case '4': return '<span class="role-tag role-4">ปฐมภูมิ</span>';
                 default: return '<span class="role-tag role-5">เด็กวัด</span>'; 
             }
         }

@@ -88,12 +88,26 @@
         .modal-header { text-align: center; margin-bottom: 15px; } .modal-header h3 { color: var(--gold-light); font-size: 1.4rem; margin-bottom: 5px; text-shadow: 0 2px 5px rgba(0,0,0,0.8); }
         .btn-submit-modal { background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; border: none; padding: 12px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-weight: bold; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: all 0.3s; width: 80%; margin: 0 auto; display: block; } .btn-submit-modal:hover { filter: brightness(1.2); transform: translateY(-2px); }
         
-        .role-badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 0.75rem; font-family: 'Prompt', sans-serif; font-weight: 600; letter-spacing: 0.5px; box-shadow: 0 2px 4px rgba(0,0,0,0.6); vertical-align: middle; margin-left: 6px; }
-        .role-1 { background: linear-gradient(135deg, #4a0e0e, #2e0808); color: #f5d77f; border: 1px solid #d4af37; text-shadow: 0 0 5px rgba(212,175,55,0.5); }
-        .role-2 { background: linear-gradient(135deg, #3a1c4a, #1f0f29); color: #e5b3ff; border: 1px solid #a86bd1; }
-        .role-3 { background: linear-gradient(135deg, #3a2e0a, #1c1503); color: #f5d77f; border: 1px solid #d4af37; }
-        .role-4 { background: linear-gradient(135deg, #1c2630, #0a1117); color: #c0c8d1; border: 1px solid #8a96a6; }
-        .role-5 { background: linear-gradient(135deg, #2b1f14, #120c0a); color: #a69477; border: 1px solid #8a6315; }
+        /* /* 🌟 โค้ดสีป้ายยศ (แก้ปัญหาสีอักษรจมด้วย !important) */
+        .role-badge, .role-tag { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 0.75rem; font-family: 'Prompt', sans-serif; font-weight: 600; letter-spacing: 0.5px; vertical-align: middle; margin-left: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.6); }
+        
+        /* 1. ปรมัตถ์ (สีทองอร่ามมีแสง - อักษรสีดำคมกริบ) */
+        .role-1 { background: linear-gradient(135deg, #f5d77f, #d4af37, #8a6315); color: #1a0f02 !important; border: 1px solid #ffeea8; box-shadow: 0 0 12px rgba(212,175,55,0.8), inset 0 0 6px rgba(255,255,255,0.6); font-weight: 700; } 
+        
+        /* 2. ตติยภูมิ (สีม่วงลึกลับ) */
+        .role-2 { background: linear-gradient(135deg, #4a1c60, #240b36); color: #e5b3ff !important; border: 1px solid #9b59b6; box-shadow: 0 0 6px rgba(155,89,182,0.4); } 
+        
+        /* 3. ทุติยภูมิ (สีเงิน) */
+        .role-3 { background: linear-gradient(135deg, #6c7a86, #262c30); color: #d6dfe5 !important; border: 1px solid #94a6b5; box-shadow: 0 0 6px rgba(148,166,181,0.4); } 
+        
+        /* 4. ปฐมภูมิ (สีทองแดง) */
+        .role-4 { background: linear-gradient(135deg, #8a4818, #422008); color: #e8a67c !important; border: 1px solid #b86226; box-shadow: 0 0 6px rgba(184,98,38,0.4); } 
+        
+        /* 5. เด็กวัด (สีเดิม) */
+        .role-5 { background: rgba(138, 99, 21, 0.1); color: #a69477 !important; border: 1px solid #8a6315; } 
+        
+        .role-guest { background: rgba(168, 46, 46, 0.15); color: #ff6b6b !important; border: 1px dashed #a82e2e; } 
+        
 
         @media (max-width: 950px) { .post-layout { grid-template-columns: 1fr; } .form-actions { flex-direction: column; } }
         @media (max-width: 600px) {
