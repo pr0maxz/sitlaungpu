@@ -57,26 +57,19 @@
         .btn-reorder { background: rgba(212, 175, 55, 0.1); color: var(--gold-light); border: 1px solid rgba(212, 175, 55, 0.3); padding: 4px 8px; font-size: 0.75rem; }
         .btn-reorder:hover { background: var(--gold-main); color: #000; }
         
-        /* /* 🌟 โค้ดสีป้ายยศ (แก้ปัญหาสีอักษรจมด้วย !important) */
+        /* 🌟 โค้ดสีป้ายยศ (แก้ปัญหาสีอักษรจมด้วย !important) */
         .role-badge, .role-tag { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 0.75rem; font-family: 'Prompt', sans-serif; font-weight: 600; letter-spacing: 0.5px; vertical-align: middle; margin-left: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.6); }
-        
-        /* 1. ปรมัตถ์ (สีทองอร่ามมีแสง - อักษรสีดำคมกริบ) */
+        /* 1. ปรมัตถ์ (สีทองอร่ามมีแสง) */
         .role-1 { background: linear-gradient(135deg, #f5d77f, #d4af37, #8a6315); color: #1a0f02 !important; border: 1px solid #ffeea8; box-shadow: 0 0 12px rgba(212,175,55,0.8), inset 0 0 6px rgba(255,255,255,0.6); font-weight: 700; } 
-        
         /* 2. ตติยภูมิ (สีม่วงลึกลับ) */
         .role-2 { background: linear-gradient(135deg, #4a1c60, #240b36); color: #e5b3ff !important; border: 1px solid #9b59b6; box-shadow: 0 0 6px rgba(155,89,182,0.4); } 
-        
         /* 3. ทุติยภูมิ (สีเงิน) */
         .role-3 { background: linear-gradient(135deg, #6c7a86, #262c30); color: #d6dfe5 !important; border: 1px solid #94a6b5; box-shadow: 0 0 6px rgba(148,166,181,0.4); } 
-        
         /* 4. ปฐมภูมิ (สีทองแดง) */
         .role-4 { background: linear-gradient(135deg, #8a4818, #422008); color: #e8a67c !important; border: 1px solid #b86226; box-shadow: 0 0 6px rgba(184,98,38,0.4); } 
-        
         /* 5. เด็กวัด (สีเดิม) */
         .role-5 { background: rgba(138, 99, 21, 0.1); color: #a69477 !important; border: 1px solid #8a6315; } 
-        
         .role-guest { background: rgba(168, 46, 46, 0.15); color: #ff6b6b !important; border: 1px dashed #a82e2e; }
-        
 
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; width: 100%; }
         .form-group { margin-bottom: 14px; width: 100%; } .form-group label { display: block; color: var(--gold-light); font-size: 0.85rem; margin-bottom: 5px; font-family: 'Prompt', sans-serif; }
@@ -135,6 +128,7 @@
 
         <main class="admin-content">
 
+            <!-- Tab Dashboard -->
             <div id="tab-dashboard" class="tab-pane active">
                 <div class="stats-grid">
                     <div class="stat-card"><h4>กระทู้ทั้งหมด</h4><div class="number" id="stat-posts-count">0</div></div>
@@ -156,6 +150,7 @@
                 </div>
             </div>
 
+            <!-- Tab Posts -->
             <div id="tab-posts" class="tab-pane">
                 <div class="panel-card">
                     <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-top-left" alt="" width="50" height="50">
@@ -168,24 +163,41 @@
                         <button class="btn btn-gold" onclick="openPostModal()">+ สลักกระทู้</button>
                     </div>
 
-                    <h4 style="margin-bottom: 8px; color: var(--gold-main); font-size: 0.95rem;">❖ หมวดหมู่: นิยาย "สัตยาสาบาน"</h4>
-                    <div class="table-responsive" style="margin-bottom: 20px;">
-                        <table class="data-table">
-                            <thead><tr><th>ID</th><th>หัวข้อเรื่อง</th><th>สถานะ</th><th>ผู้เขียน</th><th>จัดการ</th></tr></thead>
-                            <tbody id="posts-table-body-cat1"><tr><td colspan="5" style="text-align:center;">กำลังโหลดข้อมูล...</td></tr></tbody>
-                        </table>
+                    <!-- 🌟 เพิ่มระบบฟิลเตอร์ค้นหากระทู้ตามหมวด -->
+                    <div class="filter-toolbar">
+                        <input type="text" id="searchPostField" class="search-input" placeholder="🔍 ค้นหาตามหัวข้อ, รหัส (ID) หรือผู้เขียน..." oninput="handlePostSearch()">
+                        <select id="filterPostCategory" class="filter-select" onchange="handlePostSearch()">
+                            <option value="">🏷️ แสดงทุกหมวดหมู่</option>
+                            <option value="1">นิยาย "สัตยาสาบาน"</option>
+                            <option value="2">คุยกับศิษย์หลวงปู่</option>
+                        </select>
                     </div>
 
-                    <h4 style="margin-bottom: 8px; color: var(--gold-main); font-size: 0.95rem;">❖ หมวดหมู่: คุยกับศิษย์หลวงปู่</h4>
-                    <div class="table-responsive">
-                        <table class="data-table">
-                            <thead><tr><th>ID</th><th>หัวข้อเรื่อง</th><th>สถานะ</th><th>ผู้เขียน</th><th>จัดการ</th></tr></thead>
-                            <tbody id="posts-table-body-cat2"><tr><td colspan="5" style="text-align:center;">กำลังโหลดข้อมูล...</td></tr></tbody>
-                        </table>
+                    <div id="section-cat1">
+                        <h4 style="margin-bottom: 8px; margin-top: 10px; color: var(--gold-main); font-size: 0.95rem;">❖ หมวดหมู่: นิยาย "สัตยาสาบาน"</h4>
+                        <div class="table-responsive" style="margin-bottom: 10px;">
+                            <table class="data-table">
+                                <thead><tr><th>ID</th><th>หัวข้อเรื่อง</th><th>สถานะ</th><th>ผู้เขียน</th><th>จัดการ</th></tr></thead>
+                                <tbody id="posts-table-body-cat1"><tr><td colspan="5" style="text-align:center;">กำลังโหลดข้อมูล...</td></tr></tbody>
+                            </table>
+                        </div>
+                        <div id="postPaginationCat1" class="pagination" style="margin-bottom: 25px;"></div>
+                    </div>
+
+                    <div id="section-cat2">
+                        <h4 style="margin-bottom: 8px; color: var(--gold-main); font-size: 0.95rem;">❖ หมวดหมู่: คุยกับศิษย์หลวงปู่</h4>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead><tr><th>ID</th><th>หัวข้อเรื่อง</th><th>สถานะ</th><th>ผู้เขียน</th><th>จัดการ</th></tr></thead>
+                                <tbody id="posts-table-body-cat2"><tr><td colspan="5" style="text-align:center;">กำลังโหลดข้อมูล...</td></tr></tbody>
+                            </table>
+                        </div>
+                        <div id="postPaginationCat2" class="pagination"></div>
                     </div>
                 </div>
             </div>
 
+            <!-- Tab Users -->
             <div id="tab-users" class="tab-pane">
                 <div class="panel-card">
                     <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-top-left" alt="" width="50" height="50">
@@ -239,6 +251,7 @@
                 </div>
             </div>
 
+            <!-- Tab CMS Index -->
             <div id="tab-cms-index" class="tab-pane">
                 <div class="panel-card">
                     <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-top-left" alt="" width="50" height="50">
@@ -351,6 +364,14 @@
             USE_REAL_API: true, 
             BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
         };
+
+        // ตัวแปรสำหรับระบบ Pagination ของกระทู้
+        let globalPostsData = [];
+        let filteredPostsCat1 = [];
+        let filteredPostsCat2 = [];
+        let currentPostPage1 = 1;
+        let currentPostPage2 = 1;
+        const POSTS_PER_PAGE_ADMIN = 10;
 
         let globalUsersData = [];
         let filteredUsersData = [];
@@ -569,38 +590,12 @@
             document.getElementById('stat-api-mode').textContent = API_CONFIG.USE_REAL_API ? "Cloudflare D1 (API)" : "LocalStorage (Mock)";
             document.getElementById('stat-api-mode').style.color = API_CONFIG.USE_REAL_API ? "#73c990" : "var(--gold-main)";
 
-            const posts = await AdminAPI.getPosts();
-            document.getElementById('stat-posts-count').textContent = posts.length;
-            
-            const tbCat1 = document.getElementById('posts-table-body-cat1');
-            const tbCat2 = document.getElementById('posts-table-body-cat2');
-            tbCat1.innerHTML = '';
-            tbCat2.innerHTML = '';
-            
-            posts.sort((a, b) => {
-                const aPin = checkIsPinned(a.pinned) ? 1 : 0;
-                const bPin = checkIsPinned(b.pinned) ? 1 : 0;
-                if (aPin !== bPin) return bPin - aPin;
-                return parseInt(b.id) - parseInt(a.id); 
-            });
-
-            let countCat1 = 0; let countCat2 = 0;
-
-            posts.forEach(p => { 
-                const isPinned = checkIsPinned(p.pinned);
-                const pinBtnHtml = `<button class="btn ${isPinned ? 'btn-edit' : 'btn-pin'}" onclick="togglePinPost('${p.id}')">${isPinned ? '📍 ถอดหมุด' : '📌 ปักหมุด'}</button>`;
-                const rowHtml = `<tr><td>${String(p.id).substring(0, 6)}...</td><td><strong>${p.title}</strong></td><td>${isPinned ? '<span style="color:var(--gold-main);">📌 ปักหมุด</span>' : 'ปกติ'}</td><td>${p.author}</td><td><div style="display:flex; gap:5px; flex-wrap:wrap;">${pinBtnHtml} <button class="btn btn-edit" onclick="editPost('${p.id}')">แก้ไข</button> <button class="btn btn-delete" onclick="deletePost('${p.id}')">ลบ</button></div></td></tr>`; 
-                
-                if (String(p.category) === "1") { tbCat1.innerHTML += rowHtml; countCat1++; } 
-                else { tbCat2.innerHTML += rowHtml; countCat2++; }
-            });
-
-            if (countCat1 === 0) tbCat1.innerHTML = '<tr><td colspan="5" style="text-align:center;">ยังไม่มีกระทู้ในหมวดนี้</td></tr>';
-            if (countCat2 === 0) tbCat2.innerHTML = '<tr><td colspan="5" style="text-align:center;">ยังไม่มีกระทู้ในหมวดนี้</td></tr>';
+            globalPostsData = await AdminAPI.getPosts();
+            document.getElementById('stat-posts-count').textContent = globalPostsData.length;
+            handlePostSearch();
 
             globalUsersData = await AdminAPI.getUsers();
             document.getElementById('stat-users-count').textContent = globalUsersData.length;
-            
             handleUserSearch();
             
             const cms = await AdminAPI.getCMS();
@@ -611,6 +606,113 @@
                 document.getElementById('cms-hero-btn-text').value = cms.heroBtnText || cms.hero_btn_text || cms.btn_text || cms.btnText || ''; 
                 document.getElementById('cms-hero-btn-url').value = cms.heroBtnUrl || cms.hero_btn_url || cms.btn_url || cms.btnUrl || '#';
             }
+        }
+
+        // 🌟 ฟังก์ชันจัดการค้นหาและแยกหมวดหมู่กระทู้
+        function handlePostSearch() {
+            const queryField = document.getElementById('searchPostField');
+            const query = queryField ? queryField.value.toLowerCase().trim() : '';
+            const catFilterField = document.getElementById('filterPostCategory');
+            const catFilter = catFilterField ? catFilterField.value : '';
+
+            // ควบคุมการแสดงผลหมวดหมู่ถ้ามีการเลือกฟิลเตอร์
+            const secCat1 = document.getElementById('section-cat1');
+            const secCat2 = document.getElementById('section-cat2');
+            if (secCat1) secCat1.style.display = (catFilter === '' || catFilter === '1') ? 'block' : 'none';
+            if (secCat2) secCat2.style.display = (catFilter === '' || catFilter === '2') ? 'block' : 'none';
+
+            let filtered = globalPostsData.filter(p => {
+                return (p.title && p.title.toLowerCase().includes(query)) || 
+                       (p.author && p.author.toLowerCase().includes(query)) || 
+                       (String(p.id).includes(query));
+            });
+
+            filtered.sort((a, b) => {
+                const aPin = checkIsPinned(a.pinned) ? 1 : 0;
+                const bPin = checkIsPinned(b.pinned) ? 1 : 0;
+                if (aPin !== bPin) return bPin - aPin;
+                return parseInt(b.id) - parseInt(a.id); 
+            });
+
+            filteredPostsCat1 = filtered.filter(p => String(p.category) === "1");
+            filteredPostsCat2 = filtered.filter(p => String(p.category) === "2");
+
+            renderPostsPage(1, 1);
+            renderPostsPage(2, 1);
+        }
+
+        // 🌟 ฟังก์ชันสร้างรายการกระทู้ตามหน้า
+        function renderPostsPage(categoryId, page) {
+            const tbody = document.getElementById(`posts-table-body-cat${categoryId}`);
+            if (!tbody) return;
+
+            const data = categoryId === 1 ? filteredPostsCat1 : filteredPostsCat2;
+            tbody.innerHTML = '';
+
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">ไม่พบข้อมูลกระทู้ในหมวดนี้</td></tr>`;
+                const pageContainer = document.getElementById(`postPaginationCat${categoryId}`);
+                if (pageContainer) pageContainer.innerHTML = '';
+                return;
+            }
+
+            const totalPages = Math.ceil(data.length / POSTS_PER_PAGE_ADMIN);
+            if (page < 1) page = 1;
+            if (page > totalPages) page = totalPages;
+            
+            if (categoryId === 1) currentPostPage1 = page;
+            else currentPostPage2 = page;
+
+            const startIndex = (page - 1) * POSTS_PER_PAGE_ADMIN;
+            const endIndex = startIndex + POSTS_PER_PAGE_ADMIN;
+            const postsToShow = data.slice(startIndex, endIndex);
+
+            postsToShow.forEach(p => {
+                const isPinned = checkIsPinned(p.pinned);
+                const pinBtnHtml = `<button class="btn ${isPinned ? 'btn-edit' : 'btn-pin'}" onclick="togglePinPost('${p.id}')">${isPinned ? '📍 ถอดหมุด' : '📌 ปักหมุด'}</button>`;
+                
+                const rowHtml = `<tr>
+                    <td style="max-width: 80px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${String(p.id).substring(0, 6)}...</td>
+                    <td><strong>${p.title}</strong></td>
+                    <td>${isPinned ? '<span style="color:var(--gold-main);">📌 ปักหมุด</span>' : 'ปกติ'}</td>
+                    <td>${p.author}</td>
+                    <td>
+                        <div style="display:flex; gap:5px; flex-wrap:wrap;">
+                            ${pinBtnHtml} 
+                            <button class="btn btn-edit" onclick="editPost('${p.id}')">แก้ไข</button> 
+                            <button class="btn btn-delete" onclick="deletePost('${p.id}')">ลบ</button>
+                        </div>
+                    </td>
+                </tr>`;
+                tbody.innerHTML += rowHtml;
+            });
+
+            renderPostPaginationControls(categoryId, totalPages);
+        }
+
+        // 🌟 ฟังก์ชันสร้างปุ่มแบ่งหน้ากระทู้
+        function renderPostPaginationControls(categoryId, totalPages) {
+            const container = document.getElementById(`postPaginationCat${categoryId}`);
+            if (!container) return;
+            if (totalPages <= 1) {
+                container.innerHTML = '';
+                return;
+            }
+
+            const currentPage = categoryId === 1 ? currentPostPage1 : currentPostPage2;
+            let html = `<button class="page-btn" ${currentPage === 1 ? 'disabled' : ''} onclick="renderPostsPage(${categoryId}, ${currentPage - 1})">« ย้อนกลับ</button>`;
+            
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                    html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="renderPostsPage(${categoryId}, ${i})">${i}</button>`;
+                } else if (i === currentPage - 2 || i === currentPage + 2) {
+                    html += `<span style="color: var(--gold-dark);">...</span>`;
+                }
+            }
+            
+            html += `<button class="page-btn" ${currentPage === totalPages ? 'disabled' : ''} onclick="renderPostsPage(${categoryId}, ${currentPage + 1})">ถัดไป »</button>`;
+            
+            container.innerHTML = html;
         }
 
         function handleUserSearch() {
