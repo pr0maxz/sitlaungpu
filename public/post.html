@@ -116,8 +116,8 @@
         .role-2 { background: linear-gradient(135deg, #8e44ad, #4b0082); color: #e8daef !important; border: 1px solid #9b59b6; box-shadow: 0 0 10px rgba(142,68,173,0.8); } 
         .role-3 { background: linear-gradient(135deg, #bdc3c7, #7f8c8d); color: #1a1a1a !important; border: 1px solid #ecf0f1; box-shadow: 0 0 8px rgba(189,195,199,0.8); } 
         .role-4 { background: linear-gradient(135deg, #d35400, #a04000); color: #ffebcc !important; border: 1px solid #e67e22; box-shadow: 0 0 10px rgba(211,84,0,0.8); } 
-        .role-5 { background: linear-gradient(135deg, #4a4a4a, #2b2b2b); color: #d0d0d0 !important; border: 1px solid #666; box-shadow: 0 0 6px rgba(100,100,100,0.5); } /* เด็กวัด: สไตล์พรีเมียมสีเทาเข้มขอบเรืองแสง ตรงกันทุกหน้า */
-        .role-6 { background: linear-gradient(135deg, #27ae60, #145a32); color: #abebc6 !important; border: 1px solid #2ecc71; box-shadow: 0 0 10px rgba(46,204,113,0.8); font-weight: 700; } /* ตัวละครพิเศษ */
+        .role-5 { background: linear-gradient(135deg, #4a4a4a, #2b2b2b); color: #d0d0d0 !important; border: 1px solid #666; box-shadow: 0 0 6px rgba(100,100,100,0.5); } 
+        .role-6 { background: linear-gradient(135deg, #27ae60, #145a32); color: #abebc6 !important; border: 1px solid #2ecc71; box-shadow: 0 0 10px rgba(46,204,113,0.8); font-weight: 700; } 
         .role-guest { background: rgba(168, 46, 46, 0.15); color: #ff6b6b !important; border: 1px dashed #a82e2e; }
 
         .sect-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(7, 4, 2, 0.9); backdrop-filter: blur(8px); z-index: 1000; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; } .sect-modal-overlay.active { display: flex; opacity: 1; }
@@ -281,11 +281,9 @@
         let currentPostAuthorGlobal = ''; 
 
         // ==========================================
-        // ⚡ ระบบกระแสจิตเรียลไทม์ (WebSocket) แบบกรองเบิ้ล
+        // ⚡ ระบบกระแสจิตเรียลไทม์ (WebSocket)
         // ==========================================
         let telepathySocket;
-        let lastLoadTime = 0;
-
         function connectTelepathy() {
             const wsUrl = API_CONFIG.BASE_URL.replace('http', 'ws') + '/ws';
             telepathySocket = new WebSocket(wsUrl);
@@ -322,11 +320,7 @@
                 if (data.type === 'NEW_COMMENT') {
                     const urlParams = new URLSearchParams(window.location.search);
                     const currentPostId = urlParams.get('id');
-                    
-                    // 🌟 ใช้ระบบหน่วงเวลา (Debounce) ป้องกันคอมเมนต์โหลดเบิ้ลซ้ำซ้อน
-                    const now = Date.now();
-                    if (data.postId === currentPostId && typeof loadComments === 'function' && (now - lastLoadTime > 1500)) {
-                        lastLoadTime = now;
+                    if (data.postId === currentPostId) {
                         loadComments(data.postId);
                     }
                 }
@@ -616,6 +610,20 @@
             }
         }
 
+        // ฟังก์ชันแปลงป้ายยศแบบ Sync โดยอ้างอิงจาก Users Map ป้องกัน async render ซ้อน
+        function formatBadgeFromUsersMap(username, usersMap) {
+            if (!username) return '<span class="role-badge role-5">เด็กวัด</span>';
+            if (username.toUpperCase() === 'ADMIN') return '<span class="role-badge role-1">ปรมัตถ์</span>';
+            const user = usersMap[username];
+            if (user) {
+                let role = String(user.role || '5');
+                let rank = user.rank_name || getRoleTitleName(role);
+                let roleClass = rank === 'ตัวละคร' ? 'role-6' : `role-${role}`;
+                return `<span class="role-badge ${roleClass}">${rank}</span>`;
+            }
+            return '<span class="role-badge role-5">เด็กวัด</span>';
+        }
+
         async function getRoleBadgeFromAPI(username) {
             if (!username) return '<span class="role-badge role-5">เด็กวัด</span>';
             if (username.toUpperCase() === 'ADMIN') { return '<span class="role-badge role-1">ปรมัตถ์</span>'; }
@@ -641,135 +649,154 @@
             if (box) box.classList.toggle('active');
         }
 
+        // 🌟 ตัวล็อกคิวการโหลดคอมเมนต์ ป้องกันการเรนเดอร์เบิ้ลพร้อมกัน
+        let isCommentsRendering = false;
+
         async function loadComments(postId) {
+            if (isCommentsRendering) return;
+            isCommentsRendering = true;
+
             const container = document.getElementById('commentsList');
-            const comments = await ApiManager.getComments(postId);
             
-            const savedUser = localStorage.getItem('siy_username');
-            const userType = localStorage.getItem('siy_usertype');
-            let isUserAdmin = false;
-            
-            if (savedUser) {
-                if (savedUser.toUpperCase() === 'ADMIN') { isUserAdmin = true; } 
-                else {
-                    try {
-                        const res = await fetch(`${API_CONFIG.BASE_URL}/users`);
-                        const usersDB = await res.json();
-                        const curUser = usersDB.find(u => u.username === savedUser);
-                        if (curUser && String(curUser.role) === '1') { isUserAdmin = true; }
-                    } catch (e) {}
-                }
-                document.getElementById('btnReportPost').style.display = 'inline-block';
-            }
-
-            container.innerHTML = ''; 
-            const likedComments = JSON.parse(localStorage.getItem('siy_liked_comments') || '[]');
-
-            if(comments.length === 0) {
-                container.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 20px;">ยังไม่มีผู้ใดทิ้งร่องรอยไว้... เป็นคนแรกที่เปล่งวาจาสิ</div>';
-                return;
-            }
-
-            const mainComments = [];
-            const replyComments = [];
-
-            comments.forEach(c => {
-                const match = c.content.match(/^\[REPLY_TO:([^\]]+)\]/);
-                if (match) {
-                    const parentId = match[1];
-                    const parentExists = comments.some(p => String(p.id) === parentId && !p.content.startsWith('[REPLY_TO:'));
-                    if (parentExists) { replyComments.push(c); } else { mainComments.push(c); }
-                } else { mainComments.push(c); }
-            });
-
-            for (const c of mainComments) {
-                const badge = await getRoleBadgeFromAPI(c.author);
-                let cleanMainContent = c.content.replace(/^\[REPLY_TO:[^\]]+\](?:\[AUTHOR:[^\]]+\])?/, '');
-
-                let adminControls = isUserAdmin ? `<button type="button" class="btn-delete-comment" onclick="deleteCommentAction('${c.id}', '${postId}')">🗑️ ทำลาย</button>` : '';
-                let replyBtn = (userType !== 'guest') ? `<button type="button" class="btn-reply-comment" onclick="toggleReplyBox('${c.id}')">💬 ตอบกลับ</button>` : '';
-                let reportBtn = (savedUser) ? `<button type="button" class="btn-report" onclick="openReportModal('comment', '${c.id}')">🚨 แจ้ง</button>` : '';
+            try {
+                const [comments, usersRes] = await Promise.all([
+                    ApiManager.getComments(postId),
+                    fetch(`${API_CONFIG.BASE_URL}/users`).then(r => r.ok ? r.json() : []).catch(() => [])
+                ]);
                 
-                const isLiked = likedComments.includes(String(c.id)) ? 'liked' : '';
-                let likeBtn = `<button type="button" class="btn-like ${isLiked}" id="btn-like-comment-${c.id}" onclick="likeCommentAction('${c.id}')">🙏 อนุโมทนา (<span id="comment-like-count-${c.id}">${c.likes || 0}</span>)</button>`;
+                // แปลง Users เป็น Dictionary เพื่อดึงได้ทันที ไม่ต้องหยุดรอ await ทีละบรรทัด
+                const usersMap = {};
+                usersRes.forEach(u => { usersMap[u.username] = u; });
 
-                const childReplies = replyComments.filter(r => {
-                    const match = r.content.match(/^\[REPLY_TO:([^\]]+)\]/);
-                    return match && match[1] === String(c.id);
-                });
+                const savedUser = localStorage.getItem('siy_username');
+                const userType = localStorage.getItem('siy_usertype');
+                let isUserAdmin = false;
                 
-                let repliesHtml = '';
-
-                if (childReplies.length > 0) {
-                    repliesHtml += `<div class="replies-container">`; 
-                    for (const r of childReplies) {
-                        const rBadge = await getRoleBadgeFromAPI(r.author);
-                        let rAdminControls = isUserAdmin ? `<button type="button" class="btn-delete-comment" onclick="deleteCommentAction('${r.id}', '${postId}')">🗑️ ทำลาย</button>` : '';
-                        let rReportBtn = (savedUser) ? `<button type="button" class="btn-report" onclick="openReportModal('comment', '${r.id}')">🚨 แจ้ง</button>` : '';
-                        
-                        let authorMatch = r.content.match(/\[AUTHOR:([^\]]+)\]/);
-                        let repliedTo = authorMatch ? authorMatch[1] : c.author;
-                        let cleanReplyContent = r.content.replace(/^\[REPLY_TO:[^\]]+\](?:\[AUTHOR:[^\]]+\])?/, '');
-                        
-                        const rIsLiked = likedComments.includes(String(r.id)) ? 'liked' : '';
-                        let rLikeBtn = `<button type="button" class="btn-like ${rIsLiked}" id="btn-like-comment-${r.id}" onclick="likeCommentAction('${r.id}')">🙏 อนุโมทนา (<span id="comment-like-count-${r.id}">${r.likes || 0}</span>)</button>`;
-
-                        repliesHtml += `
-                            <div class="comment-card is-reply">
-                                <div class="reply-badge">↪ ตอบกลับคุณ: ${repliedTo}</div>
-                                <div class="comment-header">
-                                    <div>
-                                        <span class="comment-author">${r.author}</span>
-                                        ${rBadge}
-                                    </div>
-                                    <div>
-                                        <span class="post-time">${r.timestamp}</span>
-                                    </div>
-                                </div>
-                                <div class="comment-body">${cleanReplyContent}</div>
-                                <div class="comment-actions">
-                                    ${rLikeBtn}
-                                    ${rReportBtn}
-                                    ${rAdminControls}
-                                </div>
-                            </div>
-                        `;
+                if (savedUser) {
+                    if (savedUser.toUpperCase() === 'ADMIN') { 
+                        isUserAdmin = true; 
+                    } else if (usersMap[savedUser] && String(usersMap[savedUser].role) === '1') {
+                        isUserAdmin = true;
                     }
-                    repliesHtml += `</div>`;
+                    document.getElementById('btnReportPost').style.display = 'inline-block';
                 }
 
-                let replyFormHtml = (userType !== 'guest') ? `
-                    <div id="reply-box-${c.id}" class="reply-form-container">
-                        <textarea id="replyInput-${c.id}" class="form-textarea" placeholder="พิมพ์ข้อความตอบกลับคุณ ${c.author}..."></textarea>
-                        <div style="display: flex; gap: 8px;">
-                            <button type="button" class="btn-submit-comment" onclick="submitReply('${c.id}', '${c.author}', '${postId}')" style="padding: 6px 15px; font-size: 0.85rem;">ส่งคำตอบกลับ</button>
-                            <button type="button" class="btn-delete-comment" onclick="toggleReplyBox('${c.id}')" style="background: transparent; color: #a69477; border-color: #a69477;">ยกเลิก</button>
-                        </div>
-                    </div>
-                ` : '';
+                const likedComments = JSON.parse(localStorage.getItem('siy_liked_comments') || '[]');
 
-                container.innerHTML += `
-                    <div class="comment-card">
-                        <div class="comment-header">
-                            <div>
-                                <span class="comment-author">${c.author}</span>
-                                ${badge}
-                            </div>
-                            <div>
-                                <span class="post-time">${c.timestamp}</span>
+                if(comments.length === 0) {
+                    container.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 20px;">ยังไม่มีผู้ใดทิ้งร่องรอยไว้... เป็นคนแรกที่เปล่งวาจาสิ</div>';
+                    isCommentsRendering = false;
+                    return;
+                }
+
+                const mainComments = [];
+                const replyComments = [];
+
+                comments.forEach(c => {
+                    const match = c.content.match(/^\[REPLY_TO:([^\]]+)\]/);
+                    if (match) {
+                        const parentId = match[1];
+                        const parentExists = comments.some(p => String(p.id) === parentId && !p.content.startsWith('[REPLY_TO:'));
+                        if (parentExists) { replyComments.push(c); } else { mainComments.push(c); }
+                    } else { mainComments.push(c); }
+                });
+
+                let outputHtml = '';
+
+                for (const c of mainComments) {
+                    const badge = formatBadgeFromUsersMap(c.author, usersMap);
+                    let cleanMainContent = c.content.replace(/^\[REPLY_TO:[^\]]+\](?:\[AUTHOR:[^\]]+\])?/, '');
+
+                    let adminControls = isUserAdmin ? `<button type="button" class="btn-delete-comment" onclick="deleteCommentAction('${c.id}', '${postId}')">🗑️ ทำลาย</button>` : '';
+                    let replyBtn = (userType !== 'guest') ? `<button type="button" class="btn-reply-comment" onclick="toggleReplyBox('${c.id}')">💬 ตอบกลับ</button>` : '';
+                    let reportBtn = (savedUser) ? `<button type="button" class="btn-report" onclick="openReportModal('comment', '${c.id}')">🚨 แจ้ง</button>` : '';
+                    
+                    const isLiked = likedComments.includes(String(c.id)) ? 'liked' : '';
+                    let likeBtn = `<button type="button" class="btn-like ${isLiked}" id="btn-like-comment-${c.id}" onclick="likeCommentAction('${c.id}')">🙏 อนุโมทนา (<span id="comment-like-count-${c.id}">${c.likes || 0}</span>)</button>`;
+
+                    const childReplies = replyComments.filter(r => {
+                        const match = r.content.match(/^\[REPLY_TO:([^\]]+)\]/);
+                        return match && match[1] === String(c.id);
+                    });
+                    
+                    let repliesHtml = '';
+
+                    if (childReplies.length > 0) {
+                        repliesHtml += `<div class="replies-container">`; 
+                        for (const r of childReplies) {
+                            const rBadge = formatBadgeFromUsersMap(r.author, usersMap);
+                            let rAdminControls = isUserAdmin ? `<button type="button" class="btn-delete-comment" onclick="deleteCommentAction('${r.id}', '${postId}')">🗑️ ทำลาย</button>` : '';
+                            let rReportBtn = (savedUser) ? `<button type="button" class="btn-report" onclick="openReportModal('comment', '${r.id}')">🚨 แจ้ง</button>` : '';
+                            
+                            let authorMatch = r.content.match(/\[AUTHOR:([^\]]+)\]/);
+                            let repliedTo = authorMatch ? authorMatch[1] : c.author;
+                            let cleanReplyContent = r.content.replace(/^\[REPLY_TO:[^\]]+\](?:\[AUTHOR:[^\]]+\])?/, '');
+                            
+                            const rIsLiked = likedComments.includes(String(r.id)) ? 'liked' : '';
+                            let rLikeBtn = `<button type="button" class="btn-like ${rIsLiked}" id="btn-like-comment-${r.id}" onclick="likeCommentAction('${r.id}')">🙏 อนุโมทนา (<span id="comment-like-count-${r.id}">${r.likes || 0}</span>)</button>`;
+
+                            repliesHtml += `
+                                <div class="comment-card is-reply">
+                                    <div class="reply-badge">↪ ตอบกลับคุณ: ${repliedTo}</div>
+                                    <div class="comment-header">
+                                        <div>
+                                            <span class="comment-author">${r.author}</span>
+                                            ${rBadge}
+                                        </div>
+                                        <div>
+                                            <span class="post-time">${r.timestamp}</span>
+                                        </div>
+                                    </div>
+                                    <div class="comment-body">${cleanReplyContent}</div>
+                                    <div class="comment-actions">
+                                        ${rLikeBtn}
+                                        ${rReportBtn}
+                                        ${rAdminControls}
+                                    </div>
+                                </div>
+                            `;
+                        }
+                        repliesHtml += `</div>`;
+                    }
+
+                    let replyFormHtml = (userType !== 'guest') ? `
+                        <div id="reply-box-${c.id}" class="reply-form-container">
+                            <textarea id="replyInput-${c.id}" class="form-textarea" placeholder="พิมพ์ข้อความตอบกลับคุณ ${c.author}..."></textarea>
+                            <div style="display: flex; gap: 8px;">
+                                <button type="button" class="btn-submit-comment" onclick="submitReply('${c.id}', '${c.author}', '${postId}')" style="padding: 6px 15px; font-size: 0.85rem;">ส่งคำตอบกลับ</button>
+                                <button type="button" class="btn-delete-comment" onclick="toggleReplyBox('${c.id}')" style="background: transparent; color: #a69477; border-color: #a69477;">ยกเลิก</button>
                             </div>
                         </div>
-                        <div class="comment-body">${cleanMainContent}</div>
-                        <div class="comment-actions">
-                            ${likeBtn}
-                            ${replyBtn}
-                            ${reportBtn}
-                            ${adminControls}
+                    ` : '';
+
+                    outputHtml += `
+                        <div class="comment-card">
+                            <div class="comment-header">
+                                <div>
+                                    <span class="comment-author">${c.author}</span>
+                                    ${badge}
+                                </div>
+                                <div>
+                                    <span class="post-time">${c.timestamp}</span>
+                                </div>
+                            </div>
+                            <div class="comment-body">${cleanMainContent}</div>
+                            <div class="comment-actions">
+                                ${likeBtn}
+                                ${replyBtn}
+                                ${reportBtn}
+                                ${adminControls}
+                            </div>
+                            ${replyFormHtml}
                         </div>
-                        ${replyFormHtml}
-                    </div>
-                    ${repliesHtml}
-                `;
+                        ${repliesHtml}
+                    `;
+                }
+
+                // สั่งยัดลงหน้าจอเพียงครั้งเดียวเมื่อประกอบเสร็จ ป้องกันการวาดซ้ำ
+                container.innerHTML = outputHtml;
+            } finally {
+                isCommentsRendering = false;
             }
         }
 
@@ -806,12 +833,20 @@
             return { valid: true };
         }
 
+        let isSubmittingComment = false;
+
         async function submitComment() {
+            if (isSubmittingComment) return;
+
             const textarea = document.getElementById('commentInput');
             const content = textarea.value.trim();
             if(!content) { showCustomAlert('ท่านต้องเปล่งวาจาเสียก่อน'); return; }
             const validation = validateComment(content);
             if (!validation.valid) { showCustomAlert(validation.error); return; }
+
+            isSubmittingComment = true;
+            const btn = document.getElementById('submitCommentBtn');
+            if(btn) { btn.textContent = 'กำลังส่ง...'; btn.disabled = true; }
 
             const urlParams = new URLSearchParams(window.location.search);
             const postId = urlParams.get('id');
@@ -826,39 +861,51 @@
                 content: content.replace(/\n/g, '<br>'), timestamp: timeStr, likes: 0
             };
 
-            const btn = document.getElementById('submitCommentBtn');
-            btn.textContent = 'กำลังส่ง...'; btn.disabled = true;
+            try {
+                const result = await ApiManager.saveComment(commentData);
+                if(result && result.success !== false) {
+                    textarea.value = ''; 
+                    
+                    if (currentPostAuthorGlobal && currentPostAuthorGlobal !== author) {
+                        await ApiManager.sendNotification({
+                            id: Date.now().toString(),
+                            recipient: currentPostAuthorGlobal,
+                            actor: author,
+                            action_type: 'comment',
+                            post_id: postId,
+                            timestamp: timeStr
+                        });
+                    }
 
-            const result = await ApiManager.saveComment(commentData);
-            if(result && result.success !== false) {
-                textarea.value = ''; 
-                
-                if (currentPostAuthorGlobal && currentPostAuthorGlobal !== author) {
-                    await ApiManager.sendNotification({
-                        id: Date.now().toString(),
-                        recipient: currentPostAuthorGlobal,
-                        actor: author,
-                        action_type: 'comment',
-                        post_id: postId,
-                        timestamp: timeStr
-                    });
+                    broadcastAction('NEW_COMMENT', postId, { postId: postId });
+                    showCustomAlert('บันทึกจารึกสำเร็จ!');
+                    loadComments(postId); 
+                } else {
+                    showCustomAlert('เกิดอาถรรพ์ขัดข้อง ส่งข้อความไม่สำเร็จ');
                 }
-
-                broadcastAction('NEW_COMMENT', postId, { postId: postId });
-
-                showCustomAlert('บันทึกจารึกสำเร็จ!');
-                loadComments(postId); 
-            } else { showCustomAlert('เกิดอาถรรพ์ขัดข้อง ส่งข้อความไม่สำเร็จ'); }
-            btn.textContent = 'ส่งความคิดเห็น'; btn.disabled = false;
+            } catch (e) {
+                showCustomAlert('เกิดอาถรรพ์ขัดข้องในการเชื่อมต่อ');
+            } finally {
+                isSubmittingComment = false;
+                if(btn) { btn.textContent = 'ส่งความคิดเห็น'; btn.disabled = false; }
+            }
         }
 
+        const submittingReplies = {};
+
         async function submitReply(parentId, parentAuthor, postId) {
+            if (submittingReplies[parentId]) return;
+
             const textarea = document.getElementById(`replyInput-${parentId}`);
             if (!textarea) return;
             const content = textarea.value.trim();
             if(!content) { showCustomAlert('ท่านต้องพิมพ์ข้อความตอบกลับเสียก่อน'); return; }
             const validation = validateComment(content);
             if (!validation.valid) { showCustomAlert(validation.error); return; }
+
+            submittingReplies[parentId] = true;
+            const btn = textarea.parentElement.querySelector('.btn-submit-comment');
+            if(btn) { btn.textContent = 'กำลังส่ง...'; btn.disabled = true; }
 
             const author = localStorage.getItem('siy_username');
             
@@ -874,30 +921,32 @@
                 content: finalContent, timestamp: timeStr, likes: 0
             };
 
-            const btn = textarea.nextElementSibling.querySelector('.btn-submit-comment');
-            if(btn) { btn.textContent = 'กำลังส่ง...'; btn.disabled = true; }
+            try {
+                const result = await ApiManager.saveComment(commentData);
+                if(result && result.success !== false) {
+                    textarea.value = '';
 
-            const result = await ApiManager.saveComment(commentData);
-            if(result && result.success !== false) {
-                textarea.value = '';
+                    if (parentAuthor && parentAuthor !== author) {
+                        await ApiManager.sendNotification({
+                            id: Date.now().toString(),
+                            recipient: parentAuthor,
+                            actor: author,
+                            action_type: 'reply',
+                            post_id: postId,
+                            timestamp: timeStr
+                        });
+                    }
 
-                if (parentAuthor && parentAuthor !== author) {
-                    await ApiManager.sendNotification({
-                        id: Date.now().toString(),
-                        recipient: parentAuthor,
-                        actor: author,
-                        action_type: 'reply',
-                        post_id: postId,
-                        timestamp: timeStr
-                    });
+                    broadcastAction('NEW_COMMENT', postId, { postId: postId });
+                    showCustomAlert('ส่งคำตอบกลับสำเร็จ!');
+                    loadComments(postId);
+                } else {
+                    showCustomAlert('เกิดอาถรรพ์ขัดข้อง ส่งคำตอบกลับไม่สำเร็จ');
                 }
-
-                broadcastAction('NEW_COMMENT', postId, { postId: postId });
-
-                showCustomAlert('ส่งคำตอบกลับสำเร็จ!');
-                loadComments(postId);
-            } else {
-                showCustomAlert('เกิดอาถรรพ์ขัดข้อง ส่งคำตอบกลับไม่สำเร็จ');
+            } catch (e) {
+                showCustomAlert('เกิดอาถรรพ์ขัดข้องในการเชื่อมต่อ');
+            } finally {
+                submittingReplies[parentId] = false;
                 if(btn) { btn.textContent = 'ส่งคำตอบกลับ'; btn.disabled = false; }
             }
         }
