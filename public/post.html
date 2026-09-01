@@ -389,7 +389,7 @@
         }
 
         // ==========================================
-        // 🌟 ฟังก์ชันจัดการอนุโมทนา (Likes)
+        // 🌟 ฟังก์ชันจัดการอนุโมทนา (Likes) - ฉบับแจ้งเตือนข้อผิดพลาด
         // ==========================================
         async function likePostAction() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -402,14 +402,21 @@
                 return;
             }
 
+            const btn = document.getElementById('btnLikeMainPost');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = 'กำลังส่งจิต...'; // เปลี่ยนข้อความตอนกำลังโหลด
+
             const result = await ApiManager.likePost(postId);
             if (result && result.success) {
                 likedPosts.push(postId);
                 localStorage.setItem('siy_liked_posts', JSON.stringify(likedPosts));
                 
                 document.getElementById('dyn-likes').textContent = result.likes;
-                const btn = document.getElementById('btnLikeMainPost');
                 btn.classList.add('liked');
+                btn.innerHTML = `🙏 อนุโมทนา (<span id="dyn-likes">${result.likes}</span>)`;
+            } else {
+                btn.innerHTML = originalText;
+                showCustomAlert('⚠️ อาถรรพ์สะท้อนกลับ! เชื่อมต่อหลังบ้านไม่สำเร็จ (โปรดเช็คว่า Deploy ผ่านแล้ว หรือเพิ่มคอลัมน์ likes ใน D1 แล้ว)');
             }
         }
 
@@ -420,17 +427,25 @@
                 return;
             }
 
+            const btn = document.getElementById(`btn-like-comment-${commentId}`);
+            const originalText = btn ? btn.innerHTML : '';
+            if(btn) btn.innerHTML = '...';
+
             const result = await ApiManager.likeComment(commentId);
             if (result && result.success) {
                 likedComments.push(commentId);
                 localStorage.setItem('siy_liked_comments', JSON.stringify(likedComments));
                 
                 document.getElementById(`comment-like-count-${commentId}`).textContent = result.likes;
-                const btn = document.getElementById(`btn-like-comment-${commentId}`);
-                if(btn) btn.classList.add('liked');
+                if(btn) {
+                    btn.classList.add('liked');
+                    btn.innerHTML = `🙏 อนุโมทนา (<span id="comment-like-count-${commentId}">${result.likes}</span>)`;
+                }
+            } else {
+                if(btn) btn.innerHTML = originalText;
+                showCustomAlert('⚠️ อาถรรพ์สะท้อนกลับ! เชื่อมต่อหลังบ้านไม่สำเร็จ');
             }
         }
-
 
         // ==========================================
         // ระบบพื้นฐานเดิม
