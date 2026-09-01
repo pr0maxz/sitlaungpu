@@ -387,6 +387,9 @@
         // ==========================================
         // 🌟 ฟังก์ชันจัดการอนุโมทนา (Likes)
         // ==========================================
+        // ==========================================
+        // 🌟 ฟังก์ชันจัดการอนุโมทนา (Likes) - ฉบับส่งกระแสจิตครบถ้วน
+        // ==========================================
         async function likePostAction() {
             const urlParams = new URLSearchParams(window.location.search);
             const postId = urlParams.get('id');
@@ -411,7 +414,7 @@
                 btn.classList.add('liked');
                 btn.innerHTML = `🙏 อนุโมทนา (<span id="dyn-likes">${result.likes}</span>)`;
 
-                // 🌟 ส่งกระแสจิตเตือนคนตั้งกระทู้
+                // 🌟 เพิ่มคาถาส่งกระแสจิตเตือนคนตั้งกระทู้ตรงนี้!
                 if (currentPostAuthorGlobal && currentPostAuthorGlobal !== currentUser) {
                     const thaiMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
                     const now = new Date();
@@ -457,7 +460,7 @@
                     btn.innerHTML = `🙏 อนุโมทนา (<span id="comment-like-count-${commentId}">${result.likes}</span>)`;
                 }
 
-                // 🌟 ส่งกระแสจิตเตือนเจ้าของคอมเมนต์
+                // 🌟 เพิ่มคาถาส่งกระแสจิตเตือนเจ้าของคอมเมนต์ตรงนี้!
                 if (commentAuthor && commentAuthor !== currentUser) {
                     const thaiMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
                     const now = new Date();
