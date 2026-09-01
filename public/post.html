@@ -34,7 +34,6 @@
         .post-body { line-height: 1.8; color: #e2d4c3; font-size: 1.05rem; margin-bottom: 30px; word-wrap: break-word; overflow-wrap: break-word; min-height: 150px; } 
         .post-body img, .comment-body img { max-width: 100% !important; height: auto !important; box-sizing: border-box; }
 
-        /* 🌟 ปุ่มอนุโมทนา (Like) */
         .btn-like { background: rgba(212, 175, 55, 0.1); border: 1px solid var(--gold-dark); color: var(--gold-light); padding: 4px 12px; border-radius: 20px; font-family: 'Prompt', sans-serif; font-size: 0.8rem; cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
         .btn-like:hover { background: var(--gold-main); color: #000; box-shadow: 0 0 10px rgba(212,175,55,0.4); }
         .btn-like.liked { background: var(--gold-main); color: #000; font-weight: bold; }
@@ -77,7 +76,6 @@
         .btn-logout { display: block; width: 100%; background: transparent; color: #ff6b6b; border: 1px solid rgba(168, 46, 46, 0.5); padding: 8px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-size: 0.9rem; cursor: pointer; transition: all 0.3s; } 
         .btn-logout:hover { background: rgba(168, 46, 46, 0.1); border-color: #ff6b6b; }
 
-        /* 🌟 ระบบกระแสจิต (Notification Dropdown) */
         .noti-wrapper { position: absolute; top: 12px; right: 12px; }
         .noti-btn { background: transparent; border: none; font-size: 1.4rem; cursor: pointer; position: relative; transition: transform 0.3s; }
         .noti-btn:hover { transform: scale(1.1); filter: drop-shadow(0 0 8px var(--gold-main)); }
@@ -150,7 +148,6 @@
                         <div class="loading-text">กำลังรวบรวมชิ้นส่วนจารึก...</div>
                     </div>
 
-                    <!-- 🌟 ส่วนปุ่มกดอนุโมทนา (Like) สำหรับกระทู้หลัก -->
                     <div style="border-top: 1px dashed rgba(138, 99, 21, 0.3); padding-top: 20px; display: flex; align-items: center; gap: 15px;">
                         <button class="btn-like" id="btnLikeMainPost" onclick="likePostAction()">
                             🙏 อนุโมทนา (<span id="dyn-likes">0</span>)
@@ -170,7 +167,6 @@
 
             <div class="post-sidebar">
                 <div class="widget user-status-box">
-                    <!-- 🌟 ส่วนไอคอนกระดิ่งแจ้งเตือน (กระแสจิต) -->
                     <div class="noti-wrapper" id="notiContainer" style="display: none;">
                         <button class="noti-btn" onclick="toggleNotiDropdown()">🔔<span class="noti-badge" id="notiBadgeCount" style="display:none;">0</span></button>
                         <div class="noti-dropdown" id="notiDropdownBox">
@@ -251,7 +247,7 @@
             BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
         };
 
-        let currentPostAuthorGlobal = ''; // ไว้เก็บชื่อคนตั้งกระทู้สำหรับระบบแจ้งเตือน
+        let currentPostAuthorGlobal = ''; 
 
         const ApiManager = {
             async getPostById(id) {
@@ -291,7 +287,6 @@
                     return await response.json();
                 } catch (error) { return { success: false }; }
             },
-            // 🌟 เพิ่ม API สำหรับระบบ Like
             async likePost(postId) {
                 try {
                     const res = await fetch(`${API_CONFIG.BASE_URL}/posts/${postId}/like`, { method: 'POST' });
@@ -304,7 +299,6 @@
                     return await res.json();
                 } catch (e) { return { success: false }; }
             },
-            // 🌟 เพิ่ม API สำหรับระบบกระแสจิต (Notifications)
             async sendNotification(data) {
                 try {
                     await fetch(`${API_CONFIG.BASE_URL}/notifications`, {
@@ -355,6 +349,8 @@
                 let actionText = '';
                 if (n.action_type === 'comment') actionText = 'ได้สลักความเห็นในกระทู้ของท่าน';
                 if (n.action_type === 'reply') actionText = 'ได้ตอบกลับข้อความของท่าน';
+                if (n.action_type === 'like_post') actionText = 'ได้ร่วมอนุโมทนาในกระทู้ของท่าน';
+                if (n.action_type === 'like_comment') actionText = 'ได้ร่วมอนุโมทนาในความเห็นของท่าน';
 
                 const isUnreadClass = String(n.is_read) === '0' ? 'unread' : '';
                 
@@ -380,7 +376,7 @@
             const currentPostId = urlParams.get('id');
             
             if (currentPostId === postId) {
-                loadNotifications(); // ถ้อยู่หน้าเดิมแค่รีเฟรชกระดิ่ง
+                loadNotifications();
                 document.getElementById('notiDropdownBox').classList.remove('active');
                 window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
             } else {
@@ -389,13 +385,13 @@
         }
 
         // ==========================================
-        // 🌟 ฟังก์ชันจัดการอนุโมทนา (Likes) - ฉบับแจ้งเตือนข้อผิดพลาด
+        // 🌟 ฟังก์ชันจัดการอนุโมทนา (Likes)
         // ==========================================
         async function likePostAction() {
             const urlParams = new URLSearchParams(window.location.search);
             const postId = urlParams.get('id');
+            const currentUser = localStorage.getItem('siy_username') || 'วิญญาณเร่ร่อน';
             
-            // เช็คว่าเคยกดแล้วหรือยังด้วย LocalStorage 
             const likedPosts = JSON.parse(localStorage.getItem('siy_liked_posts') || '[]');
             if (likedPosts.includes(postId)) {
                 showCustomAlert('ท่านได้ส่งจิตอนุโมทนาให้จารึกนี้ไปแล้ว 🙏');
@@ -404,7 +400,7 @@
 
             const btn = document.getElementById('btnLikeMainPost');
             const originalText = btn.innerHTML;
-            btn.innerHTML = 'กำลังส่งจิต...'; // เปลี่ยนข้อความตอนกำลังโหลด
+            btn.innerHTML = 'กำลังส่งจิต...';
 
             const result = await ApiManager.likePost(postId);
             if (result && result.success) {
@@ -414,13 +410,32 @@
                 document.getElementById('dyn-likes').textContent = result.likes;
                 btn.classList.add('liked');
                 btn.innerHTML = `🙏 อนุโมทนา (<span id="dyn-likes">${result.likes}</span>)`;
+
+                // 🌟 ส่งกระแสจิตเตือนคนตั้งกระทู้
+                if (currentPostAuthorGlobal && currentPostAuthorGlobal !== currentUser) {
+                    const thaiMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+                    const now = new Date();
+                    const timeStr = now.getDate() + ' ' + thaiMonths[now.getMonth()] + ' ' + (now.getFullYear() + 543) + ' | ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ' น.';
+                    
+                    await ApiManager.sendNotification({
+                        id: Date.now().toString(),
+                        recipient: currentPostAuthorGlobal,
+                        actor: currentUser,
+                        action_type: 'like_post',
+                        post_id: postId,
+                        timestamp: timeStr
+                    });
+                }
             } else {
                 btn.innerHTML = originalText;
-                showCustomAlert('⚠️ อาถรรพ์สะท้อนกลับ! เชื่อมต่อหลังบ้านไม่สำเร็จ (โปรดเช็คว่า Deploy ผ่านแล้ว หรือเพิ่มคอลัมน์ likes ใน D1 แล้ว)');
+                showCustomAlert('⚠️ อาถรรพ์สะท้อนกลับ! เชื่อมต่อหลังบ้านไม่สำเร็จ');
             }
         }
 
-        async function likeCommentAction(commentId) {
+        async function likeCommentAction(commentId, commentAuthor) {
+            const currentUser = localStorage.getItem('siy_username') || 'วิญญาณเร่ร่อน';
+            const postId = new URLSearchParams(window.location.search).get('id');
+
             const likedComments = JSON.parse(localStorage.getItem('siy_liked_comments') || '[]');
             if (likedComments.includes(commentId)) {
                 showCustomAlert('ท่านได้ส่งจิตอนุโมทนาให้ข้อความนี้ไปแล้ว 🙏');
@@ -440,6 +455,22 @@
                 if(btn) {
                     btn.classList.add('liked');
                     btn.innerHTML = `🙏 อนุโมทนา (<span id="comment-like-count-${commentId}">${result.likes}</span>)`;
+                }
+
+                // 🌟 ส่งกระแสจิตเตือนเจ้าของคอมเมนต์
+                if (commentAuthor && commentAuthor !== currentUser) {
+                    const thaiMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+                    const now = new Date();
+                    const timeStr = now.getDate() + ' ' + thaiMonths[now.getMonth()] + ' ' + (now.getFullYear() + 543) + ' | ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ' น.';
+                    
+                    await ApiManager.sendNotification({
+                        id: Date.now().toString(),
+                        recipient: commentAuthor,
+                        actor: currentUser,
+                        action_type: 'like_comment',
+                        post_id: postId,
+                        timestamp: timeStr
+                    });
                 }
             } else {
                 if(btn) btn.innerHTML = originalText;
@@ -584,9 +615,9 @@
                 let replyBtn = (userType !== 'guest') ? `<button type="button" class="btn-reply-comment" onclick="toggleReplyBox('${c.id}')">💬 ตอบกลับ</button>` : '';
                 let reportBtn = (savedUser) ? `<button type="button" class="btn-report" onclick="openReportModal('comment', '${c.id}')">🚨 แจ้ง</button>` : '';
                 
-                // 🌟 ปุ่มอนุโมทนาคอมเมนต์
+                // 🌟 ส่งชื่อคนคอมเมนต์ (c.author) เข้าไปในฟังก์ชันเพื่อให้แจ้งเตือนถูกคน
                 const isLiked = likedComments.includes(String(c.id)) ? 'liked' : '';
-                let likeBtn = `<button type="button" class="btn-like ${isLiked}" id="btn-like-comment-${c.id}" onclick="likeCommentAction('${c.id}')">🙏 อนุโมทนา (<span id="comment-like-count-${c.id}">${c.likes || 0}</span>)</button>`;
+                let likeBtn = `<button type="button" class="btn-like ${isLiked}" id="btn-like-comment-${c.id}" onclick="likeCommentAction('${c.id}', '${c.author}')">🙏 อนุโมทนา (<span id="comment-like-count-${c.id}">${c.likes || 0}</span>)</button>`;
 
                 const childReplies = replyComments.filter(r => {
                     const match = r.content.match(/^\[REPLY_TO:([^\]]+)\]/);
@@ -606,9 +637,9 @@
                         let repliedTo = authorMatch ? authorMatch[1] : c.author;
                         let cleanReplyContent = r.content.replace(/^\[REPLY_TO:[^\]]+\](?:\[AUTHOR:[^\]]+\])?/, '');
                         
-                        // 🌟 ปุ่มอนุโมทนาคอมเมนต์ตอบกลับ
+                        // 🌟 ส่งชื่อคนตอบกลับ (r.author) เข้าไปในฟังก์ชัน
                         const rIsLiked = likedComments.includes(String(r.id)) ? 'liked' : '';
-                        let rLikeBtn = `<button type="button" class="btn-like ${rIsLiked}" id="btn-like-comment-${r.id}" onclick="likeCommentAction('${r.id}')">🙏 อนุโมทนา (<span id="comment-like-count-${r.id}">${r.likes || 0}</span>)</button>`;
+                        let rLikeBtn = `<button type="button" class="btn-like ${rIsLiked}" id="btn-like-comment-${r.id}" onclick="likeCommentAction('${r.id}', '${r.author}')">🙏 อนุโมทนา (<span id="comment-like-count-${r.id}">${r.likes || 0}</span>)</button>`;
 
                         repliesHtml += `
                             <div class="comment-card is-reply">
@@ -729,7 +760,6 @@
             if(result && result.success !== false) {
                 textarea.value = ''; 
                 
-                // 🌟 ส่งกระแสจิตเตือนเจ้าของกระทู้
                 if (currentPostAuthorGlobal && currentPostAuthorGlobal !== author) {
                     await ApiManager.sendNotification({
                         id: Date.now().toString(),
@@ -776,7 +806,6 @@
             if(result && result.success !== false) {
                 textarea.value = '';
 
-                // 🌟 ส่งกระแสจิตเตือนคนที่เราไปตอบกลับ
                 if (parentAuthor && parentAuthor !== author) {
                     await ApiManager.sendNotification({
                         id: Date.now().toString(),
@@ -804,7 +833,6 @@
                 showCustomAlert('เขตหวงห้าม! ท่านยังไม่ได้เลือกสถานะทางเข้า', 'webboard.html'); return;
             }
 
-            // 🌟 โหลดระบบแจ้งเตือน (กระแสจิต) เมื่อเข้ามาในหน้ากระทู้
             loadNotifications();
 
             let currentUserRole = '5'; let currentUserRank = 'เด็กวัด';
@@ -833,7 +861,6 @@
                 showCustomAlert('อาถรรพ์บังตา... ไม่พบศิลาจารึกที่คุณค้นหา อาจถูกลบไปแล้ว', 'webboard.html'); return;
             }
 
-            // 🌟 เก็บชื่อเจ้าของกระทู้ไว้ส่งแจ้งเตือนทีหลัง
             currentPostAuthorGlobal = postData.author;
 
             document.getElementById('pageTitle').textContent = postData.title + ' - ศิษย์หลวงปู่';
@@ -844,7 +871,6 @@
             document.getElementById('dyn-author-badge').innerHTML = await getRoleBadgeFromAPI(postData.author);
             document.getElementById('dyn-time').textContent = 'โพสต์เมื่อ: ' + postData.timestamp;
             
-            // 🌟 แสดงผลยอดวิวและยอดอนุโมทนา (Likes)
             document.getElementById('dyn-views').textContent = postData.views || 0;
             document.getElementById('dyn-likes').textContent = postData.likes || 0;
             
@@ -880,7 +906,6 @@
             showCustomAlert('ท่านได้ออกจากระบบเรียบร้อยแล้ว', 'webboard.html');
         }
 
-        // ปิด Dropdown แจ้งเตือนเมื่อคลิกพื้นที่อื่น
         window.onclick = function(event) {
             if (!event.target.matches('.noti-btn') && !event.target.closest('.noti-btn') && !event.target.closest('.noti-dropdown')) {
                 const dropdowns = document.getElementsByClassName("noti-dropdown");

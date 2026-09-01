@@ -44,7 +44,6 @@ app.get('/api/fix-db', async (c) => {
         is_read INTEGER DEFAULT 0,
         timestamp TEXT NOT NULL
     );`,
-    // 🌟 สร้างตารางสำหรับเก็บข้อมูลการแจ้งเบาะแส (Reports)
     `CREATE TABLE IF NOT EXISTS reports (
         id TEXT PRIMARY KEY,
         target_type TEXT NOT NULL,
@@ -224,6 +223,18 @@ app.delete('/api/posts/:id', async (c) => {
   return c.json({ success: true })
 })
 
+// 🌟🌟 นำ API กดไลก์กระทู้กลับมา 🌟🌟
+app.post('/api/posts/:postId/like', async (c) => {
+  const postId = c.req.param('postId')
+  try {
+    await c.env.DB.prepare("UPDATE posts SET likes = COALESCE(likes, 0) + 1 WHERE id = ?").bind(postId).run()
+    const post: any = await c.env.DB.prepare("SELECT likes FROM posts WHERE id = ?").bind(postId).first()
+    return c.json({ success: true, likes: post?.likes || 0 })
+  } catch (e: any) {
+    return c.json({ success: false, error: e.message }, 500)
+  }
+})
+
 app.get('/api/comments', async (c) => {
   const { results } = await c.env.DB.prepare("SELECT * FROM comments ORDER BY id ASC").all()
   return c.json(results)
@@ -253,6 +264,18 @@ app.delete('/api/comments/:id', async (c) => {
   }
   await c.env.DB.prepare("DELETE FROM comments WHERE id = ?").bind(id).run()
   return c.json({ success: true })
+})
+
+// 🌟🌟 นำ API กดไลก์คอมเมนต์กลับมา 🌟🌟
+app.post('/api/comments/:commentId/like', async (c) => {
+  const commentId = c.req.param('commentId')
+  try {
+    await c.env.DB.prepare("UPDATE comments SET likes = COALESCE(likes, 0) + 1 WHERE id = ?").bind(commentId).run()
+    const comment: any = await c.env.DB.prepare("SELECT likes FROM comments WHERE id = ?").bind(commentId).first()
+    return c.json({ success: true, likes: comment?.likes || 0 })
+  } catch (e: any) {
+    return c.json({ success: false, error: e.message }, 500)
+  }
 })
 
 // ==========================================
