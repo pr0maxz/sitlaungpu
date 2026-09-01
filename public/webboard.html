@@ -67,9 +67,9 @@
         .page-btn.active { background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; font-weight: bold; border-color: var(--gold-light); box-shadow: 0 0 12px rgba(212,175,55,0.5); }
         .page-btn:disabled { opacity: 0.4; cursor: not-allowed; border-color: rgba(138, 99, 21, 0.2); }
 
-        /* 🌟 จัดวางปุ่มแจ้งเตือนให้อยู่ในระดับเดียวกับหัวข้อ และขยับหัวข้อมาทางซ้ายของกล่อง */
-        .noti-wrapper { position: absolute; top: -20px; right: 25px; z-index: 50; }
-        .noti-btn { background: radial-gradient(circle, rgba(212, 175, 55, 0.25) 0%, rgba(7, 4, 2, 0.95) 80%); border: 1px solid var(--gold-main); border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; transition: all 0.4s ease; box-shadow: 0 0 12px rgba(212, 175, 55, 0.3), inset 0 0 6px rgba(245, 215, 127, 0.5); padding: 0; animation: orbPulse 3s infinite alternate; }
+        /* 🔮 ปรับตำแหน่งดวงแก้วกระแสจิตขึ้นไปอยู่ชิดมุมบนขวาในพื้นที่ padding พอดี ไม่ทับขอบกล่องประปา */
+        .noti-wrapper { position: absolute; top: 8px; right: 12px; z-index: 50; }
+        .noti-btn { background: radial-gradient(circle, rgba(212, 175, 55, 0.25) 0%, rgba(7, 4, 2, 0.95) 80%); border: 1px solid var(--gold-main); border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; transition: all 0.4s ease; box-shadow: 0 0 12px rgba(212, 175, 55, 0.3), inset 0 0 6px rgba(245, 215, 127, 0.5); padding: 0; animation: orbPulse 3s infinite alternate; }
         @keyframes orbPulse {
             0% { box-shadow: 0 0 6px rgba(212, 175, 55, 0.2), inset 0 0 3px rgba(245, 215, 127, 0.3); }
             50% { box-shadow: 0 0 16px rgba(212, 175, 55, 0.6), inset 0 0 8px rgba(245, 215, 127, 0.8); }
@@ -80,7 +80,7 @@
         .noti-btn:hover svg { transform: scale(1.15); }
         .noti-badge { position: absolute; top: -3px; right: -3px; background: linear-gradient(135deg, #ff6b6b, #a82e2e); color: white; font-size: 0.65rem; font-weight: bold; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 8px rgba(255, 107, 107, 0.8); border: 1px solid #ffeea8; }
         
-        .noti-dropdown { display: none; position: absolute; top: 45px; right: 0; width: 280px; background: rgba(15, 8, 3, 0.95); border: 1px solid var(--gold-dark); border-radius: 8px; box-shadow: 0 5px 20px rgba(0,0,0,0.9); z-index: 100; max-height: 350px; overflow-y: auto; text-align: left; }
+        .noti-dropdown { display: none; position: absolute; top: 42px; right: 0; width: 280px; background: rgba(15, 8, 3, 0.95); border: 1px solid var(--gold-dark); border-radius: 8px; box-shadow: 0 5px 20px rgba(0,0,0,0.9); z-index: 100; max-height: 350px; overflow-y: auto; text-align: left; }
         .noti-dropdown.active { display: block; animation: fadeIn 0.2s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
         .noti-header { padding: 10px; border-bottom: 1px solid rgba(138, 99, 21, 0.3); color: var(--gold-main); font-family: 'Prompt', sans-serif; font-size: 0.9rem; font-weight: bold; text-align: center; background: rgba(0,0,0,0.3); }
@@ -179,7 +179,7 @@
                     
                     <div id="loggedInView" style="display: none;">
                         <div class="user-logged-in-profile">
-                            <div class="user-info-text" style="text-align: center;">
+                            <div class="user-info-text" style="text-align: center; width: 100%;">
                                 <h4 id="displayUsername" style="text-align: center; margin-bottom: 5px;">นามแฝง</h4>
                                 <div id="displayUserBadge" style="margin-bottom: 8px;"></div>
                             </div>
@@ -346,6 +346,46 @@
             USE_REAL_API: true, 
             BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
         };
+
+        // ==========================================
+        // ⚡ ระบบกระแสจิตเรียลไทม์ (WebSocket)
+        // ==========================================
+        const telepathySocket = new WebSocket("wss://my-backend.pr0maxz.workers.dev/api/ws");
+
+        telepathySocket.onopen = () => {
+            console.log("⚡ เชื่อมต่อกระแสจิตกับสำนักสำเร็จ!");
+        };
+
+        telepathySocket.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            
+            if (data.type === 'LIKE_UPDATE') {
+                const likeCountEl = document.getElementById(data.isComment ? `comment-like-count-${data.targetId}` : 'dyn-likes');
+                if (likeCountEl) {
+                    likeCountEl.textContent = data.newLikes;
+                    likeCountEl.style.color = '#fff';
+                    setTimeout(() => { likeCountEl.style.color = ''; }, 500);
+                }
+            }
+            
+            if (data.type === 'NEW_COMMENT') {
+                const urlParams = new URLSearchParams(window.location.search);
+                const currentPostId = urlParams.get('id');
+                if (data.postId === currentPostId && typeof loadComments === 'function') {
+                    loadComments(data.postId);
+                }
+            }
+        };
+
+        function broadcastAction(actionType, targetId, extraData = {}) {
+            if (telepathySocket.readyState === WebSocket.OPEN) {
+                telepathySocket.send(JSON.stringify({
+                    type: actionType,
+                    targetId: targetId,
+                    ...extraData
+                }));
+            }
+        }
 
         const ApiManager = {
             async fetchPosts() {

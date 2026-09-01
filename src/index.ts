@@ -3,6 +3,7 @@ import { cors } from 'hono/cors'
 
 type Bindings = {
   DB: D1Database
+  TELEPATHY_ROOM: DurableObjectNamespace
 }
 
 const app = new Hono<{ Bindings: Bindings }>()
@@ -374,5 +375,55 @@ app.put('/api/notifications/:id/read', async (c) => {
       return c.json({ success: false, error: error.message }, 500)
   }
 })
+
+// ==========================================
+// ⚡ WebSocket Endpoint (พลังจิตเรียลไทม์ - เฟส 2)
+// ==========================================
+app.get('/api/ws', async (c) => {
+  const upgradeHeader = c.req.header('Upgrade')
+  if (upgradeHeader !== 'websocket') {
+    return c.text('Expected Upgrade: websocket', 426)
+  }
+  const id = c.env.TELEPATHY_ROOM.idFromName('global-telepathy-room')
+  const stub = c.env.TELEPATHY_ROOM.get(id)
+  return stub.fetch(c.req.raw)
+})
+
+// ==========================================
+// 🔮 Durable Object สำหรับ WebSocket Room
+// ==========================================
+export class TelepathyRoom {
+  state: DurableObjectState
+  sessions: Set<WebSocket>
+
+  constructor(state: DurableObjectState, env: any) {
+    this.state = state
+    this.sessions = new Set()
+  }
+
+  async fetch(request: Request) {
+    const pair = new WebSocketPair()
+    const [client, server] = Object.values(pair)
+
+    this.sessions.add(server)
+    server.accept()
+
+    server.addEventListener('message', async (msg) => {
+      for (let session of this.sessions) {
+        try {
+          session.send(msg.data)
+        } catch (e) {
+          this.sessions.delete(session)
+        }
+      }
+    })
+
+    server.addEventListener('close', () => {
+      this.sessions.delete(server)
+    })
+
+    return new Response(null, { status: 101, webSocket: client })
+  }
+}
 
 export default app

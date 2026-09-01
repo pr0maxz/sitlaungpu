@@ -18,7 +18,6 @@
 
         h1, h2, h3, h4 { font-family: 'Prompt', sans-serif; margin: 0; }
         
-        /* 🌟 เอฟเฟกต์กรอบแสงทองหมุนวนสไตล์ webboard */
         @property --ring-angle { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
         @keyframes containerPulse { 0% { box-shadow: 0 0 30px rgba(0,0,0,0.8), inset 0 0 20px rgba(212,175,55,0.02); } 50% { box-shadow: 0 0 50px rgba(212,175,55,0.15), inset 0 0 40px rgba(212,175,55,0.08); } 100% { box-shadow: 0 0 30px rgba(0,0,0,0.8), inset 0 0 20px rgba(212,175,55,0.02); } }
         @keyframes ringRotate { to { --ring-angle: 360deg; } }
@@ -81,11 +80,9 @@
         .btn-submit-comment:hover { filter: brightness(1.2); }
         .btn-submit-comment:disabled { filter: grayscale(1); cursor: not-allowed; opacity: 0.7; }
         
-        /* 🌟 ปุ่มรองรับสไตล์สำนัก (สำหรับปุ่มกลับไปลานเสวนา) */
         .btn-secondary-custom { background: transparent; border: 1px solid var(--gold-dark); color: var(--gold-light); padding: 10px 20px; border-radius: 20px; font-family: 'Prompt', sans-serif; font-size: 0.9rem; cursor: pointer; transition: all 0.3s; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
         .btn-secondary-custom:hover { background: rgba(212, 175, 55, 0.15); color: #fff; border-color: var(--gold-main); }
 
-        /* 🌟 สไตล์ Widget และป้ายหัวข้อสไตล์ webboard.html ในหน้า post.html */
         .widget { background: rgba(12, 7, 4, 0.7); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 8px; padding: 45px 20px 20px 20px; margin-top: 45px; margin-bottom: 40px; box-shadow: inset 0 0 15px rgba(0,0,0,0.8), 0 5px 15px rgba(0,0,0,0.5); position: relative; } 
         .section-title { text-align: center; background: linear-gradient(180deg, #3a2511 0%, #150a03 100%); color: var(--gold-light); padding: 8px 25px; border: 1px solid var(--gold-main); border-radius: 8px; display: inline-block; position: absolute; top: -20px; left: 25px; font-size: 1.1rem; font-weight: 700; white-space: nowrap; box-shadow: 0 8px 16px rgba(0,0,0,0.9), inset 0 1px 2px rgba(255,255,255,0.15); text-shadow: 0 2px 4px rgba(0,0,0,0.8); letter-spacing: 1px; margin: 0; z-index: 5; }
 
@@ -93,7 +90,6 @@
         .btn-logout { display: block; width: 100%; background: transparent; color: #ff6b6b; border: 1px solid rgba(168, 46, 46, 0.5); padding: 8px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-size: 0.9rem; cursor: pointer; transition: all 0.3s; } 
         .btn-logout:hover { background: rgba(168, 46, 46, 0.1); border-color: #ff6b6b; }
 
-        /* 🔮 ดวงแก้วกระแสจิต (Spirit Orb) ขลังๆ วางมุมขวาบนในระดับเดียวกับป้ายหัวข้อ */
         .noti-wrapper { position: absolute; top: -20px; right: 25px; z-index: 50; }
         .noti-btn { background: radial-gradient(circle, rgba(212, 175, 55, 0.25) 0%, rgba(7, 4, 2, 0.95) 80%); border: 1px solid var(--gold-main); border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; transition: all 0.4s ease; box-shadow: 0 0 12px rgba(212, 175, 55, 0.3), inset 0 0 6px rgba(245, 215, 127, 0.5); padding: 0; animation: orbPulse 3s infinite alternate; }
         @keyframes orbPulse {
@@ -194,7 +190,6 @@
 
             <div class="post-sidebar">
                 <div class="widget user-status-box">
-                    <!-- 🔮 ดวงแก้วกระแสจิต (Spirit Orb) ขลังๆ สไตล์ webboard -->
                     <div class="noti-wrapper" id="notiContainer" style="display: none;">
                         <button class="noti-btn" onclick="toggleNotiDropdown()" title="กระแสจิตเตือนภัย">
                             <svg viewBox="0 0 24 24">
@@ -212,7 +207,6 @@
                         </div>
                     </div>
 
-                    <!-- 🌟 หัวข้อสถานะสำนักอยู่ด้านใน Widget สไตล์ webboard -->
                     <h4 class="section-title">สถานะสำนัก</h4>
 
                     <div class="user-logged-in-profile" style="margin-top: 10px;">
@@ -232,7 +226,7 @@
         <div class="sect-modal-content" style="max-width: 400px; text-align: center; padding: 30px 20px 40px 20px;">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-left" alt="" width="60" height="60">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-right" alt="" width="60" height="60">
-            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-bottom-left" alt="" width="60" height="60">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-left" alt="" width="60" height="60">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-bottom-right" alt="" width="60" height="60">
             <div class="modal-header"><h3 style="font-size: 1.4rem; color: #e29578;">🚨 แจ้งเบาะแสผู้คุมกฎ</h3></div>
             <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">เหตุใดท่านจึงต้องการแจ้งรายงานสลักนี้?</p>
@@ -285,6 +279,47 @@
         };
 
         let currentPostAuthorGlobal = ''; 
+
+        // ==========================================
+        // ⚡ ระบบกระแสจิตเรียลไทม์ (WebSocket)
+        // ==========================================
+        const telepathySocket = new WebSocket("wss://my-backend.pr0maxz.workers.dev/api/ws");
+
+        telepathySocket.onopen = () => {
+            console.log("⚡ เชื่อมต่อกระแสจิตกับสำนักสำเร็จ!");
+        };
+
+        telepathySocket.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            
+            if (data.type === 'LIKE_UPDATE') {
+                // รองรับทั้งไลก์กระทู้หลักและคอมเมนต์
+                const likeCountEl = document.getElementById(data.isComment ? `comment-like-count-${data.targetId}` : 'dyn-likes');
+                if (likeCountEl) {
+                    likeCountEl.textContent = data.newLikes;
+                    likeCountEl.style.color = '#fff';
+                    setTimeout(() => { likeCountEl.style.color = ''; }, 500);
+                }
+            }
+            
+            if (data.type === 'NEW_COMMENT') {
+                const urlParams = new URLSearchParams(window.location.search);
+                const currentPostId = urlParams.get('id');
+                if (data.postId === currentPostId && typeof loadComments === 'function') {
+                    loadComments(data.postId);
+                }
+            }
+        };
+
+        function broadcastAction(actionType, targetId, extraData = {}) {
+            if (telepathySocket.readyState === WebSocket.OPEN) {
+                telepathySocket.send(JSON.stringify({
+                    type: actionType,
+                    targetId: targetId,
+                    ...extraData
+                }));
+            }
+        }
 
         const ApiManager = {
             async getPostById(id) {
@@ -452,6 +487,9 @@
                 document.getElementById('dyn-likes').textContent = result.likes;
                 btn.classList.add('liked');
                 btn.innerHTML = `🙏 อนุโมทนา (<span id="dyn-likes">${result.likes}</span>)`;
+
+                // 🌟 ส่งกระแสจิตให้ทุกคนรู้ว่ายอดไลก์กระทู้ขึ้นแล้ว!
+                broadcastAction('LIKE_UPDATE', postId, { newLikes: result.likes, isComment: false });
             } else {
                 btn.innerHTML = originalText;
                 showCustomAlert('⚠️ อาถรรพ์สะท้อนกลับ! เชื่อมต่อหลังบ้านไม่สำเร็จ');
@@ -479,6 +517,9 @@
                     btn.classList.add('liked');
                     btn.innerHTML = `🙏 อนุโมทนา (<span id="comment-like-count-${commentId}">${result.likes}</span>)`;
                 }
+
+                // 🌟 ส่งกระแสจิตให้ทุกคนรู้ว่ายอดไลก์คอมเมนต์ขึ้นแล้ว!
+                broadcastAction('LIKE_UPDATE', commentId, { newLikes: result.likes, isComment: true });
             } else {
                 if(btn) btn.innerHTML = originalText;
                 showCustomAlert('⚠️ อาถรรพ์สะท้อนกลับ! เชื่อมต่อหลังบ้านไม่สำเร็จ');
@@ -773,6 +814,9 @@
                     });
                 }
 
+                // 🌟 ส่งกระแสจิตบอกว่ามีความเห็นใหม่
+                broadcastAction('NEW_COMMENT', postId, { postId: postId });
+
                 showCustomAlert('บันทึกจารึกสำเร็จ!');
                 loadComments(postId); 
             } else { showCustomAlert('เกิดอาถรรพ์ขัดข้อง ส่งข้อความไม่สำเร็จ'); }
@@ -818,6 +862,9 @@
                         timestamp: timeStr
                     });
                 }
+
+                // 🌟 ส่งกระแสจิตบอกว่ามีการตอบกลับใหม่
+                broadcastAction('NEW_COMMENT', postId, { postId: postId });
 
                 showCustomAlert('ส่งคำตอบกลับสำเร็จ!');
                 loadComments(postId);
