@@ -195,7 +195,7 @@
         <div class="sect-modal-content" style="max-width: 400px; text-align: center; padding: 30px 20px 40px 20px;">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-left" alt="" width="60" height="60">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-right" alt="" width="60" height="60">
-            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-bottom-left" alt="" width="60" height="60">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-left" alt="" width="60" height="60">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-bottom-right" alt="" width="60" height="60">
             <div class="modal-header"><h3 style="font-size: 1.4rem; color: #e29578;">🚨 แจ้งเบาะแสผู้คุมกฎ</h3></div>
             <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">เหตุใดท่านจึงต้องการแจ้งรายงานสลักนี้?</p>
@@ -287,18 +287,31 @@
                     return await response.json();
                 } catch (error) { return { success: false }; }
             },
+            
+            // 🌟 บรรจุคาถาที่ส่ง actor ไปกับ Body เรียบร้อยแล้ว
             async likePost(postId) {
                 try {
-                    const res = await fetch(`${API_CONFIG.BASE_URL}/posts/${postId}/like`, { method: 'POST' });
+                    const actor = localStorage.getItem('siy_username') || 'วิญญาณเร่ร่อน';
+                    const res = await fetch(`${API_CONFIG.BASE_URL}/posts/${postId}/like`, { 
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ actor })
+                    });
                     return await res.json();
                 } catch (e) { return { success: false }; }
             },
             async likeComment(commentId) {
                 try {
-                    const res = await fetch(`${API_CONFIG.BASE_URL}/comments/${commentId}/like`, { method: 'POST' });
+                    const actor = localStorage.getItem('siy_username') || 'วิญญาณเร่ร่อน';
+                    const res = await fetch(`${API_CONFIG.BASE_URL}/comments/${commentId}/like`, { 
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ actor })
+                    });
                     return await res.json();
                 } catch (e) { return { success: false }; }
             },
+
             async sendNotification(data) {
                 try {
                     await fetch(`${API_CONFIG.BASE_URL}/notifications`, {
@@ -387,13 +400,9 @@
         // ==========================================
         // 🌟 ฟังก์ชันจัดการอนุโมทนา (Likes)
         // ==========================================
-        // ==========================================
-        // 🌟 ฟังก์ชันจัดการอนุโมทนา (Likes) - ฉบับส่งกระแสจิตครบถ้วน
-        // ==========================================
         async function likePostAction() {
             const urlParams = new URLSearchParams(window.location.search);
             const postId = urlParams.get('id');
-            const currentUser = localStorage.getItem('siy_username') || 'วิญญาณเร่ร่อน';
             
             const likedPosts = JSON.parse(localStorage.getItem('siy_liked_posts') || '[]');
             if (likedPosts.includes(postId)) {
@@ -413,32 +422,13 @@
                 document.getElementById('dyn-likes').textContent = result.likes;
                 btn.classList.add('liked');
                 btn.innerHTML = `🙏 อนุโมทนา (<span id="dyn-likes">${result.likes}</span>)`;
-
-                // 🌟 เพิ่มคาถาส่งกระแสจิตเตือนคนตั้งกระทู้ตรงนี้!
-                if (currentPostAuthorGlobal && currentPostAuthorGlobal !== currentUser) {
-                    const thaiMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
-                    const now = new Date();
-                    const timeStr = now.getDate() + ' ' + thaiMonths[now.getMonth()] + ' ' + (now.getFullYear() + 543) + ' | ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ' น.';
-                    
-                    await ApiManager.sendNotification({
-                        id: Date.now().toString(),
-                        recipient: currentPostAuthorGlobal,
-                        actor: currentUser,
-                        action_type: 'like_post',
-                        post_id: postId,
-                        timestamp: timeStr
-                    });
-                }
             } else {
                 btn.innerHTML = originalText;
                 showCustomAlert('⚠️ อาถรรพ์สะท้อนกลับ! เชื่อมต่อหลังบ้านไม่สำเร็จ');
             }
         }
 
-        async function likeCommentAction(commentId, commentAuthor) {
-            const currentUser = localStorage.getItem('siy_username') || 'วิญญาณเร่ร่อน';
-            const postId = new URLSearchParams(window.location.search).get('id');
-
+        async function likeCommentAction(commentId) {
             const likedComments = JSON.parse(localStorage.getItem('siy_liked_comments') || '[]');
             if (likedComments.includes(commentId)) {
                 showCustomAlert('ท่านได้ส่งจิตอนุโมทนาให้ข้อความนี้ไปแล้ว 🙏');
@@ -458,22 +448,6 @@
                 if(btn) {
                     btn.classList.add('liked');
                     btn.innerHTML = `🙏 อนุโมทนา (<span id="comment-like-count-${commentId}">${result.likes}</span>)`;
-                }
-
-                // 🌟 เพิ่มคาถาส่งกระแสจิตเตือนเจ้าของคอมเมนต์ตรงนี้!
-                if (commentAuthor && commentAuthor !== currentUser) {
-                    const thaiMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
-                    const now = new Date();
-                    const timeStr = now.getDate() + ' ' + thaiMonths[now.getMonth()] + ' ' + (now.getFullYear() + 543) + ' | ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ' น.';
-                    
-                    await ApiManager.sendNotification({
-                        id: Date.now().toString(),
-                        recipient: commentAuthor,
-                        actor: currentUser,
-                        action_type: 'like_comment',
-                        post_id: postId,
-                        timestamp: timeStr
-                    });
                 }
             } else {
                 if(btn) btn.innerHTML = originalText;
@@ -618,9 +592,8 @@
                 let replyBtn = (userType !== 'guest') ? `<button type="button" class="btn-reply-comment" onclick="toggleReplyBox('${c.id}')">💬 ตอบกลับ</button>` : '';
                 let reportBtn = (savedUser) ? `<button type="button" class="btn-report" onclick="openReportModal('comment', '${c.id}')">🚨 แจ้ง</button>` : '';
                 
-                // 🌟 ส่งชื่อคนคอมเมนต์ (c.author) เข้าไปในฟังก์ชันเพื่อให้แจ้งเตือนถูกคน
                 const isLiked = likedComments.includes(String(c.id)) ? 'liked' : '';
-                let likeBtn = `<button type="button" class="btn-like ${isLiked}" id="btn-like-comment-${c.id}" onclick="likeCommentAction('${c.id}', '${c.author}')">🙏 อนุโมทนา (<span id="comment-like-count-${c.id}">${c.likes || 0}</span>)</button>`;
+                let likeBtn = `<button type="button" class="btn-like ${isLiked}" id="btn-like-comment-${c.id}" onclick="likeCommentAction('${c.id}')">🙏 อนุโมทนา (<span id="comment-like-count-${c.id}">${c.likes || 0}</span>)</button>`;
 
                 const childReplies = replyComments.filter(r => {
                     const match = r.content.match(/^\[REPLY_TO:([^\]]+)\]/);
@@ -640,9 +613,8 @@
                         let repliedTo = authorMatch ? authorMatch[1] : c.author;
                         let cleanReplyContent = r.content.replace(/^\[REPLY_TO:[^\]]+\](?:\[AUTHOR:[^\]]+\])?/, '');
                         
-                        // 🌟 ส่งชื่อคนตอบกลับ (r.author) เข้าไปในฟังก์ชัน
                         const rIsLiked = likedComments.includes(String(r.id)) ? 'liked' : '';
-                        let rLikeBtn = `<button type="button" class="btn-like ${rIsLiked}" id="btn-like-comment-${r.id}" onclick="likeCommentAction('${r.id}', '${r.author}')">🙏 อนุโมทนา (<span id="comment-like-count-${r.id}">${r.likes || 0}</span>)</button>`;
+                        let rLikeBtn = `<button type="button" class="btn-like ${rIsLiked}" id="btn-like-comment-${r.id}" onclick="likeCommentAction('${r.id}')">🙏 อนุโมทนา (<span id="comment-like-count-${r.id}">${r.likes || 0}</span>)</button>`;
 
                         repliesHtml += `
                             <div class="comment-card is-reply">
