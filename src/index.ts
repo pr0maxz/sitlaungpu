@@ -223,12 +223,28 @@ app.delete('/api/posts/:id', async (c) => {
   return c.json({ success: true })
 })
 
-// 🌟🌟 นำ API กดไลก์กระทู้กลับมา 🌟🌟
+// 🌟🌟 API กดไลก์กระทู้ (พร้อมบันทึกแจ้งเตือนกระแสจิตอัตโนมัติ) 🌟🌟
 app.post('/api/posts/:postId/like', async (c) => {
   const postId = c.req.param('postId')
+  const body = await c.req.json().catch(() => ({}))
+  const actor = body.actor || 'วิญญาณเร่ร่อน'
+
   try {
     await c.env.DB.prepare("UPDATE posts SET likes = COALESCE(likes, 0) + 1 WHERE id = ?").bind(postId).run()
-    const post: any = await c.env.DB.prepare("SELECT likes FROM posts WHERE id = ?").bind(postId).first()
+    const post: any = await c.env.DB.prepare("SELECT * FROM posts WHERE id = ?").bind(postId).first()
+    
+    // ส่งกระแสจิตเตือนเจ้าของกระทู้ (ถ้าไม่ใช่คนเดียวกัน)
+    if (post && post.author && post.author !== actor) {
+      const notiId = Date.now().toString()
+      const thaiMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.']
+      const now = new Date()
+      const timeStr = now.getDate() + ' ' + thaiMonths[now.getMonth()] + ' ' + (now.getFullYear() + 543) + ' | ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ' น.'
+      
+      await c.env.DB.prepare(
+        "INSERT INTO notifications (id, recipient, actor, action_type, post_id, is_read, timestamp) VALUES (?, ?, ?, 'like_post', ?, 0, ?)"
+      ).bind(notiId, post.author, actor, postId, timeStr).run().catch(() => {})
+    }
+
     return c.json({ success: true, likes: post?.likes || 0 })
   } catch (e: any) {
     return c.json({ success: false, error: e.message }, 500)
@@ -266,12 +282,28 @@ app.delete('/api/comments/:id', async (c) => {
   return c.json({ success: true })
 })
 
-// 🌟🌟 นำ API กดไลก์คอมเมนต์กลับมา 🌟🌟
+// 🌟🌟 API กดไลก์คอมเมนต์ (พร้อมบันทึกแจ้งเตือนกระแสจิตอัตโนมัติ) 🌟🌟
 app.post('/api/comments/:commentId/like', async (c) => {
   const commentId = c.req.param('commentId')
+  const body = await c.req.json().catch(() => ({}))
+  const actor = body.actor || 'วิญญาณเร่ร่อน'
+
   try {
     await c.env.DB.prepare("UPDATE comments SET likes = COALESCE(likes, 0) + 1 WHERE id = ?").bind(commentId).run()
-    const comment: any = await c.env.DB.prepare("SELECT likes FROM comments WHERE id = ?").bind(commentId).first()
+    const comment: any = await c.env.DB.prepare("SELECT * FROM comments WHERE id = ?").bind(commentId).first()
+    
+    // ส่งกระแสจิตเตือนเจ้าของความเห็น (ถ้าไม่ใช่คนเดียวกัน)
+    if (comment && comment.author && comment.author !== actor) {
+      const notiId = Date.now().toString()
+      const thaiMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.']
+      const now = new Date()
+      const timeStr = now.getDate() + ' ' + thaiMonths[now.getMonth()] + ' ' + (now.getFullYear() + 543) + ' | ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ' น.'
+      
+      await c.env.DB.prepare(
+        "INSERT INTO notifications (id, recipient, actor, action_type, post_id, is_read, timestamp) VALUES (?, ?, ?, 'like_comment', ?, 0, ?)"
+      ).bind(notiId, comment.author, actor, comment.post_id || comment.postId, timeStr).run().catch(() => {})
+    }
+
     return c.json({ success: true, likes: comment?.likes || 0 })
   } catch (e: any) {
     return c.json({ success: false, error: e.message }, 500)
