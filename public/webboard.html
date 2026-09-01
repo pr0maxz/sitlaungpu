@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;700&family=Sarabun:wght@400;600&display=swap" rel="stylesheet">
     <style>
         html { scroll-behavior: smooth; overflow-x: hidden; width: 100%; } * { box-sizing: border-box; }
-        :root { --bg-deep: #070402; --bg-glow: #2a1805; --gold-light: #f5d77f; --gold-main: #d4af37; --gold-dark: #8a6315; --text-muted: #8a7761; }
+        :root { --bg-deep: #070402; --bg-glow: #2a1805; --gold-light: #f5d77f; --gold-main: #d4af37; --gold-dark: #8a6315; --text-muted: #8a7761; --danger-color: #ff6b6b; }
         body { margin: 0; padding: 0; width: 100%; min-height: 100vh; background-color: var(--bg-deep); background-image: radial-gradient(circle at 50% 50%, var(--bg-glow) 0%, var(--bg-deep) 90%); background-attachment: fixed; color: #d1bfae; font-family: 'Sarabun', sans-serif; overflow-x: hidden; }
         
         body::before { content: ""; position: fixed; top: -50vh; left: -50vw; width: 200vw; height: 200vh; z-index: -2; pointer-events: none; background-image: radial-gradient(2px 2px at 40px 60px, var(--gold-light), transparent), radial-gradient(1.5px 1.5px at 150px 120px, var(--gold-main), transparent), radial-gradient(2.5px 2.5px at 90px 200px, var(--gold-light), transparent), radial-gradient(1.5px 1.5px at 110px 90px, var(--gold-light), transparent); background-size: 200px 200px; opacity: 0.4; animation: floatingMagic 15s linear infinite; will-change: transform; }
@@ -37,30 +37,20 @@
         
         .thread-title { color: var(--gold-light); font-family: 'Prompt', sans-serif; font-size: 1.05rem; font-weight: 500; text-decoration: none; display: block; margin-bottom: 5px; cursor: pointer; } .thread-title:hover { color: #fff; text-shadow: 0 0 8px var(--gold-main); } 
         
-        /* 🌟 โค้ดสีป้ายยศ (แก้ปัญหาสีอักษรจมด้วย !important) */
         .role-badge, .role-tag { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 0.75rem; font-family: 'Prompt', sans-serif; font-weight: 600; letter-spacing: 0.5px; vertical-align: middle; margin-left: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.6); }
-        
-        /* 1. ปรมัตถ์ (สีทองอร่ามมีแสง - อักษรสีดำคมกริบ) */
         .role-1 { background: linear-gradient(135deg, #f5d77f, #d4af37, #8a6315); color: #1a0f02 !important; border: 1px solid #ffeea8; box-shadow: 0 0 12px rgba(212,175,55,0.8), inset 0 0 6px rgba(255,255,255,0.6); font-weight: 700; } 
-        
-        /* 2. ตติยภูมิ (สีม่วงลึกลับ) */
         .role-2 { background: linear-gradient(135deg, #4a1c60, #240b36); color: #e5b3ff !important; border: 1px solid #9b59b6; box-shadow: 0 0 6px rgba(155,89,182,0.4); } 
-        
-        /* 3. ทุติยภูมิ (สีเงิน) */
         .role-3 { background: linear-gradient(135deg, #6c7a86, #262c30); color: #d6dfe5 !important; border: 1px solid #94a6b5; box-shadow: 0 0 6px rgba(148,166,181,0.4); } 
-        
-        /* 4. ปฐมภูมิ (สีทองแดง) */
         .role-4 { background: linear-gradient(135deg, #8a4818, #422008); color: #e8a67c !important; border: 1px solid #b86226; box-shadow: 0 0 6px rgba(184,98,38,0.4); } 
-        
-        /* 5. เด็กวัด (สีเดิม) */
         .role-5 { background: rgba(138, 99, 21, 0.1); color: #a69477 !important; border: 1px solid #8a6315; } 
-        
         .role-guest { background: rgba(168, 46, 46, 0.15); color: #ff6b6b !important; border: 1px dashed #a82e2e; }
 
         .wb-tag { font-size: 0.75rem; padding: 2px 6px; border-radius: 4px; border: 1px solid; margin-right: 6px; display: inline-block; vertical-align: middle; margin-top: -2px; }
         .wb-tag-pin { border-color: #d4af37; color: #150a03; background: var(--gold-main); font-weight: bold; }
         
         .thread-details { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; } .thread-details span { color: #a69477; } .thread-stats { display: flex; gap: 15px; font-size: 0.85rem; color: #a69477; text-align: right; align-items: center; } .thread-stats .stat-box { display: flex; align-items: center; gap: 5px; min-width: 80px; justify-content: flex-start; }
+        
+        /* 🌟 ปรับให้ widget มี position relative เพื่อวางกระดิ่ง */
         .widget { background: rgba(12, 7, 4, 0.7); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 8px; padding: 40px 20px 20px 20px; margin-top: 35px; margin-bottom: 40px; box-shadow: inset 0 0 15px rgba(0,0,0,0.8), 0 5px 15px rgba(0,0,0,0.5); position: relative; }
         .user-status-box { text-align: center; } .user-logged-in-profile { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; background: rgba(212, 175, 55, 0.05); padding: 12px; border-radius: 8px; border: 1px dashed var(--gold-dark); } .user-info-text { text-align: left; flex: 1; } .user-info-text h4 { color: var(--gold-light); font-size: 1.05rem; margin-bottom: 2px; text-shadow: 0 0 8px rgba(212,175,55,0.4); } .user-info-text p { color: var(--text-muted); font-size: 0.75rem; margin: 0; }
         
@@ -77,18 +67,29 @@
         .page-btn.active { background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; font-weight: bold; border-color: var(--gold-light); box-shadow: 0 0 12px rgba(212,175,55,0.5); }
         .page-btn:disabled { opacity: 0.4; cursor: not-allowed; border-color: rgba(138, 99, 21, 0.2); }
 
+        /* 🌟 ระบบกระแสจิต (Notification Dropdown) */
+        .noti-wrapper { position: absolute; top: 12px; right: 12px; z-index: 50; }
+        .noti-btn { background: transparent; border: none; font-size: 1.4rem; cursor: pointer; position: relative; transition: transform 0.3s; padding: 0; }
+        .noti-btn:hover { transform: scale(1.1); filter: drop-shadow(0 0 8px var(--gold-main)); }
+        .noti-badge { position: absolute; top: -5px; right: -5px; background: var(--danger-color); color: white; font-size: 0.65rem; font-weight: bold; border-radius: 50%; padding: 2px 5px; box-shadow: 0 0 5px rgba(0,0,0,0.5); }
+        .noti-dropdown { display: none; position: absolute; top: 35px; right: 0; width: 280px; background: rgba(15, 8, 3, 0.95); border: 1px solid var(--gold-dark); border-radius: 8px; box-shadow: 0 5px 20px rgba(0,0,0,0.9); z-index: 100; max-height: 350px; overflow-y: auto; text-align: left; }
+        .noti-dropdown.active { display: block; animation: fadeIn 0.2s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        .noti-header { padding: 10px; border-bottom: 1px solid rgba(138, 99, 21, 0.3); color: var(--gold-main); font-family: 'Prompt', sans-serif; font-size: 0.9rem; font-weight: bold; text-align: center; background: rgba(0,0,0,0.3); }
+        .noti-item { padding: 12px 10px; border-bottom: 1px solid rgba(138, 99, 21, 0.2); font-size: 0.85rem; color: #d1bfae; cursor: pointer; transition: 0.3s; line-height: 1.4; display: flex; flex-direction: column; gap: 4px; }
+        .noti-item:hover { background: rgba(212, 175, 55, 0.1); }
+        .noti-item.unread { background: rgba(212, 175, 55, 0.08); border-left: 3px solid var(--gold-main); }
+        .noti-time { font-size: 0.7rem; color: var(--text-muted); text-align: right; }
+
         .sect-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(7, 4, 2, 0.9); backdrop-filter: blur(8px); z-index: 1000; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; } .sect-modal-overlay.active { display: flex; opacity: 1; }
         .sect-modal-content { position: relative; background: linear-gradient(135deg, #1a120b, #0a0603); border: 1px solid var(--gold-main); border-radius: 12px; width: 90%; max-width: 450px; padding: 40px 30px 60px 30px; box-shadow: 0 15px 40px rgba(0,0,0,0.9), inset 0 0 20px rgba(212,175,55,0.1); transform: translateY(-20px); transition: transform 0.3s ease; } .sect-modal-overlay.active .sect-modal-content { transform: translateY(0); }
         
-        /* 🌟 สไตล์พิเศษสำหรับป๊อปปัปประกาศกฎสำนัก */
         .rules-modal-content { max-width: 650px; max-height: 85vh; display: flex; flex-direction: column; }
         .rules-body-box { background: rgba(0,0,0,0.5); border: 1px solid rgba(138, 99, 21, 0.4); border-radius: 8px; padding: 15px 20px; max-height: 280px; overflow-y: auto; margin-bottom: 15px; text-align: left; font-size: 0.9rem; line-height: 1.6; color: #d1bfae; }
         .rules-body-box h4 { color: var(--gold-main); margin-top: 12px; margin-bottom: 5px; font-size: 0.95rem; }
         .rules-body-box ul, .rules-body-box ol { padding-left: 20px; margin: 5px 0; }
         .rules-body-box li { margin-bottom: 6px; }
-
         .scroll-warning-hint { font-size: 0.8rem; color: #ff6b6b; text-align: center; margin-bottom: 10px; font-style: italic; transition: color 0.3s ease; }
-
         .checkbox-group { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; cursor: pointer; font-size: 0.95rem; color: var(--gold-light); text-align: left; transition: opacity 0.3s; }
         .checkbox-group input[type="checkbox"] { accent-color: var(--gold-main); width: 18px; height: 18px; cursor: pointer; }
 
@@ -102,19 +103,7 @@
         .modal-actions { display: flex; gap: 10px; } 
         .btn-submit { flex: 1; background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; border: none; padding: 12px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-weight: bold; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: all 0.3s; } 
         .btn-submit:hover { filter: brightness(1.2); transform: translateY(-2px); } 
-        
-        /* 🌟 ปุ่มตกลงตอนถูกปิดใช้งาน (Disabled) ให้เป็นสีเทา */
-        .btn-submit:disabled, .btn-submit.disabled { 
-            background: linear-gradient(180deg, #4a3b1a 0%, #2a1805 100%) !important; 
-            color: #8a7761 !important; 
-            border: 1px solid #5a4f35 !important; 
-            cursor: not-allowed !important; 
-            box-shadow: none !important; 
-            filter: none !important; 
-            opacity: 0.6; 
-            transform: none !important; 
-        }
-
+        .btn-submit:disabled, .btn-submit.disabled { background: linear-gradient(180deg, #4a3b1a 0%, #2a1805 100%) !important; color: #8a7761 !important; border: 1px solid #5a4f35 !important; cursor: not-allowed !important; box-shadow: none !important; filter: none !important; opacity: 0.6; transform: none !important; }
         .btn-cancel { background: transparent; color: var(--text-muted); border: 1px solid var(--text-muted); padding: 12px 20px; border-radius: 25px; font-family: 'Prompt', sans-serif; cursor: pointer; transition: all 0.3s; } .btn-cancel:hover { background: rgba(255,255,255,0.1); color: #fff; }
         
         @media (max-width: 950px) { .board-layout { grid-template-columns: 1fr; } .thread-stats { display: none; } }
@@ -159,7 +148,19 @@
 
             <div class="board-sidebar">
                 <div class="widget user-status-box">
+                    <!-- 🌟 ส่วนไอคอนกระดิ่งแจ้งเตือน (กระแสจิต) -->
+                    <div class="noti-wrapper" id="notiContainer" style="display: none;">
+                        <button class="noti-btn" onclick="toggleNotiDropdown()">🔔<span class="noti-badge" id="notiBadgeCount" style="display:none;">0</span></button>
+                        <div class="noti-dropdown" id="notiDropdownBox">
+                            <div class="noti-header">กระแสจิตเตือนภัย</div>
+                            <div id="notiListContent">
+                                <div style="padding: 15px; text-align: center; color: var(--text-muted); font-size: 0.85rem;">ยังไม่มีกระแสจิตส่งถึงท่าน</div>
+                            </div>
+                        </div>
+                    </div>
+
                     <h4 class="section-title">สถานะสำนัก</h4>
+                    
                     <div id="loggedInView" style="display: none;">
                         <div class="user-logged-in-profile">
                             <div class="user-info-text" style="text-align: center;">
@@ -198,7 +199,7 @@
         </footer>
     </div>
 
-    <!-- 📜 Modal ประกาศิตกฎระเบียบ (เด้งขึ้นมาเมื่อเข้าหน้า Webboard เป็นครั้งแรก) -->
+    <!-- 📜 Modal ประกาศิตกฎระเบียบ -->
     <div class="sect-modal-overlay" id="webboardRulesModal">
         <div class="sect-modal-content rules-modal-content">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-left" alt="" width="60" height="60">
@@ -250,7 +251,7 @@
         </div>
     </div>
 
-    <!-- Modal สมัครสมาชิก / เข้าสู่ระบบ (รูปแบบเดิม) -->
+    <!-- Modal สมัครสมาชิก / เข้าสู่ระบบ -->
     <div class="sect-modal-overlay" id="registerModal">
         <div class="sect-modal-content">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-left" alt="" width="60" height="60">
@@ -330,7 +331,101 @@
             BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
         };
 
-        // 🌟 ตรวจสอบและแสดงป๊อปปัปกฎเมื่อเข้าหน้า Webboard พร้อมระบบบังคับเลื่อนบรรทัดสุดท้าย
+        const ApiManager = {
+            async fetchPosts() {
+                if (API_CONFIG.USE_REAL_API) {
+                    try {
+                        const response = await fetch(`${API_CONFIG.BASE_URL}/posts`);
+                        if (!response.ok) return [];
+                        return await response.json();
+                    } catch (error) { 
+                        return []; 
+                    }
+                }
+                return [];
+            },
+            // 🌟 เพิ่ม API ดึงข้อมูลแจ้งเตือนกระแสจิต
+            async getNotifications(username) {
+                try {
+                    const res = await fetch(`${API_CONFIG.BASE_URL}/notifications/${username}`);
+                    return await res.json();
+                } catch (e) { return []; }
+            },
+            async readNotification(id) {
+                try { await fetch(`${API_CONFIG.BASE_URL}/notifications/${id}/read`, { method: 'PUT' }); } catch(e) {}
+            }
+        };
+
+        // ==========================================
+        // 🌟 ฟังก์ชันจัดการกระแสจิต (Notifications)
+        // ==========================================
+        function toggleNotiDropdown() {
+            document.getElementById('notiDropdownBox').classList.toggle('active');
+        }
+
+        async function loadNotifications() {
+            const savedUser = localStorage.getItem('siy_username');
+            if (!savedUser || localStorage.getItem('siy_usertype') === 'guest') return;
+
+            document.getElementById('notiContainer').style.display = 'block';
+            
+            const notis = await ApiManager.getNotifications(savedUser);
+            const notiListContent = document.getElementById('notiListContent');
+            const badgeCount = document.getElementById('notiBadgeCount');
+            
+            let unreadCount = 0;
+            notiListContent.innerHTML = '';
+
+            if (notis.length === 0) {
+                notiListContent.innerHTML = '<div style="padding: 15px; text-align: center; color: var(--text-muted); font-size: 0.85rem;">ยังไม่มีกระแสจิตส่งถึงท่าน</div>';
+                badgeCount.style.display = 'none';
+                return;
+            }
+
+            notis.forEach(n => {
+                if (String(n.is_read) === '0') unreadCount++;
+                
+                let actionText = '';
+                if (n.action_type === 'comment') actionText = 'ได้สลักความเห็นในกระทู้ของท่าน';
+                if (n.action_type === 'reply') actionText = 'ได้ตอบกลับข้อความของท่าน';
+
+                const isUnreadClass = String(n.is_read) === '0' ? 'unread' : '';
+                
+                notiListContent.innerHTML += `
+                    <div class="noti-item ${isUnreadClass}" onclick="handleNotiClick('${n.id}', '${n.post_id}')">
+                        <div><strong style="color: var(--gold-light);">${n.actor}</strong> ${actionText}</div>
+                        <div class="noti-time">${n.timestamp}</div>
+                    </div>
+                `;
+            });
+
+            if (unreadCount > 0) {
+                badgeCount.textContent = unreadCount;
+                badgeCount.style.display = 'inline-block';
+            } else {
+                badgeCount.style.display = 'none';
+            }
+        }
+
+        async function handleNotiClick(notiId, postId) {
+            await ApiManager.readNotification(notiId);
+            window.location.href = `post.html?id=${postId}`;
+        }
+
+        // ปิด Dropdown แจ้งเตือนเมื่อคลิกพื้นที่อื่น
+        window.onclick = function(event) {
+            if (!event.target.matches('.noti-btn') && !event.target.closest('.noti-btn') && !event.target.closest('.noti-dropdown')) {
+                const dropdowns = document.getElementsByClassName("noti-dropdown");
+                for (let i = 0; i < dropdowns.length; i++) {
+                    const openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('active')) {
+                        openDropdown.classList.remove('active');
+                    }
+                }
+            }
+        }
+
+        // 🌟 โหลดการทำงานตอนเริ่มหน้า
         document.addEventListener('DOMContentLoaded', () => {
             loadAndRenderPosts();
             checkUserLoginStatus();
@@ -346,7 +441,6 @@
 
                 function checkRulesScroll() {
                     if (!rulesBox) return;
-                    // เช็กว่าเลื่อนถึงด้านล่างสุดหรือยัง (เผื่อความคลาดเคลื่อน 5 พิกเซล)
                     const isAtBottom = rulesBox.scrollTop + rulesBox.clientHeight >= rulesBox.scrollHeight - 5;
                     const noScrollNeeded = rulesBox.scrollHeight <= rulesBox.clientHeight;
 
@@ -366,7 +460,6 @@
                 }
             }
 
-            // ควบคุมการปลดล็อกปุ่มตกลงเมื่อติ๊กยินดีปฏิบัติกฎ
             const acceptCheckbox = document.getElementById('acceptWebboardRulesCheckbox');
             const acceptBtn = document.getElementById('acceptRulesBtn');
 
@@ -411,7 +504,7 @@
         }
 
         function cancelWebboardRules() {
-            window.location.href = 'index.html'; // ถ้ายกเลิก จะดีดกลับหน้าแรกทันที
+            window.location.href = 'index.html'; 
         }
 
         function checkIsPinned(val) {
@@ -448,21 +541,6 @@
             } catch (e) {}
             return '<span class="role-badge role-5">เด็กวัด</span>';
         }
-
-        const ApiManager = {
-            async fetchPosts() {
-                if (API_CONFIG.USE_REAL_API) {
-                    try {
-                        const response = await fetch(`${API_CONFIG.BASE_URL}/posts`);
-                        if (!response.ok) return [];
-                        return await response.json();
-                    } catch (error) { 
-                        return []; 
-                    }
-                }
-                return [];
-            }
-        };
 
         let globalPostsCat1 = [];
         let globalPostsCat2 = [];
@@ -566,7 +644,6 @@
             }
 
             let html = '<div class="pagination">';
-            
             html += `<button class="page-btn" ${currentPage === 1 ? 'disabled' : ''} onclick="renderCategoryPage(${categoryId}, ${currentPage - 1})">« ย้อนกลับ</button>`;
             
             let lastPage = 0;
@@ -627,6 +704,9 @@
                     } catch (e) {
                         document.getElementById('displayUserBadge').innerHTML = await getRoleBadgeFromAPI(savedUser);
                     }
+                    
+                    // 🌟 โหลดระบบแจ้งเตือน (กระแสจิต) เฉพาะศิษย์ที่มีตัวตน
+                    loadNotifications();
                 }
                 
                 guestView.style.display = 'none';
@@ -640,6 +720,7 @@
             } else {
                 guestView.style.display = 'block';
                 loggedInView.style.display = 'none';
+                document.getElementById('notiContainer').style.display = 'none';
             }
         }
 
