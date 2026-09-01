@@ -26,6 +26,40 @@ function sanitize(text: string) {
 }
 
 // ==========================================
+// 🛠️ ฟังก์ชันคำนวณยศ (Auto-Rank System)
+// ==========================================
+function calculateRank(karma: number, currentRole: string, currentRankName: string) {
+  // หากเป็นแอดมิน (ปรมัตถ์, role '1') หรือมียศพิเศษ "ตัวละคร" ให้คงสถานะนั้นไว้ ไม่ถูกระบบออโต้ทับ
+  if (currentRole === '1' || currentRankName === 'ตัวละคร') {
+    return { role: currentRole, rank_name: currentRankName, nextRankMsg: 'ยศพิเศษเฉพาะกิจ' };
+  }
+  
+  if (karma >= 51) return { role: '2', rank_name: 'ตติยภูมิ', nextRankMsg: 'ตบะขั้นสูงสุดของศิษย์ทั่วไป' };
+  if (karma >= 21) return { role: '3', rank_name: 'ทุติยภูมิ', nextRankMsg: `อีก ${51 - karma} แต้มบุญ จะเลื่อนเป็น ตติยภูมิ` };
+  if (karma >= 11) return { role: '4', rank_name: 'ปฐมภูมิ', nextRankMsg: `อีก ${21 - karma} แต้มบุญ จะเลื่อนเป็น ทุติยภูมิ` };
+  return { role: '5', rank_name: 'เด็กวัด', nextRankMsg: `อีก ${11 - karma} แต้มบุญ จะเลื่อนเป็น ปฐมภูมิ` };
+}
+
+// ฟังก์ชันเพิ่มแต้มบุญอัตโนมัติ (ไม่นับวิญญาณเร่ร่อนและแอดมิน)
+async function addKarma(db: D1Database, username: string, amount: number) {
+  try {
+    if (!username || username.includes('ผู้ไม่ประสงค์ออกนาม')) return;
+    
+    const user: any = await db.prepare("SELECT * FROM users WHERE username = ?").bind(username).first()
+    if (!user || String(user.role) === '1' || user.rank_name === 'ตัวละคร') return;
+
+    const newKarma = (user.karma || 0) + amount;
+    const rankInfo = calculateRank(newKarma, String(user.role), user.rank_name);
+
+    await db.prepare(
+      "UPDATE users SET karma = ?, role = ?, rank_name = ? WHERE username = ?"
+    ).bind(newKarma, rankInfo.role, rankInfo.rank_name, username).run()
+  } catch (e) {
+    console.error("Error adding karma:", e)
+  }
+}
+
+// ==========================================
 // 🛠️ เครื่องมือเสกฐานข้อมูล (Magic Fix DB)
 // ==========================================
 app.get('/api/fix-db', async (c) => {
@@ -36,6 +70,7 @@ app.get('/api/fix-db', async (c) => {
     "ALTER TABLE posts ADD COLUMN pinned INTEGER DEFAULT 0;",
     "ALTER TABLE comments ADD COLUMN likes INTEGER DEFAULT 0;",
     "ALTER TABLE users ADD COLUMN last_login INTEGER;",
+    "ALTER TABLE users ADD COLUMN karma INTEGER DEFAULT 0;",
     `CREATE TABLE IF NOT EXISTS notifications (
         id TEXT PRIMARY KEY,
         recipient TEXT NOT NULL,
@@ -121,7 +156,7 @@ app.post('/api/admin/login', async (c) => {
 
     try { await c.env.DB.prepare("UPDATE users SET last_login = ? WHERE username = ?").bind(Date.now(), user.username).run(); } catch(e) {}
 
-    return c.json({ success: true, username: user.username, rank_name: user.rank_name || 'วิญญาณเร่ร่อน' });
+    return c.json({ success: true, username: user.username, rank_name: user.rank_name || 'เด็กวัด' });
   } catch (err) {
     return c.json({ success: false, error: 'เกิดข้อผิดพลาดที่แก่นเซิร์ฟเวอร์' }, 500);
   }
@@ -132,7 +167,11 @@ app.post('/api/admin/login', async (c) => {
 // ==========================================
 app.get('/api/users', async (c) => {
   const { results } = await c.env.DB.prepare("SELECT * FROM users").all()
-  return c.json(results)
+  const usersWithKarmaInfo = results.map((u: any) => {
+    const rankInfo = calculateRank(u.karma || 0, String(u.role), u.rank_name);
+    return { ...u, nextRankMsg: rankInfo.nextRankMsg }
+  })
+  return c.json(usersWithKarmaInfo)
 })
 
 app.post('/api/users', async (c) => {
@@ -141,8 +180,8 @@ app.post('/api/users', async (c) => {
   const hashed = await hashPassword(password, salt)
   try {
     await c.env.DB.prepare(
-      "INSERT INTO users (username, password_hash, salt, role, rank_name, password, last_login) VALUES (?, ?, ?, ?, ?, ?, ?)"
-    ).bind(username, hashed, salt, role || '5', rank_name || 'วิญญาณเร่ร่อน', password, last_login || null).run()
+      "INSERT INTO users (username, password_hash, salt, role, rank_name, password, last_login, karma) VALUES (?, ?, ?, ?, ?, ?, ?, 0)"
+    ).bind(username, hashed, salt, role || '5', rank_name || 'เด็กวัด', password, last_login || null).run()
     return c.json({ success: true })
   } catch (e) {
     return c.json({ success: false, message: 'นามแฝงนี้มีผู้ใช้งานแล้ว' }, 400)
@@ -150,19 +189,21 @@ app.post('/api/users', async (c) => {
 })
 
 app.put('/api/users', async (c) => {
-  const { username, oldUsername, password, role, rank_name, last_login } = await c.req.json()
+  const { username, oldUsername, password, role, rank_name, last_login, karma } = await c.req.json()
   const targetName = oldUsername || username
+  const currentKarma = karma || 0
+  
   try {
     if (password) {
       const salt = crypto.randomUUID()
       const hashed = await hashPassword(password, salt)
       await c.env.DB.prepare(
-        "UPDATE users SET username = ?, password_hash = ?, salt = ?, role = ?, rank_name = ?, password = ?, last_login = COALESCE(?, last_login) WHERE username = ?"
-      ).bind(username, hashed, salt, role || '5', rank_name || 'วิญญาณเร่ร่อน', password, last_login || null, targetName).run()
+        "UPDATE users SET username = ?, password_hash = ?, salt = ?, role = ?, rank_name = ?, password = ?, last_login = COALESCE(?, last_login), karma = COALESCE(?, karma) WHERE username = ?"
+      ).bind(username, hashed, salt, role || '5', rank_name || 'เด็กวัด', password, last_login || null, currentKarma, targetName).run()
     } else {
       await c.env.DB.prepare(
-        "UPDATE users SET username = ?, role = ?, rank_name = ?, last_login = COALESCE(?, last_login) WHERE username = ?"
-      ).bind(username, role || '5', rank_name || 'วิญญาณเร่ร่อน', last_login || null, targetName).run()
+        "UPDATE users SET username = ?, role = ?, rank_name = ?, last_login = COALESCE(?, last_login), karma = COALESCE(?, karma) WHERE username = ?"
+      ).bind(username, role || '5', rank_name || 'เด็กวัด', last_login || null, currentKarma, targetName).run()
     }
     return c.json({ success: true })
   } catch (e) {
@@ -192,6 +233,10 @@ app.post('/api/posts', async (c) => {
   await c.env.DB.prepare(
     "INSERT INTO posts (id, category, title, content, author, timestamp, pinned) VALUES (?, ?, ?, ?, ?, ?, ?)"
   ).bind(body.id, body.category, body.title, safeContent, body.author, body.timestamp, isPinned).run()
+  
+  // 🌟 ได้แต้มบุญ +2 จากการตั้งกระทู้
+  await addKarma(c.env.DB, body.author, 2);
+
   return c.json({ success: true })
 })
 
@@ -242,6 +287,9 @@ app.post('/api/posts/:postId/like', async (c) => {
       await c.env.DB.prepare(
         "INSERT INTO notifications (id, recipient, actor, action_type, post_id, is_read, timestamp) VALUES (?, ?, ?, 'like_post', ?, 0, ?)"
       ).bind(notiId, post.author, actor, postId, timeStr).run().catch(() => {})
+
+      // 🌟 เจ้าของกระทู้ได้แต้มบุญ +1
+      await addKarma(c.env.DB, post.author, 1);
     }
 
     return c.json({ success: true, likes: post?.likes || 0 })
@@ -268,6 +316,10 @@ app.post('/api/comments', async (c) => {
     "INSERT INTO comments (id, post_id, author, content, timestamp) VALUES (?, ?, ?, ?, ?)"
   ).bind(body.id, body.postId, body.author, safeContent, body.timestamp).run()
   await c.env.DB.prepare("UPDATE posts SET replies = replies + 1 WHERE id = ?").bind(body.postId).run()
+  
+  // 🌟 ได้แต้มบุญ +1 จากการตอบคอมเมนต์
+  await addKarma(c.env.DB, body.author, 1);
+
   return c.json({ success: true })
 })
 
@@ -299,6 +351,9 @@ app.post('/api/comments/:commentId/like', async (c) => {
       await c.env.DB.prepare(
         "INSERT INTO notifications (id, recipient, actor, action_type, post_id, is_read, timestamp) VALUES (?, ?, ?, 'like_comment', ?, 0, ?)"
       ).bind(notiId, comment.author, actor, comment.post_id || comment.postId, timeStr).run().catch(() => {})
+
+      // 🌟 เจ้าของคอมเมนต์ได้แต้มบุญ +1
+      await addKarma(c.env.DB, comment.author, 1);
     }
 
     return c.json({ success: true, likes: comment?.likes || 0 })
@@ -398,7 +453,6 @@ export class TelepathyRoom {
       return new Response("Expected Upgrade: websocket", { status: 426 });
     }
 
-    // แก้ไขวิธีดึง WebSocketPair ตามมาตรฐานที่ปลอดภัยของ Cloudflare
     const webSocketPair = new WebSocketPair();
     const client = webSocketPair[0];
     const server = webSocketPair[1];

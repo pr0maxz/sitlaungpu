@@ -35,16 +35,24 @@
         .category-posts-container { min-height: 250px; }
 
         .thread-item { padding: 15px 20px; border-bottom: 1px solid rgba(138, 99, 21, 0.2); display: flex; align-items: center; gap: 15px; transition: background 0.3s; } .thread-item:last-child { border-bottom: none; } .thread-item:hover { background: rgba(212, 175, 55, 0.05); } .thread-content { flex: 1; } 
-        
         .thread-title { color: var(--gold-light); font-family: 'Prompt', sans-serif; font-size: 1.05rem; font-weight: 500; text-decoration: none; display: block; margin-bottom: 5px; cursor: pointer; } .thread-title:hover { color: #fff; text-shadow: 0 0 8px var(--gold-main); } 
         
-        .role-badge, .role-tag { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 0.75rem; font-family: 'Prompt', sans-serif; font-weight: 600; letter-spacing: 0.5px; vertical-align: middle; margin-left: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.6); }
+        /* 🌟 ฉายาเรืองแสงและยศพิเศษ "ตัวละคร" (สีเขียว) */
+        .role-badge, .role-tag { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 0.75rem; font-family: 'Prompt', sans-serif; font-weight: 600; letter-spacing: 0.5px; vertical-align: middle; margin-left: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.6); }
         .role-1 { background: linear-gradient(135deg, #f5d77f, #d4af37, #8a6315); color: #1a0f02 !important; border: 1px solid #ffeea8; box-shadow: 0 0 12px rgba(212,175,55,0.8), inset 0 0 6px rgba(255,255,255,0.6); font-weight: 700; } 
-        .role-2 { background: linear-gradient(135deg, #4a1c60, #240b36); color: #e5b3ff !important; border: 1px solid #9b59b6; box-shadow: 0 0 6px rgba(155,89,182,0.4); } 
-        .role-3 { background: linear-gradient(135deg, #6c7a86, #262c30); color: #d6dfe5 !important; border: 1px solid #94a6b5; box-shadow: 0 0 6px rgba(148,166,181,0.4); } 
-        .role-4 { background: linear-gradient(135deg, #8a4818, #422008); color: #e8a67c !important; border: 1px solid #b86226; box-shadow: 0 0 6px rgba(184,98,38,0.4); } 
-        .role-5 { background: rgba(138, 99, 21, 0.1); color: #a69477 !important; border: 1px solid #8a6315; } 
+        .role-2 { background: linear-gradient(135deg, #8e44ad, #4b0082); color: #e8daef !important; border: 1px solid #9b59b6; box-shadow: 0 0 10px rgba(142,68,173,0.8); } 
+        .role-3 { background: linear-gradient(135deg, #bdc3c7, #7f8c8d); color: #1a1a1a !important; border: 1px solid #ecf0f1; box-shadow: 0 0 8px rgba(189,195,199,0.8); } 
+        .role-4 { background: linear-gradient(135deg, #d35400, #a04000); color: #ffebcc !important; border: 1px solid #e67e22; box-shadow: 0 0 10px rgba(211,84,0,0.8); } 
+        .role-5 { background: linear-gradient(135deg, #4a4a4a, #2b2b2b); color: #d0d0d0 !important; border: 1px solid #666; box-shadow: 0 0 6px rgba(100,100,100,0.5); } 
+        .role-6 { background: linear-gradient(135deg, #27ae60, #145a32); color: #abebc6 !important; border: 1px solid #2ecc71; box-shadow: 0 0 10px rgba(46,204,113,0.8); font-weight: 700; } /* ตัวละคร: สีเขียวพิเศษ */
         .role-guest { background: rgba(168, 46, 46, 0.15); color: #ff6b6b !important; border: 1px dashed #a82e2e; }
+
+        /* 🌟 หลอดพลังตบะ (Karma Progress Bar) */
+        .karma-container { margin-top: 12px; background: rgba(0,0,0,0.6); padding: 10px; border-radius: 8px; border: 1px solid rgba(138, 99, 21, 0.2); text-align: center; width: 100%; box-sizing: border-box; }
+        .karma-bar-bg { width: 100%; height: 6px; background: #1a120b; border-radius: 4px; overflow: hidden; margin-bottom: 6px; position: relative; box-shadow: inset 0 1px 3px rgba(0,0,0,0.8); }
+        .karma-bar-fill { height: 100%; background: linear-gradient(90deg, var(--gold-dark), var(--gold-light)); border-radius: 4px; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 8px var(--gold-main); }
+        .karma-text { font-size: 0.75rem; color: #d1bfae; font-family: 'Sarabun', sans-serif; letter-spacing: 0.3px; }
+        .karma-text strong { color: var(--gold-light); font-weight: bold; }
 
         .wb-tag { font-size: 0.75rem; padding: 2px 6px; border-radius: 4px; border: 1px solid; margin-right: 6px; display: inline-block; vertical-align: middle; margin-top: -2px; }
         .wb-tag-pin { border-color: #d4af37; color: #150a03; background: var(--gold-main); font-weight: bold; }
@@ -52,7 +60,10 @@
         .thread-details { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; } .thread-details span { color: #a69477; } .thread-stats { display: flex; gap: 15px; font-size: 0.85rem; color: #a69477; text-align: right; align-items: center; } .thread-stats .stat-box { display: flex; align-items: center; gap: 5px; min-width: 80px; justify-content: flex-start; }
         
         .widget { background: rgba(12, 7, 4, 0.7); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 8px; padding: 45px 20px 20px 20px; margin-top: 45px; margin-bottom: 40px; box-shadow: inset 0 0 15px rgba(0,0,0,0.8), 0 5px 15px rgba(0,0,0,0.5); position: relative; }
-        .user-status-box { text-align: center; } .user-logged-in-profile { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; background: rgba(212, 175, 55, 0.05); padding: 12px; border-radius: 8px; border: 1px dashed var(--gold-dark); } .user-info-text { text-align: left; flex: 1; } .user-info-text h4 { color: var(--gold-light); font-size: 1.05rem; margin-bottom: 2px; text-shadow: 0 0 8px rgba(212,175,55,0.4); } .user-info-text p { color: var(--text-muted); font-size: 0.75rem; margin: 0; }
+        .user-status-box { text-align: center; } 
+        .user-logged-in-profile { display: flex; flex-direction: column; align-items: center; margin-bottom: 15px; background: rgba(212, 175, 55, 0.05); padding: 15px; border-radius: 8px; border: 1px dashed var(--gold-dark); } 
+        .user-info-text { text-align: center; width: 100%; } 
+        .user-info-text h4 { color: var(--gold-light); font-size: 1.1rem; margin-bottom: 5px; text-shadow: 0 0 8px rgba(212,175,55,0.4); } 
         
         .btn-logout { display: block; width: 100%; background: transparent; color: #ff6b6b; border: 1px solid rgba(168, 46, 46, 0.5); padding: 10px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-size: 0.95rem; cursor: pointer; transition: all 0.3s; } .btn-logout:hover { background: rgba(168, 46, 46, 0.1); border-color: #ff6b6b; }
         .search-wrapper { display: flex; gap: 8px; margin-bottom: 20px; } .search-input { flex: 1; background: rgba(0,0,0,0.5); border: 1px solid var(--gold-dark); color: var(--gold-light); padding: 10px 15px; border-radius: 25px; font-family: 'Sarabun', sans-serif; } .search-input:focus { outline: none; border-color: var(--gold-main); box-shadow: 0 0 8px rgba(212,175,55,0.3); } .search-btn { background: transparent; border: 1px solid var(--gold-dark); color: var(--gold-main); padding: 0 15px; border-radius: 25px; cursor: pointer; transition: all 0.3s; font-family: 'Prompt', sans-serif; } .search-btn:hover { background: var(--gold-dark); color: #fff; }
@@ -67,20 +78,16 @@
         .page-btn.active { background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; font-weight: bold; border-color: var(--gold-light); box-shadow: 0 0 12px rgba(212,175,55,0.5); }
         .page-btn:disabled { opacity: 0.4; cursor: not-allowed; border-color: rgba(138, 99, 21, 0.2); }
 
-        /* 🔮 ปรับตำแหน่งดวงแก้วกระแสจิตขึ้นไปอยู่ชิดมุมบนขวาในพื้นที่ padding พอดี ไม่ทับขอบกล่องประปา */
-        .noti-wrapper { position: absolute; top: 8px; right: 12px; z-index: 50; }
-        .noti-btn { background: radial-gradient(circle, rgba(212, 175, 55, 0.25) 0%, rgba(7, 4, 2, 0.95) 80%); border: 1px solid var(--gold-main); border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; transition: all 0.4s ease; box-shadow: 0 0 12px rgba(212, 175, 55, 0.3), inset 0 0 6px rgba(245, 215, 127, 0.5); padding: 0; animation: orbPulse 3s infinite alternate; }
-        @keyframes orbPulse {
-            0% { box-shadow: 0 0 6px rgba(212, 175, 55, 0.2), inset 0 0 3px rgba(245, 215, 127, 0.3); }
-            50% { box-shadow: 0 0 16px rgba(212, 175, 55, 0.6), inset 0 0 8px rgba(245, 215, 127, 0.8); }
-            100% { box-shadow: 0 0 6px rgba(212, 175, 55, 0.2), inset 0 0 3px rgba(245, 215, 127, 0.3); }
-        }
+        /* 🔮 ปรับตำแหน่งดวงแก้วกระแสจิตให้อยู่ในระดับเดียวกับป้ายหัวข้อเป๊ะๆ (top: -20px) */
+        .noti-wrapper { position: absolute; top: -20px; right: 25px; z-index: 50; }
+        .noti-btn { background: radial-gradient(circle, rgba(212, 175, 55, 0.25) 0%, rgba(7, 4, 2, 0.95) 80%); border: 1px solid var(--gold-main); border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; transition: all 0.4s ease; box-shadow: 0 0 12px rgba(212, 175, 55, 0.3), inset 0 0 6px rgba(245, 215, 127, 0.5); padding: 0; animation: orbPulse 3s infinite alternate; }
+        @keyframes orbPulse { 0% { box-shadow: 0 0 6px rgba(212, 175, 55, 0.2), inset 0 0 3px rgba(245, 215, 127, 0.3); } 50% { box-shadow: 0 0 16px rgba(212, 175, 55, 0.6), inset 0 0 8px rgba(245, 215, 127, 0.8); } 100% { box-shadow: 0 0 6px rgba(212, 175, 55, 0.2), inset 0 0 3px rgba(245, 215, 127, 0.3); } }
         .noti-btn:hover { border-color: var(--gold-light); transform: scale(1.12); box-shadow: 0 0 25px rgba(212, 175, 55, 0.9), inset 0 0 12px rgba(245, 215, 127, 0.9); }
         .noti-btn svg { width: 18px; height: 18px; fill: var(--gold-light); filter: drop-shadow(0 0 6px var(--gold-main)); transition: transform 0.4s ease; }
         .noti-btn:hover svg { transform: scale(1.15); }
         .noti-badge { position: absolute; top: -3px; right: -3px; background: linear-gradient(135deg, #ff6b6b, #a82e2e); color: white; font-size: 0.65rem; font-weight: bold; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 8px rgba(255, 107, 107, 0.8); border: 1px solid #ffeea8; }
         
-        .noti-dropdown { display: none; position: absolute; top: 42px; right: 0; width: 280px; background: rgba(15, 8, 3, 0.95); border: 1px solid var(--gold-dark); border-radius: 8px; box-shadow: 0 5px 20px rgba(0,0,0,0.9); z-index: 100; max-height: 350px; overflow-y: auto; text-align: left; }
+        .noti-dropdown { display: none; position: absolute; top: 45px; right: 0; width: 280px; background: rgba(15, 8, 3, 0.95); border: 1px solid var(--gold-dark); border-radius: 8px; box-shadow: 0 5px 20px rgba(0,0,0,0.9); z-index: 100; max-height: 350px; overflow-y: auto; text-align: left; }
         .noti-dropdown.active { display: block; animation: fadeIn 0.2s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
         .noti-header { padding: 10px; border-bottom: 1px solid rgba(138, 99, 21, 0.3); color: var(--gold-main); font-family: 'Prompt', sans-serif; font-size: 0.9rem; font-weight: bold; text-align: center; background: rgba(0,0,0,0.3); }
@@ -156,7 +163,7 @@
 
             <div class="board-sidebar">
                 <div class="widget user-status-box">
-                    <!-- 🔮 ดวงแก้วกระแสจิต (Spirit Orb) -->
+                    <!-- 🔮 ดวงแก้วกระแสจิต (Spirit Orb) ขยับไปอยู่มุมขวาบนในระดับเดียวกับป้ายหัวข้อเรียบร้อย -->
                     <div class="noti-wrapper" id="notiContainer" style="display: none;">
                         <button class="noti-btn" onclick="toggleNotiDropdown()" title="กระแสจิตเตือนภัย">
                             <svg viewBox="0 0 24 24">
@@ -178,10 +185,12 @@
                     
                     <div id="loggedInView" style="display: none;">
                         <div class="user-logged-in-profile">
-                            <div class="user-info-text" style="text-align: center;">
-                                <h4 id="displayUsername" style="text-align: center; margin-bottom: 5px;">นามแฝง</h4>
-                                <div id="displayUserBadge" style="margin-bottom: 8px;"></div>
+                            <div class="user-info-text">
+                                <h4 id="displayUsername">นามแฝง</h4>
+                                <div id="displayUserBadge"></div>
                             </div>
+                            <!-- 🌟 หลอดพลังตบะ (Karma Bar) -->
+                            <div id="karmaBarContainer" style="display: none; width: 100%;"></div>
                         </div>
                         <button onclick="handleLogout()" class="btn-logout" id="logoutBtnText">ออกจากระบบ (ลบตัวตน)</button>
                     </div>
@@ -347,73 +356,37 @@
         };
 
         // ==========================================
-        // ⚡ ระบบกระแสจิตเรียลไทม์ (WebSocket) แบบมี Auto-Reconnect
+        // ⚡ ระบบกระแสจิตเรียลไทม์ (WebSocket)
         // ==========================================
         let telepathySocket;
         function connectTelepathy() {
             const wsUrl = API_CONFIG.BASE_URL.replace('http', 'ws') + '/ws';
             telepathySocket = new WebSocket(wsUrl);
 
-            telepathySocket.onopen = () => {
-                console.log("⚡ เปิดช่องรับกระแสจิตจากสำนักสำเร็จ!");
-            };
-
+            telepathySocket.onopen = () => { console.log("⚡ เปิดช่องรับกระแสจิตสำเร็จ!"); };
             telepathySocket.onmessage = (event) => {
                 const data = JSON.parse(event.data);
-                console.log("📩 ได้รับกระแสจิต:", data);
-                
                 if (data.type === 'LIKE_UPDATE') {
                     if (data.isComment) {
                         const commentLikeEl = document.getElementById(`comment-like-count-${data.targetId}`);
-                        if (commentLikeEl) {
-                            commentLikeEl.textContent = data.newLikes;
-                            commentLikeEl.style.color = '#fff';
-                            setTimeout(() => { commentLikeEl.style.color = ''; }, 500);
-                        }
+                        if (commentLikeEl) { commentLikeEl.textContent = data.newLikes; commentLikeEl.style.color = '#fff'; setTimeout(() => { commentLikeEl.style.color = ''; }, 500); }
                     } else {
                         const urlParams = new URLSearchParams(window.location.search);
-                        const currentPostId = urlParams.get('id');
-                        if (data.targetId === currentPostId) {
+                        if (data.targetId === urlParams.get('id')) {
                             const likeCountEl = document.getElementById('dyn-likes');
-                            if (likeCountEl) {
-                                likeCountEl.textContent = data.newLikes;
-                                likeCountEl.style.color = '#fff';
-                                setTimeout(() => { likeCountEl.style.color = ''; }, 500);
-                            }
+                            if (likeCountEl) { likeCountEl.textContent = data.newLikes; likeCountEl.style.color = '#fff'; setTimeout(() => { likeCountEl.style.color = ''; }, 500); }
                         }
                     }
                 }
-                
                 if (data.type === 'NEW_COMMENT') {
                     const urlParams = new URLSearchParams(window.location.search);
-                    const currentPostId = urlParams.get('id');
-                    if (data.postId === currentPostId && typeof loadComments === 'function') {
-                        loadComments(data.postId);
-                    }
+                    if (data.postId === urlParams.get('id') && typeof loadComments === 'function') loadComments(data.postId);
                 }
             };
-
-            telepathySocket.onclose = () => {
-                console.warn("🔌 กระแสจิตหลุด! กำลังพยายามร่ายมนต์เชื่อมต่อใหม่ใน 5 วินาที...");
-                setTimeout(connectTelepathy, 5000); 
-            };
-            
-            telepathySocket.onerror = (err) => {
-                console.error("❌ กระแสจิตขัดข้อง:", err);
-            };
+            telepathySocket.onclose = () => { setTimeout(connectTelepathy, 5000); };
+            telepathySocket.onerror = (err) => { console.error("❌ กระแสจิตขัดข้อง:", err); };
         }
-
         connectTelepathy();
-
-        function broadcastAction(actionType, targetId, extraData = {}) {
-            if (telepathySocket && telepathySocket.readyState === WebSocket.OPEN) {
-                telepathySocket.send(JSON.stringify({
-                    type: actionType,
-                    targetId: targetId,
-                    ...extraData
-                }));
-            }
-        }
 
         const ApiManager = {
             async fetchPosts() {
@@ -422,9 +395,7 @@
                         const response = await fetch(`${API_CONFIG.BASE_URL}/posts`);
                         if (!response.ok) return [];
                         return await response.json();
-                    } catch (error) { 
-                        return []; 
-                    }
+                    } catch (error) { return []; }
                 }
                 return [];
             },
@@ -612,11 +583,9 @@
                 const user = usersDB.find(u => u.username === username);
                 if (user) {
                     let role = String(user.role || '5');
-                    let rank = getRoleTitleName(role);
-                    if (role === '1') {
-                        return '<span class="role-badge role-1">ปรมัตถ์</span>';
-                    }
-                    return `<span class="role-badge role-${role}">${rank}</span>`;
+                    let rank = user.rank_name || getRoleTitleName(role);
+                    let roleClass = rank === 'ตัวละคร' ? 'role-6' : `role-${role}`;
+                    return `<span class="role-badge ${roleClass}">${rank}</span>`;
                 }
             } catch (e) {}
             return '<span class="role-badge role-5">เด็กวัด</span>';
@@ -764,8 +733,8 @@
                 document.getElementById('displayUsername').textContent = savedUser;
 
                 if (userType === 'guest' || savedUser.includes('ผู้ไม่ประสงค์ออกนาม')) {
-                    document.getElementById('displayUserBadge').innerHTML = 
-                        `<span class="role-badge role-guest">วิญญาณเร่ร่อน</span>`;
+                    document.getElementById('displayUserBadge').innerHTML = `<span class="role-badge role-guest">วิญญาณเร่ร่อน</span>`;
+                    document.getElementById('karmaBarContainer').style.display = 'none';
                 } else {
                     try {
                         const res = await fetch(`${API_CONFIG.BASE_URL}/users`);
@@ -773,29 +742,47 @@
                         const currentUser = usersDB.find(u => u.username === savedUser);
 
                         if (currentUser) {
-                            let roleTitle = getRoleTitleName(currentUser.role);
-                            let roleClass = 'role-' + (currentUser.role || '5');
+                            let roleClass = currentUser.rank_name === 'ตัวละคร' ? 'role-6' : 'role-' + (currentUser.role || '5');
+                            let rankTitle = currentUser.rank_name || getRoleTitleName(currentUser.role);
+                            document.getElementById('displayUserBadge').innerHTML = `<span class="role-badge ${roleClass}">${rankTitle}</span>`;
                             
-                            document.getElementById('displayUserBadge').innerHTML = 
-                                `<span class="role-badge ${roleClass}">${roleTitle}</span>`;
+                            // 🌟 เรนเดอร์หลอดพลังตบะ (เฉพาะ user ทั่วไป ไม่ใช่แอดมิน ปรมัตถ์ หรือยศ ตัวละคร)
+                            if (String(currentUser.role) !== '1' && currentUser.rank_name !== 'ตัวละคร') {
+                                let karma = currentUser.karma || 0;
+                                let nextTarget = 11, minKarma = 0;
+                                
+                                if(karma >= 51) { nextTarget = 101; minKarma = 51; }
+                                else if(karma >= 21) { nextTarget = 51; minKarma = 21; }
+                                else if(karma >= 11) { nextTarget = 21; minKarma = 11; }
+                                
+                                let progressPercent = karma >= 100 ? 100 : ((karma - minKarma) / (nextTarget - minKarma)) * 100;
+                                let nextMsg = currentUser.nextRankMsg || `อีก ${nextTarget - karma} แต้มบุญ จะเลื่อนขั้น`;
+                                if(karma >= 100) nextMsg = "บรรลุตบะขั้นสูงสุดของศิษย์ทั่วไปแล้ว";
+                                
+                                document.getElementById('karmaBarContainer').innerHTML = `
+                                    <div class="karma-container">
+                                        <div class="karma-bar-bg"><div class="karma-bar-fill" style="width: ${progressPercent}%;"></div></div>
+                                        <div class="karma-text"><strong>${karma}</strong> แต้มบุญ | ${nextMsg}</div>
+                                    </div>
+                                `;
+                                document.getElementById('karmaBarContainer').style.display = 'block';
+                            } else {
+                                document.getElementById('karmaBarContainer').style.display = 'none';
+                            }
                         } else {
                             document.getElementById('displayUserBadge').innerHTML = await getRoleBadgeFromAPI(savedUser);
+                            document.getElementById('karmaBarContainer').style.display = 'none';
                         }
                     } catch (e) {
                         document.getElementById('displayUserBadge').innerHTML = await getRoleBadgeFromAPI(savedUser);
+                        document.getElementById('karmaBarContainer').style.display = 'none';
                     }
-                    
                     loadNotifications();
                 }
                 
                 guestView.style.display = 'none';
                 loggedInView.style.display = 'block';
-
-                if (userType === 'guest' || savedUser.includes('ผู้ไม่ประสงค์ออกนาม')) {
-                    document.getElementById('logoutBtnText').textContent = 'ลบตัวตน (สละร่าง)';
-                } else {
-                    document.getElementById('logoutBtnText').textContent = 'ออกจากระบบ';
-                }
+                document.getElementById('logoutBtnText').textContent = (userType === 'guest' || savedUser.includes('ผู้ไม่ประสงค์ออกนาม')) ? 'ลบตัวตน (สละร่าง)' : 'ออกจากระบบ';
             } else {
                 guestView.style.display = 'block';
                 loggedInView.style.display = 'none';

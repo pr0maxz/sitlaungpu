@@ -57,13 +57,14 @@
         .btn-reorder { background: rgba(212, 175, 55, 0.1); color: var(--gold-light); border: 1px solid rgba(212, 175, 55, 0.3); padding: 4px 8px; font-size: 0.75rem; }
         .btn-reorder:hover { background: var(--gold-main); color: #000; }
         
-        /* 🌟 โค้ดสีป้ายยศ */
+        /* 🌟 โค้ดสีป้ายยศ (รวมยศพิเศษ "ตัวละคร" สีเขียว Role 6) */
         .role-badge, .role-tag { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 0.75rem; font-family: 'Prompt', sans-serif; font-weight: 600; letter-spacing: 0.5px; vertical-align: middle; margin-left: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.6); }
         .role-1 { background: linear-gradient(135deg, #f5d77f, #d4af37, #8a6315); color: #1a0f02 !important; border: 1px solid #ffeea8; box-shadow: 0 0 12px rgba(212,175,55,0.8), inset 0 0 6px rgba(255,255,255,0.6); font-weight: 700; } 
         .role-2 { background: linear-gradient(135deg, #4a1c60, #240b36); color: #e5b3ff !important; border: 1px solid #9b59b6; box-shadow: 0 0 6px rgba(155,89,182,0.4); } 
         .role-3 { background: linear-gradient(135deg, #6c7a86, #262c30); color: #d6dfe5 !important; border: 1px solid #94a6b5; box-shadow: 0 0 6px rgba(148,166,181,0.4); } 
         .role-4 { background: linear-gradient(135deg, #8a4818, #422008); color: #e8a67c !important; border: 1px solid #b86226; box-shadow: 0 0 6px rgba(184,98,38,0.4); } 
         .role-5 { background: rgba(138, 99, 21, 0.1); color: #a69477 !important; border: 1px solid #8a6315; } 
+        .role-6 { background: linear-gradient(135deg, #27ae60, #145a32); color: #abebc6 !important; border: 1px solid #2ecc71; box-shadow: 0 0 10px rgba(46,204,113,0.8); font-weight: 700; } /* ตัวละคร: สีเขียวพิเศษ */
         .role-guest { background: rgba(168, 46, 46, 0.15); color: #ff6b6b !important; border: 1px dashed #a82e2e; }
 
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; width: 100%; }
@@ -215,6 +216,7 @@
                             <option value="3">ทุติยภูมิ</option>
                             <option value="4">ปฐมภูมิ</option>
                             <option value="5">เด็กวัด</option>
+                            <option value="character">ตัวละคร (ยศพิเศษ)</option>
                         </select>
 
                         <select id="sortOrderField" class="filter-select" onchange="handleUserSearch()">
@@ -234,19 +236,20 @@
                                     <th>นามแฝง (Username)</th>
                                     <th>รหัสผ่านลับ</th>
                                     <th>ระดับขั้น</th>
+                                    <th>แต้มบุญ (Karma)</th>
                                     <th>ใช้งานล่าสุด</th>
                                     <th>จัดเรียงลำดับเอง</th>
                                     <th>จัดการ</th>
                                 </tr>
                             </thead>
-                            <tbody id="users-table-body"><tr><td colspan="7" style="text-align:center;">กำลังโหลดข้อมูล...</td></tr></tbody>
+                            <tbody id="users-table-body"><tr><td colspan="8" style="text-align:center;">กำลังโหลดข้อมูล...</td></tr></tbody>
                         </table>
                     </div>
                     <div id="userPagination" class="pagination"></div>
                 </div>
             </div>
 
-            <!-- 🌟 Tab แจ้งเบาะแส (Reports) -->
+            <!-- Tab แจ้งเบาะแส (Reports) -->
             <div id="tab-reports" class="tab-pane">
                 <div class="panel-card">
                     <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-top-left" alt="" width="50" height="50">
@@ -328,6 +331,7 @@
         </div>
     </div>
 
+    <!-- Modal เพิ่ม/แก้ไขสมาชิก รองรับยศพิเศษ "ตัวละคร" -->
     <div class="modal-overlay" id="userModal">
         <div class="modal-box" style="max-width: 400px;">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-top-left" alt="" width="50" height="50">
@@ -347,6 +351,7 @@
                         <option value="4">ปฐมภูมิ (ระดับ 4)</option>
                         <option value="3">ทุติยภูมิ (ระดับ 3)</option>
                         <option value="2">ตติยภูมิ (ระดับ 2)</option>
+                        <option value="character">ตัวละครพิเศษ (ออร่าสีเขียว)</option>
                         <option value="1">ปรมัตถ์ (แอดมิน)</option>
                     </select>
                 </div>
@@ -489,7 +494,6 @@
             async saveCMS(cmsData) { 
                 if (API_CONFIG.USE_REAL_API) { await fetch(`${API_CONFIG.BASE_URL}/cms`, { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(cmsData) }); } 
             },
-            // 🌟 API สำหรับ Reports
             async getReports() {
                 if (API_CONFIG.USE_REAL_API) {
                     try { const res = await fetch(`${API_CONFIG.BASE_URL}/reports`); return await res.json(); } catch(e){ return []; }
@@ -527,13 +531,20 @@
             if (pendingConfirmAction) { await pendingConfirmAction(); pendingConfirmAction = null; }
         });
 
-        function getRoleBadge(roleValue) {
+        // ฟังก์ชันแปลงแสดงป้ายยศในหน้าแอดมิน (รองรับยศพิเศษ ตัวละคร)
+        function getRoleBadge(userObj) {
+            let roleValue = userObj.role;
+            let rankName = userObj.rank_name;
+
+            if (rankName === 'ตัวละคร') {
+                return '<span class="role-tag role-6">ตัวละคร</span>';
+            }
             switch(String(roleValue)) {
                 case '1': return '<span class="role-tag role-1">ปรมัตถ์</span>';
                 case '2': return '<span class="role-tag role-2">ตติยภูมิ</span>';
                 case '3': return '<span class="role-tag role-3">ทุติยภูมิ</span>';
                 case '4': return '<span class="role-tag role-4">ปฐมภูมิ</span>';
-                default: return '<span class="role-tag role-5">เด็กวัด</span>'; 
+                default: return `<span class="role-tag role-5">${rankName || 'เด็กวัด'}</span>`; 
             }
         }
 
@@ -549,7 +560,6 @@
             document.getElementById('stat-users-count').textContent = globalUsersData.length;
             handleUserSearch();
             
-            // 🌟 โหลดข้อมูล Reports
             loadReportsData();
             
             const cms = await AdminAPI.getCMS();
@@ -664,7 +674,12 @@
 
             let data = globalUsersData.filter(u => {
                 const matchName = u.username.toLowerCase().includes(query);
-                const matchRole = roleFilter === "" || String(u.role) === roleFilter;
+                let matchRole = true;
+                if (roleFilter === "character") {
+                    matchRole = u.rank_name === 'ตัวละคร';
+                } else if (roleFilter !== "") {
+                    matchRole = String(u.role) === roleFilter && u.rank_name !== 'ตัวละคร';
+                }
                 return matchName && matchRole;
             });
 
@@ -697,7 +712,7 @@
             const tbody = document.getElementById('users-table-body');
             tbody.innerHTML = '';
             if (filteredUsersData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">ไม่พบข้อมูลสมาชิกตามเงื่อนไข</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">ไม่พบข้อมูลสมาชิกตามเงื่อนไข</td></tr>';
                 document.getElementById('userPagination').innerHTML = '';
                 return;
             }
@@ -714,8 +729,9 @@
             usersToShow.forEach((u, i) => {
                 const absoluteIndex = startIndex + i;
                 const globalIndex = globalUsersData.findIndex(g => g.username === u.username) + 1;
-                const displayRole = getRoleBadge(u.role);
+                const displayRole = getRoleBadge(u);
                 const displayLastLogin = timeSinceLastLogin(u.last_login || u.login_timestamp);
+                const userKarma = u.karma || 0;
                 
                 let reorderBtns = `<div style="display:flex; gap:3px;">`;
                 if (absoluteIndex > 0) reorderBtns += `<button class="btn btn-reorder" onclick="moveUserRow(${absoluteIndex}, -1)" title="เลื่อนขึ้น">▲</button>`;
@@ -728,6 +744,7 @@
                         <td><strong>${u.username}</strong></td>
                         <td><code>${u.password || '-'}</code></td>
                         <td>${displayRole}</td>
+                        <td><strong style="color:var(--gold-light);">${userKarma}</strong> แต้ม</td>
                         <td>${displayLastLogin}</td>
                         <td>${reorderBtns}</td>
                         <td>
@@ -826,20 +843,48 @@
                     document.getElementById('edit-user-old-username').value = u.username; 
                     document.getElementById('edit-user-name').value = u.username; 
                     document.getElementById('edit-user-password').value = u.password; 
-                    document.getElementById('edit-user-role').value = u.role || '5'; 
+                    
+                    // เช็คว่าเป็นยศตัวละครพิเศษ หรือตาม role ปกติ
+                    if (u.rank_name === 'ตัวละคร') {
+                        document.getElementById('edit-user-role').value = 'character';
+                    } else {
+                        document.getElementById('edit-user-role').value = u.role || '5'; 
+                    }
                 }
                 document.getElementById('userModalTitle').textContent = 'แก้ไขข้อมูลสมาชิก';
             } else { document.getElementById('userModalTitle').textContent = 'เพิ่มสมาชิกใหม่'; }
             document.getElementById('userModal').classList.add('active');
         }
         function editUser(username) { openUserModal(username); }
+
         async function submitUserForm(e) {
             e.preventDefault(); document.getElementById('btnSaveUser').textContent = 'กำลังบันทึก...';
             const oldUsername = document.getElementById('edit-user-old-username').value;
+            const roleSelectVal = document.getElementById('edit-user-role').value;
+            
+            let finalRole = roleSelectVal;
+            let finalRankName = 'เด็กวัด';
+
+            if (roleSelectVal === 'character') {
+                finalRole = '2'; // เทียบเท่าตติยภูมิ
+                finalRankName = 'ตัวละคร';
+            } else if (roleSelectVal === '1') {
+                finalRankName = 'ปรมัตถ์';
+            } else if (roleSelectVal === '2') {
+                finalRankName = 'ตติยภูมิ';
+            } else if (roleSelectVal === '3') {
+                finalRankName = 'ทุติยภูมิ';
+            } else if (roleSelectVal === '4') {
+                finalRankName = 'ปฐมภูมิ';
+            } else {
+                finalRankName = 'เด็กวัด';
+            }
+
             const data = { 
                 username: document.getElementById('edit-user-name').value.trim(), 
                 password: document.getElementById('edit-user-password').value.trim(),
-                role: document.getElementById('edit-user-role').value 
+                role: finalRole,
+                rank_name: finalRankName
             };
             try { 
                 await AdminAPI.saveUser(data, oldUsername); 
@@ -858,7 +903,6 @@
             });
         }
 
-        // 🌟 ฟังก์ชันจัดการ Reports (โหลดข้อมูล)
         async function loadReportsData() {
             const tbody = document.getElementById('reports-table-body');
             const reports = await AdminAPI.getReports();
@@ -871,13 +915,10 @@
 
             reports.forEach(r => {
                 const targetText = r.target_type === 'post' ? 'กระทู้หลัก' : 'ความคิดเห็น';
-                
-                // ตรวจสอบว่าเป้าหมายยังอยู่หรือไม่
                 let inspectBtn = '';
                 if (r.target_type === 'post') {
                     inspectBtn = `<a href="post.html?id=${r.target_id}" target="_blank" class="btn btn-gold">🔍 ตรวจสอบ</a>`;
                 } else {
-                    // ถ้าเป็น comment อาจจะต้องเช็ค post_id แต่เอาแค่นี้ไปก่อน
                     inspectBtn = `<button class="btn btn-edit" onclick="showCustomAlert('การตรวจสอบคอมเมนต์ ให้เข้าไปหากระทู้ที่มีข้อความนี้')">🔍 ตรวจสอบ</button>`;
                 }
 
