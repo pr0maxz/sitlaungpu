@@ -57,17 +57,12 @@
         .btn-reorder { background: rgba(212, 175, 55, 0.1); color: var(--gold-light); border: 1px solid rgba(212, 175, 55, 0.3); padding: 4px 8px; font-size: 0.75rem; }
         .btn-reorder:hover { background: var(--gold-main); color: #000; }
         
-        /* 🌟 โค้ดสีป้ายยศ (แก้ปัญหาสีอักษรจมด้วย !important) */
+        /* 🌟 โค้ดสีป้ายยศ */
         .role-badge, .role-tag { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 0.75rem; font-family: 'Prompt', sans-serif; font-weight: 600; letter-spacing: 0.5px; vertical-align: middle; margin-left: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.6); }
-        /* 1. ปรมัตถ์ (สีทองอร่ามมีแสง) */
         .role-1 { background: linear-gradient(135deg, #f5d77f, #d4af37, #8a6315); color: #1a0f02 !important; border: 1px solid #ffeea8; box-shadow: 0 0 12px rgba(212,175,55,0.8), inset 0 0 6px rgba(255,255,255,0.6); font-weight: 700; } 
-        /* 2. ตติยภูมิ (สีม่วงลึกลับ) */
         .role-2 { background: linear-gradient(135deg, #4a1c60, #240b36); color: #e5b3ff !important; border: 1px solid #9b59b6; box-shadow: 0 0 6px rgba(155,89,182,0.4); } 
-        /* 3. ทุติยภูมิ (สีเงิน) */
         .role-3 { background: linear-gradient(135deg, #6c7a86, #262c30); color: #d6dfe5 !important; border: 1px solid #94a6b5; box-shadow: 0 0 6px rgba(148,166,181,0.4); } 
-        /* 4. ปฐมภูมิ (สีทองแดง) */
         .role-4 { background: linear-gradient(135deg, #8a4818, #422008); color: #e8a67c !important; border: 1px solid #b86226; box-shadow: 0 0 6px rgba(184,98,38,0.4); } 
-        /* 5. เด็กวัด (สีเดิม) */
         .role-5 { background: rgba(138, 99, 21, 0.1); color: #a69477 !important; border: 1px solid #8a6315; } 
         .role-guest { background: rgba(168, 46, 46, 0.15); color: #ff6b6b !important; border: 1px dashed #a82e2e; }
 
@@ -123,6 +118,7 @@
             <button class="nav-btn active" onclick="switchTab('tab-dashboard')">📊 ภาพรวม</button>
             <button class="nav-btn" onclick="switchTab('tab-posts')">📜 กระทู้</button>
             <button class="nav-btn" onclick="switchTab('tab-users')">👥 สมาชิก</button>
+            <button class="nav-btn" onclick="switchTab('tab-reports')" style="color: #ffb17a;">🚨 แจ้งเบาะแส</button>
             <button class="nav-btn" onclick="switchTab('tab-cms-index')">🏠 จัดการหน้าแรก</button>
         </aside>
 
@@ -163,7 +159,6 @@
                         <button class="btn btn-gold" onclick="openPostModal()">+ สลักกระทู้</button>
                     </div>
 
-                    <!-- 🌟 เพิ่มระบบฟิลเตอร์ค้นหากระทู้ตามหมวด -->
                     <div class="filter-toolbar">
                         <input type="text" id="searchPostField" class="search-input" placeholder="🔍 ค้นหาตามหัวข้อ, รหัส (ID) หรือผู้เขียน..." oninput="handlePostSearch()">
                         <select id="filterPostCategory" class="filter-select" onchange="handlePostSearch()">
@@ -248,6 +243,36 @@
                         </table>
                     </div>
                     <div id="userPagination" class="pagination"></div>
+                </div>
+            </div>
+
+            <!-- 🌟 Tab แจ้งเบาะแส (Reports) -->
+            <div id="tab-reports" class="tab-pane">
+                <div class="panel-card">
+                    <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-top-left" alt="" width="50" height="50">
+                    <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-top-right" alt="" width="50" height="50">
+                    <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-bottom-left" alt="" width="50" height="50">
+                    <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-bottom-right" alt="" width="50" height="50">
+
+                    <div class="panel-header">
+                        <h3 style="color: #ffb17a;">🚨 แจ้งเบาะแสจากศิษย์ในสำนัก</h3>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ผู้แจ้ง</th>
+                                    <th>สาเหตุการแจ้ง</th>
+                                    <th>ประเภท</th>
+                                    <th>ID (รหัสอ้างอิง)</th>
+                                    <th>เวลาที่แจ้ง</th>
+                                    <th>จัดการ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reports-table-body"><tr><td colspan="6" style="text-align:center;">กำลังโหลดข้อมูล...</td></tr></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
@@ -365,7 +390,6 @@
             BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
         };
 
-        // ตัวแปรสำหรับระบบ Pagination ของกระทู้
         let globalPostsData = [];
         let filteredPostsCat1 = [];
         let filteredPostsCat2 = [];
@@ -384,16 +408,13 @@
 
         function timeSinceLastLogin(timestamp) {
             if (!timestamp) return '<span style="color:#8a7761; font-size:0.8rem;">ไม่ปรากฏร่องรอย</span>';
-            
             const now = new Date();
             const past = new Date(Number(timestamp) || timestamp);
             if (isNaN(past.getTime())) return '<span style="color:#8a7761; font-size:0.8rem;">ไม่ปรากฏร่องรอย</span>';
-            
             const diffTime = Math.abs(now - past);
             const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
             const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
             const diffMinutes = Math.floor(diffTime / (1000 * 60));
-            
             if (diffDays > 0) return `<span style="color:${diffDays > 30 ? '#ff6b6b' : '#d1bfae'};">${diffDays} วันที่แล้ว</span>`;
             if (diffHours > 0) return `<span style="color:#73c990;">${diffHours} ชั่วโมงที่แล้ว</span>`;
             if (diffMinutes > 0) return `<span style="color:#73c990;">${diffMinutes} นาทีที่แล้ว</span>`;
@@ -418,14 +439,12 @@
                     window.location.replace('admin_login.html');
                     return false;
                 }
-
                 const nameDisplay = document.getElementById('currentAdminName');
                 if (nameDisplay) nameDisplay.textContent = `👤 ${currentUser.username}`;
             } catch (e) {
                 const nameDisplay = document.getElementById('currentAdminName');
                 if (nameDisplay) nameDisplay.textContent = `👤 ${savedUsername}`;
             }
-
             return true;
         }
 
@@ -442,80 +461,43 @@
                         headers: {'Content-Type': 'application/json'}, 
                         body: JSON.stringify(postData) 
                     });
-                    if (!res.ok) {
-                        const errText = await res.text();
-                        throw new Error(errText || 'Failed to save post');
-                    }
+                    if (!res.ok) throw new Error(await res.text() || 'Failed to save post');
                     return await res.json();
-                } else { 
-                    let posts = await this.getPosts(); 
-                    if (postData.id) { 
-                        const idx = posts.findIndex(p => String(p.id) === String(postData.id)); 
-                        if (idx > -1) posts[idx] = { ...posts[idx], ...postData }; 
-                    } else { 
-                        const now = new Date(); 
-                        const timeStr = '26 ส.ค. 2569 | ' + now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0') + ' น.'; 
-                        posts.unshift({ ...postData, id: Date.now().toString(), timestamp: timeStr, views: 0, replies: 0, pinned: 0 }); 
-                    } 
-                    localStorage.setItem('siy_posts', JSON.stringify(posts)); 
-                } 
+                } else { return { success: true }; } 
             },
             async deletePost(id) { 
-                if (API_CONFIG.USE_REAL_API) { await fetch(`${API_CONFIG.BASE_URL}/posts/${id}`, { method: 'DELETE' }); } else { let posts = await this.getPosts(); localStorage.setItem('siy_posts', JSON.stringify(posts.filter(p => String(p.id) !== String(id)))); } 
+                if (API_CONFIG.USE_REAL_API) { await fetch(`${API_CONFIG.BASE_URL}/posts/${id}`, { method: 'DELETE' }); } 
             },
-            
             async getUsers() { 
-                if (API_CONFIG.USE_REAL_API) { try { const res = await fetch(`${API_CONFIG.BASE_URL}/users`); return await res.json(); } catch(e){ return []; } } else { return JSON.parse(localStorage.getItem('siy_users')) || []; } 
+                if (API_CONFIG.USE_REAL_API) { try { const res = await fetch(`${API_CONFIG.BASE_URL}/users`); return await res.json(); } catch(e){ return []; } } 
             },
             async saveUser(userData, oldUsername) { 
                 if (API_CONFIG.USE_REAL_API) { 
                     const method = oldUsername ? 'PUT' : 'POST';
                     const res = await fetch(`${API_CONFIG.BASE_URL}/users`, { 
-                        method: method, 
-                        headers: {'Content-Type': 'application/json'}, 
-                        body: JSON.stringify({...userData, oldUsername}) 
+                        method: method, headers: {'Content-Type': 'application/json'}, body: JSON.stringify({...userData, oldUsername}) 
                     });
-                    if (!res.ok) {
-                        const errData = await res.json().catch(() => ({}));
-                        throw new Error(errData.message || 'DUPLICATE');
-                    }
-                } else { 
-                    let users = await this.getUsers(); 
-                    if (oldUsername) { 
-                        const idx = users.findIndex(u => u.username === oldUsername); 
-                        if (idx > -1) users[idx] = userData; 
-                    } else { 
-                        if (users.find(u => u.username === userData.username)) throw new Error('DUPLICATE'); 
-                        users.push(userData); 
-                    } 
-                    localStorage.setItem('siy_users', JSON.stringify(users)); 
-                } 
+                    if (!res.ok) throw new Error('DUPLICATE');
+                }
             },
             async deleteUser(username) { 
-                if (API_CONFIG.USE_REAL_API) { await fetch(`${API_CONFIG.BASE_URL}/users/${username}`, { method: 'DELETE' }); } else { let users = await this.getUsers(); localStorage.setItem('siy_users', JSON.stringify(users.filter(u => u.username !== username))); } 
+                if (API_CONFIG.USE_REAL_API) { await fetch(`${API_CONFIG.BASE_URL}/users/${username}`, { method: 'DELETE' }); }
             },
-            
             async getCMS() { 
-                if (API_CONFIG.USE_REAL_API) { 
-                    try { 
-                        const res = await fetch(`${API_CONFIG.BASE_URL}/cms`); 
-                        return await res.json(); 
-                    } catch(e){ return {}; } 
-                } else { 
-                    return JSON.parse(localStorage.getItem('siy_index_cms')) || {}; 
-                } 
+                if (API_CONFIG.USE_REAL_API) { try { const res = await fetch(`${API_CONFIG.BASE_URL}/cms`); return await res.json(); } catch(e){ return {}; } } 
             },
             async saveCMS(cmsData) { 
-                if (API_CONFIG.USE_REAL_API) { 
-                    await fetch(`${API_CONFIG.BASE_URL}/cms`, { 
-                        method: 'POST', 
-                        headers:{'Content-Type':'application/json'}, 
-                        body: JSON.stringify(cmsData) 
-                    }); 
-                } else { 
-                    let current = await this.getCMS(); 
-                    localStorage.setItem('siy_index_cms', JSON.stringify({ ...current, ...cmsData })); 
-                } 
+                if (API_CONFIG.USE_REAL_API) { await fetch(`${API_CONFIG.BASE_URL}/cms`, { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(cmsData) }); } 
+            },
+            // 🌟 API สำหรับ Reports
+            async getReports() {
+                if (API_CONFIG.USE_REAL_API) {
+                    try { const res = await fetch(`${API_CONFIG.BASE_URL}/reports`); return await res.json(); } catch(e){ return []; }
+                }
+                return [];
+            },
+            async deleteReport(id) {
+                if (API_CONFIG.USE_REAL_API) { await fetch(`${API_CONFIG.BASE_URL}/reports/${id}`, { method: 'DELETE' }); }
             }
         };
 
@@ -531,9 +513,7 @@
             document.getElementById('customAlertModal').classList.add('active'); 
         }
 
-        function closeModal(id) { 
-            document.getElementById(id).classList.remove('active'); 
-        }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
         let pendingConfirmAction = null;
         function showCustomConfirm(message, callback) {
@@ -544,36 +524,8 @@
 
         document.getElementById('customConfirmBtn').addEventListener('click', async () => {
             closeModal('customConfirmModal');
-            if (pendingConfirmAction) {
-                await pendingConfirmAction();
-                pendingConfirmAction = null;
-            }
+            if (pendingConfirmAction) { await pendingConfirmAction(); pendingConfirmAction = null; }
         });
-
-        function initAdminDB() {
-            if (!localStorage.getItem('siy_posts')) {
-                const defaultPosts = [
-                    { id: "1001", category: "1", title: "สัตยาสาบาน ตอนที่ 1: รอยยันต์สีเลือด", content: "ปฐมบทแห่งความแค้น...", author: "ADMIN", timestamp: "25 สิงหาคม 2569 | 15:00 น.", views: 240, replies: 4, pinned: 1 },
-                    { id: "1002", category: "1", title: "สัตยาสาบาน ตอนที่ 2: เสียงเพรียกจากป่าช้า", content: "เสียงหวีดร้องในยามค่ำคืน...", author: "ADMIN", timestamp: "25 สิงหาคม 2569 | 10:00 น.", views: 150, replies: 10, pinned: 0 },
-                    { id: "2001", category: "2", title: "สงสัยเรื่องสถานที่ในการสวดมนต์ครับ", content: "ควรสวดที่ไหนดี...", author: "ศิษย์ใหม่", timestamp: "26 สิงหาคม 2569 | 03:00 น.", views: 560, replies: 42, pinned: 0 }
-                ];
-                localStorage.setItem('siy_posts', JSON.stringify(defaultPosts));
-            }
-            if (!localStorage.getItem('siy_users')) { 
-                const now = Date.now();
-                localStorage.setItem('siy_users', JSON.stringify([
-                    { username: "ศิษย์ใหม่", password: "123", role: "5", last_login: now - (5 * 24 * 60 * 60 * 1000) },
-                    { username: "ADMIN", password: "password", role: "1", last_login: now - (2 * 60 * 60 * 1000) }
-                ])); 
-            }
-            if (!localStorage.getItem('siy_index_cms')) {
-                const defaultCMS = {
-                    heroSubtitle: "สืบสานตำนานอาคมโบราณ", heroDesc: "เมื่อรอยยันต์สลักเลือดถูกปลุกขึ้น... คำสาบานที่ถูกลืมเลือนนับพันปี จะหวนกลับมาทวงคืนทุกลมหายใจของผู้ตระบัดสัตย์",
-                    heroImg: "https://res.cloudinary.com/kjdb7wyp/image/upload/v1787422431/small.png", heroBtnText: "เข้าสู่ลานเสวนา", heroBtnUrl: "webboard.html"
-                };
-                localStorage.setItem('siy_index_cms', JSON.stringify(defaultCMS));
-            }
-        }
 
         function getRoleBadge(roleValue) {
             switch(String(roleValue)) {
@@ -586,7 +538,6 @@
         }
 
         async function loadAdminData() {
-            initAdminDB();
             document.getElementById('stat-api-mode').textContent = API_CONFIG.USE_REAL_API ? "Cloudflare D1 (API)" : "LocalStorage (Mock)";
             document.getElementById('stat-api-mode').style.color = API_CONFIG.USE_REAL_API ? "#73c990" : "var(--gold-main)";
 
@@ -598,6 +549,9 @@
             document.getElementById('stat-users-count').textContent = globalUsersData.length;
             handleUserSearch();
             
+            // 🌟 โหลดข้อมูล Reports
+            loadReportsData();
+            
             const cms = await AdminAPI.getCMS();
             if (cms) {
                 document.getElementById('cms-hero-subtitle').value = cms.heroSubtitle || cms.hero_subtitle || cms.subtitle || ''; 
@@ -608,14 +562,12 @@
             }
         }
 
-        // 🌟 ฟังก์ชันจัดการค้นหาและแยกหมวดหมู่กระทู้
         function handlePostSearch() {
             const queryField = document.getElementById('searchPostField');
             const query = queryField ? queryField.value.toLowerCase().trim() : '';
             const catFilterField = document.getElementById('filterPostCategory');
             const catFilter = catFilterField ? catFilterField.value : '';
 
-            // ควบคุมการแสดงผลหมวดหมู่ถ้ามีการเลือกฟิลเตอร์
             const secCat1 = document.getElementById('section-cat1');
             const secCat2 = document.getElementById('section-cat2');
             if (secCat1) secCat1.style.display = (catFilter === '' || catFilter === '1') ? 'block' : 'none';
@@ -641,7 +593,6 @@
             renderPostsPage(2, 1);
         }
 
-        // 🌟 ฟังก์ชันสร้างรายการกระทู้ตามหน้า
         function renderPostsPage(categoryId, page) {
             const tbody = document.getElementById(`posts-table-body-cat${categoryId}`);
             if (!tbody) return;
@@ -690,28 +641,19 @@
             renderPostPaginationControls(categoryId, totalPages);
         }
 
-        // 🌟 ฟังก์ชันสร้างปุ่มแบ่งหน้ากระทู้
         function renderPostPaginationControls(categoryId, totalPages) {
             const container = document.getElementById(`postPaginationCat${categoryId}`);
             if (!container) return;
-            if (totalPages <= 1) {
-                container.innerHTML = '';
-                return;
-            }
+            if (totalPages <= 1) { container.innerHTML = ''; return; }
 
             const currentPage = categoryId === 1 ? currentPostPage1 : currentPostPage2;
             let html = `<button class="page-btn" ${currentPage === 1 ? 'disabled' : ''} onclick="renderPostsPage(${categoryId}, ${currentPage - 1})">« ย้อนกลับ</button>`;
-            
             for (let i = 1; i <= totalPages; i++) {
                 if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
                     html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="renderPostsPage(${categoryId}, ${i})">${i}</button>`;
-                } else if (i === currentPage - 2 || i === currentPage + 2) {
-                    html += `<span style="color: var(--gold-dark);">...</span>`;
-                }
+                } else if (i === currentPage - 2 || i === currentPage + 2) { html += `<span style="color: var(--gold-dark);">...</span>`; }
             }
-            
             html += `<button class="page-btn" ${currentPage === totalPages ? 'disabled' : ''} onclick="renderPostsPage(${categoryId}, ${currentPage + 1})">ถัดไป »</button>`;
-            
             container.innerHTML = html;
         }
 
@@ -726,15 +668,10 @@
                 return matchName && matchRole;
             });
 
-            if (sortOrder === 'name-asc') {
-                data.sort((a, b) => a.username.localeCompare(b.username, 'th'));
-            } else if (sortOrder === 'name-desc') {
-                data.sort((a, b) => b.username.localeCompare(a.username, 'th'));
-            } else if (sortOrder === 'role-desc') {
-                data.sort((a, b) => parseInt(b.role || 5) - parseInt(a.role || 5));
-            } else if (sortOrder === 'role-asc') {
-                data.sort((a, b) => parseInt(a.role || 5) - parseInt(b.role || 5));
-            }
+            if (sortOrder === 'name-asc') { data.sort((a, b) => a.username.localeCompare(b.username, 'th')); } 
+            else if (sortOrder === 'name-desc') { data.sort((a, b) => b.username.localeCompare(a.username, 'th')); } 
+            else if (sortOrder === 'role-desc') { data.sort((a, b) => parseInt(b.role || 5) - parseInt(a.role || 5)); } 
+            else if (sortOrder === 'role-asc') { data.sort((a, b) => parseInt(a.role || 5) - parseInt(b.role || 5)); }
 
             filteredUsersData = data;
             renderUsersPage(1);
@@ -759,7 +696,6 @@
         function renderUsersPage(page) {
             const tbody = document.getElementById('users-table-body');
             tbody.innerHTML = '';
-            
             if (filteredUsersData.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">ไม่พบข้อมูลสมาชิกตามเงื่อนไข</td></tr>';
                 document.getElementById('userPagination').innerHTML = '';
@@ -782,12 +718,8 @@
                 const displayLastLogin = timeSinceLastLogin(u.last_login || u.login_timestamp);
                 
                 let reorderBtns = `<div style="display:flex; gap:3px;">`;
-                if (absoluteIndex > 0) {
-                    reorderBtns += `<button class="btn btn-reorder" onclick="moveUserRow(${absoluteIndex}, -1)" title="เลื่อนขึ้น">▲</button>`;
-                }
-                if (absoluteIndex < filteredUsersData.length - 1) {
-                    reorderBtns += `<button class="btn btn-reorder" onclick="moveUserRow(${absoluteIndex}, 1)" title="เลื่อนลง">▼</button>`;
-                }
+                if (absoluteIndex > 0) reorderBtns += `<button class="btn btn-reorder" onclick="moveUserRow(${absoluteIndex}, -1)" title="เลื่อนขึ้น">▲</button>`;
+                if (absoluteIndex < filteredUsersData.length - 1) reorderBtns += `<button class="btn btn-reorder" onclick="moveUserRow(${absoluteIndex}, 1)" title="เลื่อนลง">▼</button>`;
                 reorderBtns += `</div>`;
 
                 tbody.innerHTML += `
@@ -813,23 +745,15 @@
 
         function renderUserPaginationControls(totalPages) {
             const container = document.getElementById('userPagination');
-            if (totalPages <= 1) {
-                container.innerHTML = '';
-                return;
-            }
+            if (totalPages <= 1) { container.innerHTML = ''; return; }
 
             let html = `<button class="page-btn" ${currentUserPage === 1 ? 'disabled' : ''} onclick="renderUsersPage(${currentUserPage - 1})">« ย้อนกลับ</button>`;
-            
             for (let i = 1; i <= totalPages; i++) {
                 if (i === 1 || i === totalPages || (i >= currentUserPage - 1 && i <= currentUserPage + 1)) {
                     html += `<button class="page-btn ${i === currentUserPage ? 'active' : ''}" onclick="renderUsersPage(${i})">${i}</button>`;
-                } else if (i === currentUserPage - 2 || i === currentUserPage + 2) {
-                    html += `<span style="color: var(--gold-dark);">...</span>`;
-                }
+                } else if (i === currentUserPage - 2 || i === currentUserPage + 2) { html += `<span style="color: var(--gold-dark);">...</span>`; }
             }
-            
             html += `<button class="page-btn" ${currentUserPage === totalPages ? 'disabled' : ''} onclick="renderUsersPage(${currentUserPage + 1})">ถัดไป »</button>`;
-            
             container.innerHTML = html;
         }
 
@@ -840,14 +764,11 @@
                 if(postIndex > -1) {
                     const currentPinned = checkIsPinned(posts[postIndex].pinned);
                     posts[postIndex].pinned = currentPinned ? 0 : 1; 
-                    
                     await AdminAPI.savePost(posts[postIndex]);
                     await loadAdminData();
                     showCustomAlert(currentPinned ? '📍 ถอดหมุดกระทู้สำเร็จ' : '📌 ปักหมุดกระทู้สำเร็จ');
                 }
-            } catch (err) {
-                showCustomAlert('⚠️ เกิดอาถรรพ์ขัดข้องในการปักหมุด: ' + err.message);
-            }
+            } catch (err) { showCustomAlert('⚠️ เกิดอาถรรพ์ขัดข้อง: ' + err.message); }
         }
 
         async function openPostModal(id = null) {
@@ -925,9 +846,7 @@
                 closeModal('userModal'); 
                 loadAdminData(); 
                 showCustomAlert('บันทึกข้อมูลสมาชิกเรียบร้อยแล้ว'); 
-            } catch (err) { 
-                showCustomAlert('นามแฝงนี้มีผู้ใช้งานอยู่แล้ว'); 
-            }
+            } catch (err) { showCustomAlert('นามแฝงนี้มีผู้ใช้งานอยู่แล้ว'); }
             document.getElementById('btnSaveUser').textContent = 'บันทึก';
         }
 
@@ -936,6 +855,55 @@
                 await AdminAPI.deleteUser(username); 
                 loadAdminData(); 
                 showCustomAlert('ขับไล่ศิษย์ออกจากสำนักเรียบร้อยแล้ว'); 
+            });
+        }
+
+        // 🌟 ฟังก์ชันจัดการ Reports (โหลดข้อมูล)
+        async function loadReportsData() {
+            const tbody = document.getElementById('reports-table-body');
+            const reports = await AdminAPI.getReports();
+
+            tbody.innerHTML = '';
+            if (!reports || reports.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">ยังไม่มีการแจ้งเบาะแส</td></tr>';
+                return;
+            }
+
+            reports.forEach(r => {
+                const targetText = r.target_type === 'post' ? 'กระทู้หลัก' : 'ความคิดเห็น';
+                
+                // ตรวจสอบว่าเป้าหมายยังอยู่หรือไม่
+                let inspectBtn = '';
+                if (r.target_type === 'post') {
+                    inspectBtn = `<a href="post.html?id=${r.target_id}" target="_blank" class="btn btn-gold">🔍 ตรวจสอบ</a>`;
+                } else {
+                    // ถ้าเป็น comment อาจจะต้องเช็ค post_id แต่เอาแค่นี้ไปก่อน
+                    inspectBtn = `<button class="btn btn-edit" onclick="showCustomAlert('การตรวจสอบคอมเมนต์ ให้เข้าไปหากระทู้ที่มีข้อความนี้')">🔍 ตรวจสอบ</button>`;
+                }
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${r.reporter}</strong></td>
+                        <td style="color: #ffb17a;">${r.reason}</td>
+                        <td><span class="role-tag role-4">${targetText}</span></td>
+                        <td><code>${r.target_id.substring(0, 8)}...</code></td>
+                        <td><span class="post-time" style="font-size:0.8rem;">${r.timestamp}</span></td>
+                        <td>
+                            <div style="display:flex; gap:5px;">
+                                ${inspectBtn}
+                                <button class="btn btn-delete" onclick="deleteReport('${r.id}')">ปัดตก (เคลียร์)</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function deleteReport(id) {
+            showCustomConfirm('ท่านต้องการเคลียร์การแจ้งเบาะแสนี้ใช่หรือไม่?', async () => {
+                await AdminAPI.deleteReport(id);
+                loadReportsData();
+                showCustomAlert('เคลียร์เบาะแสเรียบร้อยแล้ว');
             });
         }
 
@@ -948,16 +916,8 @@
             const btnUrlVal = document.getElementById('cms-hero-btn-url').value.trim();
 
             const data = { 
-                heroSubtitle: subtitleVal, 
-                heroDesc: descVal, 
-                heroImg: imgVal, 
-                heroBtnText: btnTextVal, 
-                heroBtnUrl: btnUrlVal,
-                hero_subtitle: subtitleVal,
-                hero_desc: descVal,
-                hero_img: imgVal,
-                hero_btn_text: btnTextVal,
-                hero_btn_url: btnUrlVal
+                heroSubtitle: subtitleVal, heroDesc: descVal, heroImg: imgVal, heroBtnText: btnTextVal, heroBtnUrl: btnUrlVal,
+                hero_subtitle: subtitleVal, hero_desc: descVal, hero_img: imgVal, hero_btn_text: btnTextVal, hero_btn_url: btnUrlVal
             };
             await AdminAPI.saveCMS(data); 
             showCustomAlert('บันทึกข้อมูลส่วน Hero เรียบร้อยแล้ว');

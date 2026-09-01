@@ -43,6 +43,16 @@ app.get('/api/fix-db', async (c) => {
         post_id TEXT NOT NULL,
         is_read INTEGER DEFAULT 0,
         timestamp TEXT NOT NULL
+    );`,
+    // 🌟 สร้างตารางสำหรับเก็บข้อมูลการแจ้งเบาะแส (Reports)
+    `CREATE TABLE IF NOT EXISTS reports (
+        id TEXT PRIMARY KEY,
+        target_type TEXT NOT NULL,
+        target_id TEXT NOT NULL,
+        reporter TEXT NOT NULL,
+        reason TEXT NOT NULL,
+        timestamp TEXT NOT NULL,
+        status TEXT DEFAULT 'pending'
     );`
   ]
 
@@ -55,6 +65,38 @@ app.get('/api/fix-db', async (c) => {
     }
   }
   return c.json({ message: "อัปเกรดฐานข้อมูลเรียบร้อยแล้ว!", logs })
+})
+
+// ==========================================
+// 🚨 ระบบแจ้งเบาะแส (Report System) 
+// ==========================================
+app.get('/api/reports', async (c) => {
+  try {
+    const { results } = await c.env.DB.prepare("SELECT * FROM reports ORDER BY id DESC").all()
+    return c.json(results || [])
+  } catch (e) { return c.json([]) }
+})
+
+app.post('/api/reports', async (c) => {
+  const body = await c.req.json()
+  try {
+    await c.env.DB.prepare(
+      "INSERT INTO reports (id, target_type, target_id, reporter, reason, timestamp) VALUES (?, ?, ?, ?, ?, ?)"
+    ).bind(body.id, body.target_type, body.target_id, body.reporter, body.reason, body.timestamp).run()
+    return c.json({ success: true })
+  } catch (error: any) {
+    return c.json({ success: false, error: error.message }, 500)
+  }
+})
+
+app.delete('/api/reports/:id', async (c) => {
+  const id = c.req.param('id')
+  try {
+    await c.env.DB.prepare("DELETE FROM reports WHERE id = ?").bind(id).run()
+    return c.json({ success: true })
+  } catch (error: any) {
+    return c.json({ success: false, error: error.message }, 500)
+  }
 })
 
 // ==========================================
@@ -77,10 +119,7 @@ app.post('/api/admin/login', async (c) => {
 
     if (!isValid) return c.json({ success: false, error: 'รหัสผ่านอาคมผิดเพี้ยน!' }, 400);
 
-    // 🌟 อัปเดตเวลาใช้งานล่าสุดของ Admin ด้วย
-    try {
-        await c.env.DB.prepare("UPDATE users SET last_login = ? WHERE username = ?").bind(Date.now(), user.username).run();
-    } catch(e) {}
+    try { await c.env.DB.prepare("UPDATE users SET last_login = ? WHERE username = ?").bind(Date.now(), user.username).run(); } catch(e) {}
 
     return c.json({ success: true, username: user.username, rank_name: user.rank_name || 'วิญญาณเร่ร่อน' });
   } catch (err) {
@@ -92,13 +131,11 @@ app.post('/api/admin/login', async (c) => {
 // 🚪 จัดการสมาชิก 
 // ==========================================
 app.get('/api/users', async (c) => {
-  // 🌟 ดึงข้อมูล last_login ส่งไปให้หน้า Admin ด้วย
   const { results } = await c.env.DB.prepare("SELECT * FROM users").all()
   return c.json(results)
 })
 
 app.post('/api/users', async (c) => {
-  // 🌟 รับค่า last_login มาจากหน้าเว็บตอนสมัครสมาชิก
   const { username, password, role, rank_name, last_login } = await c.req.json()
   const salt = crypto.randomUUID()
   const hashed = await hashPassword(password, salt)
@@ -113,7 +150,6 @@ app.post('/api/users', async (c) => {
 })
 
 app.put('/api/users', async (c) => {
-  // 🌟 รับค่า last_login ตอนเข้าสู่ระบบ หรือตอนแอดมินแก้ไขข้อมูล
   const { username, oldUsername, password, role, rank_name, last_login } = await c.req.json()
   const targetName = oldUsername || username
   try {
@@ -121,7 +157,6 @@ app.put('/api/users', async (c) => {
       const salt = crypto.randomUUID()
       const hashed = await hashPassword(password, salt)
       await c.env.DB.prepare(
-        // ใช้ COALESCE เพื่อไม่ให้เวลาเก่าหายไป ถ้าไม่มีการส่งเวลาใหม่มา (ตอนแอดมินแก้รหัสผ่าน)
         "UPDATE users SET username = ?, password_hash = ?, salt = ?, role = ?, rank_name = ?, password = ?, last_login = COALESCE(?, last_login) WHERE username = ?"
       ).bind(username, hashed, salt, role || '5', rank_name || 'วิญญาณเร่ร่อน', password, last_login || null, targetName).run()
     } else {
@@ -177,10 +212,7 @@ app.put('/api/posts', async (c) => {
 
 app.get('/api/posts/:id', async (c) => {
   const id = c.req.param('id')
-  try {
-    await c.env.DB.prepare("UPDATE posts SET views = COALESCE(views, 0) + 1 WHERE id = ?").bind(id).run()
-  } catch (e) {}
-
+  try { await c.env.DB.prepare("UPDATE posts SET views = COALESCE(views, 0) + 1 WHERE id = ?").bind(id).run() } catch (e) {}
   const post = await c.env.DB.prepare("SELECT * FROM posts WHERE id = ?").bind(id).first()
   return c.json(post)
 })
@@ -190,17 +222,6 @@ app.delete('/api/posts/:id', async (c) => {
   await c.env.DB.prepare("DELETE FROM posts WHERE id = ?").bind(id).run()
   await c.env.DB.prepare("DELETE FROM comments WHERE post_id = ?").bind(id).run()
   return c.json({ success: true })
-})
-
-app.post('/api/posts/:postId/like', async (c) => {
-  const postId = c.req.param('postId')
-  try {
-    await c.env.DB.prepare("UPDATE posts SET likes = COALESCE(likes, 0) + 1 WHERE id = ?").bind(postId).run()
-    const post: any = await c.env.DB.prepare("SELECT likes FROM posts WHERE id = ?").bind(postId).first()
-    return c.json({ success: true, likes: post?.likes || 0 })
-  } catch (e: any) {
-    return c.json({ success: false, error: e.message }, 500)
-  }
 })
 
 app.get('/api/comments', async (c) => {
@@ -232,17 +253,6 @@ app.delete('/api/comments/:id', async (c) => {
   }
   await c.env.DB.prepare("DELETE FROM comments WHERE id = ?").bind(id).run()
   return c.json({ success: true })
-})
-
-app.post('/api/comments/:commentId/like', async (c) => {
-  const commentId = c.req.param('commentId')
-  try {
-    await c.env.DB.prepare("UPDATE comments SET likes = COALESCE(likes, 0) + 1 WHERE id = ?").bind(commentId).run()
-    const comment: any = await c.env.DB.prepare("SELECT likes FROM comments WHERE id = ?").bind(commentId).first()
-    return c.json({ success: true, likes: comment?.likes || 0 })
-  } catch (e: any) {
-    return c.json({ success: false, error: e.message }, 500)
-  }
 })
 
 // ==========================================
