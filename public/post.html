@@ -93,7 +93,6 @@
         .btn-logout { display: block; width: 100%; background: transparent; color: #ff6b6b; border: 1px solid rgba(168, 46, 46, 0.5); padding: 8px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-size: 0.9rem; cursor: pointer; transition: all 0.3s; } 
         .btn-logout:hover { background: rgba(168, 46, 46, 0.1); border-color: #ff6b6b; }
 
-        /* 🔮 ปรับตำแหน่งดวงแก้วกระแสจิต */
         .noti-wrapper { position: absolute; top: -20px; right: 25px; z-index: 50; }
         .noti-btn { background: radial-gradient(circle, rgba(212, 175, 55, 0.25) 0%, rgba(7, 4, 2, 0.95) 80%); border: 1px solid var(--gold-main); border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; transition: all 0.4s ease; box-shadow: 0 0 12px rgba(212, 175, 55, 0.3), inset 0 0 6px rgba(245, 215, 127, 0.5); padding: 0; animation: orbPulse 3s infinite alternate; }
         @keyframes orbPulse {
@@ -121,7 +120,7 @@
         .role-2 { background: linear-gradient(135deg, #8e44ad, #4b0082); color: #e8daef !important; border: 1px solid #9b59b6; box-shadow: 0 0 10px rgba(142,68,173,0.8); } 
         .role-3 { background: linear-gradient(135deg, #bdc3c7, #7f8c8d); color: #1a1a1a !important; border: 1px solid #ecf0f1; box-shadow: 0 0 8px rgba(189,195,199,0.8); } 
         .role-4 { background: linear-gradient(135deg, #d35400, #a04000); color: #ffebcc !important; border: 1px solid #e67e22; box-shadow: 0 0 10px rgba(211,84,0,0.8); } 
-        .role-5 { background: linear-gradient(180deg, #1f140a 0%, #0c0704 100%); color: var(--gold-light) !important; border: 1px solid var(--gold-dark); box-shadow: 0 0 8px rgba(138, 99, 21, 0.5), inset 0 0 4px rgba(212, 175, 55, 0.2); } 
+        .role-5 { background-color: rgba(138, 99, 21, 0.1); color: #a69477 !important; border: 1px solid #8a6315; box-shadow: none; font-weight: 600; }
         .role-6 { background: linear-gradient(135deg, #27ae60, #145a32); color: #abebc6 !important; border: 1px solid #2ecc71; box-shadow: 0 0 10px rgba(46,204,113,0.8); font-weight: 700; } 
         .role-guest { background-color: rgba(168, 46, 46, 0.15); color: #ff6b6b !important; border: 1px dashed #a82e2e; box-shadow: none; }
 
@@ -131,7 +130,51 @@
         .btn-submit-modal { background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; border: none; padding: 12px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-weight: bold; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: all 0.3s; width: 80%; margin: 0 auto; display: block; }
         .form-select { width: 100%; background: rgba(0,0,0,0.6); border: 1px solid rgba(138, 99, 21, 0.5); color: #fff; padding: 12px 15px; border-radius: 6px; font-size: 1rem; margin-bottom: 20px; font-family: 'Sarabun', sans-serif; } .form-select option { background: #1a120b; }
 
+        /* 🌟 คลาสสำหรับกล่องวิญญาณเร่ร่อน รองรับ Responsive เต็มรูปแบบ โดยที่ป้ายยศไม่ยืด */
+        .ghost-warning-box {
+            background: linear-gradient(180deg, rgba(20, 9, 5, 0.8) 0%, rgba(7, 4, 2, 0.9) 100%);
+            border: 1px solid rgba(168, 46, 46, 0.4);
+            border-radius: 10px;
+            padding: clamp(20px, 4vw, 30px) clamp(15px, 3vw, 20px);
+            margin-top: 30px;
+            text-align: center;
+            box-shadow: inset 0 0 20px rgba(168, 46, 46, 0.05), 0 5px 15px rgba(0,0,0,0.5);
+            position: relative;
+        }
+        .ghost-warning-box h4 {
+            color: #ff6b6b;
+            font-size: clamp(1.1rem, 4vw, 1.25rem);
+            margin-bottom: 12px;
+            text-shadow: 0 0 10px rgba(168, 46, 46, 0.5);
+        }
+        .ghost-warning-box p {
+            color: #d1bfae;
+            font-size: clamp(0.85rem, 3vw, 0.95rem);
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+        .ghost-line {
+            display: block;
+            margin-bottom: 6px;
+        }
+        .ghost-btn-group {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .ghost-btn-group > * {
+            flex: 1 1 auto;
+            min-width: 140px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         @media (max-width: 950px) { .post-layout { grid-template-columns: 1fr; } .replies-container { margin-left: 10px; border-left-width: 1px; } .comment-card.is-reply::before { width: 10px; left: -11px; } }
+        @media (max-width: 480px) { .ghost-btn-group { flex-direction: column; } .ghost-btn-group > * { width: 100%; max-width: 100%; flex: 1 1 100%; } }
+        
         .loading-text { font-family: 'Prompt', sans-serif; color: var(--gold-main); animation: pulse 1.5s infinite alternate; text-align: center; padding: 40px; }
         @keyframes pulse { from { opacity: 0.5; } to { opacity: 1; text-shadow: 0 0 10px var(--gold-main); } }
     </style>
@@ -987,7 +1030,7 @@
             document.getElementById('displayUsername').textContent = savedUser;
             let myBadgeHtml = '';
             if (savedUser.toUpperCase() === 'ADMIN' || currentUserRole === '1') { myBadgeHtml = '<span class="role-badge role-1">ปรมัตถ์</span>'; } 
-            else if (userType === 'guest' || savedUser.includes('ผู้ไม่ประสงค์ออกนาม')) { myBadgeHtml = '<span class="role-badge role-guest">วิญญาณเร่ร่อน</span>'; } 
+            else if (userType === 'guest' || savedUser.includes('ผู้ไม่ประสงค์ออกนาม')) { myBadgeHtml = '<span class="role-badge role-guest" style="display: inline-block; margin-top: -2px;">วิญญาณเร่ร่อน</span>'; } 
             else { 
                 let badgeClass = currentUserRank === 'ตัวละคร' ? 'role-6' : `role-${currentUserRole}`;
                 myBadgeHtml = `<span class="role-badge ${badgeClass}">${currentUserRank}</span>`; 
@@ -1026,17 +1069,17 @@
             if (userType === 'guest') {
                 document.getElementById('logoutBtnText').textContent = 'ลบตัวตน (สละร่าง)';
                 
-                // 🌟 ปรับดีไซน์ใหม่ให้วิญญาณเร่ร่อนดูเท่และขลังขึ้น
+                // 🌟 อัปเดตกล่องวิญญาณเร่ร่อนแบบ Responsive โดยจำกัดป้ายยศไม่ให้ยืดเต็มจอ
                 commentArea.innerHTML = `
-                    <div style="background: linear-gradient(180deg, rgba(20, 9, 5, 0.8) 0%, rgba(7, 4, 2, 0.9) 100%); border: 1px solid rgba(168, 46, 46, 0.4); border-radius: 10px; padding: 30px 20px; margin-top: 30px; text-align: center; box-shadow: inset 0 0 20px rgba(168, 46, 46, 0.05), 0 5px 15px rgba(0,0,0,0.5); position: relative;">
-                        <div style="font-size: 2rem; margin-bottom: 10px; filter: drop-shadow(0 0 8px rgba(168, 46, 46, 0.8));">👻</div>
-                        <h4 style="color: #ff6b6b; font-size: 1.2rem; margin-bottom: 10px; text-shadow: 0 0 10px rgba(168, 46, 46, 0.5);">เขตอนธการ (วิญญาณมิอาจก้าวล่วง)</h4>
-                        <p style="color: #d1bfae; font-size: 0.95rem; line-height: 1.6; margin-bottom: 20px;">
-                            นามปัจจุบันของท่านคือ <strong style="color: var(--gold-light);">${savedUser}</strong><br>
-                            ดวงจิตของท่านยังคงล่องลอยไร้ตัวตนในสถานะ <span class="role-badge role-guest">วิญญาณเร่ร่อน</span><br>
-                            ท่านสามารถรับรู้ได้เพียงอดีต แต่ไม่อาจสลักวาจาใดๆ ลงในหน้าศิลาจารึกนี้ได้
+                    <div class="ghost-warning-box">
+                        <div style="font-size: 2.5rem; margin-bottom: 10px; filter: drop-shadow(0 0 8px rgba(168, 46, 46, 0.8));">👻</div>
+                        <h4>เขตอนธการ (วิญญาณมิอาจก้าวล่วง)</h4>
+                        <p>
+                            <span class="ghost-line">นามปัจจุบันของท่านคือ <strong style="color: var(--gold-light);">${savedUser}</strong></span>
+                            <span class="ghost-line">ดวงจิตของท่านยังคงล่องลอยไร้ตัวตนในสถานะ <span class="role-badge role-guest" style="display: inline-block; margin-top: -2px;">วิญญาณเร่ร่อน</span></span>
+                            <span class="ghost-line" style="margin-top: 5px;">ท่านสามารถรับรู้ได้เพียงอดีต แต่ไม่อาจสลักวาจาใดๆ ลงในหน้าประวัติศาสตร์นี้ได้</span>
                         </p>
-                        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                        <div class="ghost-btn-group">
                             <button onclick="handleLogout()" class="btn-submit-comment" style="background: linear-gradient(180deg, #a82e2e 0%, #5c1414 100%); color: #ffd1d1; border: 1px solid #ff6b6b;">สละร่างเพื่อจุติใหม่</button>
                             <a href="webboard.html" class="btn-secondary-custom">เร้นกายกลับลานเสวนา</a>
                         </div>
