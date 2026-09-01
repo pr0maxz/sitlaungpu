@@ -93,7 +93,7 @@
         .btn-logout { display: block; width: 100%; background: transparent; color: #ff6b6b; border: 1px solid rgba(168, 46, 46, 0.5); padding: 8px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-size: 0.9rem; cursor: pointer; transition: all 0.3s; } 
         .btn-logout:hover { background: rgba(168, 46, 46, 0.1); border-color: #ff6b6b; }
 
-        /* 🔮 ปรับตำแหน่งดวงแก้วกระแสจิตให้อยู่ในระดับเดียวกับป้ายหัวข้อเป๊ะๆ */
+        /* 🔮 ปรับตำแหน่งดวงแก้วกระแสจิต */
         .noti-wrapper { position: absolute; top: -20px; right: 25px; z-index: 50; }
         .noti-btn { background: radial-gradient(circle, rgba(212, 175, 55, 0.25) 0%, rgba(7, 4, 2, 0.95) 80%); border: 1px solid var(--gold-main); border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; transition: all 0.4s ease; box-shadow: 0 0 12px rgba(212, 175, 55, 0.3), inset 0 0 6px rgba(245, 215, 127, 0.5); padding: 0; animation: orbPulse 3s infinite alternate; }
         @keyframes orbPulse {
@@ -121,10 +121,7 @@
         .role-2 { background: linear-gradient(135deg, #8e44ad, #4b0082); color: #e8daef !important; border: 1px solid #9b59b6; box-shadow: 0 0 10px rgba(142,68,173,0.8); } 
         .role-3 { background: linear-gradient(135deg, #bdc3c7, #7f8c8d); color: #1a1a1a !important; border: 1px solid #ecf0f1; box-shadow: 0 0 8px rgba(189,195,199,0.8); } 
         .role-4 { background: linear-gradient(135deg, #d35400, #a04000); color: #ffebcc !important; border: 1px solid #e67e22; box-shadow: 0 0 10px rgba(211,84,0,0.8); } 
-        
-        /* 👇 แก้ไขสีเด็กวัดให้ตรงกับรูป: พื้นหลังโปร่งแสง ขอบสีทองเข้ม ตัวหนังสือหม่น */
-        .role-5 { background-color: rgba(138, 99, 21, 0.1); color: #a69477 !important; border: 1px solid #8a6315; box-shadow: none; font-weight: 600; }
-        
+        .role-5 { background: linear-gradient(180deg, #1f140a 0%, #0c0704 100%); color: var(--gold-light) !important; border: 1px solid var(--gold-dark); box-shadow: 0 0 8px rgba(138, 99, 21, 0.5), inset 0 0 4px rgba(212, 175, 55, 0.2); } 
         .role-6 { background: linear-gradient(135deg, #27ae60, #145a32); color: #abebc6 !important; border: 1px solid #2ecc71; box-shadow: 0 0 10px rgba(46,204,113,0.8); font-weight: 700; } 
         .role-guest { background-color: rgba(168, 46, 46, 0.15); color: #ff6b6b !important; border: 1px dashed #a82e2e; box-shadow: none; }
 
@@ -1028,9 +1025,22 @@
             const commentArea = document.getElementById('commentAreaContainer');
             if (userType === 'guest') {
                 document.getElementById('logoutBtnText').textContent = 'ลบตัวตน (สละร่าง)';
+                
+                // 🌟 ปรับดีไซน์ใหม่ให้วิญญาณเร่ร่อนดูเท่และขลังขึ้น
                 commentArea.innerHTML = `
-                    <div class="ghost-warning" style="margin-bottom: 15px;">สถานะปัจจุบัน: <strong>${savedUser}</strong><br>ท่านอยู่ในร่างวิญญาณเร่ร่อน <strong>ไม่อาจฝากข้อความหรือคอมเมนต์ได้</strong></div>
-                    <a href="webboard.html" class="btn-secondary-custom" style="width: 100%;">กลับไปลานเสวนา</a>
+                    <div style="background: linear-gradient(180deg, rgba(20, 9, 5, 0.8) 0%, rgba(7, 4, 2, 0.9) 100%); border: 1px solid rgba(168, 46, 46, 0.4); border-radius: 10px; padding: 30px 20px; margin-top: 30px; text-align: center; box-shadow: inset 0 0 20px rgba(168, 46, 46, 0.05), 0 5px 15px rgba(0,0,0,0.5); position: relative;">
+                        <div style="font-size: 2rem; margin-bottom: 10px; filter: drop-shadow(0 0 8px rgba(168, 46, 46, 0.8));">👻</div>
+                        <h4 style="color: #ff6b6b; font-size: 1.2rem; margin-bottom: 10px; text-shadow: 0 0 10px rgba(168, 46, 46, 0.5);">เขตอนธการ (วิญญาณมิอาจก้าวล่วง)</h4>
+                        <p style="color: #d1bfae; font-size: 0.95rem; line-height: 1.6; margin-bottom: 20px;">
+                            นามปัจจุบันของท่านคือ <strong style="color: var(--gold-light);">${savedUser}</strong><br>
+                            ดวงจิตของท่านยังคงล่องลอยไร้ตัวตนในสถานะ <span class="role-badge role-guest">วิญญาณเร่ร่อน</span><br>
+                            ท่านสามารถรับรู้ได้เพียงอดีต แต่ไม่อาจสลักวาจาใดๆ ลงในหน้าศิลาจารึกนี้ได้
+                        </p>
+                        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                            <button onclick="handleLogout()" class="btn-submit-comment" style="background: linear-gradient(180deg, #a82e2e 0%, #5c1414 100%); color: #ffd1d1; border: 1px solid #ff6b6b;">สละร่างเพื่อจุติใหม่</button>
+                            <a href="webboard.html" class="btn-secondary-custom">เร้นกายกลับลานเสวนา</a>
+                        </div>
+                    </div>
                 `;
             } else {
                 document.getElementById('logoutBtnText').textContent = 'ออกจากระบบ';
