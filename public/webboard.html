@@ -156,7 +156,7 @@
 
             <div class="board-sidebar">
                 <div class="widget user-status-box">
-                    <!-- 🔮 ดวงแก้วกระแสจิต (Spirit Orb) ขยับมาอยู่ด้านขวาในระดับเดียวกับป้ายหัวข้อ -->
+                    <!-- 🔮 ดวงแก้วกระแสจิต (Spirit Orb) -->
                     <div class="noti-wrapper" id="notiContainer" style="display: none;">
                         <button class="noti-btn" onclick="toggleNotiDropdown()" title="กระแสจิตเตือนภัย">
                             <svg viewBox="0 0 24 24">
@@ -174,12 +174,11 @@
                         </div>
                     </div>
 
-                    <!-- 🌟 หัวข้อขยับมาทางซ้ายของกล่องสวยงาม -->
                     <h4 class="section-title">สถานะสำนัก</h4>
                     
                     <div id="loggedInView" style="display: none;">
                         <div class="user-logged-in-profile">
-                            <div class="user-info-text" style="text-align: center; width: 100%;">
+                            <div class="user-info-text" style="text-align: center;">
                                 <h4 id="displayUsername" style="text-align: center; margin-bottom: 5px;">นามแฝง</h4>
                                 <div id="displayUserBadge" style="margin-bottom: 8px;"></div>
                             </div>
@@ -348,37 +347,66 @@
         };
 
         // ==========================================
-        // ⚡ ระบบกระแสจิตเรียลไทม์ (WebSocket)
+        // ⚡ ระบบกระแสจิตเรียลไทม์ (WebSocket) แบบมี Auto-Reconnect
         // ==========================================
-        const telepathySocket = new WebSocket("wss://my-backend.pr0maxz.workers.dev/api/ws");
+        let telepathySocket;
+        function connectTelepathy() {
+            const wsUrl = API_CONFIG.BASE_URL.replace('http', 'ws') + '/ws';
+            telepathySocket = new WebSocket(wsUrl);
 
-        telepathySocket.onopen = () => {
-            console.log("⚡ เชื่อมต่อกระแสจิตกับสำนักสำเร็จ!");
-        };
+            telepathySocket.onopen = () => {
+                console.log("⚡ เปิดช่องรับกระแสจิตจากสำนักสำเร็จ!");
+            };
 
-        telepathySocket.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            
-            if (data.type === 'LIKE_UPDATE') {
-                const likeCountEl = document.getElementById(data.isComment ? `comment-like-count-${data.targetId}` : 'dyn-likes');
-                if (likeCountEl) {
-                    likeCountEl.textContent = data.newLikes;
-                    likeCountEl.style.color = '#fff';
-                    setTimeout(() => { likeCountEl.style.color = ''; }, 500);
+            telepathySocket.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                console.log("📩 ได้รับกระแสจิต:", data);
+                
+                if (data.type === 'LIKE_UPDATE') {
+                    if (data.isComment) {
+                        const commentLikeEl = document.getElementById(`comment-like-count-${data.targetId}`);
+                        if (commentLikeEl) {
+                            commentLikeEl.textContent = data.newLikes;
+                            commentLikeEl.style.color = '#fff';
+                            setTimeout(() => { commentLikeEl.style.color = ''; }, 500);
+                        }
+                    } else {
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const currentPostId = urlParams.get('id');
+                        if (data.targetId === currentPostId) {
+                            const likeCountEl = document.getElementById('dyn-likes');
+                            if (likeCountEl) {
+                                likeCountEl.textContent = data.newLikes;
+                                likeCountEl.style.color = '#fff';
+                                setTimeout(() => { likeCountEl.style.color = ''; }, 500);
+                            }
+                        }
+                    }
                 }
-            }
-            
-            if (data.type === 'NEW_COMMENT') {
-                const urlParams = new URLSearchParams(window.location.search);
-                const currentPostId = urlParams.get('id');
-                if (data.postId === currentPostId && typeof loadComments === 'function') {
-                    loadComments(data.postId);
+                
+                if (data.type === 'NEW_COMMENT') {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const currentPostId = urlParams.get('id');
+                    if (data.postId === currentPostId && typeof loadComments === 'function') {
+                        loadComments(data.postId);
+                    }
                 }
-            }
-        };
+            };
+
+            telepathySocket.onclose = () => {
+                console.warn("🔌 กระแสจิตหลุด! กำลังพยายามร่ายมนต์เชื่อมต่อใหม่ใน 5 วินาที...");
+                setTimeout(connectTelepathy, 5000); 
+            };
+            
+            telepathySocket.onerror = (err) => {
+                console.error("❌ กระแสจิตขัดข้อง:", err);
+            };
+        }
+
+        connectTelepathy();
 
         function broadcastAction(actionType, targetId, extraData = {}) {
-            if (telepathySocket.readyState === WebSocket.OPEN) {
+            if (telepathySocket && telepathySocket.readyState === WebSocket.OPEN) {
                 telepathySocket.send(JSON.stringify({
                     type: actionType,
                     targetId: targetId,

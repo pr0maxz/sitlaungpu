@@ -224,7 +224,6 @@ app.delete('/api/posts/:id', async (c) => {
   return c.json({ success: true })
 })
 
-// 🌟🌟 API กดไลก์กระทู้ (พร้อมบันทึกแจ้งเตือนกระแสจิตอัตโนมัติ) 🌟🌟
 app.post('/api/posts/:postId/like', async (c) => {
   const postId = c.req.param('postId')
   const body = await c.req.json().catch(() => ({}))
@@ -234,7 +233,6 @@ app.post('/api/posts/:postId/like', async (c) => {
     await c.env.DB.prepare("UPDATE posts SET likes = COALESCE(likes, 0) + 1 WHERE id = ?").bind(postId).run()
     const post: any = await c.env.DB.prepare("SELECT * FROM posts WHERE id = ?").bind(postId).first()
     
-    // ส่งกระแสจิตเตือนเจ้าของกระทู้ (ถ้าไม่ใช่คนเดียวกัน)
     if (post && post.author && post.author !== actor) {
       const notiId = Date.now().toString()
       const thaiMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.']
@@ -283,7 +281,6 @@ app.delete('/api/comments/:id', async (c) => {
   return c.json({ success: true })
 })
 
-// 🌟🌟 API กดไลก์คอมเมนต์ (พร้อมบันทึกแจ้งเตือนกระแสจิตอัตโนมัติ) 🌟🌟
 app.post('/api/comments/:commentId/like', async (c) => {
   const commentId = c.req.param('commentId')
   const body = await c.req.json().catch(() => ({}))
@@ -293,7 +290,6 @@ app.post('/api/comments/:commentId/like', async (c) => {
     await c.env.DB.prepare("UPDATE comments SET likes = COALESCE(likes, 0) + 1 WHERE id = ?").bind(commentId).run()
     const comment: any = await c.env.DB.prepare("SELECT * FROM comments WHERE id = ?").bind(commentId).first()
     
-    // ส่งกระแสจิตเตือนเจ้าของความเห็น (ถ้าไม่ใช่คนเดียวกัน)
     if (comment && comment.author && comment.author !== actor) {
       const notiId = Date.now().toString()
       const thaiMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.']
@@ -311,9 +307,6 @@ app.post('/api/comments/:commentId/like', async (c) => {
   }
 })
 
-// ==========================================
-// 🏠 CMS Index
-// ==========================================
 app.get('/api/cms', async (c) => {
   const cms = await c.env.DB.prepare("SELECT * FROM cms WHERE id = 1").first()
   return c.json(cms || {})
@@ -336,9 +329,6 @@ app.post('/api/cms', async (c) => {
   return c.json({ success: true })
 })
 
-// ==========================================
-// 🔔 ระบบกระแสจิต (Notifications)
-// ==========================================
 app.get('/api/notifications/:username', async (c) => {
   const username = c.req.param('username')
   try {
@@ -389,8 +379,10 @@ app.get('/api/ws', async (c) => {
   return stub.fetch(c.req.raw)
 })
 
+export default app
+
 // ==========================================
-// 🔮 Durable Object สำหรับ WebSocket Room
+// 🔮 Durable Object สำหรับกระจายคลื่นกระแสจิต (Broadcast)
 // ==========================================
 export class TelepathyRoom {
   state: DurableObjectState
@@ -402,28 +394,39 @@ export class TelepathyRoom {
   }
 
   async fetch(request: Request) {
-    const pair = new WebSocketPair()
-    const [client, server] = Object.values(pair)
+    if (request.headers.get("Upgrade") !== "websocket") {
+      return new Response("Expected Upgrade: websocket", { status: 426 });
+    }
 
-    this.sessions.add(server)
-    server.accept()
+    // แก้ไขวิธีดึง WebSocketPair ตามมาตรฐานที่ปลอดภัยของ Cloudflare
+    const webSocketPair = new WebSocketPair();
+    const client = webSocketPair[0];
+    const server = webSocketPair[1];
 
-    server.addEventListener('message', async (msg) => {
-      for (let session of this.sessions) {
+    this.sessions.add(server);
+    server.accept();
+
+    server.addEventListener('message', (event) => {
+      for (const session of this.sessions) {
         try {
-          session.send(msg.data)
+          session.send(event.data);
         } catch (e) {
-          this.sessions.delete(session)
+          this.sessions.delete(session);
         }
       }
-    })
+    });
 
     server.addEventListener('close', () => {
-      this.sessions.delete(server)
-    })
+      this.sessions.delete(server);
+    });
 
-    return new Response(null, { status: 101, webSocket: client })
+    server.addEventListener('error', () => {
+      this.sessions.delete(server);
+    });
+
+    return new Response(null, {
+      status: 101,
+      webSocket: client,
+    });
   }
 }
-
-export default app
