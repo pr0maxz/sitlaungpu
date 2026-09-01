@@ -76,11 +76,15 @@
         .btn-logout { display: block; width: 100%; background: transparent; color: #ff6b6b; border: 1px solid rgba(168, 46, 46, 0.5); padding: 8px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-size: 0.9rem; cursor: pointer; transition: all 0.3s; } 
         .btn-logout:hover { background: rgba(168, 46, 46, 0.1); border-color: #ff6b6b; }
 
-        .noti-wrapper { position: absolute; top: 12px; right: 12px; }
-        .noti-btn { background: transparent; border: none; font-size: 1.4rem; cursor: pointer; position: relative; transition: transform 0.3s; }
-        .noti-btn:hover { transform: scale(1.1); filter: drop-shadow(0 0 8px var(--gold-main)); }
-        .noti-badge { position: absolute; top: -5px; right: -5px; background: var(--danger-color); color: white; font-size: 0.65rem; font-weight: bold; border-radius: 50%; padding: 2px 5px; box-shadow: 0 0 5px rgba(0,0,0,0.5); }
-        .noti-dropdown { display: none; position: absolute; top: 35px; right: 0; width: 280px; background: rgba(15, 8, 3, 0.95); border: 1px solid var(--gold-dark); border-radius: 8px; box-shadow: 0 5px 20px rgba(0,0,0,0.9); z-index: 100; max-height: 350px; overflow-y: auto; text-align: left; }
+        /* 🌟 ระฆังทองคำโบราณ (Notification Bell SVG) */
+        .noti-wrapper { position: absolute; top: 12px; right: 12px; z-index: 50; }
+        .noti-btn { background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(7, 4, 2, 0.9)); border: 1px solid var(--gold-dark); border-radius: 50%; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; transition: all 0.4s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.6), inset 0 1px 2px rgba(255,255,255,0.2); padding: 0; }
+        .noti-btn:hover { border-color: var(--gold-main); transform: scale(1.1); box-shadow: 0 0 20px rgba(212, 175, 55, 0.6), inset 0 0 8px rgba(212, 175, 55, 0.4); }
+        .noti-btn svg { width: 20px; height: 20px; fill: var(--gold-light); filter: drop-shadow(0 0 4px rgba(212, 175, 55, 0.8)); transition: transform 0.3s ease; }
+        .noti-btn:hover svg { transform: rotate(15deg) scale(1.05); }
+        .noti-badge { position: absolute; top: -3px; right: -3px; background: linear-gradient(135deg, #ff6b6b, #a82e2e); color: white; font-size: 0.65rem; font-weight: bold; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 8px rgba(255, 107, 107, 0.8); border: 1px solid #ffeea8; }
+        
+        .noti-dropdown { display: none; position: absolute; top: 48px; right: 0; width: 280px; background: rgba(15, 8, 3, 0.95); border: 1px solid var(--gold-dark); border-radius: 8px; box-shadow: 0 5px 20px rgba(0,0,0,0.9); z-index: 100; max-height: 350px; overflow-y: auto; text-align: left; }
         .noti-dropdown.active { display: block; animation: fadeIn 0.2s ease; }
         .noti-header { padding: 10px; border-bottom: 1px solid rgba(138, 99, 21, 0.3); color: var(--gold-main); font-family: 'Prompt', sans-serif; font-size: 0.9rem; font-weight: bold; text-align: center; background: rgba(0,0,0,0.3); }
         .noti-item { padding: 12px 10px; border-bottom: 1px solid rgba(138, 99, 21, 0.2); font-size: 0.85rem; color: #d1bfae; cursor: pointer; transition: 0.3s; line-height: 1.4; display: flex; flex-direction: column; gap: 4px; }
@@ -167,8 +171,12 @@
 
             <div class="post-sidebar">
                 <div class="widget user-status-box">
+                    <!-- 🌟 ระฆังทองคำโบราณ -->
                     <div class="noti-wrapper" id="notiContainer" style="display: none;">
-                        <button class="noti-btn" onclick="toggleNotiDropdown()">🔔<span class="noti-badge" id="notiBadgeCount" style="display:none;">0</span></button>
+                        <button class="noti-btn" onclick="toggleNotiDropdown()" title="กระแสจิตเตือนภัย">
+                            <svg viewBox="0 0 24 24"><path d="M12 2C10.34 2 9 3.34 9 5V6.09C6.16 6.78 4 9.35 4 12.5V18L2 20V21H22V20L20 18V12.5C20 9.35 17.84 6.78 15 6.09V5C15 3.34 13.66 2 12 2M10 23H14C14 24.1 13.1 25 12 25C10.9 25 10 24.1 10 23Z"/></svg>
+                            <span class="noti-badge" id="notiBadgeCount" style="display:none;">0</span>
+                        </button>
                         <div class="noti-dropdown" id="notiDropdownBox">
                             <div class="noti-header">กระแสจิตเตือนภัย</div>
                             <div id="notiListContent">
@@ -288,7 +296,6 @@
                 } catch (error) { return { success: false }; }
             },
             
-            // 🌟 บรรจุคาถาที่ส่ง actor ไปกับ Body เรียบร้อยแล้ว
             async likePost(postId) {
                 try {
                     const actor = localStorage.getItem('siy_username') || 'วิญญาณเร่ร่อน';
@@ -330,9 +337,6 @@
             }
         };
 
-        // ==========================================
-        // 🌟 ฟังก์ชันจัดการกระแสจิต (Notifications)
-        // ==========================================
         function toggleNotiDropdown() {
             document.getElementById('notiDropdownBox').classList.toggle('active');
         }
@@ -397,9 +401,6 @@
             }
         }
 
-        // ==========================================
-        // 🌟 ฟังก์ชันจัดการอนุโมทนา (Likes)
-        // ==========================================
         async function likePostAction() {
             const urlParams = new URLSearchParams(window.location.search);
             const postId = urlParams.get('id');
@@ -455,9 +456,6 @@
             }
         }
 
-        // ==========================================
-        // ระบบพื้นฐานเดิม
-        // ==========================================
         let pendingConfirmAction = null;
         function showCustomConfirm(message, callback) {
             document.getElementById('customConfirmMessage').innerHTML = message;

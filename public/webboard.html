@@ -50,7 +50,6 @@
         
         .thread-details { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; } .thread-details span { color: #a69477; } .thread-stats { display: flex; gap: 15px; font-size: 0.85rem; color: #a69477; text-align: right; align-items: center; } .thread-stats .stat-box { display: flex; align-items: center; gap: 5px; min-width: 80px; justify-content: flex-start; }
         
-        /* 🌟 ปรับให้ widget มี position relative เพื่อวางกระดิ่ง */
         .widget { background: rgba(12, 7, 4, 0.7); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 8px; padding: 40px 20px 20px 20px; margin-top: 35px; margin-bottom: 40px; box-shadow: inset 0 0 15px rgba(0,0,0,0.8), 0 5px 15px rgba(0,0,0,0.5); position: relative; }
         .user-status-box { text-align: center; } .user-logged-in-profile { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; background: rgba(212, 175, 55, 0.05); padding: 12px; border-radius: 8px; border: 1px dashed var(--gold-dark); } .user-info-text { text-align: left; flex: 1; } .user-info-text h4 { color: var(--gold-light); font-size: 1.05rem; margin-bottom: 2px; text-shadow: 0 0 8px rgba(212,175,55,0.4); } .user-info-text p { color: var(--text-muted); font-size: 0.75rem; margin: 0; }
         
@@ -67,12 +66,15 @@
         .page-btn.active { background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; font-weight: bold; border-color: var(--gold-light); box-shadow: 0 0 12px rgba(212,175,55,0.5); }
         .page-btn:disabled { opacity: 0.4; cursor: not-allowed; border-color: rgba(138, 99, 21, 0.2); }
 
-        /* 🌟 ระบบกระแสจิต (Notification Dropdown) */
+        /* 🌟 ระฆังทองคำโบราณ (Notification Bell SVG) */
         .noti-wrapper { position: absolute; top: 12px; right: 12px; z-index: 50; }
-        .noti-btn { background: transparent; border: none; font-size: 1.4rem; cursor: pointer; position: relative; transition: transform 0.3s; padding: 0; }
-        .noti-btn:hover { transform: scale(1.1); filter: drop-shadow(0 0 8px var(--gold-main)); }
-        .noti-badge { position: absolute; top: -5px; right: -5px; background: var(--danger-color); color: white; font-size: 0.65rem; font-weight: bold; border-radius: 50%; padding: 2px 5px; box-shadow: 0 0 5px rgba(0,0,0,0.5); }
-        .noti-dropdown { display: none; position: absolute; top: 35px; right: 0; width: 280px; background: rgba(15, 8, 3, 0.95); border: 1px solid var(--gold-dark); border-radius: 8px; box-shadow: 0 5px 20px rgba(0,0,0,0.9); z-index: 100; max-height: 350px; overflow-y: auto; text-align: left; }
+        .noti-btn { background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(7, 4, 2, 0.9)); border: 1px solid var(--gold-dark); border-radius: 50%; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; transition: all 0.4s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.6), inset 0 1px 2px rgba(255,255,255,0.2); padding: 0; }
+        .noti-btn:hover { border-color: var(--gold-main); transform: scale(1.1); box-shadow: 0 0 20px rgba(212, 175, 55, 0.6), inset 0 0 8px rgba(212, 175, 55, 0.4); }
+        .noti-btn svg { width: 20px; height: 20px; fill: var(--gold-light); filter: drop-shadow(0 0 4px rgba(212, 175, 55, 0.8)); transition: transform 0.3s ease; }
+        .noti-btn:hover svg { transform: rotate(15deg) scale(1.05); }
+        .noti-badge { position: absolute; top: -3px; right: -3px; background: linear-gradient(135deg, #ff6b6b, #a82e2e); color: white; font-size: 0.65rem; font-weight: bold; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 8px rgba(255, 107, 107, 0.8); border: 1px solid #ffeea8; }
+        
+        .noti-dropdown { display: none; position: absolute; top: 48px; right: 0; width: 280px; background: rgba(15, 8, 3, 0.95); border: 1px solid var(--gold-dark); border-radius: 8px; box-shadow: 0 5px 20px rgba(0,0,0,0.9); z-index: 100; max-height: 350px; overflow-y: auto; text-align: left; }
         .noti-dropdown.active { display: block; animation: fadeIn 0.2s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
         .noti-header { padding: 10px; border-bottom: 1px solid rgba(138, 99, 21, 0.3); color: var(--gold-main); font-family: 'Prompt', sans-serif; font-size: 0.9rem; font-weight: bold; text-align: center; background: rgba(0,0,0,0.3); }
@@ -148,9 +150,12 @@
 
             <div class="board-sidebar">
                 <div class="widget user-status-box">
-                    <!-- 🌟 ส่วนไอคอนกระดิ่งแจ้งเตือน (กระแสจิต) -->
+                    <!-- 🌟 ระฆังทองคำโบราณ -->
                     <div class="noti-wrapper" id="notiContainer" style="display: none;">
-                        <button class="noti-btn" onclick="toggleNotiDropdown()">🔔<span class="noti-badge" id="notiBadgeCount" style="display:none;">0</span></button>
+                        <button class="noti-btn" onclick="toggleNotiDropdown()" title="กระแสจิตเตือนภัย">
+                            <svg viewBox="0 0 24 24"><path d="M12 2C10.34 2 9 3.34 9 5V6.09C6.16 6.78 4 9.35 4 12.5V18L2 20V21H22V20L20 18V12.5C20 9.35 17.84 6.78 15 6.09V5C15 3.34 13.66 2 12 2M10 23H14C14 24.1 13.1 25 12 25C10.9 25 10 24.1 10 23Z"/></svg>
+                            <span class="noti-badge" id="notiBadgeCount" style="display:none;">0</span>
+                        </button>
                         <div class="noti-dropdown" id="notiDropdownBox">
                             <div class="noti-header">กระแสจิตเตือนภัย</div>
                             <div id="notiListContent">
@@ -344,7 +349,6 @@
                 }
                 return [];
             },
-            // 🌟 เพิ่ม API ดึงข้อมูลแจ้งเตือนกระแสจิต
             async getNotifications(username) {
                 try {
                     const res = await fetch(`${API_CONFIG.BASE_URL}/notifications/${username}`);
@@ -356,9 +360,6 @@
             }
         };
 
-        // ==========================================
-        // 🌟 ฟังก์ชันจัดการกระแสจิต (Notifications)
-        // ==========================================
         function toggleNotiDropdown() {
             document.getElementById('notiDropdownBox').classList.toggle('active');
         }
@@ -414,7 +415,6 @@
             window.location.href = `post.html?id=${postId}`;
         }
 
-        // ปิด Dropdown แจ้งเตือนเมื่อคลิกพื้นที่อื่น
         window.onclick = function(event) {
             if (!event.target.matches('.noti-btn') && !event.target.closest('.noti-btn') && !event.target.closest('.noti-dropdown')) {
                 const dropdowns = document.getElementsByClassName("noti-dropdown");
@@ -427,7 +427,6 @@
             }
         }
 
-        // 🌟 โหลดการทำงานตอนเริ่มหน้า
         document.addEventListener('DOMContentLoaded', () => {
             loadAndRenderPosts();
             checkUserLoginStatus();
@@ -707,7 +706,6 @@
                         document.getElementById('displayUserBadge').innerHTML = await getRoleBadgeFromAPI(savedUser);
                     }
                     
-                    // 🌟 โหลดระบบแจ้งเตือน (กระแสจิต) เฉพาะศิษย์ที่มีตัวตน
                     loadNotifications();
                 }
                 
