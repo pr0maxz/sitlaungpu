@@ -1043,6 +1043,18 @@
             const postId = urlParams.get('id');
             const postData = await ApiManager.getPostById(postId);
             
+                        // 🌟 อาคมบันทึกรอยเท้าวิญญาณ (เพิ่มเข้าไปในไฟล์ post.html)
+            if (postData && postData.title) {
+                let viewHistory = JSON.parse(localStorage.getItem('siy_view_history') || '[]');
+                // ลบของเดิมออกถ้าซ้ำ เพื่อดันขึ้นไปอยู่บนสุด
+                viewHistory = viewHistory.filter(item => String(item.id) !== String(postId));
+                // บันทึกรอยเท้าใหม่ล่าสุดไว้หน้าสุด (เก็บแค่ ID และ ชื่อกระทู้)
+                viewHistory.unshift({ id: postId, title: postData.title });
+                // จำกัดให้จำแค่ 5 รอยเท้าล่าสุด
+                if (viewHistory.length > 5) viewHistory.pop();
+                localStorage.setItem('siy_view_history', JSON.stringify(viewHistory));
+            }
+
             if(!postData) {
                 showCustomAlert('อาถรรพ์บังตา... ไม่พบศิลาจารึกที่คุณค้นหา อาจถูกลบไปแล้ว', 'webboard.html'); return;
             }
