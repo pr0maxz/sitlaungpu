@@ -146,6 +146,40 @@
         animation: none !important;
     }
 }
+/* 🚀 อาคมลดภาระเครื่องขั้นเด็ดขาด (ลื่นปรี๊ด 100% บนแท็บเล็ตและมือถือ) */
+@media (max-width: 1200px), (hover: none) and (pointer: coarse) {
+    /* 1. ปลดล็อกพื้นหลัง fixed ตัวการที่ทำให้เลื่อนจอแล้วกระตุก */
+    body {
+        background-attachment: scroll !important;
+    }
+
+    /* 2. ซ่อนละอองเวทมนตร์ขนาดยักษ์ (200vw x 200vh) ทิ้งไปเลย เพราะกินแรมมหาศาล */
+    body::before, body::after {
+        display: none !important;
+    }
+
+    /* 3. ปิดกระจกฝ้า (Blur) และแสงเงาที่ต้องคำนวณหนักๆ */
+    .main-container {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        background-color: rgba(7, 4, 2, 0.98) !important;
+        animation: none !important;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.9) !important; /* เปลี่ยนเป็นเงาธรรมดาเบาๆ */
+    }
+    
+    /* 4. ปิดกรอบวิ่งสลับสี */
+    .main-container::before {
+        animation: none !important;
+        background: var(--gold-main) !important;
+        -webkit-mask: none !important;
+        padding: 1px;
+    }
+
+    /* 5. ปิดแอนิเมชันลูกเล่นจุกจิกทั้งหมด */
+    .corner-decor, .noti-btn, .loading-text, .hero-center-img {
+        animation: none !important;
+    }
+}
     </style>
 </head>
 <body>
