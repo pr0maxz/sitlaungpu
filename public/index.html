@@ -199,7 +199,7 @@
         .modal-header { text-align: center; margin-bottom: 25px; } .modal-header h3 { color: var(--gold-light); font-size: 1.6rem; margin-bottom: 5px; text-shadow: 0 2px 5px rgba(0,0,0,0.8); }
         .btn-submit-modal { background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; border: none; padding: 12px; border-radius: 6px; font-family: 'Prompt', sans-serif; font-weight: bold; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: all 0.3s; width: 80%; margin: 0 auto; display: block; }
         
-        @media (max-width: 850px) { .hero { flex-direction: column; text-align: center; padding: 0; } .hero-text { margin-bottom: 40px; } .main-container { padding: 30px 20px 40px 20px !important; width: 95%; } .wb-row { flex-direction: column; align-items: flex-start; gap: 10px; } .wb-meta { width: 100%; justify-content: space-between; } }
+        @media (max-width: 850px) { .hero { flex-direction: column; text-align: center; padding: 0; } .hero-text { margin-bottom: 40px; } .main-container { padding: 45px 20px 40px 20px !important; width: 95%; } .wb-row { flex-direction: column; align-items: flex-start; gap: 10px; } .wb-meta { width: 100%; justify-content: space-between; } }
         
         /* 🌟 4. กฎสำหรับหน้าจอมือถือ (ล็อคสัดส่วนเช่นกัน) */
         @media (max-width: 768px) {
@@ -207,6 +207,7 @@
                 height: 65px !important; /* ขนาดย่อสำหรับมือถือ */
             }
             nav { 
+                flex-wrap: nowrap !important; /* 🌟 ยันต์กันเมนูตกบรรทัด บังคับให้อยู่บรรทัดเดียว */
                 justify-content: flex-start; 
                 overflow-x: auto; 
                 scrollbar-width: none; 
@@ -259,7 +260,7 @@
         <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor corner-bottom-right" alt="ลายไทย" width="130" height="130">
 
         <header>
-            <div class="site-title"><img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019626/logo.png" alt="ศิษย์หลวงปู่"></div>
+            <h1 class="site-title"><img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019626/logo.png" alt="ศิษย์หลวงปู่"></h1>
             <nav>
                 <a href="index.html" class="active">หน้าแรก</a>
                 <a href="reader.html">สัตยาสาบาน</a>
