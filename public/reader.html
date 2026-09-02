@@ -40,8 +40,14 @@
         @keyframes containerPulse { 0% { box-shadow: 0 0 30px rgba(0,0,0,0.8), inset 0 0 20px rgba(212,175,55,0.02); } 50% { box-shadow: 0 0 50px rgba(212,175,55,0.15), inset 0 0 40px rgba(212,175,55,0.08); } 100% { box-shadow: 0 0 30px rgba(0,0,0,0.8), inset 0 0 20px rgba(212,175,55,0.02); } }
         @keyframes ringRotate { to { --ring-angle: 360deg; } }
         
-        /* 🌟 Responsive Container */
-        .main-container { position: relative; isolation: isolate; max-width: 1200px; width: 94%; margin: clamp(20px, 4vw, 40px) auto; padding: clamp(20px, 4vw, 40px) clamp(15px, 3vw, 30px) clamp(30px, 5vw, 60px) clamp(15px, 3vw, 30px); background-color: rgba(7, 4, 2, 0.85); border: 1px solid var(--gold-dark); border-radius: 16px; backdrop-filter: blur(10px); animation: containerPulse 6s infinite alternate; }
+        /* 🌟 Responsive Container พร้อมล็อค padding ด้านบน */
+        .main-container { 
+            position: relative; isolation: isolate; max-width: 1200px; width: 94%; 
+            margin: clamp(20px, 4vw, 40px) auto; 
+            padding: clamp(20px, 4vw, 40px) clamp(15px, 3vw, 30px) clamp(30px, 5vw, 60px) clamp(15px, 3vw, 30px); 
+            padding-top: 45px !important; /* ล็อคระยะขอบด้านบนให้เท่ากันทุกหน้า */
+            background-color: rgba(7, 4, 2, 0.85); border: 1px solid var(--gold-dark); border-radius: 16px; backdrop-filter: blur(10px); animation: containerPulse 6s infinite alternate; 
+        }
         .main-container::before { content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1px; background: conic-gradient(from var(--ring-angle), transparent 0deg, var(--gold-main) 25deg, transparent 70deg, transparent 180deg, var(--gold-light) 205deg, transparent 250deg, transparent 360deg); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: ringRotate 10s linear infinite; pointer-events: none; z-index: -1; }
         
         @keyframes bracketGlow { 0%, 100% { opacity: 0.7; filter: drop-shadow(0 0 2px rgba(212,175,55,0.3)); } 50% { opacity: 1; filter: drop-shadow(0 0 8px rgba(212,175,55,0.7)); } }
@@ -51,42 +57,94 @@
         .corner-bottom-left { bottom: 12px; left: 12px; transform: scaleX(-1) scaleY(-1); } 
         .corner-bottom-right { bottom: 12px; right: 12px; transform: scaleY(-1); }
         
-        /* 🌟 โค้ดมาตรฐาน: ส่วนหัว โลโก้ และแถบเมนู (ใช้ร่วมกันทุกหน้า) */
-        header { text-align: center; margin-bottom: 40px; position: relative; z-index: 10; }
-        .site-title { margin: 0 0 25px 0; line-height: 0; }
-        .site-title img { height: clamp(60px, 8vw, 100px); width: auto; filter: drop-shadow(0 5px 15px rgba(0,0,0,1)) drop-shadow(0 0 20px rgba(212,175,55,0.4)); }
+        /* 🌟 โค้ดมาตรฐาน: ล็อค Header และ Logo ให้อยู่กึ่งกลางเป๊ะ */
+        header { 
+            text-align: center; 
+            margin: 0 auto 40px auto !important; 
+            position: relative; 
+            z-index: 10; 
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .site-title { 
+            margin: 0 0 25px 0 !important; 
+            line-height: 0; 
+        }
+        .site-title img { 
+            height: 85px !important; /* ล็อคความสูงตายตัว ไม่ให้ดิ้น */
+            width: auto !important; 
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,1)) drop-shadow(0 0 20px rgba(212,175,55,0.4)); 
+        }
 
+        /* 🌟 โค้ดมาตรฐาน: ล็อค Navigation Bar ให้สูงและกว้างเท่ากันทุกหน้า */
         nav { 
-            display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; 
+            display: flex; 
+            flex-wrap: wrap; 
+            justify-content: center; 
+            align-items: center;
+            gap: 15px; 
             background: linear-gradient(to bottom, #1f1107, #070402); 
-            border: 1px solid var(--gold-dark); border-radius: 50px; 
-            padding: 10px 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.9); 
-            max-width: 800px; margin: 0 auto; 
+            border: 1px solid var(--gold-dark); 
+            border-radius: 50px; 
+            padding: 0 30px !important; 
+            box-shadow: 0 5px 20px rgba(0,0,0,0.9); 
+            width: 100%;
+            max-width: 800px !important; 
+            height: 55px !important; /* ล็อคความสูงแท็บเมนู */
+            margin: 0 auto !important; 
+            box-sizing: border-box;
         }
         nav a { 
-            color: var(--gold-light); text-decoration: none; 
-            font-size: clamp(0.95rem, 1.8vw, 1.05rem); 
-            padding: 5px 15px; transition: all 0.3s; position: relative; 
+            color: var(--gold-light); 
+            text-decoration: none; 
+            font-size: 1.05rem !important; /* ล็อคขนาดฟอนต์ให้ตายตัว */
+            padding: 5px 15px; 
+            transition: all 0.3s; 
+            position: relative; 
             white-space: nowrap; 
+            line-height: 1;
         }
-        nav a:hover, nav a.active { color: #fff; text-shadow: 0 0 10px var(--gold-main); }
+        nav a:hover, nav a.active { 
+            color: #fff; 
+            text-shadow: 0 0 10px var(--gold-main); 
+        }
         nav a::after { 
-            content: ''; position: absolute; bottom: -5px; left: 50%; 
-            transform: translateX(-50%); width: 0; height: 2px; 
-            background-color: var(--gold-main); transition: width 0.3s; 
+            content: ''; 
+            position: absolute; 
+            bottom: -10px; /* ปรับขีดสีทองให้อยู่ห่างจากตัวหนังสือพอดี */
+            left: 50%; 
+            transform: translateX(-50%); 
+            width: 0; 
+            height: 2px; 
+            background-color: var(--gold-main); 
+            transition: width 0.3s; 
         }
-        nav a:hover::after, nav a.active::after { width: 100%; }
+        nav a:hover::after, nav a.active::after { 
+            width: 100%; 
+        }
 
+        /* 🌟 โค้ดมาตรฐาน: กฎสำหรับหน้าจอมือถือ (ล็อคสัดส่วนเช่นกัน) */
         @media (max-width: 768px) {
+            .site-title img { 
+                height: 65px !important; /* ขนาดย่อสำหรับมือถือ */
+            }
             nav { 
-                flex-wrap: nowrap; justify-content: flex-start; 
-                overflow-x: auto; scrollbar-width: none; 
-                gap: 10px; padding: 12px 20px; border-radius: 40px; 
+                justify-content: flex-start; 
+                overflow-x: auto; 
+                scrollbar-width: none; 
+                border-radius: 40px; 
+                padding: 0 20px !important;
+                height: 50px !important; /* ลดความสูงลงนิดหน่อยบนมือถือ */
                 mask-image: linear-gradient(to right, transparent 0, black 20px, black calc(100% - 20px), transparent 100%);
                 -webkit-mask-image: linear-gradient(to right, transparent 0, black 20px, black calc(100% - 20px), transparent 100%);
             }
             nav::-webkit-scrollbar { display: none; }
-            nav a { flex-shrink: 0; }
+            nav a { 
+                font-size: 0.95rem !important; 
+                flex-shrink: 0;
+            }
         }
 
         .board-layout { display: flex; justify-content: center; margin-top: 10px; width: 100%; }
