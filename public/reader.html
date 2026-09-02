@@ -276,60 +276,31 @@ header { text-align: center; margin-bottom: clamp(25px, 5vw, 40px); position: re
             font-size: 1rem;
         }
 
-        /* 🚀 อาคมลดภาระเครื่อง (Optimization สำหรับแท็บเล็ตและมือถือ) */
-@media (max-width: 1024px) {
-    /* 1. ปิดกระจกฝ้า เปลี่ยนเป็นสีพื้นหลังแบบทึบขึ้นแทน */
-    .main-container {
-        backdrop-filter: none !important;
-        -webkit-backdrop-filter: none !important;
-        background-color: rgba(7, 4, 2, 0.98) !important;
-    }
-    
-    /* 2. หยุดกรอบแสงวิ่ง เปลี่ยนเป็นกรอบสีทองนิ่งๆ */
-    .main-container::before {
-        animation: none !important;
-        background: var(--gold-main) !important;
-        -webkit-mask: none !important;
-        padding: 1px;
-    }
-    
-    /* 3. หยุดละอองเวทมนตร์ลอยไปมา ให้หยุดนิ่งเป็นพื้นหลังธรรมดา */
-    body::before, body::after {
-        animation: none !important;
-    }
-
-    /* 4. หยุดการกะพริบของมุมลายไทยและลูกแก้วแจ้งเตือน */
-    .corner-decor, .noti-btn {
-        animation: none !important;
-    }
-}
-/* 🚀 อาคมลดภาระเครื่องขั้นเด็ดขาด (ลื่นปรี๊ด 100% บนแท็บเล็ตและมือถือ) */
+       /* 🚀 อาคมลดภาระเครื่องขั้นเด็ดขาด (ลื่นปรี๊ด 100% บนแท็บเล็ตและมือถือ) */
 @media (max-width: 1200px), (hover: none) and (pointer: coarse) {
     /* 1. ปลดล็อกพื้นหลัง fixed ตัวการที่ทำให้เลื่อนจอแล้วกระตุก */
     body {
         background-attachment: scroll !important;
     }
 
-    /* 2. ซ่อนละอองเวทมนตร์ขนาดยักษ์ (200vw x 200vh) ทิ้งไปเลย เพราะกินแรมมหาศาล */
+    /* 2. ซ่อนละอองเวทมนตร์ขนาดยักษ์ (200vw x 200vh) */
     body::before, body::after {
         display: none !important;
     }
 
-    /* 3. ปิดกระจกฝ้า (Blur) และแสงเงาที่ต้องคำนวณหนักๆ */
+    /* 3. ปิดกระจกฝ้า (Blur) และเพิ่มขอบสีทองแบบนิ่งๆ แทน */
     .main-container {
         backdrop-filter: none !important;
         -webkit-backdrop-filter: none !important;
         background-color: rgba(7, 4, 2, 0.98) !important;
         animation: none !important;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.9) !important; /* เปลี่ยนเป็นเงาธรรมดาเบาๆ */
+        box-shadow: 0 5px 15px rgba(0,0,0,0.9) !important;
+        border: 1px solid var(--gold-main) !important; /* วาดเส้นขอบตรงนี้แทน */
     }
     
-    /* 4. ปิดกรอบวิ่งสลับสี */
+    /* 4. ซ่อนตัวทำกรอบแสงวิ่ง (ต้นเหตุของพื้นหลังสีทอง) ปิดทิ้งไปเลย */
     .main-container::before {
-        animation: none !important;
-        background: var(--gold-main) !important;
-        -webkit-mask: none !important;
-        padding: 1px;
+        display: none !important;
     }
 
     /* 5. ปิดแอนิเมชันลูกเล่นจุกจิกทั้งหมด */

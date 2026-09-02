@@ -129,60 +129,31 @@
         @media (max-width: 850px) { .hero { flex-direction: column; text-align: center; padding: 0; } .hero-text { margin-bottom: 40px; } .main-container { padding: 30px 20px 40px 20px; width: 95%; } nav { flex-wrap: nowrap; justify-content: flex-start; overflow-x: auto; scrollbar-width: none; gap: 10px; padding: 14px 24px; border-radius: 40px; max-width: 100%; mask-image: linear-gradient(to right, transparent 0, black 24px, black calc(100% - 24px), transparent 100%); -webkit-mask-image: linear-gradient(to right, transparent 0, black 24px, black calc(100% - 24px), transparent 100%); } nav::-webkit-scrollbar { display: none; } nav a { white-space: nowrap; flex-shrink: 0; padding: 10px 20px; font-size: 1.15rem; } .wb-row { flex-direction: column; align-items: flex-start; gap: 10px; } .wb-meta { width: 100%; justify-content: space-between; } }
         @media (max-width: 400px) { nav { gap: 8px; padding: 12px 18px; } nav a { padding: 9px 16px; font-size: 1.05rem; } }
 
-        /* 🚀 อาคมลดภาระเครื่อง (Optimization สำหรับแท็บเล็ตและมือถือ) */
-@media (max-width: 1024px) {
-    /* 1. ปิดกระจกฝ้า เปลี่ยนเป็นสีพื้นหลังแบบทึบขึ้นแทน */
-    .main-container {
-        backdrop-filter: none !important;
-        -webkit-backdrop-filter: none !important;
-        background-color: rgba(7, 4, 2, 0.98) !important;
-    }
-    
-    /* 2. หยุดกรอบแสงวิ่ง เปลี่ยนเป็นกรอบสีทองนิ่งๆ */
-    .main-container::before {
-        animation: none !important;
-        background: var(--gold-main) !important;
-        -webkit-mask: none !important;
-        padding: 1px;
-    }
-    
-    /* 3. หยุดละอองเวทมนตร์ลอยไปมา ให้หยุดนิ่งเป็นพื้นหลังธรรมดา */
-    body::before, body::after {
-        animation: none !important;
-    }
-
-    /* 4. หยุดการกะพริบของมุมลายไทยและลูกแก้วแจ้งเตือน */
-    .corner-decor, .noti-btn {
-        animation: none !important;
-    }
-}
-/* 🚀 อาคมลดภาระเครื่องขั้นเด็ดขาด (ลื่นปรี๊ด 100% บนแท็บเล็ตและมือถือ) */
+        /* 🚀 อาคมลดภาระเครื่องขั้นเด็ดขาด (ลื่นปรี๊ด 100% บนแท็บเล็ตและมือถือ) */
 @media (max-width: 1200px), (hover: none) and (pointer: coarse) {
     /* 1. ปลดล็อกพื้นหลัง fixed ตัวการที่ทำให้เลื่อนจอแล้วกระตุก */
     body {
         background-attachment: scroll !important;
     }
 
-    /* 2. ซ่อนละอองเวทมนตร์ขนาดยักษ์ (200vw x 200vh) ทิ้งไปเลย เพราะกินแรมมหาศาล */
+    /* 2. ซ่อนละอองเวทมนตร์ขนาดยักษ์ (200vw x 200vh) */
     body::before, body::after {
         display: none !important;
     }
 
-    /* 3. ปิดกระจกฝ้า (Blur) และแสงเงาที่ต้องคำนวณหนักๆ */
+    /* 3. ปิดกระจกฝ้า (Blur) และเพิ่มขอบสีทองแบบนิ่งๆ แทน */
     .main-container {
         backdrop-filter: none !important;
         -webkit-backdrop-filter: none !important;
         background-color: rgba(7, 4, 2, 0.98) !important;
         animation: none !important;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.9) !important; /* เปลี่ยนเป็นเงาธรรมดาเบาๆ */
+        box-shadow: 0 5px 15px rgba(0,0,0,0.9) !important;
+        border: 1px solid var(--gold-main) !important; /* วาดเส้นขอบตรงนี้แทน */
     }
     
-    /* 4. ปิดกรอบวิ่งสลับสี */
+    /* 4. ซ่อนตัวทำกรอบแสงวิ่ง (ต้นเหตุของพื้นหลังสีทอง) ปิดทิ้งไปเลย */
     .main-container::before {
-        animation: none !important;
-        background: var(--gold-main) !important;
-        -webkit-mask: none !important;
-        padding: 1px;
+        display: none !important;
     }
 
     /* 5. ปิดแอนิเมชันลูกเล่นจุกจิกทั้งหมด */
