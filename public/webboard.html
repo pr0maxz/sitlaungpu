@@ -34,20 +34,44 @@
         .category-block { background: rgba(12, 7, 4, 0.7); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 8px; margin-top: 45px; margin-bottom: 40px; padding-top: 35px; box-shadow: inset 0 0 15px rgba(0,0,0,0.8), 0 5px 15px rgba(0,0,0,0.5); position: relative; }
         .category-posts-container { min-height: 250px; }
 
+        /* 🌟 คาถาลวงตา: Skeleton Loading Effect */
+        @keyframes shimmer {
+            0% { background-position: -500px 0; }
+            100% { background-position: 500px 0; }
+        }
+        .skeleton-row {
+            background: rgba(10, 5, 2, 0.4);
+            border-bottom: 1px solid rgba(138, 99, 21, 0.2);
+            padding: 15px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .skeleton-line {
+            border-radius: 4px;
+            background: linear-gradient(to right, rgba(138, 99, 21, 0.1) 8%, rgba(212, 175, 55, 0.15) 18%, rgba(138, 99, 21, 0.1) 33%);
+            background-size: 1000px 100%;
+            animation: shimmer 1.5s linear infinite forwards;
+        }
+        .skeleton-title { width: 65%; height: 22px; }
+        .skeleton-meta { width: 40%; height: 14px; }
+        @media (max-width: 600px) {
+            .skeleton-title { width: 85%; }
+            .skeleton-meta { width: 60%; }
+        }
+
         .thread-item { padding: 15px 20px; border-bottom: 1px solid rgba(138, 99, 21, 0.2); display: flex; align-items: center; gap: 15px; transition: background 0.3s; } .thread-item:last-child { border-bottom: none; } .thread-item:hover { background: rgba(212, 175, 55, 0.05); } .thread-content { flex: 1; } 
         .thread-title { color: var(--gold-light); font-family: 'Prompt', sans-serif; font-size: 1.05rem; font-weight: 500; text-decoration: none; display: block; margin-bottom: 5px; cursor: pointer; } .thread-title:hover { color: #fff; text-shadow: 0 0 8px var(--gold-main); } 
         
-        /* 🌟 สไตล์ป้ายยศเรืองแสงให้ตรงกับหน้า post.html ทุกประการ */
         .role-badge, .role-tag { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 0.75rem; font-family: 'Prompt', sans-serif; font-weight: 600; letter-spacing: 0.5px; vertical-align: middle; margin-left: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.6); }
         .role-1 { background: linear-gradient(135deg, #f5d77f, #d4af37, #8a6315); color: #1a0f02 !important; border: 1px solid #ffeea8; box-shadow: 0 0 12px rgba(212,175,55,0.8), inset 0 0 6px rgba(255,255,255,0.6); font-weight: 700; } 
         .role-2 { background: linear-gradient(135deg, #4a1c60, #240b36); color: #e5b3ff !important; border: 1px solid #9b59b6; box-shadow: 0 0 6px rgba(155,89,182,0.4); } 
         .role-3 { background: linear-gradient(135deg, #6c7a86, #262c30); color: #d6dfe5 !important; border: 1px solid #94a6b5; box-shadow: 0 0 6px rgba(148,166,181,0.4); } 
         .role-4 { background: linear-gradient(135deg, #8a4818, #422008); color: #e8a67c !important; border: 1px solid #b86226; box-shadow: 0 0 6px rgba(184,98,38,0.4); } 
-        .role-5 { background: rgba(138, 99, 21, 0.1); color: #a69477 !important; border: 1px solid #8a6315; } /* เด็กวัด: สไตล์เดียวกับหน้า post.html */
-        .role-6 { background: linear-gradient(135deg, #27ae60, #145a32); color: #abebc6 !important; border: 1px solid #2ecc71; box-shadow: 0 0 10px rgba(46,204,113,0.8); font-weight: 700; } /* ตัวละครพิเศษ */
+        .role-5 { background: rgba(138, 99, 21, 0.1); color: #a69477 !important; border: 1px solid #8a6315; } 
+        .role-6 { background: linear-gradient(135deg, #27ae60, #145a32); color: #abebc6 !important; border: 1px solid #2ecc71; box-shadow: 0 0 10px rgba(46,204,113,0.8); font-weight: 700; } 
         .role-guest { background: rgba(168, 46, 46, 0.15); color: #ff6b6b !important; border: 1px dashed #a82e2e; }
 
-        /* 🌟 หลอดพลังตบะ (Karma Progress Bar) */
         .karma-container { margin-top: 12px; background: rgba(0,0,0,0.6); padding: 10px; border-radius: 8px; border: 1px solid rgba(138, 99, 21, 0.2); text-align: center; width: 100%; box-sizing: border-box; }
         .karma-bar-bg { width: 100%; height: 6px; background: #1a120b; border-radius: 4px; overflow: hidden; margin-bottom: 6px; position: relative; box-shadow: inset 0 1px 3px rgba(0,0,0,0.8); }
         .karma-bar-fill { height: 100%; background: linear-gradient(90deg, var(--gold-dark), var(--gold-light)); border-radius: 4px; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 8px var(--gold-main); }
@@ -78,7 +102,6 @@
         .page-btn.active { background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; font-weight: bold; border-color: var(--gold-light); box-shadow: 0 0 12px rgba(212,175,55,0.5); }
         .page-btn:disabled { opacity: 0.4; cursor: not-allowed; border-color: rgba(138, 99, 21, 0.2); }
 
-        /* 🔮 ดวงแก้วกระแสจิต (Spirit Orb) อยู่ชิดขอบบนสุดระดับป้ายหัวข้อ */
         .noti-wrapper { position: absolute; top: -20px; right: 25px; z-index: 50; }
         .noti-btn { background: radial-gradient(circle, rgba(212, 175, 55, 0.25) 0%, rgba(7, 4, 2, 0.95) 80%); border: 1px solid var(--gold-main); border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; transition: all 0.4s ease; box-shadow: 0 0 12px rgba(212, 175, 55, 0.3), inset 0 0 6px rgba(245, 215, 127, 0.5); padding: 0; animation: orbPulse 3s infinite alternate; }
         @keyframes orbPulse { 0% { box-shadow: 0 0 6px rgba(212, 175, 55, 0.2), inset 0 0 3px rgba(245, 215, 127, 0.3); } 50% { box-shadow: 0 0 16px rgba(212, 175, 55, 0.6), inset 0 0 8px rgba(245, 215, 127, 0.8); } 100% { box-shadow: 0 0 6px rgba(212, 175, 55, 0.2), inset 0 0 3px rgba(245, 215, 127, 0.3); } }
@@ -163,7 +186,6 @@
 
             <div class="board-sidebar">
                 <div class="widget user-status-box">
-                    <!-- 🔮 ดวงแก้วกระแสจิต (Spirit Orb) อยู่ชิดขอบบนสุดระดับป้ายหัวข้อเรียบร้อย -->
                     <div class="noti-wrapper" id="notiContainer" style="display: none;">
                         <button class="noti-btn" onclick="toggleNotiDropdown()" title="กระแสจิตเตือนภัย">
                             <svg viewBox="0 0 24 24">
@@ -189,7 +211,6 @@
                                 <h4 id="displayUsername">นามแฝง</h4>
                                 <div id="displayUserBadge"></div>
                             </div>
-                            <!-- 🌟 หลอดพลังตบะ (Karma Bar) -->
                             <div id="karmaBarContainer" style="display: none; width: 100%;"></div>
                         </div>
                         <button onclick="handleLogout()" class="btn-logout" id="logoutBtnText">ออกจากระบบ (ลบตัวตน)</button>
@@ -354,6 +375,22 @@
             USE_REAL_API: true, 
             BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
         };
+
+        // ==========================================
+        // 🌟 คาถาลวงตา (Skeleton HTML Generator)
+        // ==========================================
+        function getSkeletonHTML(count) {
+            let html = '';
+            for(let i = 0; i < count; i++) {
+                html += `
+                    <div class="skeleton-row">
+                        <div class="skeleton-line skeleton-title"></div>
+                        <div class="skeleton-line skeleton-meta"></div>
+                    </div>
+                `;
+            }
+            return html;
+        }
 
         // ==========================================
         // ⚡ ระบบกระแสจิตเรียลไทม์ (WebSocket)
@@ -599,8 +636,9 @@
             const cat1Container = document.getElementById('dynamic-category-1');
             const cat2Container = document.getElementById('dynamic-category-2');
 
-            cat1Container.innerHTML = '<div class="loading-text">กำลังอัญเชิญจารึก...</div>';
-            cat2Container.innerHTML = '<div class="loading-text">กำลังอัญเชิญจารึก...</div>';
+            // 🌟 แสดงผล Skeleton ทันทีขณะรออัญเชิญจารึก
+            cat1Container.innerHTML = getSkeletonHTML(5);
+            cat2Container.innerHTML = getSkeletonHTML(5);
             
             document.getElementById('pagination-cat-1').innerHTML = '';
             document.getElementById('pagination-cat-2').innerHTML = '';
@@ -746,7 +784,6 @@
                             let rankTitle = currentUser.rank_name || getRoleTitleName(currentUser.role);
                             document.getElementById('displayUserBadge').innerHTML = `<span class="role-badge ${roleClass}">${rankTitle}</span>`;
                             
-                            // 🌟 เรนเดอร์หลอดพลังตบะ (เฉพาะ user ทั่วไป ไม่ใช่แอดมิน ปรมัตถ์ หรือยศ ตัวละคร)
                             if (String(currentUser.role) !== '1' && currentUser.rank_name !== 'ตัวละคร') {
                                 let karma = currentUser.karma || 0;
                                 let nextTarget = 11, minKarma = 0;
