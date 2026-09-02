@@ -99,6 +99,25 @@
         nav a:hover::after, nav a.active::after { 
             width: 100%; 
         }
+
+        /* 🌟 อักขระเรียกขาน (User Mention Tag) */
+        .user-mention {
+            color: var(--gold-main);
+            background: rgba(212, 175, 55, 0.1);
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            text-shadow: 0 0 8px rgba(212, 175, 55, 0.4);
+            border: 1px dashed var(--gold-dark);
+            transition: all 0.3s ease;
+            font-family: 'Prompt', sans-serif;
+        }
+        .user-mention:hover {
+            background: rgba(212, 175, 55, 0.25);
+            color: #fff;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
         
         /* 🌟 ปรับปรุง Layout ให้ยืดหยุ่น ป้องกันกรอบทะลุ */
         .board-layout { display: grid; grid-template-columns: 2.2fr 1fr; gap: 25px; margin-top: 10px; width: 100%; box-sizing: border-box; }
@@ -502,6 +521,15 @@
         };
 
         // ==========================================
+        // 🌟 ฟังก์ชันแปลง @ชื่อ ให้กลายเป็นป้ายเรืองแสง
+        // ==========================================
+        function formatMentions(text) {
+            if(!text) return '';
+            const mentionRegex = /@([ก-๙a-zA-Z0-9_-]+)/g;
+            return text.replace(mentionRegex, '<span class="user-mention">@$1</span>');
+        }
+
+        // ==========================================
         // 🌟 คาถาลวงตา (Skeleton HTML Generator)
         // ==========================================
         function getSkeletonHTML(count) {
@@ -603,6 +631,8 @@
                 if (n.action_type === 'reply') actionText = 'ได้ตอบกลับข้อความของท่าน';
                 if (n.action_type === 'like_post') actionText = 'ได้ร่วมอนุโมทนาในกระทู้ของท่าน';
                 if (n.action_type === 'like_comment') actionText = 'ได้ร่วมอนุโมทนาในความเห็นของท่าน';
+                // 🌟 แจ้งเตือนเมื่อถูกกล่าวถึง
+                if (n.action_type === 'mention') actionText = 'ได้เอ่ยนามเรียกขานท่าน (Mention)';
 
                 const isUnreadClass = String(n.is_read) === '0' ? 'unread' : '';
                 
@@ -640,7 +670,7 @@
         }
 
         // ==========================================
-        // 🌟 ฟังก์ชันเรนเดอร์ "รอยเท้าวิญญาณ" (Recently Viewed) ป้องกันกล่องทะลุ
+        // 🌟 ฟังก์ชันเรนเดอร์ "รอยเท้าวิญญาณ" (Recently Viewed)
         // ==========================================
         function renderViewHistory() {
             const history = JSON.parse(localStorage.getItem('siy_view_history') || '[]');
@@ -656,9 +686,10 @@
             container.innerHTML = '';
             
             history.forEach(item => {
+                const displayTitle = formatMentions(item.title); // แปลงชื่อกระทู้ในประวัติให้เรืองแสงด้วย
                 container.innerHTML += `
                     <a href="post.html?id=${item.id}" style="display: block; width: 100%; box-sizing: border-box; overflow: hidden; padding: 12px 15px; background: rgba(0,0,0,0.4); border: 1px dashed rgba(138, 99, 21, 0.3); border-radius: 6px; text-decoration: none; color: var(--gold-light); font-size: 0.9rem; transition: 0.3s;" onmouseover="this.style.borderColor='var(--gold-main)'; this.style.background='rgba(212,175,55,0.05)'" onmouseout="this.style.borderColor='rgba(138, 99, 21, 0.3)'; this.style.background='rgba(0,0,0,0.4)'">
-                        <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: 'Prompt', sans-serif; width: 100%;">${item.title}</div>
+                        <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: 'Prompt', sans-serif; width: 100%;">${displayTitle}</div>
                     </a>
                 `;
             });
@@ -787,7 +818,6 @@
             const cat1Container = document.getElementById('dynamic-category-1');
             const cat2Container = document.getElementById('dynamic-category-2');
 
-            // 🌟 แสดงผล Skeleton ทันทีขณะรออัญเชิญจารึก
             cat1Container.innerHTML = getSkeletonHTML(5);
             cat2Container.innerHTML = getSkeletonHTML(5);
             
@@ -854,11 +884,14 @@
             for (let post of postsToShow) {
                 const pinTag = checkIsPinned(post.pinned) ? '<span class="wb-tag wb-tag-pin">📌 ปักหมุด</span> ' : '';
                 const authorBadge = await getRoleBadgeFromAPI(post.author);
+                
+                // 🌟 หากมีคนใช้ @ชื่อ ในหัวข้อกระทู้ ระบบก็จะแสดงผลแบบเรืองแสง
+                const displayTitle = formatMentions(post.title);
 
                 const postHTML = `
                     <div class="thread-item">
                         <div class="thread-content">
-                            <a onclick="checkAccessAndGo('post.html?id=${post.id}')" class="thread-title">${pinTag}${post.title}</a>
+                            <a onclick="checkAccessAndGo('post.html?id=${post.id}')" class="thread-title">${pinTag}${displayTitle}</a>
                             <div class="thread-details">โดย <span>${post.author}</span> ${authorBadge} | อัปเดตล่าสุด: ${post.timestamp ? post.timestamp.split('|')[0].trim() : '-'}</div>
                         </div>
                         <div class="thread-stats">

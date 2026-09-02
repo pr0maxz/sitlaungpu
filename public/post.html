@@ -24,14 +24,106 @@
         @keyframes containerPulse { 0% { box-shadow: 0 0 30px rgba(0,0,0,0.8), inset 0 0 20px rgba(212,175,55,0.02); } 50% { box-shadow: 0 0 50px rgba(212,175,55,0.15), inset 0 0 40px rgba(212,175,55,0.08); } 100% { box-shadow: 0 0 30px rgba(0,0,0,0.8), inset 0 0 20px rgba(212,175,55,0.02); } }
         @keyframes ringRotate { to { --ring-angle: 360deg; } }
         
-        .main-container { position: relative; isolation: isolate; max-width: 1200px; width: 92%; margin: 40px auto; padding: 40px 30px; background-color: rgba(7, 4, 2, 0.85); border: 1px solid var(--gold-dark); border-radius: 16px; backdrop-filter: blur(10px); box-sizing: border-box; animation: containerPulse 6s infinite alternate; }
+        /* 🌟 1. ล็อคระยะขอบด้านบนของกล่องหลักให้เท่ากันทุกหน้า */
+        .main-container { 
+            position: relative; isolation: isolate; max-width: 1200px; width: 92%; 
+            margin: 40px auto; 
+            padding: 45px 30px 60px 30px !important; /* ล็อค padding-top เป็น 45px */
+            background-color: rgba(7, 4, 2, 0.85); border: 1px solid var(--gold-dark); border-radius: 16px; backdrop-filter: blur(10px); box-sizing: border-box; animation: containerPulse 6s infinite alternate; 
+        }
         .main-container::before { content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1px; background: conic-gradient(from var(--ring-angle), transparent 0deg, var(--gold-main) 25deg, transparent 70deg, transparent 180deg, var(--gold-light) 205deg, transparent 250deg, transparent 360deg); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: ringRotate 10s linear infinite; pointer-events: none; z-index: -1; }
         
         @keyframes bracketGlow { 0%, 100% { opacity: 0.7; filter: drop-shadow(0 0 2px rgba(212,175,55,0.3)); } 50% { opacity: 1; filter: drop-shadow(0 0 8px rgba(212,175,55,0.7)); } }
         .corner-decor { position: absolute; width: clamp(60px, 8vw, 110px); height: clamp(60px, 8vw, 110px); z-index: 20; pointer-events: none; animation: bracketGlow 3s ease-in-out infinite; }
         .corner-top-left { top: 12px; left: 12px; transform: scaleX(-1); } .corner-top-right { top: 12px; right: 12px; } .corner-bottom-left { bottom: 12px; left: 12px; transform: scaleX(-1) scaleY(-1); } .corner-bottom-right { bottom: 12px; right: 12px; transform: scaleY(-1); }
         
-        header { text-align: center; margin-bottom: 40px; } .site-title img { height: clamp(60px, 8vw, 100px); width: auto; filter: drop-shadow(0 0 20px rgba(212,175,55,0.4)); }
+        /* 🌟 2. ล็อค Header และ Logo ให้อยู่กึ่งกลางเป๊ะ */
+        header { 
+            text-align: center; 
+            margin: 0 auto 40px auto !important; 
+            position: relative; 
+            z-index: 10; 
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .site-title { 
+            margin: 0 0 25px 0 !important; 
+            line-height: 0; 
+        }
+        .site-title img { 
+            height: 85px !important; /* ล็อคความสูงตายตัว ไม่ให้ดิ้น */
+            width: auto !important; 
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,1)) drop-shadow(0 0 20px rgba(212,175,55,0.4)); 
+        }
+
+        /* 🌟 3. ล็อค Navigation Bar ให้สูงและกว้างเท่ากันทุกหน้า */
+        nav { 
+            display: flex; 
+            flex-wrap: wrap; 
+            justify-content: center; 
+            align-items: center;
+            gap: 15px; 
+            background: linear-gradient(to bottom, #1f1107, #070402); 
+            border: 1px solid var(--gold-dark); 
+            border-radius: 50px; 
+            padding: 0 30px !important; 
+            box-shadow: 0 5px 20px rgba(0,0,0,0.9); 
+            width: 100%;
+            max-width: 800px !important; 
+            height: 55px !important; /* ล็อคความสูงแท็บเมนู */
+            margin: 0 auto !important; 
+            box-sizing: border-box;
+        }
+        nav a { 
+            color: var(--gold-light); 
+            text-decoration: none; 
+            font-size: 1.05rem !important; /* ล็อคขนาดฟอนต์ให้ตายตัว */
+            padding: 5px 15px; 
+            transition: all 0.3s; 
+            position: relative; 
+            white-space: nowrap; 
+            line-height: 1;
+        }
+        nav a:hover, nav a.active { 
+            color: #fff; 
+            text-shadow: 0 0 10px var(--gold-main); 
+        }
+        nav a::after { 
+            content: ''; 
+            position: absolute; 
+            bottom: -10px; /* ปรับขีดสีทองให้อยู่ห่างจากตัวหนังสือพอดี */
+            left: 50%; 
+            transform: translateX(-50%); 
+            width: 0; 
+            height: 2px; 
+            background-color: var(--gold-main); 
+            transition: width 0.3s; 
+        }
+        nav a:hover::after, nav a.active::after { 
+            width: 100%; 
+        }
+
+        /* 🌟 อักขระเรียกขาน (User Mention Tag) */
+        .user-mention {
+            color: var(--gold-main);
+            background: rgba(212, 175, 55, 0.1);
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            text-shadow: 0 0 8px rgba(212, 175, 55, 0.4);
+            border: 1px dashed var(--gold-dark);
+            transition: all 0.3s ease;
+            font-family: 'Prompt', sans-serif;
+        }
+        .user-mention:hover {
+            background: rgba(212, 175, 55, 0.25);
+            color: #fff;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
+
         .post-layout { display: grid; grid-template-columns: 2.2fr 1fr; gap: 25px; margin-top: 10px; width: 100%; }
         .breadcrumb { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 20px; } .breadcrumb a { color: var(--gold-light); text-decoration: none; }
         .btn-back { display: inline-flex; align-items: center; gap: 8px; color: var(--gold-light); text-decoration: none; margin-bottom: 20px; font-size: 0.95rem; }
@@ -127,8 +219,8 @@
         .role-guest { background-color: rgba(168, 46, 46, 0.15); color: #ff6b6b !important; border: 1px dashed #a82e2e; box-shadow: none; }
 
         .sect-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(7, 4, 2, 0.9); backdrop-filter: blur(8px); z-index: 1000; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; } .sect-modal-overlay.active { display: flex; opacity: 1; }
-        .sect-modal-content { position: relative; background: linear-gradient(135deg, #1a120b, #0a0603); border: 1px solid var(--gold-main); border-radius: 12px; width: 90%; max-width: 450px; padding: 40px 30px 60px 30px; box-shadow: 0 15px 40px rgba(0,0,0,0.9), inset 0 0 20px rgba(212,175,55,0.1); transform: translateY(-20px); transition: transform 0.3s ease; } .sect-modal-overlay.active .sect-modal-content { transform: translateY(0); }
-        .modal-corner { position: absolute; width: 60px; height: 60px; pointer-events: none; opacity: 0.8; } .mc-top-left { top: 12px; left: 12px; transform: scaleX(-1); } .mc-top-right { top: 12px; right: 12px; } .mc-bottom-left { bottom: 12px; left: 12px; transform: scaleX(-1) scaleY(-1); } .mc-bottom-right { bottom: 12px; right: 12px; transform: scaleY(-1); }
+        .sect-modal-content { position: relative; background: linear-gradient(135deg, #1a120b, #0a0603); border: 1px solid var(--gold-main); border-radius: 12px; width: 90%; max-width: 450px; padding: 40px 30px 60px 30px; box-shadow: 0 15px 40px rgba(0,0,0,0.9), inset 0 0 20px rgba(212,175,55,0.1); transform: translateY(-20px); transition: transform 0.3s ease; box-sizing: border-box; } .sect-modal-overlay.active .sect-modal-content { transform: translateY(0); }
+        .modal-corner { position: absolute; width: 60px; height: 60px; pointer-events: none; opacity: 0.8; } .mc-top-left { top: 12px; left: 12px; transform: scaleX(-1); } .mc-top-right { top: 12px; right: 12px; } .mc-bottom-left { bottom: 12px; left: 12px; transform: scaleX(-1 scaleY(-1); } .mc-bottom-right { bottom: 12px; right: 12px; transform: scaleY(-1); }
         .btn-submit-modal { background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; border: none; padding: 12px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-weight: bold; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: all 0.3s; width: 80%; margin: 0 auto; display: block; }
         .form-select { width: 100%; background: rgba(0,0,0,0.6); border: 1px solid rgba(138, 99, 21, 0.5); color: #fff; padding: 12px 15px; border-radius: 6px; font-size: 1rem; margin-bottom: 20px; font-family: 'Sarabun', sans-serif; } .form-select option { background: #1a120b; }
 
@@ -174,56 +266,85 @@
             justify-content: center;
         }
 
+        /* 🌟 โค้ดมาตรฐาน: กฎสำหรับหน้าจอมือถือ (ล็อคสัดส่วนเช่นกัน) */
         @media (max-width: 950px) { .post-layout { grid-template-columns: 1fr; } .replies-container { margin-left: 10px; border-left-width: 1px; } .comment-card.is-reply::before { width: 10px; left: -11px; } }
+        @media (max-width: 768px) {
+            .site-title img { 
+                height: 65px !important; /* ขนาดย่อสำหรับมือถือ */
+            }
+            nav { 
+                flex-wrap: nowrap !important; /* 🌟 ยันต์กันเมนูตกบรรทัด บังคับให้อยู่บรรทัดเดียว */
+                justify-content: flex-start; 
+                overflow-x: auto; 
+                scrollbar-width: none; 
+                border-radius: 40px; 
+                padding: 0 20px !important;
+                height: 50px !important; /* ลดความสูงลงนิดหน่อยบนมือถือ */
+                mask-image: linear-gradient(to right, transparent 0, black 20px, black calc(100% - 20px), transparent 100%);
+                -webkit-mask-image: linear-gradient(to right, transparent 0, black 20px, black calc(100% - 20px), transparent 100%);
+            }
+            nav::-webkit-scrollbar { display: none; }
+            nav a { 
+                font-size: 0.95rem !important; 
+                flex-shrink: 0;
+            }
+        }
+        @media (max-width: 600px) { .main-container { padding: 45px 20px 40px 20px !important; width: 95%; margin-top: 30px; } }
         @media (max-width: 480px) { .ghost-btn-group { flex-direction: column; } .ghost-btn-group > * { width: 100%; max-width: 100%; flex: 1 1 100%; } }
         
         .loading-text { font-family: 'Prompt', sans-serif; color: var(--gold-main); animation: pulse 1.5s infinite alternate; text-align: center; padding: 40px; }
         @keyframes pulse { from { opacity: 0.5; } to { opacity: 1; text-shadow: 0 0 10px var(--gold-main); } }
 
         /* 🚀 อาคมลดภาระเครื่องขั้นเด็ดขาด (ลื่นปรี๊ด 100% บนแท็บเล็ตและมือถือ) */
-@media (max-width: 1200px), (hover: none) and (pointer: coarse) {
-    /* 1. ปลดล็อกพื้นหลัง fixed ตัวการที่ทำให้เลื่อนจอแล้วกระตุก */
-    body {
-        background-attachment: scroll !important;
-    }
+        @media (max-width: 1200px), (hover: none) and (pointer: coarse) {
+            /* 1. ปลดล็อกพื้นหลัง fixed ตัวการที่ทำให้เลื่อนจอแล้วกระตุก */
+            body {
+                background-attachment: scroll !important;
+            }
 
-    /* 2. ซ่อนละอองเวทมนตร์ขนาดยักษ์ (200vw x 200vh) */
-    body::before, body::after {
-        display: none !important;
-    }
+            /* 2. ซ่อนละอองเวทมนตร์ขนาดยักษ์ (200vw x 200vh) */
+            body::before, body::after {
+                display: none !important;
+            }
 
-    /* 3. ปิดกระจกฝ้า (Blur) และเพิ่มขอบสีทองแบบนิ่งๆ แทน */
-    .main-container {
-        backdrop-filter: none !important;
-        -webkit-backdrop-filter: none !important;
-        background-color: rgba(7, 4, 2, 0.98) !important;
-        animation: none !important;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.9) !important;
-        border: 1px solid var(--gold-main) !important; /* วาดเส้นขอบตรงนี้แทน */
-    }
-    
-    /* 4. ซ่อนตัวทำกรอบแสงวิ่ง (ต้นเหตุของพื้นหลังสีทอง) ปิดทิ้งไปเลย */
-    .main-container::before {
-        display: none !important;
-    }
+            /* 3. ปิดกระจกฝ้า (Blur) และเพิ่มขอบสีทองแบบนิ่งๆ แทน */
+            .main-container {
+                backdrop-filter: none !important;
+                -webkit-backdrop-filter: none !important;
+                background-color: rgba(7, 4, 2, 0.98) !important;
+                animation: none !important;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.9) !important;
+                border: 1px solid var(--gold-main) !important; /* วาดเส้นขอบตรงนี้แทน */
+            }
+            
+            /* 4. ซ่อนตัวทำกรอบแสงวิ่ง (ต้นเหตุของพื้นหลังสีทอง) ปิดทิ้งไปเลย */
+            .main-container::before {
+                display: none !important;
+            }
 
-    /* 5. ปิดแอนิเมชันลูกเล่นจุกจิกทั้งหมด */
-    .corner-decor, .noti-btn, .loading-text, .hero-center-img {
-        animation: none !important;
-    }
-}
+            /* 5. ปิดแอนิเมชันลูกเล่นจุกจิกทั้งหมด */
+            .corner-decor, .noti-btn, .loading-text, .hero-center-img {
+                animation: none !important;
+            }
+        }
     </style>
 </head>
 <body>
 
     <div class="main-container">
-        <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor corner-top-left" alt="" width="110" height="110">
-        <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor corner-top-right" alt="" width="110" height="110">
-        <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor corner-bottom-left" alt="" width="110" height="110">
-        <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor corner-bottom-right" alt="" width="110" height="110">
+        <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="corner-decor corner-top-left" alt="" width="110" height="110">
+        <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="corner-decor corner-top-right" alt="" width="110" height="110">
+        <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="corner-decor corner-bottom-left" alt="" width="110" height="110">
+        <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="corner-decor corner-bottom-right" alt="" width="110" height="110">
 
         <header>
             <div class="site-title"><img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019626/logo.png" alt="ศิษย์หลวงปู่" width="300" height="100"></div>
+            <nav>
+                <a href="index.html">หน้าแรก</a>
+                <a href="reader.html">สัตยาสาบาน</a>
+                <a href="webboard.html" class="active">ลานเสวนา</a>
+                <a href="admin_login.html" style="color: var(--gold-dark);">ประตูสู่เมืองลับแล</a>
+            </nav>
         </header>
 
         <div class="post-layout">
@@ -362,6 +483,23 @@
         };
 
         let currentPostAuthorGlobal = ''; 
+
+        // ==========================================
+        // 🌟 ฟังก์ชันแปลง @ชื่อ ให้กลายเป็นป้ายเรืองแสง
+        // ==========================================
+        function formatMentions(text) {
+            const mentionRegex = /@([ก-๙a-zA-Z0-9_-]+)/g;
+            return text.replace(mentionRegex, '<span class="user-mention">@$1</span>');
+        }
+
+        // ==========================================
+        // 🌟 ฟังก์ชันดึงรายชื่อคนที่ถูก Tag ออกมาเป็น Array เพื่อส่งเข้า Database
+        // ==========================================
+        function extractMentions(text) {
+            const mentionRegex = /@([ก-๙a-zA-Z0-9_-]+)/g;
+            const matches = [...text.matchAll(mentionRegex)];
+            return [...new Set(matches.map(m => m[1]))]; 
+        }
 
         // ==========================================
         // ⚡ ระบบกระแสจิตเรียลไทม์ (WebSocket) แบบป้องกันเบิ้ล
@@ -547,6 +685,8 @@
                 if (n.action_type === 'reply') actionText = 'ได้ตอบกลับข้อความของท่าน';
                 if (n.action_type === 'like_post') actionText = 'ได้ร่วมอนุโมทนาในกระทู้ของท่าน';
                 if (n.action_type === 'like_comment') actionText = 'ได้ร่วมอนุโมทนาในความเห็นของท่าน';
+                // 🌟 ให้เติมบรรทัดนี้เพิ่มเข้าไปครับ 🌟
+                if (n.action_type === 'mention') actionText = 'ได้เอ่ยนามเรียกขานท่าน (Mention)';
 
                 const isUnreadClass = String(n.is_read) === '0' ? 'unread' : '';
                 
@@ -794,6 +934,9 @@
                 for (const c of mainComments) {
                     const badge = formatBadgeFromUsersMap(c.author, usersMap);
                     let cleanMainContent = c.content.replace(/^\[REPLY_TO:[^\]]+\](?:\[AUTHOR:[^\]]+\])?/, '');
+                    
+                    // 🌟 นำฟังก์ชัน formatMentions มาครอบข้อความคอมเมนต์หลักที่นี่
+                    cleanMainContent = formatMentions(cleanMainContent);
 
                     let adminControls = isUserAdmin ? `<button type="button" class="btn-delete-comment" onclick="deleteCommentAction('${c.id}', '${postId}')">🗑️ ทำลาย</button>` : '';
                     let replyBtn = (userType !== 'guest') ? `<button type="button" class="btn-reply-comment" onclick="toggleReplyBox('${c.id}')">💬 ตอบกลับ</button>` : '';
@@ -819,6 +962,9 @@
                             let authorMatch = r.content.match(/\[AUTHOR:([^\]]+)\]/);
                             let repliedTo = authorMatch ? authorMatch[1] : c.author;
                             let cleanReplyContent = r.content.replace(/^\[REPLY_TO:[^\]]+\](?:\[AUTHOR:[^\]]+\])?/, '');
+                            
+                            // 🌟 นำฟังก์ชัน formatMentions มาครอบข้อความตอบกลับที่นี่
+                            cleanReplyContent = formatMentions(cleanReplyContent);
                             
                             const rIsLiked = likedComments.includes(String(r.id)) ? 'liked' : '';
                             let rLikeBtn = `<button type="button" class="btn-like ${rIsLiked}" id="btn-like-comment-${r.id}" onclick="likeCommentAction('${r.id}')">🙏 อนุโมทนา (<span id="comment-like-count-${r.id}">${r.likes || 0}</span>)</button>`;
@@ -955,7 +1101,22 @@
                 if(result && result.success !== false) {
                     textarea.value = ''; 
                     
-                    if (currentPostAuthorGlobal && currentPostAuthorGlobal !== author) {
+                    // 🌟 ค้นหาคนที่ถูก Mention และส่งแจ้งเตือน
+                    const mentionedUsers = extractMentions(content);
+                    for (const mentionedUser of mentionedUsers) {
+                        if (mentionedUser !== author) { // ไม่ส่งแจ้งเตือนหาตัวเอง
+                            await ApiManager.sendNotification({
+                                id: Date.now().toString() + Math.floor(Math.random() * 1000), // สุ่ม ID กันซ้ำ
+                                recipient: mentionedUser,
+                                actor: author,
+                                action_type: 'mention', // ส่ง action_type เป็น mention
+                                post_id: postId,
+                                timestamp: timeStr
+                            });
+                        }
+                    }
+                    
+                    if (currentPostAuthorGlobal && currentPostAuthorGlobal !== author && !mentionedUsers.includes(currentPostAuthorGlobal)) {
                         await ApiManager.sendNotification({
                             id: Date.now().toString(),
                             recipient: currentPostAuthorGlobal,
@@ -1016,7 +1177,22 @@
                 if(result && result.success !== false) {
                     textarea.value = '';
 
-                    if (parentAuthor && parentAuthor !== author) {
+                    // 🌟 ค้นหาคนที่ถูก Mention และส่งแจ้งเตือนในฝั่ง Reply ด้วย
+                    const mentionedUsers = extractMentions(content);
+                    for (const mentionedUser of mentionedUsers) {
+                        if (mentionedUser !== author) { 
+                            await ApiManager.sendNotification({
+                                id: Date.now().toString() + Math.floor(Math.random() * 1000), 
+                                recipient: mentionedUser,
+                                actor: author,
+                                action_type: 'mention', 
+                                post_id: postId,
+                                timestamp: timeStr
+                            });
+                        }
+                    }
+
+                    if (parentAuthor && parentAuthor !== author && !mentionedUsers.includes(parentAuthor)) {
                         await ApiManager.sendNotification({
                             id: Date.now().toString(),
                             recipient: parentAuthor,
@@ -1097,7 +1273,10 @@
             document.getElementById('pageTitle').textContent = postData.title + ' - ศิษย์หลวงปู่';
             document.getElementById('dyn-category').textContent = (postData.category === "1" ? "นิยายสัตยาสาบาน" : "คุยกับศิษย์หลวงปู่");
             document.getElementById('dyn-title').textContent = postData.title;
-            document.getElementById('dyn-content').innerHTML = postData.content;
+            
+            // 🌟 นำฟังก์ชัน formatMentions มาครอบเนื้อหากระทู้หลักด้วยเผื่อมีการ Tag
+            document.getElementById('dyn-content').innerHTML = formatMentions(postData.content);
+            
             document.getElementById('dyn-author').textContent = postData.author;
             document.getElementById('dyn-author-badge').innerHTML = await getRoleBadgeFromAPI(postData.author);
             document.getElementById('dyn-time').textContent = 'โพสต์เมื่อ: ' + postData.timestamp;
@@ -1139,7 +1318,7 @@
                         <h4 style="margin-bottom: 18px; display: flex; align-items: center; flex-wrap: wrap; gap: 5px;">
                             ร่วมแสดงความคิดเห็นในนาม: <span style="color: var(--gold-light); margin-left: 5px;">${savedUser}</span> ${myBadgeHtml}
                         </h4>
-                        <textarea id="commentInput" class="form-textarea" placeholder="พิมพ์ความคิดเห็นของคุณที่นี่..."></textarea>
+                        <textarea id="commentInput" class="form-textarea" placeholder="พิมพ์ความคิดเห็นของคุณที่นี่... สามารถเรียกขานผู้อื่นได้โดยพิมพ์ @ตามด้วยชื่อ"></textarea>
                         <div style="display: flex; gap: 10px; align-items: center; margin-top: 10px; flex-wrap: wrap;">
                             <button type="button" id="submitCommentBtn" class="btn-submit-comment" onclick="submitComment()">ส่งความคิดเห็น</button>
                             <a href="webboard.html" class="btn-secondary-custom">กลับไปลานเสวนา</a>
