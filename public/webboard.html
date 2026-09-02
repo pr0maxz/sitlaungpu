@@ -139,6 +139,33 @@
         .loading-text { font-family: 'Prompt', sans-serif; color: var(--gold-main); animation: pulse 1.5s infinite alternate; text-align: center; padding: 40px; }
         @keyframes pulse { from { opacity: 0.5; } to { opacity: 1; text-shadow: 0 0 10px var(--gold-main); } }
         .captcha-box { background: rgba(212,175,55,0.05); border: 1px dashed var(--gold-dark); padding: 15px; border-radius: 6px; text-align: center; margin-bottom: 20px; width: 100%; box-sizing: border-box; } .captcha-box p { color: #e6dac3; margin: 0 0 10px 0; font-size: 0.9rem; }
+        /* 🚀 อาคมลดภาระเครื่อง (Optimization สำหรับแท็บเล็ตและมือถือ) */
+@media (max-width: 1024px) {
+    /* 1. ปิดกระจกฝ้า เปลี่ยนเป็นสีพื้นหลังแบบทึบขึ้นแทน */
+    .main-container {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        background-color: rgba(7, 4, 2, 0.98) !important;
+    }
+    
+    /* 2. หยุดกรอบแสงวิ่ง เปลี่ยนเป็นกรอบสีทองนิ่งๆ */
+    .main-container::before {
+        animation: none !important;
+        background: var(--gold-main) !important;
+        -webkit-mask: none !important;
+        padding: 1px;
+    }
+    
+    /* 3. หยุดละอองเวทมนตร์ลอยไปมา ให้หยุดนิ่งเป็นพื้นหลังธรรมดา */
+    body::before, body::after {
+        animation: none !important;
+    }
+
+    /* 4. หยุดการกะพริบของมุมลายไทยและลูกแก้วแจ้งเตือน */
+    .corner-decor, .noti-btn {
+        animation: none !important;
+    }
+}
     </style>
 </head>
 <body>
