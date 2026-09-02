@@ -12,5 +12,21 @@
       "database_name": "siy_db",
       "database_id": "c25c8b30-52d3-433c-a389-7fd76f08bfe4"
     }
+  ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "TELEPATHY_ROOM",
+        "class_name": "TelepathyRoom"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": [
+        "TelepathyRoom"
+      ]
+    }
   ]
 }

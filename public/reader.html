@@ -40,21 +40,23 @@
         @keyframes containerPulse { 0% { box-shadow: 0 0 30px rgba(0,0,0,0.8), inset 0 0 20px rgba(212,175,55,0.02); } 50% { box-shadow: 0 0 50px rgba(212,175,55,0.15), inset 0 0 40px rgba(212,175,55,0.08); } 100% { box-shadow: 0 0 30px rgba(0,0,0,0.8), inset 0 0 20px rgba(212,175,55,0.02); } }
         @keyframes ringRotate { to { --ring-angle: 360deg; } }
         
-        /* 🌟 Responsive Container */
-        .main-container { position: relative; isolation: isolate; max-width: 1200px; width: 92%; margin: clamp(20px, 4vw, 40px) auto; padding: clamp(20px, 4vw, 40px) clamp(15px, 3vw, 30px) clamp(30px, 5vw, 60px) clamp(15px, 3vw, 30px); background-color: rgba(7, 4, 2, 0.85); border: 1px solid var(--gold-dark); border-radius: 16px; backdrop-filter: blur(10px); animation: containerPulse 6s infinite alternate; }
+/* 🌟 Responsive Container */
+        /* 🌟 ปรับขนาดกล่องหลักให้ยืดหยุ่น */
+        .main-container { position: relative; isolation: isolate; max-width: 1200px; width: 94%; margin: clamp(20px, 4vw, 40px) auto; padding: clamp(20px, 4vw, 40px) clamp(15px, 3vw, 30px) clamp(30px, 5vw, 60px) clamp(15px, 3vw, 30px); background-color: rgba(7, 4, 2, 0.85); border: 1px solid var(--gold-dark); border-radius: 16px; backdrop-filter: blur(10px); animation: containerPulse 6s infinite alternate; }
         .main-container::before { content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1px; background: conic-gradient(from var(--ring-angle), transparent 0deg, var(--gold-main) 25deg, transparent 70deg, transparent 180deg, var(--gold-light) 205deg, transparent 250deg, transparent 360deg); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: ringRotate 10s linear infinite; pointer-events: none; z-index: -1; }
         
         @keyframes bracketGlow { 0%, 100% { opacity: 0.7; filter: drop-shadow(0 0 2px rgba(212,175,55,0.3)); } 50% { opacity: 1; filter: drop-shadow(0 0 8px rgba(212,175,55,0.7)); } }
-        .corner-decor { position: absolute; width: clamp(50px, 8vw, 110px); height: clamp(50px, 8vw, 110px); z-index: 20; pointer-events: none; animation: bracketGlow 3s ease-in-out infinite; }
+        .corner-decor { position: absolute; width: clamp(45px, 8vw, 110px); height: clamp(45px, 8vw, 110px); z-index: 20; pointer-events: none; animation: bracketGlow 3s ease-in-out infinite; }
         .corner-top-left { top: 12px; left: 12px; transform: scaleX(-1); } 
         .corner-top-right { top: 12px; right: 12px; } 
         .corner-bottom-left { bottom: 12px; left: 12px; transform: scaleX(-1) scaleY(-1); } 
         .corner-bottom-right { bottom: 12px; right: 12px; transform: scaleY(-1); }
         
-        header { text-align: center; margin-bottom: clamp(20px, 4vw, 40px); position: relative; z-index: 10; } 
+header { text-align: center; margin-bottom: clamp(25px, 5vw, 40px); position: relative; z-index: 10; } 
         .site-title img { height: clamp(50px, 8vw, 100px); width: auto; filter: drop-shadow(0 5px 15px rgba(0,0,0,1)) drop-shadow(0 0 20px rgba(212,175,55,0.4)); }
         
         /* 🌟 Responsive Nav */
+        /* 🌟 ระบบนำทาง (Nav) Responsive */
         nav { display: flex; flex-wrap: wrap; justify-content: center; gap: clamp(8px, 2vw, 15px); background: linear-gradient(to bottom, #1f1107, #070402); border: 1px solid var(--gold-dark); border-radius: 50px; padding: 10px clamp(15px, 3vw, 30px); box-shadow: 0 5px 20px rgba(0,0,0,0.9); max-width: 800px; margin: 0 auto; }
         nav a { color: var(--gold-light); text-decoration: none; font-size: clamp(0.85rem, 1.8vw, 1rem); padding: 5px clamp(10px, 2vw, 15px); transition: all 0.3s; position: relative; white-space: nowrap; } 
         nav a:hover, nav a.active { color: #fff; text-shadow: 0 0 10px var(--gold-main); } 
@@ -69,6 +71,7 @@
         .btn-back { display: inline-flex; align-items: center; gap: 8px; color: var(--gold-light); text-decoration: none; margin-bottom: 15px; font-size: clamp(0.85rem, 2vw, 0.95rem); transition: 0.3s; }
         .btn-back:hover { text-shadow: 0 0 8px var(--gold-main); }
 
+/* 🌟 ตัวปรับขนาดฟอนต์ */
         .category-block { background: rgba(12, 7, 4, 0.7); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 8px; margin-top: 35px; margin-bottom: 30px; padding: clamp(35px, 6vw, 55px) clamp(15px, 4vw, 45px) clamp(25px, 5vw, 45px) clamp(15px, 4vw, 45px); box-shadow: inset 0 0 15px rgba(0,0,0,0.8), 0 5px 15px rgba(0,0,0,0.5); position: relative; }
         .section-title { text-align: center; background: linear-gradient(180deg, #3a2511 0%, #150a03 100%); color: var(--gold-light); padding: 8px clamp(20px, 4vw, 30px); border: 1px solid var(--gold-main); border-radius: 8px; display: inline-block; position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-size: clamp(1rem, 2.5vw, 1.15rem); font-weight: 700; white-space: nowrap; box-shadow: 0 8px 16px rgba(0,0,0,0.9), inset 0 1px 2px rgba(255,255,255,0.15); text-shadow: 0 2px 4px rgba(0,0,0,0.8); letter-spacing: 1px; margin: 0; z-index: 5; }
 
@@ -81,7 +84,7 @@
         .novel-title-text { color: var(--gold-light); font-size: clamp(1.4rem, 4vw, 2rem); font-family: 'Prompt', sans-serif; margin-bottom: 10px; text-align: center; text-shadow: 0 2px 10px rgba(212,175,55,0.2); line-height: 1.4; }
         .novel-chapter-sub { color: var(--text-muted); font-size: clamp(0.85rem, 2vw, 0.95rem); margin-bottom: clamp(25px, 5vw, 40px); text-align: center; }
         
-        /* 🌟 เนื้อหานิยายแบบ Responsive ป้องกันการตัดคำมั่วซั่ว */
+/* 🌟 เนื้อหานิยายแบบ Responsive ป้องกันการตัดคำมั่วซั่ว */
         .novel-body-text { 
             line-height: 1.9; 
             color: #dfd0c0; 
@@ -150,14 +153,14 @@
             cursor: default;
         }
 
-        /* 🌟 กล่องบทกลอนจัดระเบียบใหม่ */
+/* 🌟 กล่องกลอนจัดใหม่ให้ยืดหยุ่น */
         .poem-box {
             text-align: center; color: var(--gold-light); margin: clamp(30px, 6vw, 50px) auto; 
             font-style: italic; line-height: 2.2; font-size: 1.05em;
             background: rgba(212, 175, 55, 0.05); padding: clamp(20px, 4vw, 30px) clamp(10px, 3vw, 30px); 
             border-radius: 12px; border: 1px dashed rgba(212, 175, 55, 0.3);
             max-width: 85%;
-        }
+}
 
         /* 🌟 กลุ่มปุ่มด้านล่างแบบ Responsive */
         .bottom-action-group {
@@ -172,6 +175,19 @@
             width: 100%;
         }
 
+        /* 🌟 กลุ่มปุ่มด้านล่าง (Bottom Action Group) จัดเรียงอัตโนมัติ */
+        .bottom-action-group {
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            gap: 15px; 
+            margin-top: 60px; 
+            border-top: 1px dashed rgba(138, 99, 21, 0.3); 
+            padding-top: 40px; 
+            flex-wrap: wrap; 
+            width: 100%;
+        }
+        
         .btn-primary { 
             display: inline-flex; 
             justify-content: center;
@@ -205,18 +221,19 @@
         @media (max-width: 600px) { 
             nav { flex-wrap: nowrap; justify-content: flex-start; overflow-x: auto; scrollbar-width: none; } 
             nav::-webkit-scrollbar { display: none; } 
-            .reader-controls { justify-content: center; } 
+            .reader-controls { justify-content: center; } /* จัดกลางตัวปรับฟอนต์ในมือถือ */
             .poem-box { max-width: 100%; font-size: 1em; padding: 20px 15px; }
+            /* ปุ่มล่างพับซ้อนกันแบบเต็มจอในมือถือ */
             .bottom-action-group { flex-direction: column; gap: 12px; margin-top: 40px; padding-top: 30px; }
             .btn-primary { width: 100%; max-width: 100%; }
         }
 
-        /* 🌟 แบนเนอร์จดจำจุดอ่าน (Responsive) */
+/* 🌟 แบนเนอร์จดจำจุดอ่านล่าสุด (Responsive) */
         #resume-scroll-banner {
             position: fixed;
             bottom: clamp(15px, 3vw, 20px);
             right: clamp(15px, 3vw, 20px);
-            left: clamp(15px, 3vw, auto); 
+            left: clamp(15px, 3vw, auto); /* ให้ขยายเต็มพื้นที่ด้านล่างถ้าย่อจอ */
             background: linear-gradient(135deg, #1a120b, #0a0603);
             border: 1px solid var(--gold-main, #d4af37);
             color: var(--gold-light, #f5d77f);

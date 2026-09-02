@@ -17,9 +17,18 @@
         @keyframes floatingMagic { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(200px, -200px, 0); } } @keyframes floatingMagic2 { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-350px, -350px, 0); } }
 
         h1, h2, h3, h4 { font-family: 'Prompt', sans-serif; margin: 0; }
-        .main-container { position: relative; max-width: 1200px; width: 92%; margin: 40px auto; padding: 40px 30px; background-color: rgba(7, 4, 2, 0.85); border: 1px solid var(--gold-dark); border-radius: 16px; backdrop-filter: blur(10px); box-sizing: border-box; }
-        .corner-decor { position: absolute; width: clamp(60px, 8vw, 110px); height: clamp(60px, 8vw, 110px); z-index: 20; pointer-events: none; opacity: 0.7;}
+        
+        @property --ring-angle { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+        @keyframes containerPulse { 0% { box-shadow: 0 0 30px rgba(0,0,0,0.8), inset 0 0 20px rgba(212,175,55,0.02); } 50% { box-shadow: 0 0 50px rgba(212,175,55,0.15), inset 0 0 40px rgba(212,175,55,0.08); } 100% { box-shadow: 0 0 30px rgba(0,0,0,0.8), inset 0 0 20px rgba(212,175,55,0.02); } }
+        @keyframes ringRotate { to { --ring-angle: 360deg; } }
+        
+        .main-container { position: relative; isolation: isolate; max-width: 1200px; width: 92%; margin: 40px auto; padding: 40px 30px; background-color: rgba(7, 4, 2, 0.85); border: 1px solid var(--gold-dark); border-radius: 16px; backdrop-filter: blur(10px); box-sizing: border-box; animation: containerPulse 6s infinite alternate; }
+        .main-container::before { content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1px; background: conic-gradient(from var(--ring-angle), transparent 0deg, var(--gold-main) 25deg, transparent 70deg, transparent 180deg, var(--gold-light) 205deg, transparent 250deg, transparent 360deg); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: ringRotate 10s linear infinite; pointer-events: none; z-index: -1; }
+        
+        @keyframes bracketGlow { 0%, 100% { opacity: 0.7; filter: drop-shadow(0 0 2px rgba(212,175,55,0.3)); } 50% { opacity: 1; filter: drop-shadow(0 0 8px rgba(212,175,55,0.7)); } }
+        .corner-decor { position: absolute; width: clamp(60px, 8vw, 110px); height: clamp(60px, 8vw, 110px); z-index: 20; pointer-events: none; animation: bracketGlow 3s ease-in-out infinite; }
         .corner-top-left { top: 12px; left: 12px; transform: scaleX(-1); } .corner-top-right { top: 12px; right: 12px; } .corner-bottom-left { bottom: 12px; left: 12px; transform: scaleX(-1) scaleY(-1); } .corner-bottom-right { bottom: 12px; right: 12px; transform: scaleY(-1); }
+        
         header { text-align: center; margin-bottom: 40px; } .site-title img { height: clamp(60px, 8vw, 100px); width: auto; filter: drop-shadow(0 0 20px rgba(212,175,55,0.4)); }
         .post-layout { display: grid; grid-template-columns: 2.2fr 1fr; gap: 25px; margin-top: 10px; width: 100%; }
         .breadcrumb { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 20px; } .breadcrumb a { color: var(--gold-light); text-decoration: none; }
@@ -66,44 +75,106 @@
         .comment-form-box { background: rgba(12, 7, 4, 0.8); border: 1px solid var(--gold-dark); border-radius: 10px; padding: 25px; margin-top: 30px; width: 100%; box-sizing: border-box; } 
         .form-textarea { width: 100%; max-width: 100%; height: 100px; background: rgba(0,0,0,0.6); border: 1px solid rgba(138, 99, 21, 0.5); color: #fff; padding: 12px 15px; border-radius: 6px; font-size: 1rem; margin-bottom: 10px; resize: vertical; box-sizing: border-box; }
         .form-textarea:focus { outline: none; border-color: var(--gold-main); box-shadow: 0 0 8px rgba(212,175,55,0.2); }
-        .btn-submit-comment { background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; border: none; padding: 8px 20px; border-radius: 20px; font-family: 'Prompt', sans-serif; font-weight: bold; cursor: pointer; transition: all 0.3s; font-size: 0.9rem; }
+        
+        .btn-submit-comment { background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; border: none; padding: 10px 20px; border-radius: 20px; font-family: 'Prompt', sans-serif; font-weight: bold; cursor: pointer; transition: all 0.3s; font-size: 0.9rem; }
         .btn-submit-comment:hover { filter: brightness(1.2); }
         .btn-submit-comment:disabled { filter: grayscale(1); cursor: not-allowed; opacity: 0.7; }
         
-        .widget { background: rgba(12, 7, 4, 0.7); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 8px; padding: 20px; margin-bottom: 25px; width: 100%; box-sizing: border-box; position: relative; } 
-        .widget-title { color: var(--gold-main); font-size: 1.2rem; margin-bottom: 15px; border-bottom: 1px solid rgba(138, 99, 21, 0.3); padding-bottom: 10px; }
-        .user-logged-in-profile { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; background: rgba(212, 175, 55, 0.05); padding: 12px; border-radius: 8px; border: 1px dashed var(--gold-dark); position: relative; } 
+        .btn-secondary-custom { background: transparent; border: 1px solid var(--gold-dark); color: var(--gold-light); padding: 10px 20px; border-radius: 20px; font-family: 'Prompt', sans-serif; font-size: 0.9rem; cursor: pointer; transition: all 0.3s; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
+        .btn-secondary-custom:hover { background: rgba(212, 175, 55, 0.15); color: #fff; border-color: var(--gold-main); }
+
+        .widget { background: rgba(12, 7, 4, 0.7); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 8px; padding: 45px 20px 20px 20px; margin-top: 45px; margin-bottom: 40px; box-shadow: inset 0 0 15px rgba(0,0,0,0.8), 0 5px 15px rgba(0,0,0,0.5); position: relative; } 
+        .section-title { text-align: center; background: linear-gradient(180deg, #3a2511 0%, #150a03 100%); color: var(--gold-light); padding: 8px 25px; border: 1px solid var(--gold-main); border-radius: 8px; display: inline-block; position: absolute; top: -20px; left: 25px; font-size: 1.1rem; font-weight: 700; white-space: nowrap; box-shadow: 0 8px 16px rgba(0,0,0,0.9), inset 0 1px 2px rgba(255,255,255,0.15); text-shadow: 0 2px 4px rgba(0,0,0,0.8); letter-spacing: 1px; margin: 0; z-index: 5; }
+
+        .user-logged-in-profile { display: flex; flex-direction: column; align-items: center; margin-bottom: 15px; background: rgba(212, 175, 55, 0.05); padding: 15px; border-radius: 8px; border: 1px dashed var(--gold-dark); position: relative; } 
+        .user-info-text { text-align: center; width: 100%; } 
+        .user-info-text h4 { color: var(--gold-light); font-size: 1.1rem; margin-bottom: 5px; text-shadow: 0 0 8px rgba(212,175,55,0.4); } 
+        
         .btn-logout { display: block; width: 100%; background: transparent; color: #ff6b6b; border: 1px solid rgba(168, 46, 46, 0.5); padding: 8px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-size: 0.9rem; cursor: pointer; transition: all 0.3s; } 
         .btn-logout:hover { background: rgba(168, 46, 46, 0.1); border-color: #ff6b6b; }
 
-        .noti-wrapper { position: absolute; top: 12px; right: 12px; }
-        .noti-btn { background: transparent; border: none; font-size: 1.4rem; cursor: pointer; position: relative; transition: transform 0.3s; }
-        .noti-btn:hover { transform: scale(1.1); filter: drop-shadow(0 0 8px var(--gold-main)); }
-        .noti-badge { position: absolute; top: -5px; right: -5px; background: var(--danger-color); color: white; font-size: 0.65rem; font-weight: bold; border-radius: 50%; padding: 2px 5px; box-shadow: 0 0 5px rgba(0,0,0,0.5); }
-        .noti-dropdown { display: none; position: absolute; top: 35px; right: 0; width: 280px; background: rgba(15, 8, 3, 0.95); border: 1px solid var(--gold-dark); border-radius: 8px; box-shadow: 0 5px 20px rgba(0,0,0,0.9); z-index: 100; max-height: 350px; overflow-y: auto; text-align: left; }
+        .noti-wrapper { position: absolute; top: -20px; right: 25px; z-index: 50; }
+        .noti-btn { background: radial-gradient(circle, rgba(212, 175, 55, 0.25) 0%, rgba(7, 4, 2, 0.95) 80%); border: 1px solid var(--gold-main); border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; transition: all 0.4s ease; box-shadow: 0 0 12px rgba(212, 175, 55, 0.3), inset 0 0 6px rgba(245, 215, 127, 0.5); padding: 0; animation: orbPulse 3s infinite alternate; }
+        @keyframes orbPulse {
+            0% { box-shadow: 0 0 6px rgba(212, 175, 55, 0.2), inset 0 0 3px rgba(245, 215, 127, 0.3); }
+            50% { box-shadow: 0 0 16px rgba(212, 175, 55, 0.6), inset 0 0 8px rgba(245, 215, 127, 0.8); }
+            100% { box-shadow: 0 0 6px rgba(212, 175, 55, 0.2), inset 0 0 3px rgba(245, 215, 127, 0.3); }
+        }
+        .noti-btn:hover { border-color: var(--gold-light); transform: scale(1.12); box-shadow: 0 0 25px rgba(212, 175, 55, 0.9), inset 0 0 12px rgba(245, 215, 127, 0.9); }
+        .noti-btn svg { width: 18px; height: 18px; fill: var(--gold-light); filter: drop-shadow(0 0 6px var(--gold-main)); transition: transform 0.4s ease; }
+        .noti-btn:hover svg { transform: scale(1.15); }
+        .noti-badge { position: absolute; top: -3px; right: -3px; background: linear-gradient(135deg, #ff6b6b, #a82e2e); color: white; font-size: 0.65rem; font-weight: bold; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 8px rgba(255, 107, 107, 0.8); border: 1px solid #ffeea8; }
+        
+        .noti-dropdown { display: none; position: absolute; top: 45px; right: 0; width: 280px; background: rgba(15, 8, 3, 0.95); border: 1px solid var(--gold-dark); border-radius: 8px; box-shadow: 0 5px 20px rgba(0,0,0,0.9); z-index: 100; max-height: 350px; overflow-y: auto; text-align: left; }
         .noti-dropdown.active { display: block; animation: fadeIn 0.2s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
         .noti-header { padding: 10px; border-bottom: 1px solid rgba(138, 99, 21, 0.3); color: var(--gold-main); font-family: 'Prompt', sans-serif; font-size: 0.9rem; font-weight: bold; text-align: center; background: rgba(0,0,0,0.3); }
         .noti-item { padding: 12px 10px; border-bottom: 1px solid rgba(138, 99, 21, 0.2); font-size: 0.85rem; color: #d1bfae; cursor: pointer; transition: 0.3s; line-height: 1.4; display: flex; flex-direction: column; gap: 4px; }
         .noti-item:hover { background: rgba(212, 175, 55, 0.1); }
         .noti-item.unread { background: rgba(212, 175, 55, 0.08); border-left: 3px solid var(--gold-main); }
         .noti-time { font-size: 0.7rem; color: var(--text-muted); text-align: right; }
 
-        .role-badge, .role-tag { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 0.75rem; font-family: 'Prompt', sans-serif; font-weight: 600; letter-spacing: 0.5px; vertical-align: middle; margin-left: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.6); }
+        /* 🌟 ระบบแสดงสีป้ายยศทั้งหมด */
+        .role-badge, .role-tag { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 0.75rem; font-family: 'Prompt', sans-serif; font-weight: 600; letter-spacing: 0.5px; vertical-align: middle; margin-left: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.6); }
         .role-1 { background: linear-gradient(135deg, #f5d77f, #d4af37, #8a6315); color: #1a0f02 !important; border: 1px solid #ffeea8; box-shadow: 0 0 12px rgba(212,175,55,0.8), inset 0 0 6px rgba(255,255,255,0.6); font-weight: 700; } 
-        .role-2 { background: linear-gradient(135deg, #4a1c60, #240b36); color: #e5b3ff !important; border: 1px solid #9b59b6; box-shadow: 0 0 6px rgba(155,89,182,0.4); } 
-        .role-3 { background: linear-gradient(135deg, #6c7a86, #262c30); color: #d6dfe5 !important; border: 1px solid #94a6b5; box-shadow: 0 0 6px rgba(148,166,181,0.4); } 
-        .role-4 { background: linear-gradient(135deg, #8a4818, #422008); color: #e8a67c !important; border: 1px solid #b86226; box-shadow: 0 0 6px rgba(184,98,38,0.4); } 
-        .role-5 { background: rgba(138, 99, 21, 0.1); color: #a69477 !important; border: 1px solid #8a6315; } 
-        .role-guest { background: rgba(168, 46, 46, 0.15); color: #ff6b6b !important; border: 1px dashed #a82e2e; }
+        .role-2 { background: linear-gradient(135deg, #8e44ad, #4b0082); color: #e8daef !important; border: 1px solid #9b59b6; box-shadow: 0 0 10px rgba(142,68,173,0.8); } 
+        .role-3 { background: linear-gradient(135deg, #bdc3c7, #7f8c8d); color: #1a1a1a !important; border: 1px solid #ecf0f1; box-shadow: 0 0 8px rgba(189,195,199,0.8); } 
+        .role-4 { background: linear-gradient(135deg, #d35400, #a04000); color: #ffebcc !important; border: 1px solid #e67e22; box-shadow: 0 0 10px rgba(211,84,0,0.8); } 
+        .role-5 { background-color: rgba(138, 99, 21, 0.1); color: #a69477 !important; border: 1px solid #8a6315; box-shadow: none; font-weight: 600; }
+        .role-6 { background: linear-gradient(135deg, #27ae60, #145a32); color: #abebc6 !important; border: 1px solid #2ecc71; box-shadow: 0 0 10px rgba(46,204,113,0.8); font-weight: 700; } 
+        .role-guest { background-color: rgba(168, 46, 46, 0.15); color: #ff6b6b !important; border: 1px dashed #a82e2e; box-shadow: none; }
 
         .sect-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(7, 4, 2, 0.9); backdrop-filter: blur(8px); z-index: 1000; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; } .sect-modal-overlay.active { display: flex; opacity: 1; }
         .sect-modal-content { position: relative; background: linear-gradient(135deg, #1a120b, #0a0603); border: 1px solid var(--gold-main); border-radius: 12px; width: 90%; max-width: 450px; padding: 40px 30px 60px 30px; box-shadow: 0 15px 40px rgba(0,0,0,0.9), inset 0 0 20px rgba(212,175,55,0.1); transform: translateY(-20px); transition: transform 0.3s ease; } .sect-modal-overlay.active .sect-modal-content { transform: translateY(0); }
         .modal-corner { position: absolute; width: 60px; height: 60px; pointer-events: none; opacity: 0.8; } .mc-top-left { top: 12px; left: 12px; transform: scaleX(-1); } .mc-top-right { top: 12px; right: 12px; } .mc-bottom-left { bottom: 12px; left: 12px; transform: scaleX(-1) scaleY(-1); } .mc-bottom-right { bottom: 12px; right: 12px; transform: scaleY(-1); }
-        .modal-header { text-align: center; margin-bottom: 25px; } .modal-header h3 { color: var(--gold-light); font-size: 1.6rem; margin-bottom: 5px; text-shadow: 0 2px 5px rgba(0,0,0,0.8); }
         .btn-submit-modal { background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; border: none; padding: 12px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-weight: bold; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: all 0.3s; width: 80%; margin: 0 auto; display: block; }
         .form-select { width: 100%; background: rgba(0,0,0,0.6); border: 1px solid rgba(138, 99, 21, 0.5); color: #fff; padding: 12px 15px; border-radius: 6px; font-size: 1rem; margin-bottom: 20px; font-family: 'Sarabun', sans-serif; } .form-select option { background: #1a120b; }
 
+        /* 🌟 คลาสสำหรับกล่องวิญญาณเร่ร่อน รองรับ Responsive เต็มรูปแบบ โดยที่ป้ายยศไม่ยืด */
+        .ghost-warning-box {
+            background: linear-gradient(180deg, rgba(20, 9, 5, 0.8) 0%, rgba(7, 4, 2, 0.9) 100%);
+            border: 1px solid rgba(168, 46, 46, 0.4);
+            border-radius: 10px;
+            padding: clamp(20px, 4vw, 30px) clamp(15px, 3vw, 20px);
+            margin-top: 30px;
+            text-align: center;
+            box-shadow: inset 0 0 20px rgba(168, 46, 46, 0.05), 0 5px 15px rgba(0,0,0,0.5);
+            position: relative;
+        }
+        .ghost-warning-box h4 {
+            color: #ff6b6b;
+            font-size: clamp(1.1rem, 4vw, 1.25rem);
+            margin-bottom: 12px;
+            text-shadow: 0 0 10px rgba(168, 46, 46, 0.5);
+        }
+        .ghost-warning-box p {
+            color: #d1bfae;
+            font-size: clamp(0.85rem, 3vw, 0.95rem);
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+        .ghost-line {
+            display: block;
+            margin-bottom: 6px;
+        }
+        .ghost-btn-group {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .ghost-btn-group > * {
+            flex: 1 1 auto;
+            min-width: 140px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         @media (max-width: 950px) { .post-layout { grid-template-columns: 1fr; } .replies-container { margin-left: 10px; border-left-width: 1px; } .comment-card.is-reply::before { width: 10px; left: -11px; } }
+        @media (max-width: 480px) { .ghost-btn-group { flex-direction: column; } .ghost-btn-group > * { width: 100%; max-width: 100%; flex: 1 1 100%; } }
+        
         .loading-text { font-family: 'Prompt', sans-serif; color: var(--gold-main); animation: pulse 1.5s infinite alternate; text-align: center; padding: 40px; }
         @keyframes pulse { from { opacity: 0.5; } to { opacity: 1; text-shadow: 0 0 10px var(--gold-main); } }
     </style>
@@ -168,7 +239,14 @@
             <div class="post-sidebar">
                 <div class="widget user-status-box">
                     <div class="noti-wrapper" id="notiContainer" style="display: none;">
-                        <button class="noti-btn" onclick="toggleNotiDropdown()">🔔<span class="noti-badge" id="notiBadgeCount" style="display:none;">0</span></button>
+                        <button class="noti-btn" onclick="toggleNotiDropdown()" title="กระแสจิตเตือนภัย">
+                            <svg viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-dasharray="3 2"/>
+                                <circle cx="12" cy="12" r="3.5" fill="currentColor"/>
+                                <path d="M12 1v3M12 20v3M1 12h3M20 12h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                            </svg>
+                            <span class="noti-badge" id="notiBadgeCount" style="display:none;">0</span>
+                        </button>
                         <div class="noti-dropdown" id="notiDropdownBox">
                             <div class="noti-header">กระแสจิตเตือนภัย</div>
                             <div id="notiListContent">
@@ -177,8 +255,9 @@
                         </div>
                     </div>
 
-                    <h4 class="widget-title">สถานะสำนัก</h4>
-                    <div class="user-logged-in-profile">
+                    <h4 class="section-title">สถานะสำนัก</h4>
+
+                    <div class="user-logged-in-profile" style="margin-top: 10px;">
                         <div class="user-info-text" style="text-align: center; width: 100%;">
                             <h4 id="displayUsername" style="text-align: center; margin-bottom: 5px;">นามแฝง</h4>
                             <div id="displayUserBadge" style="margin-bottom: 8px;"></div>
@@ -249,6 +328,79 @@
 
         let currentPostAuthorGlobal = ''; 
 
+        // ==========================================
+        // ⚡ ระบบกระแสจิตเรียลไทม์ (WebSocket) แบบป้องกันเบิ้ล
+        // ==========================================
+        let telepathySocket;
+        let lastLoadTime = 0;
+
+        function connectTelepathy() {
+            const wsUrl = API_CONFIG.BASE_URL.replace('http', 'ws') + '/ws';
+            telepathySocket = new WebSocket(wsUrl);
+
+            telepathySocket.onopen = () => {
+                console.log("⚡ เปิดช่องรับกระแสจิตจากสำนักสำเร็จ!");
+            };
+
+            telepathySocket.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                
+                if (data.type === 'LIKE_UPDATE') {
+                    if (data.isComment) {
+                        const commentLikeEl = document.getElementById(`comment-like-count-${data.targetId}`);
+                        if (commentLikeEl) {
+                            commentLikeEl.textContent = data.newLikes;
+                            commentLikeEl.style.color = '#fff';
+                            setTimeout(() => { commentLikeEl.style.color = ''; }, 500);
+                        }
+                    } else {
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const currentPostId = urlParams.get('id');
+                        if (data.targetId === currentPostId) {
+                            const likeCountEl = document.getElementById('dyn-likes');
+                            if (likeCountEl) {
+                                likeCountEl.textContent = data.newLikes;
+                                likeCountEl.style.color = '#fff';
+                                setTimeout(() => { likeCountEl.style.color = ''; }, 500);
+                            }
+                        }
+                    }
+                }
+                
+                if (data.type === 'NEW_COMMENT') {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const currentPostId = urlParams.get('id');
+                    
+                    // 🌟 ระบบหน่วงเวลา (Debounce) ป้องกันคอมเมนต์โหลดเบิ้ลซ้ำซ้อน
+                    const now = Date.now();
+                    if (data.postId === currentPostId && typeof loadComments === 'function' && (now - lastLoadTime > 1500)) {
+                        lastLoadTime = now;
+                        loadComments(data.postId);
+                    }
+                }
+            };
+
+            telepathySocket.onclose = () => {
+                setTimeout(connectTelepathy, 5000); 
+            };
+            
+            telepathySocket.onerror = (err) => {
+                console.error("❌ กระแสจิตขัดข้อง:", err);
+            };
+        }
+
+        connectTelepathy();
+
+        function broadcastAction(actionType, targetId, extraData = {}) {
+            if (telepathySocket && telepathySocket.readyState === WebSocket.OPEN) {
+                telepathySocket.send(JSON.stringify({
+                    type: actionType,
+                    targetId: targetId,
+                    ...extraData
+                }));
+            }
+        }
+
         const ApiManager = {
             async getPostById(id) {
                 try {
@@ -287,18 +439,30 @@
                     return await response.json();
                 } catch (error) { return { success: false }; }
             },
+            
             async likePost(postId) {
                 try {
-                    const res = await fetch(`${API_CONFIG.BASE_URL}/posts/${postId}/like`, { method: 'POST' });
+                    const actor = localStorage.getItem('siy_username') || 'วิญญาณเร่ร่อน';
+                    const res = await fetch(`${API_CONFIG.BASE_URL}/posts/${postId}/like`, { 
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ actor })
+                    });
                     return await res.json();
                 } catch (e) { return { success: false }; }
             },
             async likeComment(commentId) {
                 try {
-                    const res = await fetch(`${API_CONFIG.BASE_URL}/comments/${commentId}/like`, { method: 'POST' });
+                    const actor = localStorage.getItem('siy_username') || 'วิญญาณเร่ร่อน';
+                    const res = await fetch(`${API_CONFIG.BASE_URL}/comments/${commentId}/like`, { 
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ actor })
+                    });
                     return await res.json();
                 } catch (e) { return { success: false }; }
             },
+
             async sendNotification(data) {
                 try {
                     await fetch(`${API_CONFIG.BASE_URL}/notifications`, {
@@ -317,9 +481,6 @@
             }
         };
 
-        // ==========================================
-        // 🌟 ฟังก์ชันจัดการกระแสจิต (Notifications)
-        // ==========================================
         function toggleNotiDropdown() {
             document.getElementById('notiDropdownBox').classList.toggle('active');
         }
@@ -384,16 +545,9 @@
             }
         }
 
-        // ==========================================
-        // 🌟 ฟังก์ชันจัดการอนุโมทนา (Likes)
-        // ==========================================
-        // ==========================================
-        // 🌟 ฟังก์ชันจัดการอนุโมทนา (Likes) - ฉบับส่งกระแสจิตครบถ้วน
-        // ==========================================
         async function likePostAction() {
             const urlParams = new URLSearchParams(window.location.search);
             const postId = urlParams.get('id');
-            const currentUser = localStorage.getItem('siy_username') || 'วิญญาณเร่ร่อน';
             
             const likedPosts = JSON.parse(localStorage.getItem('siy_liked_posts') || '[]');
             if (likedPosts.includes(postId)) {
@@ -414,31 +568,14 @@
                 btn.classList.add('liked');
                 btn.innerHTML = `🙏 อนุโมทนา (<span id="dyn-likes">${result.likes}</span>)`;
 
-                // 🌟 เพิ่มคาถาส่งกระแสจิตเตือนคนตั้งกระทู้ตรงนี้!
-                if (currentPostAuthorGlobal && currentPostAuthorGlobal !== currentUser) {
-                    const thaiMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
-                    const now = new Date();
-                    const timeStr = now.getDate() + ' ' + thaiMonths[now.getMonth()] + ' ' + (now.getFullYear() + 543) + ' | ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ' น.';
-                    
-                    await ApiManager.sendNotification({
-                        id: Date.now().toString(),
-                        recipient: currentPostAuthorGlobal,
-                        actor: currentUser,
-                        action_type: 'like_post',
-                        post_id: postId,
-                        timestamp: timeStr
-                    });
-                }
+                broadcastAction('LIKE_UPDATE', postId, { newLikes: result.likes, isComment: false });
             } else {
                 btn.innerHTML = originalText;
                 showCustomAlert('⚠️ อาถรรพ์สะท้อนกลับ! เชื่อมต่อหลังบ้านไม่สำเร็จ');
             }
         }
 
-        async function likeCommentAction(commentId, commentAuthor) {
-            const currentUser = localStorage.getItem('siy_username') || 'วิญญาณเร่ร่อน';
-            const postId = new URLSearchParams(window.location.search).get('id');
-
+        async function likeCommentAction(commentId) {
             const likedComments = JSON.parse(localStorage.getItem('siy_liked_comments') || '[]');
             if (likedComments.includes(commentId)) {
                 showCustomAlert('ท่านได้ส่งจิตอนุโมทนาให้ข้อความนี้ไปแล้ว 🙏');
@@ -460,30 +597,13 @@
                     btn.innerHTML = `🙏 อนุโมทนา (<span id="comment-like-count-${commentId}">${result.likes}</span>)`;
                 }
 
-                // 🌟 เพิ่มคาถาส่งกระแสจิตเตือนเจ้าของคอมเมนต์ตรงนี้!
-                if (commentAuthor && commentAuthor !== currentUser) {
-                    const thaiMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
-                    const now = new Date();
-                    const timeStr = now.getDate() + ' ' + thaiMonths[now.getMonth()] + ' ' + (now.getFullYear() + 543) + ' | ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ' น.';
-                    
-                    await ApiManager.sendNotification({
-                        id: Date.now().toString(),
-                        recipient: commentAuthor,
-                        actor: currentUser,
-                        action_type: 'like_comment',
-                        post_id: postId,
-                        timestamp: timeStr
-                    });
-                }
+                broadcastAction('LIKE_UPDATE', commentId, { newLikes: result.likes, isComment: true });
             } else {
                 if(btn) btn.innerHTML = originalText;
                 showCustomAlert('⚠️ อาถรรพ์สะท้อนกลับ! เชื่อมต่อหลังบ้านไม่สำเร็จ');
             }
         }
 
-        // ==========================================
-        // ระบบพื้นฐานเดิม
-        // ==========================================
         let pendingConfirmAction = null;
         function showCustomConfirm(message, callback) {
             document.getElementById('customConfirmMessage').innerHTML = message;
@@ -492,7 +612,7 @@
         }
         function closeConfirmModal() { document.getElementById('customConfirmModal').classList.remove('active'); }
         document.getElementById('customConfirmBtn').addEventListener('click', async () => {
-            closeConfirmModal();
+            closeModal('customConfirmModal');
             if (pendingConfirmAction) { await pendingConfirmAction(); pendingConfirmAction = null; }
         });
 
@@ -544,6 +664,20 @@
             }
         }
 
+        // ฟังก์ชันแปลงป้ายยศแบบ Sync ป้องกัน async render ซ้อน
+        function formatBadgeFromUsersMap(username, usersMap) {
+            if (!username) return '<span class="role-badge role-5">เด็กวัด</span>';
+            if (username.toUpperCase() === 'ADMIN') return '<span class="role-badge role-1">ปรมัตถ์</span>';
+            const user = usersMap[username];
+            if (user) {
+                let role = String(user.role || '5');
+                let rank = user.rank_name || getRoleTitleName(role);
+                let roleClass = rank === 'ตัวละคร' ? 'role-6' : `role-${role}`;
+                return `<span class="role-badge ${roleClass}">${rank}</span>`;
+            }
+            return '<span class="role-badge role-5">เด็กวัด</span>';
+        }
+
         async function getRoleBadgeFromAPI(username) {
             if (!username) return '<span class="role-badge role-5">เด็กวัด</span>';
             if (username.toUpperCase() === 'ADMIN') { return '<span class="role-badge role-1">ปรมัตถ์</span>'; }
@@ -553,9 +687,9 @@
                 const user = usersDB.find(u => u.username === username);
                 if (user) {
                     let role = String(user.role || '5');
-                    let rank = getRoleTitleName(role); 
-                    if (role === '1') { return '<span class="role-badge role-1">ปรมัตถ์</span>'; }
-                    return `<span class="role-badge role-${role}">${rank}</span>`;
+                    let rank = user.rank_name || getRoleTitleName(role);
+                    let roleClass = rank === 'ตัวละคร' ? 'role-6' : `role-${role}`;
+                    return `<span class="role-badge ${roleClass}">${rank}</span>`;
                 }
             } catch (e) {}
             return '<span class="role-badge role-5">เด็กวัด</span>';
@@ -569,137 +703,153 @@
             if (box) box.classList.toggle('active');
         }
 
+        // 🌟 ตัวล็อกคิวการโหลดคอมเมนต์ ป้องกันการเรนเดอร์เบิ้ลพร้อมกัน
+        let isCommentsRendering = false;
+
         async function loadComments(postId) {
+            if (isCommentsRendering) return;
+            isCommentsRendering = true;
+
             const container = document.getElementById('commentsList');
-            const comments = await ApiManager.getComments(postId);
             
-            const savedUser = localStorage.getItem('siy_username');
-            const userType = localStorage.getItem('siy_usertype');
-            let isUserAdmin = false;
-            
-            if (savedUser) {
-                if (savedUser.toUpperCase() === 'ADMIN') { isUserAdmin = true; } 
-                else {
-                    try {
-                        const res = await fetch(`${API_CONFIG.BASE_URL}/users`);
-                        const usersDB = await res.json();
-                        const curUser = usersDB.find(u => u.username === savedUser);
-                        if (curUser && String(curUser.role) === '1') { isUserAdmin = true; }
-                    } catch (e) {}
-                }
-                document.getElementById('btnReportPost').style.display = 'inline-block';
-            }
-
-            container.innerHTML = ''; 
-            const likedComments = JSON.parse(localStorage.getItem('siy_liked_comments') || '[]');
-
-            if(comments.length === 0) {
-                container.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 20px;">ยังไม่มีผู้ใดทิ้งร่องรอยไว้... เป็นคนแรกที่เปล่งวาจาสิ</div>';
-                return;
-            }
-
-            const mainComments = [];
-            const replyComments = [];
-
-            comments.forEach(c => {
-                const match = c.content.match(/^\[REPLY_TO:([^\]]+)\]/);
-                if (match) {
-                    const parentId = match[1];
-                    const parentExists = comments.some(p => String(p.id) === parentId && !p.content.startsWith('[REPLY_TO:'));
-                    if (parentExists) { replyComments.push(c); } else { mainComments.push(c); }
-                } else { mainComments.push(c); }
-            });
-
-            for (const c of mainComments) {
-                const badge = await getRoleBadgeFromAPI(c.author);
-                let cleanMainContent = c.content.replace(/^\[REPLY_TO:[^\]]+\](?:\[AUTHOR:[^\]]+\])?/, '');
-
-                let adminControls = isUserAdmin ? `<button type="button" class="btn-delete-comment" onclick="deleteCommentAction('${c.id}', '${postId}')">🗑️ ทำลาย</button>` : '';
-                let replyBtn = (userType !== 'guest') ? `<button type="button" class="btn-reply-comment" onclick="toggleReplyBox('${c.id}')">💬 ตอบกลับ</button>` : '';
-                let reportBtn = (savedUser) ? `<button type="button" class="btn-report" onclick="openReportModal('comment', '${c.id}')">🚨 แจ้ง</button>` : '';
+            try {
+                const [comments, usersRes] = await Promise.all([
+                    ApiManager.getComments(postId),
+                    fetch(`${API_CONFIG.BASE_URL}/users`).then(r => r.ok ? r.json() : []).catch(() => [])
+                ]);
                 
-                // 🌟 ส่งชื่อคนคอมเมนต์ (c.author) เข้าไปในฟังก์ชันเพื่อให้แจ้งเตือนถูกคน
-                const isLiked = likedComments.includes(String(c.id)) ? 'liked' : '';
-                let likeBtn = `<button type="button" class="btn-like ${isLiked}" id="btn-like-comment-${c.id}" onclick="likeCommentAction('${c.id}', '${c.author}')">🙏 อนุโมทนา (<span id="comment-like-count-${c.id}">${c.likes || 0}</span>)</button>`;
+                const usersMap = {};
+                usersRes.forEach(u => { usersMap[u.username] = u; });
 
-                const childReplies = replyComments.filter(r => {
-                    const match = r.content.match(/^\[REPLY_TO:([^\]]+)\]/);
-                    return match && match[1] === String(c.id);
-                });
+                const savedUser = localStorage.getItem('siy_username');
+                const userType = localStorage.getItem('siy_usertype');
+                let isUserAdmin = false;
                 
-                let repliesHtml = '';
-
-                if (childReplies.length > 0) {
-                    repliesHtml += `<div class="replies-container">`; 
-                    for (const r of childReplies) {
-                        const rBadge = await getRoleBadgeFromAPI(r.author);
-                        let rAdminControls = isUserAdmin ? `<button type="button" class="btn-delete-comment" onclick="deleteCommentAction('${r.id}', '${postId}')">🗑️ ทำลาย</button>` : '';
-                        let rReportBtn = (savedUser) ? `<button type="button" class="btn-report" onclick="openReportModal('comment', '${r.id}')">🚨 แจ้ง</button>` : '';
-                        
-                        let authorMatch = r.content.match(/\[AUTHOR:([^\]]+)\]/);
-                        let repliedTo = authorMatch ? authorMatch[1] : c.author;
-                        let cleanReplyContent = r.content.replace(/^\[REPLY_TO:[^\]]+\](?:\[AUTHOR:[^\]]+\])?/, '');
-                        
-                        // 🌟 ส่งชื่อคนตอบกลับ (r.author) เข้าไปในฟังก์ชัน
-                        const rIsLiked = likedComments.includes(String(r.id)) ? 'liked' : '';
-                        let rLikeBtn = `<button type="button" class="btn-like ${rIsLiked}" id="btn-like-comment-${r.id}" onclick="likeCommentAction('${r.id}', '${r.author}')">🙏 อนุโมทนา (<span id="comment-like-count-${r.id}">${r.likes || 0}</span>)</button>`;
-
-                        repliesHtml += `
-                            <div class="comment-card is-reply">
-                                <div class="reply-badge">↪ ตอบกลับคุณ: ${repliedTo}</div>
-                                <div class="comment-header">
-                                    <div>
-                                        <span class="comment-author">${r.author}</span>
-                                        ${rBadge}
-                                    </div>
-                                    <div>
-                                        <span class="post-time">${r.timestamp}</span>
-                                    </div>
-                                </div>
-                                <div class="comment-body">${cleanReplyContent}</div>
-                                <div class="comment-actions">
-                                    ${rLikeBtn}
-                                    ${rReportBtn}
-                                    ${rAdminControls}
-                                </div>
-                            </div>
-                        `;
+                if (savedUser) {
+                    if (savedUser.toUpperCase() === 'ADMIN') { 
+                        isUserAdmin = true; 
+                    } else if (usersMap[savedUser] && String(usersMap[savedUser].role) === '1') {
+                        isUserAdmin = true;
                     }
-                    repliesHtml += `</div>`;
+                    document.getElementById('btnReportPost').style.display = 'inline-block';
                 }
 
-                let replyFormHtml = (userType !== 'guest') ? `
-                    <div id="reply-box-${c.id}" class="reply-form-container">
-                        <textarea id="replyInput-${c.id}" class="form-textarea" placeholder="พิมพ์ข้อความตอบกลับคุณ ${c.author}..."></textarea>
-                        <div style="display: flex; gap: 8px;">
-                            <button type="button" class="btn-submit-comment" onclick="submitReply('${c.id}', '${c.author}', '${postId}')" style="padding: 6px 15px; font-size: 0.85rem;">ส่งคำตอบกลับ</button>
-                            <button type="button" class="btn-delete-comment" onclick="toggleReplyBox('${c.id}')" style="background: transparent; color: #a69477; border-color: #a69477;">ยกเลิก</button>
-                        </div>
-                    </div>
-                ` : '';
+                const likedComments = JSON.parse(localStorage.getItem('siy_liked_comments') || '[]');
 
-                container.innerHTML += `
-                    <div class="comment-card">
-                        <div class="comment-header">
-                            <div>
-                                <span class="comment-author">${c.author}</span>
-                                ${badge}
-                            </div>
-                            <div>
-                                <span class="post-time">${c.timestamp}</span>
+                if(comments.length === 0) {
+                    container.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 20px;">ยังไม่มีผู้ใดทิ้งร่องรอยไว้... เป็นคนแรกที่เปล่งวาจาสิ</div>';
+                    isCommentsRendering = false;
+                    return;
+                }
+
+                const mainComments = [];
+                const replyComments = [];
+
+                comments.forEach(c => {
+                    const match = c.content.match(/^\[REPLY_TO:([^\]]+)\]/);
+                    if (match) {
+                        const parentId = match[1];
+                        const parentExists = comments.some(p => String(p.id) === parentId && !p.content.startsWith('[REPLY_TO:'));
+                        if (parentExists) { replyComments.push(c); } else { mainComments.push(c); }
+                    } else { mainComments.push(c); }
+                });
+
+                let outputHtml = '';
+
+                for (const c of mainComments) {
+                    const badge = formatBadgeFromUsersMap(c.author, usersMap);
+                    let cleanMainContent = c.content.replace(/^\[REPLY_TO:[^\]]+\](?:\[AUTHOR:[^\]]+\])?/, '');
+
+                    let adminControls = isUserAdmin ? `<button type="button" class="btn-delete-comment" onclick="deleteCommentAction('${c.id}', '${postId}')">🗑️ ทำลาย</button>` : '';
+                    let replyBtn = (userType !== 'guest') ? `<button type="button" class="btn-reply-comment" onclick="toggleReplyBox('${c.id}')">💬 ตอบกลับ</button>` : '';
+                    let reportBtn = (savedUser) ? `<button type="button" class="btn-report" onclick="openReportModal('comment', '${c.id}')">🚨 แจ้ง</button>` : '';
+                    
+                    const isLiked = likedComments.includes(String(c.id)) ? 'liked' : '';
+                    let likeBtn = `<button type="button" class="btn-like ${isLiked}" id="btn-like-comment-${c.id}" onclick="likeCommentAction('${c.id}')">🙏 อนุโมทนา (<span id="comment-like-count-${c.id}">${c.likes || 0}</span>)</button>`;
+
+                    const childReplies = replyComments.filter(r => {
+                        const match = r.content.match(/^\[REPLY_TO:([^\]]+)\]/);
+                        return match && match[1] === String(c.id);
+                    });
+                    
+                    let repliesHtml = '';
+
+                    if (childReplies.length > 0) {
+                        repliesHtml += `<div class="replies-container">`; 
+                        for (const r of childReplies) {
+                            const rBadge = formatBadgeFromUsersMap(r.author, usersMap);
+                            let rAdminControls = isUserAdmin ? `<button type="button" class="btn-delete-comment" onclick="deleteCommentAction('${r.id}', '${postId}')">🗑️ ทำลาย</button>` : '';
+                            let rReportBtn = (savedUser) ? `<button type="button" class="btn-report" onclick="openReportModal('comment', '${r.id}')">🚨 แจ้ง</button>` : '';
+                            
+                            let authorMatch = r.content.match(/\[AUTHOR:([^\]]+)\]/);
+                            let repliedTo = authorMatch ? authorMatch[1] : c.author;
+                            let cleanReplyContent = r.content.replace(/^\[REPLY_TO:[^\]]+\](?:\[AUTHOR:[^\]]+\])?/, '');
+                            
+                            const rIsLiked = likedComments.includes(String(r.id)) ? 'liked' : '';
+                            let rLikeBtn = `<button type="button" class="btn-like ${rIsLiked}" id="btn-like-comment-${r.id}" onclick="likeCommentAction('${r.id}')">🙏 อนุโมทนา (<span id="comment-like-count-${r.id}">${r.likes || 0}</span>)</button>`;
+
+                            repliesHtml += `
+                                <div class="comment-card is-reply">
+                                    <div class="reply-badge">↪ ตอบกลับคุณ: ${repliedTo}</div>
+                                    <div class="comment-header">
+                                        <div>
+                                            <span class="comment-author">${r.author}</span>
+                                            ${rBadge}
+                                        </div>
+                                        <div>
+                                            <span class="post-time">${r.timestamp}</span>
+                                        </div>
+                                    </div>
+                                    <div class="comment-body">${cleanReplyContent}</div>
+                                    <div class="comment-actions">
+                                        ${rLikeBtn}
+                                        ${rReportBtn}
+                                        ${rAdminControls}
+                                    </div>
+                                </div>
+                            `;
+                        }
+                        repliesHtml += `</div>`;
+                    }
+
+                    let replyFormHtml = (userType !== 'guest') ? `
+                        <div id="reply-box-${c.id}" class="reply-form-container">
+                            <textarea id="replyInput-${c.id}" class="form-textarea" placeholder="พิมพ์ข้อความตอบกลับคุณ ${c.author}..."></textarea>
+                            <div style="display: flex; gap: 8px;">
+                                <button type="button" class="btn-submit-comment" onclick="submitReply('${c.id}', '${c.author}', '${postId}')" style="padding: 6px 15px; font-size: 0.85rem;">ส่งคำตอบกลับ</button>
+                                <button type="button" class="btn-delete-comment" onclick="toggleReplyBox('${c.id}')" style="background: transparent; color: #a69477; border-color: #a69477;">ยกเลิก</button>
                             </div>
                         </div>
-                        <div class="comment-body">${cleanMainContent}</div>
-                        <div class="comment-actions">
-                            ${likeBtn}
-                            ${replyBtn}
-                            ${reportBtn}
-                            ${adminControls}
+                    ` : '';
+
+                    outputHtml += `
+                        <div class="comment-card">
+                            <div class="comment-header">
+                                <div>
+                                    <span class="comment-author">${c.author}</span>
+                                    ${badge}
+                                </div>
+                                <div>
+                                    <span class="post-time">${c.timestamp}</span>
+                                </div>
+                            </div>
+                            <div class="comment-body">${cleanMainContent}</div>
+                            <div class="comment-actions">
+                                ${likeBtn}
+                                ${replyBtn}
+                                ${reportBtn}
+                                ${adminControls}
+                            </div>
+                            ${replyFormHtml}
                         </div>
-                        ${replyFormHtml}
-                    </div>
-                    ${repliesHtml}
-                `;
+                        ${repliesHtml}
+                    `;
+                }
+
+                // นำโค้ดประกอบทั้งหมดใส่หน้าเว็บเพียงครั้งเดียว
+                container.innerHTML = outputHtml;
+            } finally {
+                isCommentsRendering = false;
             }
         }
 
@@ -736,12 +886,21 @@
             return { valid: true };
         }
 
+        // 🌟 ตัวล็อกป้องกันการกดส่งคอมเมนต์เบิ้ล
+        let isSubmittingComment = false;
+
         async function submitComment() {
+            if (isSubmittingComment) return;
+
             const textarea = document.getElementById('commentInput');
             const content = textarea.value.trim();
             if(!content) { showCustomAlert('ท่านต้องเปล่งวาจาเสียก่อน'); return; }
             const validation = validateComment(content);
             if (!validation.valid) { showCustomAlert(validation.error); return; }
+
+            isSubmittingComment = true; // ล็อกปุ่มทันที
+            const btn = document.getElementById('submitCommentBtn');
+            if(btn) { btn.textContent = 'กำลังส่ง...'; btn.disabled = true; }
 
             const urlParams = new URLSearchParams(window.location.search);
             const postId = urlParams.get('id');
@@ -756,37 +915,52 @@
                 content: content.replace(/\n/g, '<br>'), timestamp: timeStr, likes: 0
             };
 
-            const btn = document.getElementById('submitCommentBtn');
-            btn.textContent = 'กำลังส่ง...'; btn.disabled = true;
+            try {
+                const result = await ApiManager.saveComment(commentData);
+                if(result && result.success !== false) {
+                    textarea.value = ''; 
+                    
+                    if (currentPostAuthorGlobal && currentPostAuthorGlobal !== author) {
+                        await ApiManager.sendNotification({
+                            id: Date.now().toString(),
+                            recipient: currentPostAuthorGlobal,
+                            actor: author,
+                            action_type: 'comment',
+                            post_id: postId,
+                            timestamp: timeStr
+                        });
+                    }
 
-            const result = await ApiManager.saveComment(commentData);
-            if(result && result.success !== false) {
-                textarea.value = ''; 
-                
-                if (currentPostAuthorGlobal && currentPostAuthorGlobal !== author) {
-                    await ApiManager.sendNotification({
-                        id: Date.now().toString(),
-                        recipient: currentPostAuthorGlobal,
-                        actor: author,
-                        action_type: 'comment',
-                        post_id: postId,
-                        timestamp: timeStr
-                    });
+                    broadcastAction('NEW_COMMENT', postId, { postId: postId });
+                    showCustomAlert('บันทึกจารึกสำเร็จ!');
+                    loadComments(postId); 
+                } else {
+                    showCustomAlert('เกิดอาถรรพ์ขัดข้อง ส่งข้อความไม่สำเร็จ');
                 }
-
-                showCustomAlert('บันทึกจารึกสำเร็จ!');
-                loadComments(postId); 
-            } else { showCustomAlert('เกิดอาถรรพ์ขัดข้อง ส่งข้อความไม่สำเร็จ'); }
-            btn.textContent = 'ส่งความคิดเห็น'; btn.disabled = false;
+            } catch (e) {
+                showCustomAlert('เกิดอาถรรพ์ขัดข้องในการเชื่อมต่อ');
+            } finally {
+                isSubmittingComment = false; // ปลดล็อกปุ่ม
+                if(btn) { btn.textContent = 'ส่งความคิดเห็น'; btn.disabled = false; }
+            }
         }
 
+        // 🌟 ตัวล็อกป้องกันการกดส่งคำตอบกลับเบิ้ล
+        const submittingReplies = {};
+
         async function submitReply(parentId, parentAuthor, postId) {
+            if (submittingReplies[parentId]) return;
+
             const textarea = document.getElementById(`replyInput-${parentId}`);
             if (!textarea) return;
             const content = textarea.value.trim();
             if(!content) { showCustomAlert('ท่านต้องพิมพ์ข้อความตอบกลับเสียก่อน'); return; }
             const validation = validateComment(content);
             if (!validation.valid) { showCustomAlert(validation.error); return; }
+
+            submittingReplies[parentId] = true; // ล็อกตาม ID ข้อความแม่
+            const btn = textarea.parentElement.querySelector('.btn-submit-comment');
+            if(btn) { btn.textContent = 'กำลังส่ง...'; btn.disabled = true; }
 
             const author = localStorage.getItem('siy_username');
             
@@ -802,28 +976,32 @@
                 content: finalContent, timestamp: timeStr, likes: 0
             };
 
-            const btn = textarea.nextElementSibling.querySelector('.btn-submit-comment');
-            if(btn) { btn.textContent = 'กำลังส่ง...'; btn.disabled = true; }
+            try {
+                const result = await ApiManager.saveComment(commentData);
+                if(result && result.success !== false) {
+                    textarea.value = '';
 
-            const result = await ApiManager.saveComment(commentData);
-            if(result && result.success !== false) {
-                textarea.value = '';
+                    if (parentAuthor && parentAuthor !== author) {
+                        await ApiManager.sendNotification({
+                            id: Date.now().toString(),
+                            recipient: parentAuthor,
+                            actor: author,
+                            action_type: 'reply',
+                            post_id: postId,
+                            timestamp: timeStr
+                        });
+                    }
 
-                if (parentAuthor && parentAuthor !== author) {
-                    await ApiManager.sendNotification({
-                        id: Date.now().toString(),
-                        recipient: parentAuthor,
-                        actor: author,
-                        action_type: 'reply',
-                        post_id: postId,
-                        timestamp: timeStr
-                    });
+                    broadcastAction('NEW_COMMENT', postId, { postId: postId });
+                    showCustomAlert('ส่งคำตอบกลับสำเร็จ!');
+                    loadComments(postId);
+                } else {
+                    showCustomAlert('เกิดอาถรรพ์ขัดข้อง ส่งคำตอบกลับไม่สำเร็จ');
                 }
-
-                showCustomAlert('ส่งคำตอบกลับสำเร็จ!');
-                loadComments(postId);
-            } else {
-                showCustomAlert('เกิดอาถรรพ์ขัดข้อง ส่งคำตอบกลับไม่สำเร็จ');
+            } catch (e) {
+                showCustomAlert('เกิดอาถรรพ์ขัดข้องในการเชื่อมต่อ');
+            } finally {
+                submittingReplies[parentId] = false; // ปลดล็อก
                 if(btn) { btn.textContent = 'ส่งคำตอบกลับ'; btn.disabled = false; }
             }
         }
@@ -845,15 +1023,18 @@
                 const foundUser = usersDB.find(u => u.username === savedUser);
                 if (foundUser) {
                     currentUserRole = String(foundUser.role || '5');
-                    currentUserRank = getRoleTitleName(currentUserRole); 
+                    currentUserRank = foundUser.rank_name || getRoleTitleName(currentUserRole); 
                 }
             } catch (e) {}
 
             document.getElementById('displayUsername').textContent = savedUser;
             let myBadgeHtml = '';
             if (savedUser.toUpperCase() === 'ADMIN' || currentUserRole === '1') { myBadgeHtml = '<span class="role-badge role-1">ปรมัตถ์</span>'; } 
-            else if (userType === 'guest' || savedUser.includes('ผู้ไม่ประสงค์ออกนาม')) { myBadgeHtml = '<span class="role-badge role-guest">วิญญาณเร่ร่อน</span>'; } 
-            else { myBadgeHtml = `<span class="role-badge role-${currentUserRole}">${currentUserRank}</span>`; }
+            else if (userType === 'guest' || savedUser.includes('ผู้ไม่ประสงค์ออกนาม')) { myBadgeHtml = '<span class="role-badge role-guest" style="display: inline-block; margin-top: -2px;">วิญญาณเร่ร่อน</span>'; } 
+            else { 
+                let badgeClass = currentUserRank === 'ตัวละคร' ? 'role-6' : `role-${currentUserRole}`;
+                myBadgeHtml = `<span class="role-badge ${badgeClass}">${currentUserRank}</span>`; 
+            }
             document.getElementById('displayUserBadge').innerHTML = myBadgeHtml;
 
             const urlParams = new URLSearchParams(window.location.search);
@@ -887,7 +1068,23 @@
             const commentArea = document.getElementById('commentAreaContainer');
             if (userType === 'guest') {
                 document.getElementById('logoutBtnText').textContent = 'ลบตัวตน (สละร่าง)';
-                commentArea.innerHTML = `<div class="ghost-warning">สถานะปัจจุบัน: <strong>${savedUser}</strong><br>ท่านอยู่ในร่างวิญญาณเร่ร่อน <strong>ไม่อาจฝากข้อความหรือคอมเมนต์ได้</strong></div>`;
+                
+                // 🌟 อัปเดตกล่องวิญญาณเร่ร่อนแบบ Responsive โดยจำกัดป้ายยศไม่ให้ยืดเต็มจอ
+                commentArea.innerHTML = `
+                    <div class="ghost-warning-box">
+                        <div style="font-size: 2.5rem; margin-bottom: 10px; filter: drop-shadow(0 0 8px rgba(168, 46, 46, 0.8));">👻</div>
+                        <h4>เขตอนธการ (วิญญาณมิอาจก้าวล่วง)</h4>
+                        <p>
+                            <span class="ghost-line">นามปัจจุบันของท่านคือ <strong style="color: var(--gold-light);">${savedUser}</strong></span>
+                            <span class="ghost-line">ดวงจิตของท่านยังคงล่องลอยไร้ตัวตนในสถานะ <span class="role-badge role-guest" style="display: inline-block; margin-top: -2px;">วิญญาณเร่ร่อน</span></span>
+                            <span class="ghost-line" style="margin-top: 5px;">ท่านสามารถรับรู้ได้เพียงอดีต แต่ไม่อาจสลักวาจาใดๆ ลงในหน้าจารึกนี้ได้</span>
+                        </p>
+                        <div class="ghost-btn-group">
+                            <button onclick="handleLogout()" class="btn-submit-comment" style="background: linear-gradient(180deg, #a82e2e 0%, #5c1414 100%); color: #ffd1d1; border: 1px solid #ff6b6b;">สละร่างเพื่อจุติใหม่</button>
+                            <a href="webboard.html" class="btn-secondary-custom">เร้นกายกลับลานเสวนา</a>
+                        </div>
+                    </div>
+                `;
             } else {
                 document.getElementById('logoutBtnText').textContent = 'ออกจากระบบ';
                 commentArea.innerHTML = `
@@ -896,7 +1093,10 @@
                             ร่วมแสดงความคิดเห็นในนาม: <span style="color: var(--gold-light); margin-left: 5px;">${savedUser}</span> ${myBadgeHtml}
                         </h4>
                         <textarea id="commentInput" class="form-textarea" placeholder="พิมพ์ความคิดเห็นของคุณที่นี่..."></textarea>
-                        <button type="button" id="submitCommentBtn" class="btn-submit-comment" onclick="submitComment()">ส่งความคิดเห็น</button>
+                        <div style="display: flex; gap: 10px; align-items: center; margin-top: 10px; flex-wrap: wrap;">
+                            <button type="button" id="submitCommentBtn" class="btn-submit-comment" onclick="submitComment()">ส่งความคิดเห็น</button>
+                            <a href="webboard.html" class="btn-secondary-custom">กลับไปลานเสวนา</a>
+                        </div>
                     </div>
                 `;
             }
