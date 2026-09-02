@@ -384,6 +384,9 @@ app.post('/api/cms', async (c) => {
   return c.json({ success: true })
 })
 
+// ==========================================
+// 🔮 ระบบแจ้งเตือน (Notifications)
+// ==========================================
 app.get('/api/notifications/:username', async (c) => {
   const username = c.req.param('username')
   try {
@@ -398,7 +401,10 @@ app.get('/api/notifications/:username', async (c) => {
 
 app.post('/api/notifications', async (c) => {
   const body = await c.req.json()
+  
+  // 🌟 รองรับ action_type ทุกรูปแบบ รวมถึง 'mention' ด้วย (เพราะเป็น TEXT ใน Database)
   const { id, recipient, actor, action_type, post_id, timestamp } = body
+  
   if (recipient === actor) { return c.json({ success: true, ignored: true }) }
 
   try {
