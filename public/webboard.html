@@ -135,7 +135,24 @@
         @media (max-width: 600px) { .skeleton-title { width: 85%; } .skeleton-meta { width: 60%; } }
 
         .thread-item { padding: 15px 20px; border-bottom: 1px solid rgba(138, 99, 21, 0.2); display: flex; align-items: center; gap: 15px; transition: background 0.3s; width: 100%; box-sizing: border-box; } .thread-item:last-child { border-bottom: none; } .thread-item:hover { background: rgba(212, 175, 55, 0.05); } .thread-content { flex: 1; min-width: 0; } 
-        .thread-title { color: var(--gold-light); font-family: 'Prompt', sans-serif; font-size: 1.05rem; font-weight: 500; text-decoration: none; display: block; margin-bottom: 5px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; } .thread-title:hover { color: #fff; text-shadow: 0 0 8px var(--gold-main); } 
+        
+        /* 🌟 ปลดล็อกให้ข้อความกระทู้ยาวๆ แสดงผลครบถ้วน ไม่โดนตัดเป็น ... */
+        .thread-title { 
+            color: var(--gold-light); 
+            font-family: 'Prompt', sans-serif; 
+            font-size: 1.05rem; 
+            font-weight: 500; 
+            text-decoration: none; 
+            display: block; 
+            margin-bottom: 6px; 
+            cursor: pointer; 
+            white-space: normal !important; /* ปลดล็อกไม่ให้ตัดคำบรรทัดเดียว */
+            word-break: break-word !important; /* ตัดคำภาษาไทยและอังกฤษขึ้นบรรทัดใหม่อย่างสวยงาม */
+            overflow-wrap: break-word !important; 
+            line-height: 1.5; /* เว้นระยะบรรทัดให้อ่านง่าย */
+            max-width: 100%; 
+        } 
+        .thread-title:hover { color: #fff; text-shadow: 0 0 8px var(--gold-main); } 
         
         .role-badge, .role-tag { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 0.75rem; font-family: 'Prompt', sans-serif; font-weight: 600; letter-spacing: 0.5px; vertical-align: middle; margin-left: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.6); }
         .role-1 { background: linear-gradient(135deg, #f5d77f, #d4af37, #8a6315); color: #1a0f02 !important; border: 1px solid #ffeea8; box-shadow: 0 0 12px rgba(212,175,55,0.8), inset 0 0 6px rgba(255,255,255,0.6); font-weight: 700; } 
@@ -154,7 +171,15 @@
         .wb-tag { font-size: 0.75rem; padding: 2px 6px; border-radius: 4px; border: 1px solid; margin-right: 6px; display: inline-block; vertical-align: middle; margin-top: -2px; }
         .wb-tag-pin { border-color: #d4af37; color: #150a03; background: var(--gold-main); font-weight: bold; }
         
-        .thread-details { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; } .thread-details span { color: #a69477; } 
+        /* 🌟 ปรับให้รายละเอียดโพสต์ไม่โดนตัด ... ด้วยเช่นกัน */
+        .thread-details { 
+            font-size: 0.8rem; 
+            color: var(--text-muted); 
+            line-height: 1.5; 
+            word-break: break-word; 
+            max-width: 100%; 
+        } 
+        .thread-details span { color: #a69477; } 
         .thread-stats { display: flex; gap: 15px; font-size: 0.85rem; color: #a69477; text-align: right; align-items: center; flex-shrink: 0; } .thread-stats .stat-box { display: flex; align-items: center; gap: 5px; min-width: 80px; justify-content: flex-start; }
         
         /* 🌟 ซ่อมกรอบด้านข้าง (Widget) ให้พอดีจอ */
@@ -680,7 +705,7 @@
                 const displayTitle = formatMentions(item.title);
                 container.innerHTML += `
                     <a href="post.html?id=${item.id}" style="display: block; width: 100%; box-sizing: border-box; overflow: hidden; padding: 12px 15px; background: rgba(0,0,0,0.4); border: 1px dashed rgba(138, 99, 21, 0.3); border-radius: 6px; text-decoration: none; color: var(--gold-light); font-size: 0.9rem; transition: 0.3s;" onmouseover="this.style.borderColor='var(--gold-main)'; this.style.background='rgba(212,175,55,0.05)'" onmouseout="this.style.borderColor='rgba(138, 99, 21, 0.3)'; this.style.background='rgba(0,0,0,0.4)'">
-                        <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: 'Prompt', sans-serif; width: 100%;">${displayTitle}</div>
+                        <div style="white-space: normal; word-break: break-word; line-height: 1.4; font-family: 'Prompt', sans-serif; width: 100%;">${displayTitle}</div>
                     </a>
                 `;
             });
@@ -1086,7 +1111,6 @@
                         return;
                     }
 
-                    // 🌟 บันทึก Token จากการสมัครใหม่
                     if (result.token) {
                         localStorage.setItem('siy_token', result.token);
                     }
@@ -1099,7 +1123,6 @@
 
             } else {
                 try {
-                    // 🌟 ยิงตรวจสอบรหัสผ่านตรงเข้า /api/login และรับ JWT Token จากหลังบ้าน
                     const res = await fetch(`${API_CONFIG.BASE_URL}/login`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -1115,7 +1138,6 @@
                         return;
                     }
 
-                    // 🌟 บันทึก Token ยืนยันตัวตนลงใน LocalStorage
                     if (result.token) {
                         localStorage.setItem('siy_token', result.token);
                     }
@@ -1136,7 +1158,7 @@
 
         function enterAsAnonymous() {
             const guestName = `ผู้ไม่ประสงค์ออกนาม#${Math.floor(1000 + Math.random() * 9000)}`;
-            localStorage.removeItem('siy_token'); // ลบ Token ทิ้งเมื่อใช้งานแบบวิญญาณเร่ร่อน
+            localStorage.removeItem('siy_token');
             localStorage.setItem('siy_username', guestName);
             localStorage.setItem('siy_usertype', 'guest');
             localStorage.setItem('siy_login_timestamp', Date.now().toString());
@@ -1145,9 +1167,9 @@
         }
 
         function handleLogout() {
-            localStorage.removeItem('siy_token'); // ล้าง Token เมื่อออกจากระบบ
+            localStorage.removeItem('siy_token');
             localStorage.removeItem('siy_username'); 
-            localStorage.removeItem('siy_usertype');
+            localStorage.removeItem('siy_usertype'); 
             localStorage.removeItem('siy_login_timestamp');
             checkUserLoginStatus(); 
             showCustomAlert('ท่านได้ออกจากระบบเรียบร้อยแล้ว');
