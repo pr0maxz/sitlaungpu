@@ -119,54 +119,40 @@
         .btn-close-modal { background: transparent; border: 1px solid var(--text-muted); color: var(--text-muted); padding: 8px 25px; border-radius: 20px; font-family: 'Prompt', sans-serif; cursor: pointer; }
         .btn-close-modal:hover { background: rgba(255,255,255,0.1); color: #fff; }
 
-        /* 🚀 อาคมลดภาระเครื่องขั้นเด็ดขาด (ลื่นปรี๊ด 100% บนแท็บเล็ตและมือถือ) */
-@media (max-width: 1200px), (hover: none) and (pointer: coarse) {
-    /* 1. ปลดล็อกพื้นหลัง fixed ตัวการที่ทำให้เลื่อนจอแล้วกระตุก */
-    body {
-        background-attachment: scroll !important;
-    }
-
-    /* 2. ซ่อนละอองเวทมนตร์ขนาดยักษ์ (200vw x 200vh) */
-    body::before, body::after {
-        display: none !important;
-    }
-
-    /* 3. ปิดกระจกฝ้า (Blur) และเพิ่มขอบสีทองแบบนิ่งๆ แทน */
-    .main-container {
-        backdrop-filter: none !important;
-        -webkit-backdrop-filter: none !important;
-        background-color: rgba(7, 4, 2, 0.98) !important;
-        animation: none !important;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.9) !important;
-        border: 1px solid var(--gold-main) !important; /* วาดเส้นขอบตรงนี้แทน */
-    }
-    
-    /* 4. ซ่อนตัวทำกรอบแสงวิ่ง (ต้นเหตุของพื้นหลังสีทอง) ปิดทิ้งไปเลย */
-    .main-container::before {
-        display: none !important;
-    }
-
-    /* 5. ปิดแอนิเมชันลูกเล่นจุกจิกทั้งหมด */
-    .corner-decor, .noti-btn, .loading-text, .hero-center-img {
-        animation: none !important;
-    }
-}
+        /* 🚀 อาคมลดภาระเครื่องขั้นเด็ดขาด */
+        @media (max-width: 1200px), (hover: none) and (pointer: coarse) {
+            body {
+                background-attachment: scroll !important;
+            }
+            body::before, body::after {
+                display: none !important;
+            }
+            .login-box {
+                backdrop-filter: none !important;
+                -webkit-backdrop-filter: none !important;
+                background: rgba(10, 6, 3, 0.98) !important;
+                animation: none !important;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.9) !important;
+                border: 1px solid var(--gold-main) !important;
+            }
+            .corner-decor {
+                animation: none !important;
+            }
+        }
     </style>
 </head>
 <body>
 
     <div class="login-box">
-        <!-- 🌟 เพิ่ม width และ height ให้ภาพมุมกล่องเพื่อป้องกัน CLS -->
         <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-top-left" alt="" width="60" height="60">
         <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-top-right" alt="" width="60" height="60">
         <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-bottom-left" alt="" width="60" height="60">
         <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-bottom-right" alt="" width="60" height="60">
 
         <div class="login-header">
-            <!-- 🌟 เพิ่ม width และ height ให้โลโก้หลัก -->
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019626/logo.png" alt="โลโก้สำนัก" width="210" height="70">
             <h1>ประตูสู่เมืองลับแล</h1>
-            <p>สถานที่นี้สงวนไว้สำหรับ "ผู้คุมกฏ" เท่านั้น</p>
+            <p>สถานที่นี้สงวนไว้สำหรับ "ผู้คุมกฎ" เท่านั้น</p>
         </div>
 
         <form id="adminLoginForm" onsubmit="handleAdminLogin(event)">
@@ -254,7 +240,7 @@
                     if (!foundUser || foundUser.password !== password || foundUser.role !== '1') {
                         throw new Error('นามหรือรหัสผ่านอาคมไม่ถูกต้อง!');
                     }
-                    response = { ok: true, json: async () => ({ success: true, username: foundUser.username }) };
+                    response = { ok: true, json: async () => ({ success: true, username: foundUser.username, token: 'mock-admin-token' }) };
                 }
 
                 const result = await response.json();
@@ -268,6 +254,10 @@
 
                 showAlert('ยินดีต้อนรับ', 'มนตราบรรลุผล... ประตูเมืองลับแลเปิดออกแล้วท่านจ้าวปะรำพิธี', true);
                 
+                // 🌟 จัดเก็บ Token และสถานะของแอดมินลงใน Storage
+                if (result.token) {
+                    localStorage.setItem('siy_token', result.token);
+                }
                 localStorage.setItem('siy_username', result.username || username);
                 localStorage.setItem('siy_usertype', 'admin');
 

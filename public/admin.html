@@ -57,14 +57,13 @@
         .btn-reorder { background: rgba(212, 175, 55, 0.1); color: var(--gold-light); border: 1px solid rgba(212, 175, 55, 0.3); padding: 4px 8px; font-size: 0.75rem; }
         .btn-reorder:hover { background: var(--gold-main); color: #000; }
         
-        /* 🌟 โค้ดสีป้ายยศ (รวมยศพิเศษ "ตัวละคร" สีเขียว Role 6) */
         .role-badge, .role-tag { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 0.75rem; font-family: 'Prompt', sans-serif; font-weight: 600; letter-spacing: 0.5px; vertical-align: middle; margin-left: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.6); }
         .role-1 { background: linear-gradient(135deg, #f5d77f, #d4af37, #8a6315); color: #1a0f02 !important; border: 1px solid #ffeea8; box-shadow: 0 0 12px rgba(212,175,55,0.8), inset 0 0 6px rgba(255,255,255,0.6); font-weight: 700; } 
         .role-2 { background: linear-gradient(135deg, #4a1c60, #240b36); color: #e5b3ff !important; border: 1px solid #9b59b6; box-shadow: 0 0 6px rgba(155,89,182,0.4); } 
         .role-3 { background: linear-gradient(135deg, #6c7a86, #262c30); color: #d6dfe5 !important; border: 1px solid #94a6b5; box-shadow: 0 0 6px rgba(148,166,181,0.4); } 
         .role-4 { background: linear-gradient(135deg, #8a4818, #422008); color: #e8a67c !important; border: 1px solid #b86226; box-shadow: 0 0 6px rgba(184,98,38,0.4); } 
         .role-5 { background: rgba(138, 99, 21, 0.1); color: #a69477 !important; border: 1px solid #8a6315; } 
-        .role-6 { background: linear-gradient(135deg, #27ae60, #145a32); color: #abebc6 !important; border: 1px solid #2ecc71; box-shadow: 0 0 10px rgba(46,204,113,0.8); font-weight: 700; } /* ตัวละคร: สีเขียวพิเศษ */
+        .role-6 { background: linear-gradient(135deg, #27ae60, #145a32); color: #abebc6 !important; border: 1px solid #2ecc71; box-shadow: 0 0 10px rgba(46,204,113,0.8); font-weight: 700; } 
         .role-guest { background: rgba(168, 46, 46, 0.15); color: #ff6b6b !important; border: 1px dashed #a82e2e; }
 
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; width: 100%; }
@@ -98,38 +97,17 @@
             .panel-card { padding: 15px 12px; }
         }
 
-        /* 🚀 อาคมลดภาระเครื่องขั้นเด็ดขาด (ลื่นปรี๊ด 100% บนแท็บเล็ตและมือถือ) */
-@media (max-width: 1200px), (hover: none) and (pointer: coarse) {
-    /* 1. ปลดล็อกพื้นหลัง fixed ตัวการที่ทำให้เลื่อนจอแล้วกระตุก */
-    body {
-        background-attachment: scroll !important;
-    }
-
-    /* 2. ซ่อนละอองเวทมนตร์ขนาดยักษ์ (200vw x 200vh) */
-    body::before, body::after {
-        display: none !important;
-    }
-
-    /* 3. ปิดกระจกฝ้า (Blur) และเพิ่มขอบสีทองแบบนิ่งๆ แทน */
-    .main-container {
-        backdrop-filter: none !important;
-        -webkit-backdrop-filter: none !important;
-        background-color: rgba(7, 4, 2, 0.98) !important;
-        animation: none !important;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.9) !important;
-        border: 1px solid var(--gold-main) !important; /* วาดเส้นขอบตรงนี้แทน */
-    }
-    
-    /* 4. ซ่อนตัวทำกรอบแสงวิ่ง (ต้นเหตุของพื้นหลังสีทอง) ปิดทิ้งไปเลย */
-    .main-container::before {
-        display: none !important;
-    }
-
-    /* 5. ปิดแอนิเมชันลูกเล่นจุกจิกทั้งหมด */
-    .corner-decor, .noti-btn, .loading-text, .hero-center-img {
-        animation: none !important;
-    }
-}
+        @media (max-width: 1200px), (hover: none) and (pointer: coarse) {
+            body { background-attachment: scroll !important; }
+            body::before, body::after { display: none !important; }
+            .main-container {
+                backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
+                background-color: rgba(7, 4, 2, 0.98) !important; animation: none !important;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.9) !important; border: 1px solid var(--gold-main) !important;
+            }
+            .main-container::before { display: none !important; }
+            .corner-decor, .noti-btn, .loading-text, .hero-center-img { animation: none !important; }
+        }
     </style>
 </head>
 <body>
@@ -364,7 +342,6 @@
         </div>
     </div>
 
-    <!-- Modal เพิ่ม/แก้ไขสมาชิก รองรับยศพิเศษ "ตัวละคร" -->
     <div class="modal-overlay" id="userModal">
         <div class="modal-box" style="max-width: 400px;">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor mc-top-left" alt="" width="50" height="50">
@@ -462,8 +439,9 @@
         async function checkAdminAuth() {
             const savedUsername = localStorage.getItem('siy_username');
             const userType = localStorage.getItem('siy_usertype');
+            const token = localStorage.getItem('siy_token');
 
-            if (!savedUsername || userType !== 'admin') {
+            if (!savedUsername || userType !== 'admin' || !token) {
                 window.location.replace('admin_login.html');
                 return false;
             }
@@ -494,9 +472,13 @@
             },
             async savePost(postData) { 
                 if (API_CONFIG.USE_REAL_API) { 
+                    const token = localStorage.getItem('siy_token');
+                    const headers = {'Content-Type': 'application/json'};
+                    if (token) headers['Authorization'] = `Bearer ${token}`;
+
                     const res = await fetch(`${API_CONFIG.BASE_URL}/posts`, { 
                         method: postData.id && postData.id.length < 15 ? 'PUT' : 'POST',
-                        headers: {'Content-Type': 'application/json'}, 
+                        headers: headers, 
                         body: JSON.stringify(postData) 
                     });
                     if (!res.ok) throw new Error(await res.text() || 'Failed to save post');
@@ -504,28 +486,47 @@
                 } else { return { success: true }; } 
             },
             async deletePost(id) { 
-                if (API_CONFIG.USE_REAL_API) { await fetch(`${API_CONFIG.BASE_URL}/posts/${id}`, { method: 'DELETE' }); } 
+                if (API_CONFIG.USE_REAL_API) { 
+                    const token = localStorage.getItem('siy_token');
+                    const headers = {};
+                    if (token) headers['Authorization'] = `Bearer ${token}`;
+                    await fetch(`${API_CONFIG.BASE_URL}/posts/${id}`, { method: 'DELETE', headers: headers }); 
+                } 
             },
             async getUsers() { 
                 if (API_CONFIG.USE_REAL_API) { try { const res = await fetch(`${API_CONFIG.BASE_URL}/users`); return await res.json(); } catch(e){ return []; } } 
             },
             async saveUser(userData, oldUsername) { 
                 if (API_CONFIG.USE_REAL_API) { 
+                    const token = localStorage.getItem('siy_token');
+                    const headers = {'Content-Type': 'application/json'};
+                    if (token) headers['Authorization'] = `Bearer ${token}`;
+
                     const method = oldUsername ? 'PUT' : 'POST';
                     const res = await fetch(`${API_CONFIG.BASE_URL}/users`, { 
-                        method: method, headers: {'Content-Type': 'application/json'}, body: JSON.stringify({...userData, oldUsername}) 
+                        method: method, headers: headers, body: JSON.stringify({...userData, oldUsername}) 
                     });
                     if (!res.ok) throw new Error('DUPLICATE');
                 }
             },
             async deleteUser(username) { 
-                if (API_CONFIG.USE_REAL_API) { await fetch(`${API_CONFIG.BASE_URL}/users/${username}`, { method: 'DELETE' }); }
+                if (API_CONFIG.USE_REAL_API) { 
+                    const token = localStorage.getItem('siy_token');
+                    const headers = {};
+                    if (token) headers['Authorization'] = `Bearer ${token}`;
+                    await fetch(`${API_CONFIG.BASE_URL}/users/${username}`, { method: 'DELETE', headers: headers }); 
+                }
             },
             async getCMS() { 
                 if (API_CONFIG.USE_REAL_API) { try { const res = await fetch(`${API_CONFIG.BASE_URL}/cms`); return await res.json(); } catch(e){ return {}; } } 
             },
             async saveCMS(cmsData) { 
-                if (API_CONFIG.USE_REAL_API) { await fetch(`${API_CONFIG.BASE_URL}/cms`, { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(cmsData) }); } 
+                if (API_CONFIG.USE_REAL_API) { 
+                    const token = localStorage.getItem('siy_token');
+                    const headers = {'Content-Type': 'application/json'};
+                    if (token) headers['Authorization'] = `Bearer ${token}`;
+                    await fetch(`${API_CONFIG.BASE_URL}/cms`, { method: 'POST', headers: headers, body: JSON.stringify(cmsData) }); 
+                } 
             },
             async getReports() {
                 if (API_CONFIG.USE_REAL_API) {
@@ -534,7 +535,12 @@
                 return [];
             },
             async deleteReport(id) {
-                if (API_CONFIG.USE_REAL_API) { await fetch(`${API_CONFIG.BASE_URL}/reports/${id}`, { method: 'DELETE' }); }
+                if (API_CONFIG.USE_REAL_API) { 
+                    const token = localStorage.getItem('siy_token');
+                    const headers = {};
+                    if (token) headers['Authorization'] = `Bearer ${token}`;
+                    await fetch(`${API_CONFIG.BASE_URL}/reports/${id}`, { method: 'DELETE', headers: headers }); 
+                }
             }
         };
 
@@ -564,7 +570,6 @@
             if (pendingConfirmAction) { await pendingConfirmAction(); pendingConfirmAction = null; }
         });
 
-        // ฟังก์ชันแปลงแสดงป้ายยศในหน้าแอดมิน (รองรับยศพิเศษ ตัวละคร)
         function getRoleBadge(userObj) {
             let roleValue = userObj.role;
             let rankName = userObj.rank_name;
@@ -877,7 +882,6 @@
                     document.getElementById('edit-user-name').value = u.username; 
                     document.getElementById('edit-user-password').value = u.password; 
                     
-                    // เช็คว่าเป็นยศตัวละครพิเศษ หรือตาม role ปกติ
                     if (u.rank_name === 'ตัวละคร') {
                         document.getElementById('edit-user-role').value = 'character';
                     } else {
@@ -899,7 +903,7 @@
             let finalRankName = 'เด็กวัด';
 
             if (roleSelectVal === 'character') {
-                finalRole = '2'; // เทียบเท่าตติยภูมิ
+                finalRole = '2'; 
                 finalRankName = 'ตัวละคร';
             } else if (roleSelectVal === '1') {
                 finalRankName = 'ปรมัตถ์';
@@ -1008,6 +1012,8 @@
         }
 
         function handleAdminLogout() {
+            // 🌟 ล้าง Token และข้อมูลยืนยันตัวตนทั้งหมดเมื่อออกจากระบบแอดมิน
+            localStorage.removeItem('siy_token');
             localStorage.removeItem('siy_username');
             localStorage.removeItem('siy_usertype');
             sessionStorage.clear();
