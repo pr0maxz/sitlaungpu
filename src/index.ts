@@ -1,14 +1,19 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
+import { sign, verify } from 'hono/jwt'
 
 type Bindings = {
   DB: D1Database
   TELEPATHY_ROOM: DurableObjectNamespace
+  JWT_SECRET?: string
 }
 
 const app = new Hono<{ Bindings: Bindings }>()
 
 app.use('/api/*', cors())
+
+// 🌟 กุญแจอาคมสำหรับเข้ารหัส Token (เปลี่ยนหรือตั้งใน wrangler.jsonc ได้)
+const DEFAULT_JWT_SECRET = 'sitluangpu_telepathy_secret_token_2026'
 
 async function hashPassword(password: string, salt: string) {
   const encoder = new TextEncoder()
@@ -26,10 +31,32 @@ function sanitize(text: string) {
 }
 
 // ==========================================
+// 🛡️ ฟังก์ชันจัดการ Token ยืนยันตัวตน (JWT)
+// ==========================================
+async function generateToken(payload: { username: string; role: string; rank_name: string }, secret: string) {
+  return await sign({
+    ...payload,
+    exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 30) // ตรายางมีอายุ 30 วัน
+  }, secret)
+}
+
+async function getAuthenticatedUser(c: any): Promise<{ username: string; role: string; rank_name: string } | null> {
+  const authHeader = c.req.header('Authorization')
+  if (!authHeader || !authHeader.startsWith('Bearer ')) return null
+  const token = authHeader.substring(7)
+  try {
+    const secret = c.env.JWT_SECRET || DEFAULT_JWT_SECRET
+    const payload = await verify(token, secret)
+    return payload as any
+  } catch (e) {
+    return null
+  }
+}
+
+// ==========================================
 // 🛠️ ฟังก์ชันคำนวณยศ (Auto-Rank System)
 // ==========================================
 function calculateRank(karma: number, currentRole: string, currentRankName: string) {
-  // หากเป็นแอดมิน (ปรมัตถ์, role '1') หรือมียศพิเศษ "ตัวละคร" ให้คงสถานะนั้นไว้ ไม่ถูกระบบออโต้ทับ
   if (currentRole === '1' || currentRankName === 'ตัวละคร') {
     return { role: currentRole, rank_name: currentRankName, nextRankMsg: 'ยศพิเศษเฉพาะกิจ' };
   }
@@ -40,7 +67,6 @@ function calculateRank(karma: number, currentRole: string, currentRankName: stri
   return { role: '5', rank_name: 'เด็กวัด', nextRankMsg: `อีก ${11 - karma} แต้มบุญ จะเลื่อนเป็น ปฐมภูมิ` };
 }
 
-// ฟังก์ชันเพิ่มแต้มบุญอัตโนมัติ (ไม่นับวิญญาณเร่ร่อนและแอดมิน)
 async function addKarma(db: D1Database, username: string, amount: number) {
   try {
     if (!username || username.includes('ผู้ไม่ประสงค์ออกนาม')) return;
@@ -135,8 +161,50 @@ app.delete('/api/reports/:id', async (c) => {
 })
 
 // ==========================================
-// 🔑 ระบบตรวจสอบสิทธิ์แอดมิน 
+// 🔑 ระบบเข้าสู่ระบบทั่วไป & แอดมิน (Auth & Token)
 // ==========================================
+app.post('/api/login', async (c) => {
+  try {
+    const { username, password } = await c.req.json()
+    const user: any = await c.env.DB.prepare("SELECT * FROM users WHERE username = ?").bind(username).first()
+    if (!user) return c.json({ success: false, error: 'ไม่พบนามแฝงนี้ในระบบ' }, 400)
+
+    let isValid = false
+    if (user.password_hash && user.salt) {
+      const computedHash = await hashPassword(password, user.salt)
+      if (user.password_hash === computedHash) isValid = true
+    }
+    if (!isValid && user.password === password) isValid = true
+    if (!isValid && user.password_hash === password) isValid = true
+
+    if (!isValid) return c.json({ success: false, error: 'รหัสผ่านลับไม่ถูกต้อง' }, 400)
+
+    const now = Date.now()
+    try { await c.env.DB.prepare("UPDATE users SET last_login = ? WHERE username = ?").bind(now, user.username).run() } catch(e) {}
+
+    const secret = c.env.JWT_SECRET || DEFAULT_JWT_SECRET
+    const token = await generateToken({
+      username: user.username,
+      role: String(user.role || '5'),
+      rank_name: user.rank_name || 'เด็กวัด'
+    }, secret)
+
+    const rankInfo = calculateRank(user.karma || 0, String(user.role), user.rank_name)
+
+    return c.json({
+      success: true,
+      token,
+      username: user.username,
+      role: user.role,
+      rank_name: user.rank_name,
+      karma: user.karma || 0,
+      nextRankMsg: rankInfo.nextRankMsg
+    })
+  } catch (err: any) {
+    return c.json({ success: false, error: 'เกิดข้อผิดพลาดในการตรวจสอบตัวตน' }, 500)
+  }
+})
+
 app.post('/api/admin/login', async (c) => {
   try {
     const { username, password } = await c.req.json();
@@ -156,11 +224,28 @@ app.post('/api/admin/login', async (c) => {
 
     try { await c.env.DB.prepare("UPDATE users SET last_login = ? WHERE username = ?").bind(Date.now(), user.username).run(); } catch(e) {}
 
-    return c.json({ success: true, username: user.username, rank_name: user.rank_name || 'เด็กวัด' });
+    const secret = c.env.JWT_SECRET || DEFAULT_JWT_SECRET
+    const token = await generateToken({
+      username: user.username,
+      role: '1',
+      rank_name: user.rank_name || 'ปรมัตถ์'
+    }, secret)
+
+    return c.json({ success: true, token, username: user.username, rank_name: user.rank_name || 'เด็กวัด' });
   } catch (err) {
     return c.json({ success: false, error: 'เกิดข้อผิดพลาดที่แก่นเซิร์ฟเวอร์' }, 500);
   }
 });
+
+// ตรวจสอบ Token ของตัวเอง
+app.get('/api/me', async (c) => {
+  const authUser = await getAuthenticatedUser(c)
+  if (!authUser) return c.json({ authenticated: false }, 401)
+  const user: any = await c.env.DB.prepare("SELECT username, role, rank_name, karma, last_login FROM users WHERE username = ?").bind(authUser.username).first()
+  if (!user) return c.json({ authenticated: false }, 404)
+  const rankInfo = calculateRank(user.karma || 0, String(user.role), user.rank_name)
+  return c.json({ authenticated: true, user: { ...user, nextRankMsg: rankInfo.nextRankMsg } })
+})
 
 // ==========================================
 // 🚪 จัดการสมาชิก 
@@ -182,7 +267,15 @@ app.post('/api/users', async (c) => {
     await c.env.DB.prepare(
       "INSERT INTO users (username, password_hash, salt, role, rank_name, password, last_login, karma) VALUES (?, ?, ?, ?, ?, ?, ?, 0)"
     ).bind(username, hashed, salt, role || '5', rank_name || 'เด็กวัด', password, last_login || null).run()
-    return c.json({ success: true })
+    
+    const secret = c.env.JWT_SECRET || DEFAULT_JWT_SECRET
+    const token = await generateToken({
+      username,
+      role: role || '5',
+      rank_name: rank_name || 'เด็กวัด'
+    }, secret)
+
+    return c.json({ success: true, token, username })
   } catch (e) {
     return c.json({ success: false, message: 'นามแฝงนี้มีผู้ใช้งานแล้ว' }, 400)
   }
@@ -227,15 +320,24 @@ app.get('/api/posts', async (c) => {
 
 app.post('/api/posts', async (c) => {
   const body = await c.req.json()
+  
+  // 🌟 ดึงตัวตนจริงจาก Token หากมี เพื่อป้องกันการปลอมนามแฝง
+  const authUser = await getAuthenticatedUser(c)
+  const author = authUser ? authUser.username : body.author
+
+  if (!author) {
+    return c.json({ success: false, error: 'ไม่พบตัวตนผู้สลักจารึก' }, 401)
+  }
+
   const safeContent = sanitize(body.content)
   const isPinned = (body.pinned === true || body.pinned === 1 || body.pinned === '1') ? 1 : 0;
   
   await c.env.DB.prepare(
     "INSERT INTO posts (id, category, title, content, author, timestamp, pinned) VALUES (?, ?, ?, ?, ?, ?, ?)"
-  ).bind(body.id, body.category, body.title, safeContent, body.author, body.timestamp, isPinned).run()
+  ).bind(body.id, body.category, body.title, safeContent, author, body.timestamp, isPinned).run()
   
   // 🌟 ได้แต้มบุญ +2 จากการตั้งกระทู้
-  await addKarma(c.env.DB, body.author, 2);
+  await addKarma(c.env.DB, author, 2);
 
   return c.json({ success: true })
 })
@@ -272,7 +374,9 @@ app.delete('/api/posts/:id', async (c) => {
 app.post('/api/posts/:postId/like', async (c) => {
   const postId = c.req.param('postId')
   const body = await c.req.json().catch(() => ({}))
-  const actor = body.actor || 'วิญญาณเร่ร่อน'
+  
+  const authUser = await getAuthenticatedUser(c)
+  const actor = authUser ? authUser.username : (body.actor || 'วิญญาณเร่ร่อน')
 
   try {
     await c.env.DB.prepare("UPDATE posts SET likes = COALESCE(likes, 0) + 1 WHERE id = ?").bind(postId).run()
@@ -311,14 +415,23 @@ app.get('/api/posts/:postId/comments', async (c) => {
 
 app.post('/api/comments', async (c) => {
   const body = await c.req.json()
+  
+  // 🌟 ดึงตัวตนจริงจาก Token หากมี เพื่อป้องกันการปลอมนามแฝง
+  const authUser = await getAuthenticatedUser(c)
+  const author = authUser ? authUser.username : body.author
+
+  if (!author) {
+    return c.json({ success: false, error: 'ไม่พบตัวตนผู้สลักความเห็น' }, 401)
+  }
+
   const safeContent = sanitize(body.content)
   await c.env.DB.prepare(
     "INSERT INTO comments (id, post_id, author, content, timestamp) VALUES (?, ?, ?, ?, ?)"
-  ).bind(body.id, body.postId, body.author, safeContent, body.timestamp).run()
+  ).bind(body.id, body.postId, author, safeContent, body.timestamp).run()
   await c.env.DB.prepare("UPDATE posts SET replies = replies + 1 WHERE id = ?").bind(body.postId).run()
   
   // 🌟 ได้แต้มบุญ +1 จากการตอบคอมเมนต์
-  await addKarma(c.env.DB, body.author, 1);
+  await addKarma(c.env.DB, author, 1);
 
   return c.json({ success: true })
 })
@@ -336,7 +449,9 @@ app.delete('/api/comments/:id', async (c) => {
 app.post('/api/comments/:commentId/like', async (c) => {
   const commentId = c.req.param('commentId')
   const body = await c.req.json().catch(() => ({}))
-  const actor = body.actor || 'วิญญาณเร่ร่อน'
+  
+  const authUser = await getAuthenticatedUser(c)
+  const actor = authUser ? authUser.username : (body.actor || 'วิญญาณเร่ร่อน')
 
   try {
     await c.env.DB.prepare("UPDATE comments SET likes = COALESCE(likes, 0) + 1 WHERE id = ?").bind(commentId).run()
@@ -401,8 +516,6 @@ app.get('/api/notifications/:username', async (c) => {
 
 app.post('/api/notifications', async (c) => {
   const body = await c.req.json()
-  
-  // 🌟 รองรับ action_type ทุกรูปแบบ รวมถึง 'mention' ด้วย (เพราะเป็น TEXT ใน Database)
   const { id, recipient, actor, action_type, post_id, timestamp } = body
   
   if (recipient === actor) { return c.json({ success: true, ignored: true }) }

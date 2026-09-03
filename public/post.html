@@ -28,7 +28,7 @@
         .main-container { 
             position: relative; isolation: isolate; max-width: 1200px; width: 92%; 
             margin: 40px auto; 
-            padding: 45px 30px 60px 30px !important; /* ล็อค padding-top เป็น 45px */
+            padding: 45px 30px 60px 30px !important; 
             background-color: rgba(7, 4, 2, 0.85); border: 1px solid var(--gold-dark); border-radius: 16px; backdrop-filter: blur(10px); box-sizing: border-box; animation: containerPulse 6s infinite alternate; 
         }
         .main-container::before { content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1px; background: conic-gradient(from var(--ring-angle), transparent 0deg, var(--gold-main) 25deg, transparent 70deg, transparent 180deg, var(--gold-light) 205deg, transparent 250deg, transparent 360deg); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: ringRotate 10s linear infinite; pointer-events: none; z-index: -1; }
@@ -53,7 +53,7 @@
             line-height: 0; 
         }
         .site-title img { 
-            height: 85px !important; /* ล็อคความสูงตายตัว ไม่ให้ดิ้น */
+            height: 85px !important; 
             width: auto !important; 
             filter: drop-shadow(0 5px 15px rgba(0,0,0,1)) drop-shadow(0 0 20px rgba(212,175,55,0.4)); 
         }
@@ -72,14 +72,14 @@
             box-shadow: 0 5px 20px rgba(0,0,0,0.9); 
             width: 100%;
             max-width: 800px !important; 
-            height: 55px !important; /* ล็อคความสูงแท็บเมนู */
+            height: 55px !important; 
             margin: 0 auto !important; 
             box-sizing: border-box;
         }
         nav a { 
             color: var(--gold-light); 
             text-decoration: none; 
-            font-size: 1.05rem !important; /* ล็อคขนาดฟอนต์ให้ตายตัว */
+            font-size: 1.05rem !important; 
             padding: 5px 15px; 
             transition: all 0.3s; 
             position: relative; 
@@ -93,7 +93,7 @@
         nav a::after { 
             content: ''; 
             position: absolute; 
-            bottom: -10px; /* ปรับขีดสีทองให้อยู่ห่างจากตัวหนังสือพอดี */
+            bottom: -10px; 
             left: 50%; 
             transform: translateX(-50%); 
             width: 0; 
@@ -221,7 +221,7 @@
         .sect-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(7, 4, 2, 0.9); backdrop-filter: blur(8px); z-index: 1000; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; } .sect-modal-overlay.active { display: flex; opacity: 1; }
         .sect-modal-content { position: relative; background: linear-gradient(135deg, #1a120b, #0a0603); border: 1px solid var(--gold-main); border-radius: 12px; width: 90%; max-width: 450px; padding: 40px 30px 60px 30px; box-shadow: 0 15px 40px rgba(0,0,0,0.9), inset 0 0 20px rgba(212,175,55,0.1); transform: translateY(-20px); transition: transform 0.3s ease; box-sizing: border-box; } .sect-modal-overlay.active .sect-modal-content { transform: translateY(0); }
         
-        /* 🌟 โค้ดที่ได้รับการซ่อมวงเล็บแล้ว */
+        /* 🌟 ซ่อมวงเล็บปิดเรียบร้อย ไม่เพี้ยน */
         .modal-corner { position: absolute; width: 60px; height: 60px; pointer-events: none; opacity: 0.8; } 
         .mc-top-left { top: 12px; left: 12px; transform: scaleX(-1); } 
         .mc-top-right { top: 12px; right: 12px; } 
@@ -277,16 +277,16 @@
         @media (max-width: 950px) { .post-layout { grid-template-columns: 1fr; } .replies-container { margin-left: 10px; border-left-width: 1px; } .comment-card.is-reply::before { width: 10px; left: -11px; } }
         @media (max-width: 768px) {
             .site-title img { 
-                height: 65px !important; /* ขนาดย่อสำหรับมือถือ */
+                height: 65px !important; 
             }
             nav { 
-                flex-wrap: nowrap !important; /* 🌟 ยันต์กันเมนูตกบรรทัด บังคับให้อยู่บรรทัดเดียว */
+                flex-wrap: nowrap !important; 
                 justify-content: flex-start; 
                 overflow-x: auto; 
                 scrollbar-width: none; 
                 border-radius: 40px; 
                 padding: 0 20px !important;
-                height: 50px !important; /* ลดความสูงลงนิดหน่อยบนมือถือ */
+                height: 50px !important; 
                 mask-image: linear-gradient(to right, transparent 0, black 20px, black calc(100% - 20px), transparent 100%);
                 -webkit-mask-image: linear-gradient(to right, transparent 0, black 20px, black calc(100% - 20px), transparent 100%);
             }
@@ -304,32 +304,23 @@
 
         /* 🚀 อาคมลดภาระเครื่องขั้นเด็ดขาด (ลื่นปรี๊ด 100% บนแท็บเล็ตและมือถือ) */
         @media (max-width: 1200px), (hover: none) and (pointer: coarse) {
-            /* 1. ปลดล็อกพื้นหลัง fixed ตัวการที่ทำให้เลื่อนจอแล้วกระตุก */
             body {
                 background-attachment: scroll !important;
             }
-
-            /* 2. ซ่อนละอองเวทมนตร์ขนาดยักษ์ (200vw x 200vh) */
             body::before, body::after {
                 display: none !important;
             }
-
-            /* 3. ปิดกระจกฝ้า (Blur) และเพิ่มขอบสีทองแบบนิ่งๆ แทน */
             .main-container {
                 backdrop-filter: none !important;
                 -webkit-backdrop-filter: none !important;
                 background-color: rgba(7, 4, 2, 0.98) !important;
                 animation: none !important;
                 box-shadow: 0 5px 15px rgba(0,0,0,0.9) !important;
-                border: 1px solid var(--gold-main) !important; /* วาดเส้นขอบตรงนี้แทน */
+                border: 1px solid var(--gold-main) !important; 
             }
-            
-            /* 4. ซ่อนตัวทำกรอบแสงวิ่ง (ต้นเหตุของพื้นหลังสีทอง) ปิดทิ้งไปเลย */
             .main-container::before {
                 display: none !important;
             }
-
-            /* 5. ปิดแอนิเมชันลูกเล่นจุกจิกทั้งหมด */
             .corner-decor, .noti-btn, .loading-text, .hero-center-img {
                 animation: none !important;
             }
@@ -465,7 +456,7 @@
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-bottom-right" alt="" width="60" height="60">
             <div class="modal-header"><h3 style="font-size: 1.4rem;">ประกาศสำนัก</h3></div>
             <p id="customAlertMessage" style="color: #e2d4c3; font-size: 1.05rem; margin-bottom: 25px; text-align:center;">ข้อความแจ้งเตือน</p>
-            <button type="button" class="btn-submit-modal" onclick="closeCustomAlert()" id="customAlertBtn" style="width: 80%; margin: 0 auto; display: block;">รับทราบ</button>
+            <button type="button" class="btn-submit-modal" onclick="closeCustomAlert()" id="customAlertBtn">รับทราบ</button>
         </div>
     </div>
 
@@ -551,7 +542,6 @@
                     const urlParams = new URLSearchParams(window.location.search);
                     const currentPostId = urlParams.get('id');
                     
-                    // 🌟 ระบบหน่วงเวลา (Debounce) ป้องกันคอมเมนต์โหลดเบิ้ลซ้ำซ้อน
                     const now = Date.now();
                     if (data.postId === currentPostId && typeof loadComments === 'function' && (now - lastLoadTime > 1500)) {
                         lastLoadTime = now;
@@ -601,42 +591,72 @@
                     return await response2.json();
                 } catch (error) { return []; }
             },
+            // 🌟 แนบ Authorization Header ไปกับคอมเมนต์
             async saveComment(commentData) {
                 try {
+                    const token = localStorage.getItem('siy_token');
+                    const headers = { 'Content-Type': 'application/json' };
+                    if (token) {
+                        headers['Authorization'] = `Bearer ${token}`;
+                    }
+
                     const response = await fetch(`${API_CONFIG.BASE_URL}/comments`, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: headers,
                         body: JSON.stringify(commentData)
                     });
                     if (!response.ok) return { success: false };
                     return await response.json();
                 } catch (error) { return { success: false }; }
             },
+            // 🌟 แนบ Authorization Header ไปกับการลบคอมเมนต์
             async deleteComment(commentId) {
                 try {
-                    const response = await fetch(`${API_CONFIG.BASE_URL}/comments/${commentId}`, { method: 'DELETE' });
+                    const token = localStorage.getItem('siy_token');
+                    const headers = {};
+                    if (token) {
+                        headers['Authorization'] = `Bearer ${token}`;
+                    }
+
+                    const response = await fetch(`${API_CONFIG.BASE_URL}/comments/${commentId}`, { 
+                        method: 'DELETE',
+                        headers: headers 
+                    });
                     if (!response.ok) return { success: false };
                     return await response.json();
                 } catch (error) { return { success: false }; }
             },
-            
+            // 🌟 แนบ Authorization Header ไปกับการอนุโมทนากระทู้
             async likePost(postId) {
                 try {
+                    const token = localStorage.getItem('siy_token');
+                    const headers = { 'Content-Type': 'application/json' };
+                    if (token) {
+                        headers['Authorization'] = `Bearer ${token}`;
+                    }
+
                     const actor = localStorage.getItem('siy_username') || 'วิญญาณเร่ร่อน';
                     const res = await fetch(`${API_CONFIG.BASE_URL}/posts/${postId}/like`, { 
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: headers,
                         body: JSON.stringify({ actor })
                     });
                     return await res.json();
                 } catch (e) { return { success: false }; }
             },
+            // 🌟 แนบ Authorization Header ไปกับการอนุโมทนาคอมเมนต์
             async likeComment(commentId) {
                 try {
+                    const token = localStorage.getItem('siy_token');
+                    const headers = { 'Content-Type': 'application/json' };
+                    if (token) {
+                        headers['Authorization'] = `Bearer ${token}`;
+                    }
+
                     const actor = localStorage.getItem('siy_username') || 'วิญญาณเร่ร่อน';
                     const res = await fetch(`${API_CONFIG.BASE_URL}/comments/${commentId}/like`, { 
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: headers,
                         body: JSON.stringify({ actor })
                     });
                     return await res.json();
@@ -692,8 +712,7 @@
                 if (n.action_type === 'reply') actionText = 'ได้ตอบกลับข้อความของท่าน';
                 if (n.action_type === 'like_post') actionText = 'ได้ร่วมอนุโมทนาในกระทู้ของท่าน';
                 if (n.action_type === 'like_comment') actionText = 'ได้ร่วมอนุโมทนาในความเห็นของท่าน';
-                // 🌟 ให้เติมบรรทัดนี้เพิ่มเข้าไปครับ 🌟
-                if (n.action_type === 'mention') actionText = 'ได้เอ่ยนามเรียกขานท่าน';
+                if (n.action_type === 'mention') actionText = 'ได้เอ่ยนามเรียกขานท่าน (Mention)';
 
                 const isUnreadClass = String(n.is_read) === '0' ? 'unread' : '';
                 
@@ -847,7 +866,6 @@
             }
         }
 
-        // ฟังก์ชันแปลงป้ายยศแบบ Sync ป้องกัน async render ซ้อน
         function formatBadgeFromUsersMap(username, usersMap) {
             if (!username) return '<span class="role-badge role-5">เด็กวัด</span>';
             if (username.toUpperCase() === 'ADMIN') return '<span class="role-badge role-1">ปรมัตถ์</span>';
@@ -886,7 +904,6 @@
             if (box) box.classList.toggle('active');
         }
 
-        // 🌟 ตัวล็อกคิวการโหลดคอมเมนต์ ป้องกันการเรนเดอร์เบิ้ลพร้อมกัน
         let isCommentsRendering = false;
 
         async function loadComments(postId) {
@@ -942,8 +959,6 @@
                 for (const c of mainComments) {
                     const badge = formatBadgeFromUsersMap(c.author, usersMap);
                     let cleanMainContent = c.content.replace(/^\[REPLY_TO:[^\]]+\](?:\[AUTHOR:[^\]]+\])?/, '');
-                    
-                    // 🌟 นำฟังก์ชัน formatMentions มาครอบข้อความคอมเมนต์หลักที่นี่
                     cleanMainContent = formatMentions(cleanMainContent);
 
                     let adminControls = isUserAdmin ? `<button type="button" class="btn-delete-comment" onclick="deleteCommentAction('${c.id}', '${postId}')">🗑️ ทำลาย</button>` : '';
@@ -970,8 +985,6 @@
                             let authorMatch = r.content.match(/\[AUTHOR:([^\]]+)\]/);
                             let repliedTo = authorMatch ? authorMatch[1] : c.author;
                             let cleanReplyContent = r.content.replace(/^\[REPLY_TO:[^\]]+\](?:\[AUTHOR:[^\]]+\])?/, '');
-                            
-                            // 🌟 นำฟังก์ชัน formatMentions มาครอบข้อความตอบกลับที่นี่
                             cleanReplyContent = formatMentions(cleanReplyContent);
                             
                             const rIsLiked = likedComments.includes(String(r.id)) ? 'liked' : '';
@@ -1035,7 +1048,6 @@
                     `;
                 }
 
-                // นำโค้ดประกอบทั้งหมดใส่หน้าเว็บเพียงครั้งเดียว
                 container.innerHTML = outputHtml;
             } finally {
                 isCommentsRendering = false;
@@ -1075,7 +1087,6 @@
             return { valid: true };
         }
 
-        // 🌟 ตัวล็อกป้องกันการกดส่งคอมเมนต์เบิ้ล
         let isSubmittingComment = false;
 
         async function submitComment() {
@@ -1087,7 +1098,7 @@
             const validation = validateComment(content);
             if (!validation.valid) { showCustomAlert(validation.error); return; }
 
-            isSubmittingComment = true; // ล็อกปุ่มทันที
+            isSubmittingComment = true;
             const btn = document.getElementById('submitCommentBtn');
             if(btn) { btn.textContent = 'กำลังส่ง...'; btn.disabled = true; }
 
@@ -1109,15 +1120,14 @@
                 if(result && result.success !== false) {
                     textarea.value = ''; 
                     
-                    // 🌟 ค้นหาคนที่ถูก Mention และส่งแจ้งเตือน
                     const mentionedUsers = extractMentions(content);
                     for (const mentionedUser of mentionedUsers) {
-                        if (mentionedUser !== author) { // ไม่ส่งแจ้งเตือนหาตัวเอง
+                        if (mentionedUser !== author) {
                             await ApiManager.sendNotification({
-                                id: Date.now().toString() + Math.floor(Math.random() * 1000), // สุ่ม ID กันซ้ำ
+                                id: Date.now().toString() + Math.floor(Math.random() * 1000),
                                 recipient: mentionedUser,
                                 actor: author,
-                                action_type: 'mention', // ส่ง action_type เป็น mention
+                                action_type: 'mention',
                                 post_id: postId,
                                 timestamp: timeStr
                             });
@@ -1144,12 +1154,11 @@
             } catch (e) {
                 showCustomAlert('เกิดอาถรรพ์ขัดข้องในการเชื่อมต่อ');
             } finally {
-                isSubmittingComment = false; // ปลดล็อกปุ่ม
+                isSubmittingComment = false;
                 if(btn) { btn.textContent = 'ส่งความคิดเห็น'; btn.disabled = false; }
             }
         }
 
-        // 🌟 ตัวล็อกป้องกันการกดส่งคำตอบกลับเบิ้ล
         const submittingReplies = {};
 
         async function submitReply(parentId, parentAuthor, postId) {
@@ -1162,7 +1171,7 @@
             const validation = validateComment(content);
             if (!validation.valid) { showCustomAlert(validation.error); return; }
 
-            submittingReplies[parentId] = true; // ล็อกตาม ID ข้อความแม่
+            submittingReplies[parentId] = true;
             const btn = textarea.parentElement.querySelector('.btn-submit-comment');
             if(btn) { btn.textContent = 'กำลังส่ง...'; btn.disabled = true; }
 
@@ -1185,7 +1194,6 @@
                 if(result && result.success !== false) {
                     textarea.value = '';
 
-                    // 🌟 ค้นหาคนที่ถูก Mention และส่งแจ้งเตือนในฝั่ง Reply ด้วย
                     const mentionedUsers = extractMentions(content);
                     for (const mentionedUser of mentionedUsers) {
                         if (mentionedUser !== author) { 
@@ -1220,7 +1228,7 @@
             } catch (e) {
                 showCustomAlert('เกิดอาถรรพ์ขัดข้องในการเชื่อมต่อ');
             } finally {
-                submittingReplies[parentId] = false; // ปลดล็อก
+                submittingReplies[parentId] = false;
                 if(btn) { btn.textContent = 'ส่งคำตอบกลับ'; btn.disabled = false; }
             }
         }
@@ -1260,14 +1268,10 @@
             const postId = urlParams.get('id');
             const postData = await ApiManager.getPostById(postId);
             
-                        // 🌟 อาคมบันทึกรอยเท้าวิญญาณ (เพิ่มเข้าไปในไฟล์ post.html)
             if (postData && postData.title) {
                 let viewHistory = JSON.parse(localStorage.getItem('siy_view_history') || '[]');
-                // ลบของเดิมออกถ้าซ้ำ เพื่อดันขึ้นไปอยู่บนสุด
                 viewHistory = viewHistory.filter(item => String(item.id) !== String(postId));
-                // บันทึกรอยเท้าใหม่ล่าสุดไว้หน้าสุด (เก็บแค่ ID และ ชื่อกระทู้)
                 viewHistory.unshift({ id: postId, title: postData.title });
-                // จำกัดให้จำแค่ 5 รอยเท้าล่าสุด
                 if (viewHistory.length > 5) viewHistory.pop();
                 localStorage.setItem('siy_view_history', JSON.stringify(viewHistory));
             }
@@ -1281,10 +1285,7 @@
             document.getElementById('pageTitle').textContent = postData.title + ' - ศิษย์หลวงปู่';
             document.getElementById('dyn-category').textContent = (postData.category === "1" ? "นิยายสัตยาสาบาน" : "คุยกับศิษย์หลวงปู่");
             document.getElementById('dyn-title').textContent = postData.title;
-            
-            // 🌟 นำฟังก์ชัน formatMentions มาครอบเนื้อหากระทู้หลักด้วยเผื่อมีการ Tag
             document.getElementById('dyn-content').innerHTML = formatMentions(postData.content);
-            
             document.getElementById('dyn-author').textContent = postData.author;
             document.getElementById('dyn-author-badge').innerHTML = await getRoleBadgeFromAPI(postData.author);
             document.getElementById('dyn-time').textContent = 'โพสต์เมื่อ: ' + postData.timestamp;
@@ -1303,7 +1304,6 @@
             if (userType === 'guest') {
                 document.getElementById('logoutBtnText').textContent = 'ลบตัวตน (สละร่าง)';
                 
-                // 🌟 อัปเดตกล่องวิญญาณเร่ร่อนแบบ Responsive โดยจำกัดป้ายยศไม่ให้ยืดเต็มจอ
                 commentArea.innerHTML = `
                     <div class="ghost-warning-box">
                         <div style="font-size: 2.5rem; margin-bottom: 10px; filter: drop-shadow(0 0 8px rgba(168, 46, 46, 0.8));">👻</div>
@@ -1337,6 +1337,7 @@
         });
 
         function handleLogout() {
+            localStorage.removeItem('siy_token'); // 🌟 ล้าง Token เมื่อออกจากระบบ
             localStorage.removeItem('siy_username'); 
             localStorage.removeItem('siy_usertype'); 
             localStorage.removeItem('siy_login_timestamp');

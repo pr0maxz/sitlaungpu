@@ -24,7 +24,7 @@
         .main-container { 
             position: relative; isolation: isolate; max-width: 1200px; width: 92%; 
             margin: 40px auto; 
-            padding: 45px 30px 60px 30px !important; /* ล็อค padding-top เป็น 45px */
+            padding: 45px 30px 60px 30px !important; 
             background-color: rgba(7, 4, 2, 0.85); border: 1px solid var(--gold-dark); border-radius: 16px; backdrop-filter: blur(10px); animation: containerPulse 6s infinite alternate; 
         }
         .main-container::before { content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1px; background: conic-gradient(from var(--ring-angle), transparent 0deg, var(--gold-main) 25deg, transparent 70deg, transparent 180deg, var(--gold-light) 205deg, transparent 250deg, transparent 360deg); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: ringRotate 10s linear infinite; pointer-events: none; z-index: -1; }
@@ -48,7 +48,7 @@
             line-height: 0; 
         }
         .site-title img { 
-            height: 85px !important; /* ล็อคความสูงตายตัว ไม่ให้ดิ้น */
+            height: 85px !important; 
             width: auto !important; 
             filter: drop-shadow(0 5px 15px rgba(0,0,0,1)) drop-shadow(0 0 20px rgba(212,175,55,0.4)); 
         }
@@ -67,14 +67,14 @@
             box-shadow: 0 5px 20px rgba(0,0,0,0.9); 
             width: 100%;
             max-width: 800px !important; 
-            height: 55px !important; /* ล็อคความสูงแท็บเมนู */
+            height: 55px !important; 
             margin: 0 auto !important; 
             box-sizing: border-box;
         }
         nav a { 
             color: var(--gold-light); 
             text-decoration: none; 
-            font-size: 1.05rem !important; /* ล็อคขนาดฟอนต์ให้ตายตัว */
+            font-size: 1.05rem !important; 
             padding: 5px 15px; 
             transition: all 0.3s; 
             position: relative; 
@@ -88,7 +88,7 @@
         nav a::after { 
             content: ''; 
             position: absolute; 
-            bottom: -10px; /* ปรับขีดสีทองให้อยู่ห่างจากตัวหนังสือพอดี */
+            bottom: -10px; 
             left: 50%; 
             transform: translateX(-50%); 
             width: 0; 
@@ -228,16 +228,16 @@
         @media (max-width: 950px) { .board-layout { grid-template-columns: 1fr; } .thread-stats { display: none; } }
         @media (max-width: 768px) {
             .site-title img { 
-                height: 65px !important; /* ขนาดย่อสำหรับมือถือ */
+                height: 65px !important; 
             }
             nav { 
-                flex-wrap: nowrap !important; /* 🌟 ยันต์กันเมนูตกบรรทัด บังคับให้อยู่บรรทัดเดียว */
+                flex-wrap: nowrap !important; 
                 justify-content: flex-start; 
                 overflow-x: auto; 
                 scrollbar-width: none; 
                 border-radius: 40px; 
                 padding: 0 20px !important;
-                height: 50px !important; /* ลดความสูงลงนิดหน่อยบนมือถือ */
+                height: 50px !important; 
                 mask-image: linear-gradient(to right, transparent 0, black 20px, black calc(100% - 20px), transparent 100%);
                 -webkit-mask-image: linear-gradient(to right, transparent 0, black 20px, black calc(100% - 20px), transparent 100%);
             }
@@ -252,34 +252,26 @@
         .loading-text { font-family: 'Prompt', sans-serif; color: var(--gold-main); animation: pulse 1.5s infinite alternate; text-align: center; padding: 40px; }
         @keyframes pulse { from { opacity: 0.5; } to { opacity: 1; text-shadow: 0 0 10px var(--gold-main); } }
         .captcha-box { background: rgba(212,175,55,0.05); border: 1px dashed var(--gold-dark); padding: 15px; border-radius: 6px; text-align: center; margin-bottom: 20px; width: 100%; box-sizing: border-box; } .captcha-box p { color: #e6dac3; margin: 0 0 10px 0; font-size: 0.9rem; }
+        
         /* 🚀 อาคมลดภาระเครื่องขั้นเด็ดขาด (ลื่นปรี๊ด 100% บนแท็บเล็ตและมือถือ) */
         @media (max-width: 1200px), (hover: none) and (pointer: coarse) {
-            /* 1. ปลดล็อกพื้นหลัง fixed ตัวการที่ทำให้เลื่อนจอแล้วกระตุก */
             body {
                 background-attachment: scroll !important;
             }
-
-            /* 2. ซ่อนละอองเวทมนตร์ขนาดยักษ์ (200vw x 200vh) */
             body::before, body::after {
                 display: none !important;
             }
-
-            /* 3. ปิดกระจกฝ้า (Blur) และเพิ่มขอบสีทองแบบนิ่งๆ แทน */
             .main-container {
                 backdrop-filter: none !important;
                 -webkit-backdrop-filter: none !important;
                 background-color: rgba(7, 4, 2, 0.98) !important;
                 animation: none !important;
                 box-shadow: 0 5px 15px rgba(0,0,0,0.9) !important;
-                border: 1px solid var(--gold-main) !important; /* วาดเส้นขอบตรงนี้แทน */
+                border: 1px solid var(--gold-main) !important; 
             }
-            
-            /* 4. ซ่อนตัวทำกรอบแสงวิ่ง (ต้นเหตุของพื้นหลังสีทอง) ปิดทิ้งไปเลย */
             .main-container::before {
                 display: none !important;
             }
-
-            /* 5. ปิดแอนิเมชันลูกเล่นจุกจิกทั้งหมด */
             .corner-decor, .noti-btn, .loading-text, .hero-center-img {
                 animation: none !important;
             }
@@ -631,7 +623,6 @@
                 if (n.action_type === 'reply') actionText = 'ได้ตอบกลับข้อความของท่าน';
                 if (n.action_type === 'like_post') actionText = 'ได้ร่วมอนุโมทนาในกระทู้ของท่าน';
                 if (n.action_type === 'like_comment') actionText = 'ได้ร่วมอนุโมทนาในความเห็นของท่าน';
-                // 🌟 แจ้งเตือนเมื่อถูกกล่าวถึง
                 if (n.action_type === 'mention') actionText = 'ได้เอ่ยนามเรียกขานท่าน (Mention)';
 
                 const isUnreadClass = String(n.is_read) === '0' ? 'unread' : '';
@@ -686,7 +677,7 @@
             container.innerHTML = '';
             
             history.forEach(item => {
-                const displayTitle = formatMentions(item.title); // แปลงชื่อกระทู้ในประวัติให้เรืองแสงด้วย
+                const displayTitle = formatMentions(item.title);
                 container.innerHTML += `
                     <a href="post.html?id=${item.id}" style="display: block; width: 100%; box-sizing: border-box; overflow: hidden; padding: 12px 15px; background: rgba(0,0,0,0.4); border: 1px dashed rgba(138, 99, 21, 0.3); border-radius: 6px; text-decoration: none; color: var(--gold-light); font-size: 0.9rem; transition: 0.3s;" onmouseover="this.style.borderColor='var(--gold-main)'; this.style.background='rgba(212,175,55,0.05)'" onmouseout="this.style.borderColor='rgba(138, 99, 21, 0.3)'; this.style.background='rgba(0,0,0,0.4)'">
                         <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: 'Prompt', sans-serif; width: 100%;">${displayTitle}</div>
@@ -884,8 +875,6 @@
             for (let post of postsToShow) {
                 const pinTag = checkIsPinned(post.pinned) ? '<span class="wb-tag wb-tag-pin">📌 ปักหมุด</span> ' : '';
                 const authorBadge = await getRoleBadgeFromAPI(post.author);
-                
-                // 🌟 หากมีคนใช้ @ชื่อ ในหัวข้อกระทู้ ระบบก็จะแสดงผลแบบเรืองแสง
                 const displayTitle = formatMentions(post.title);
 
                 const postHTML = `
@@ -1092,10 +1081,16 @@
                         })
                     });
                     const result = await res.json();
-                    if (!res.ok) {
+                    if (!res.ok || !result.success) {
                         showCustomAlert(result.message || 'นามแฝงนี้มีผู้ใช้งานแล้ว');
                         return;
                     }
+
+                    // 🌟 บันทึก Token จากการสมัครใหม่
+                    if (result.token) {
+                        localStorage.setItem('siy_token', result.token);
+                    }
+
                     showCustomAlert('ลงนามสำเร็จ ยินดีต้อนรับสู่สำนัก, ' + usernameInput);
                 } catch (e) {
                     showCustomAlert('เกิดอาถรรพ์ขัดข้องในการเชื่อมต่อ');
@@ -1104,28 +1099,26 @@
 
             } else {
                 try {
-                    const res = await fetch(`${API_CONFIG.BASE_URL}/users`);
-                    const usersDB = await res.json();
-                    
-                    const user = usersDB.find(u => u.username === usernameInput);
-                    if (!user) { 
-                        showCustomAlert('ไม่พบนามแฝงนี้ในระบบ! โปรดสมัครเข้าสำนักก่อน'); 
-                        return; 
-                    }
-                    if (user.password !== passwordInput) { 
-                        showCustomAlert('รหัสผ่านลับไม่ถูกต้อง! อาถรรพ์กำลังสะท้อนกลับ'); 
-                        return; 
-                    }
-
-                    await fetch(`${API_CONFIG.BASE_URL}/users`, {
-                        method: 'PUT',
+                    // 🌟 ยิงตรวจสอบรหัสผ่านตรงเข้า /api/login และรับ JWT Token จากหลังบ้าน
+                    const res = await fetch(`${API_CONFIG.BASE_URL}/login`, {
+                        method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ 
-                            ...user, 
-                            oldUsername: user.username,
-                            last_login: nowTimestamp
+                        body: JSON.stringify({
+                            username: usernameInput,
+                            password: passwordInput
                         })
                     });
+                    const result = await res.json();
+                    
+                    if (!res.ok || !result.success) {
+                        showCustomAlert(result.error || 'รหัสผ่านลับไม่ถูกต้อง! อาถรรพ์กำลังสะท้อนกลับ');
+                        return;
+                    }
+
+                    // 🌟 บันทึก Token ยืนยันตัวตนลงใน LocalStorage
+                    if (result.token) {
+                        localStorage.setItem('siy_token', result.token);
+                    }
 
                     showCustomAlert('เข้าสู่ระบบสำเร็จ, ยินดีต้อนรับกลับมา ' + usernameInput);
                 } catch (e) {
@@ -1143,6 +1136,7 @@
 
         function enterAsAnonymous() {
             const guestName = `ผู้ไม่ประสงค์ออกนาม#${Math.floor(1000 + Math.random() * 9000)}`;
+            localStorage.removeItem('siy_token'); // ลบ Token ทิ้งเมื่อใช้งานแบบวิญญาณเร่ร่อน
             localStorage.setItem('siy_username', guestName);
             localStorage.setItem('siy_usertype', 'guest');
             localStorage.setItem('siy_login_timestamp', Date.now().toString());
@@ -1151,6 +1145,7 @@
         }
 
         function handleLogout() {
+            localStorage.removeItem('siy_token'); // ล้าง Token เมื่อออกจากระบบ
             localStorage.removeItem('siy_username'); 
             localStorage.removeItem('siy_usertype');
             localStorage.removeItem('siy_login_timestamp');

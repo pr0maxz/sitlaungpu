@@ -27,13 +27,11 @@
         .breadcrumb { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 20px; } .breadcrumb a { color: var(--gold-light); text-decoration: none; }
         .btn-back { display: inline-flex; align-items: center; gap: 8px; color: var(--gold-light); text-decoration: none; margin-bottom: 20px; font-size: 0.95rem; }
         
-        /* 🌟 จองพื้นที่ขั้นต่ำให้กล่องฟอร์ม */
         .form-card { background: rgba(12, 7, 4, 0.75); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 10px; padding: 30px; margin-bottom: 30px; width: 100%; box-sizing: border-box; min-height: 450px; }
         .form-header { color: var(--gold-main); font-size: 1.5rem; margin-bottom: 25px; border-bottom: 1px solid rgba(138, 99, 21, 0.3); padding-bottom: 15px; }
         .form-group { margin-bottom: 20px; width: 100%; max-width: 100%; box-sizing: border-box; } .form-group label { display: block; color: var(--gold-light); margin-bottom: 8px; font-family: 'Prompt', sans-serif; }
         .form-input, .form-select { width: 100%; max-width: 100%; background: rgba(0,0,0,0.6); border: 1px solid rgba(138, 99, 21, 0.5); color: #fff; padding: 12px 15px; border-radius: 6px; font-size: 1.05rem; box-sizing: border-box; } .form-select option { background: #1a120b; }
         
-        /* 🌟 จองพื้นที่ขั้นต่ำให้ Textarea เนื้อหา */
         .form-textarea {
             width: 100% !important;
             max-width: 100% !important;
@@ -88,26 +86,13 @@
         .modal-header { text-align: center; margin-bottom: 15px; } .modal-header h3 { color: var(--gold-light); font-size: 1.4rem; margin-bottom: 5px; text-shadow: 0 2px 5px rgba(0,0,0,0.8); }
         .btn-submit-modal { background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; border: none; padding: 12px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-weight: bold; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: all 0.3s; width: 80%; margin: 0 auto; display: block; } .btn-submit-modal:hover { filter: brightness(1.2); transform: translateY(-2px); }
         
-        /* /* 🌟 โค้ดสีป้ายยศ (แก้ปัญหาสีอักษรจมด้วย !important) */
         .role-badge, .role-tag { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 0.75rem; font-family: 'Prompt', sans-serif; font-weight: 600; letter-spacing: 0.5px; vertical-align: middle; margin-left: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.6); }
-        
-        /* 1. ปรมัตถ์ (สีทองอร่ามมีแสง - อักษรสีดำคมกริบ) */
         .role-1 { background: linear-gradient(135deg, #f5d77f, #d4af37, #8a6315); color: #1a0f02 !important; border: 1px solid #ffeea8; box-shadow: 0 0 12px rgba(212,175,55,0.8), inset 0 0 6px rgba(255,255,255,0.6); font-weight: 700; } 
-        
-        /* 2. ตติยภูมิ (สีม่วงลึกลับ) */
         .role-2 { background: linear-gradient(135deg, #4a1c60, #240b36); color: #e5b3ff !important; border: 1px solid #9b59b6; box-shadow: 0 0 6px rgba(155,89,182,0.4); } 
-        
-        /* 3. ทุติยภูมิ (สีเงิน) */
         .role-3 { background: linear-gradient(135deg, #6c7a86, #262c30); color: #d6dfe5 !important; border: 1px solid #94a6b5; box-shadow: 0 0 6px rgba(148,166,181,0.4); } 
-        
-        /* 4. ปฐมภูมิ (สีทองแดง) */
         .role-4 { background: linear-gradient(135deg, #8a4818, #422008); color: #e8a67c !important; border: 1px solid #b86226; box-shadow: 0 0 6px rgba(184,98,38,0.4); } 
-        
-        /* 5. เด็กวัด (สีเดิม) */
         .role-5 { background: rgba(138, 99, 21, 0.1); color: #a69477 !important; border: 1px solid #8a6315; } 
-        
         .role-guest { background: rgba(168, 46, 46, 0.15); color: #ff6b6b !important; border: 1px dashed #a82e2e; } 
-        
 
         @media (max-width: 950px) { .post-layout { grid-template-columns: 1fr; } .form-actions { flex-direction: column; } }
         @media (max-width: 600px) {
@@ -115,38 +100,29 @@
             .form-card { padding: 20px 15px; } 
         }
 
-       /* 🚀 อาคมลดภาระเครื่องขั้นเด็ดขาด (ลื่นปรี๊ด 100% บนแท็บเล็ตและมือถือ) */
-@media (max-width: 1200px), (hover: none) and (pointer: coarse) {
-    /* 1. ปลดล็อกพื้นหลัง fixed ตัวการที่ทำให้เลื่อนจอแล้วกระตุก */
-    body {
-        background-attachment: scroll !important;
-    }
-
-    /* 2. ซ่อนละอองเวทมนตร์ขนาดยักษ์ (200vw x 200vh) */
-    body::before, body::after {
-        display: none !important;
-    }
-
-    /* 3. ปิดกระจกฝ้า (Blur) และเพิ่มขอบสีทองแบบนิ่งๆ แทน */
-    .main-container {
-        backdrop-filter: none !important;
-        -webkit-backdrop-filter: none !important;
-        background-color: rgba(7, 4, 2, 0.98) !important;
-        animation: none !important;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.9) !important;
-        border: 1px solid var(--gold-main) !important; /* วาดเส้นขอบตรงนี้แทน */
-    }
-    
-    /* 4. ซ่อนตัวทำกรอบแสงวิ่ง (ต้นเหตุของพื้นหลังสีทอง) ปิดทิ้งไปเลย */
-    .main-container::before {
-        display: none !important;
-    }
-
-    /* 5. ปิดแอนิเมชันลูกเล่นจุกจิกทั้งหมด */
-    .corner-decor, .noti-btn, .loading-text, .hero-center-img {
-        animation: none !important;
-    }
-}
+        /* 🚀 อาคมลดภาระเครื่องขั้นเด็ดขาด (ลื่นปรี๊ด 100% บนแท็บเล็ตและมือถือ) */
+        @media (max-width: 1200px), (hover: none) and (pointer: coarse) {
+            body {
+                background-attachment: scroll !important;
+            }
+            body::before, body::after {
+                display: none !important;
+            }
+            .main-container {
+                backdrop-filter: none !important;
+                -webkit-backdrop-filter: none !important;
+                background-color: rgba(7, 4, 2, 0.98) !important;
+                animation: none !important;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.9) !important;
+                border: 1px solid var(--gold-main) !important; 
+            }
+            .main-container::before {
+                display: none !important;
+            }
+            .corner-decor, .noti-btn, .loading-text, .hero-center-img {
+                animation: none !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -157,14 +133,12 @@
     </div>
 
     <div class="main-container" id="mainContent" style="display: none;">
-        <!-- 🌟 เพิ่ม width และ height ให้ภาพมุมกล่องเพื่อป้องกัน CLS -->
         <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor corner-top-left" alt="" width="110" height="110">
         <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor corner-top-right" alt="" width="110" height="110">
         <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor corner-bottom-left" alt="" width="110" height="110">
         <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor corner-bottom-right" alt="" width="110" height="110">
 
         <header>
-            <!-- 🌟 เพิ่ม width และ height ให้โลโก้หลัก -->
             <div class="site-title"><img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019626/logo.png" alt="ศิษย์หลวงปู่" width="300" height="100"></div>
         </header>
 
@@ -192,12 +166,11 @@
                     <div class="form-group">
                         <label>เนื้อหา (Content)</label>
                         
-                        <!-- ปุ่มแนบรูปภาพ -->
                         <button type="button" class="btn-attach-img" onclick="insertImageTag()">
                             🖼️ แนบรูปภาพ
                         </button>
                         
-                        <textarea id="postContent" class="form-textarea" placeholder="จงเขียนเล่าเรื่องราวหรือสิ่งที่ท่านต้องการสนทนา (รองรับเฉพาะแท็กรูปภาพ <img src=...> เท่านั้น)..."></textarea>
+                        <textarea id="postContent" class="form-textarea" placeholder="จงเขียนเล่าเรื่องราวหรือสิ่งที่ท่านต้องการสนทนา (สามารถพิมพ์ @ตามด้วยชื่อ เพื่อเรียกขานสมาชิกลานเสวนา)..."></textarea>
                     </div>
 
                     <div class="form-actions">
@@ -234,7 +207,6 @@
     <!-- Custom Alert Modal -->
     <div class="sect-modal-overlay" id="customAlertModal">
         <div class="sect-modal-content">
-            <!-- 🌟 เพิ่ม width และ height ให้ภาพมุมกล่อง Modal -->
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-left" alt="" width="60" height="60">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-right" alt="" width="60" height="60">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-bottom-left" alt="" width="60" height="60">
@@ -252,6 +224,13 @@
             USE_REAL_API: true, 
             BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
         };
+
+        // 🌟 ฟังก์ชันดึงรายชื่อคนที่ถูก Mention
+        function extractMentions(text) {
+            const mentionRegex = /@([ก-๙a-zA-Z0-9_-]+)/g;
+            const matches = [...text.matchAll(mentionRegex)];
+            return [...new Set(matches.map(m => m[1]))]; 
+        }
 
         async function getRoleBadgeFromAPI(username) {
             if (!username) return '<span class="role-badge role-5">เด็กวัด</span>';
@@ -274,9 +253,16 @@
             async createPost(postData) {
                 if (API_CONFIG.USE_REAL_API) {
                     try {
+                        const token = localStorage.getItem('siy_token');
+                        const headers = { 'Content-Type': 'application/json' };
+                        // 🌟 แนบ Authorization Bearer Token เพื่อยืนยันตัวตนจริง
+                        if (token) {
+                            headers['Authorization'] = `Bearer ${token}`;
+                        }
+
                         const response = await fetch(`${API_CONFIG.BASE_URL}/posts`, {
                             method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: headers,
                             body: JSON.stringify(postData)
                         });
                         return await response.json();
@@ -284,6 +270,15 @@
                 } else {
                     return { success: true };
                 }
+            },
+            async sendNotification(data) {
+                try {
+                    await fetch(`${API_CONFIG.BASE_URL}/notifications`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                } catch (e) {}
             }
         };
 
@@ -394,12 +389,27 @@
 
             const result = await ApiManager.createPost(newPost);
 
-            if (result.success !== false) {
+            if (result && result.success !== false) {
+                // 🌟 ตรวจจับการ Mention ในกระทู้ใหม่และส่งแจ้งเตือน
+                const mentionedUsers = extractMentions(content + ' ' + title);
+                for (const mentionedUser of mentionedUsers) {
+                    if (mentionedUser !== author) {
+                        await ApiManager.sendNotification({
+                            id: Date.now().toString() + Math.floor(Math.random() * 1000),
+                            recipient: mentionedUser,
+                            actor: author,
+                            action_type: 'mention',
+                            post_id: newPost.id,
+                            timestamp: timeStr
+                        });
+                    }
+                }
+
                 showCustomAlert('ศิลาจารึกของคุณถูกสลักลงลานเสวนาเรียบร้อยแล้ว!', 'webboard.html');
             } else {
                 submitBtn.textContent = "ประกาศให้ประจักษ์";
                 submitBtn.disabled = false;
-                showCustomAlert('เกิดอาถรรพ์ขัดข้อง ไม่สามารถตั้งกระทู้ได้');
+                showCustomAlert(result.error || 'เกิดอาถรรพ์ขัดข้อง ไม่สามารถตั้งกระทู้ได้');
             }
         }
     </script>
