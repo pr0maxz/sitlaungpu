@@ -9,7 +9,10 @@
         html, body { scroll-behavior: smooth; overflow-x: hidden; width: 100%; max-width: 100vw; margin: 0; padding: 0; }
         * { box-sizing: border-box; }
         :root { --bg-deep: #070402; --bg-glow: #2a1805; --gold-light: #f5d77f; --gold-main: #d4af37; --gold-dark: #8a6315; --text-muted: #8a7761; --danger-color: #ff6b6b; --success-color: #73c990; }
-        body { background-color: var(--bg-deep); background-image: radial-gradient(circle at 50% 50%, var(--bg-glow) 0%, var(--bg-deep) 90%); background-attachment: fixed; color: #d1bfae; font-family: 'Sarabun', sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
+        
+        /* 🚀 โหมดเบาพิเศษ: ปิดพื้นหลังยึดติดเพื่อลดการกระตุกเวลาเลื่อนจอ */
+        body { background-color: var(--bg-deep); background-image: radial-gradient(circle at 50% 50%, var(--bg-glow) 0%, var(--bg-deep) 90%); background-attachment: scroll; color: #d1bfae; font-family: 'Sarabun', sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
+        
         h1, h2, h3, h4 { font-family: 'Prompt', sans-serif; color: var(--gold-light); }
         
         .admin-header { background: linear-gradient(180deg, #1f1107 0%, #070402 100%); border-bottom: 1px solid var(--gold-dark); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.8); width: 100%; }
@@ -84,7 +87,8 @@
         .page-btn:hover { background: rgba(212,175,55,0.2); }
         .page-btn.active { background: var(--gold-main); color: #000; font-weight: bold; border-color: var(--gold-light); }
         
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(7, 4, 2, 0.85); backdrop-filter: blur(8px); z-index: 999; justify-content: center; align-items: center; padding: 12px; } .modal-overlay.active { display: flex; }
+        /* 🚀 โหมดเบาพิเศษ: ปิด backdrop-filter ใช้สีพื้นหลังทึบขึ้นเพื่อทดแทน */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(7, 4, 2, 0.95); z-index: 999; justify-content: center; align-items: center; padding: 12px; } .modal-overlay.active { display: flex; }
         .modal-box { background: linear-gradient(135deg, #1a120b, #0a0603); border: 1px solid var(--gold-main); border-radius: 12px; width: 100%; max-width: 500px; padding: 25px 20px; position: relative; box-shadow: 0 15px 40px rgba(0,0,0,0.9); max-height: 90vh; overflow-y: auto; }
         
         @media (max-width: 850px) { 
@@ -95,18 +99,6 @@
             .nav-btn { padding: 7px 12px; font-size: 0.83rem; width: auto; flex-shrink: 0; } 
             .admin-content { padding: 12px 10px; }
             .panel-card { padding: 15px 12px; }
-        }
-
-        @media (max-width: 1200px), (hover: none) and (pointer: coarse) {
-            body { background-attachment: scroll !important; }
-            body::before, body::after { display: none !important; }
-            .main-container {
-                backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
-                background-color: rgba(7, 4, 2, 0.98) !important; animation: none !important;
-                box-shadow: 0 5px 15px rgba(0,0,0,0.9) !important; border: 1px solid var(--gold-main) !important;
-            }
-            .main-container::before { display: none !important; }
-            .corner-decor, .noti-btn, .loading-text, .hero-center-img { animation: none !important; }
         }
     </style>
 </head>
@@ -882,6 +874,7 @@
                     document.getElementById('edit-user-name').value = u.username; 
                     document.getElementById('edit-user-password').value = u.password; 
                     
+                    // เช็คว่าเป็นยศตัวละครพิเศษ หรือตาม role ปกติ
                     if (u.rank_name === 'ตัวละคร') {
                         document.getElementById('edit-user-role').value = 'character';
                     } else {
@@ -903,7 +896,7 @@
             let finalRankName = 'เด็กวัด';
 
             if (roleSelectVal === 'character') {
-                finalRole = '2'; 
+                finalRole = '2'; // เทียบเท่าตติยภูมิ
                 finalRankName = 'ตัวละคร';
             } else if (roleSelectVal === '1') {
                 finalRankName = 'ปรมัตถ์';
@@ -1012,7 +1005,6 @@
         }
 
         function handleAdminLogout() {
-            // 🌟 ล้าง Token และข้อมูลยืนยันตัวตนทั้งหมดเมื่อออกจากระบบแอดมิน
             localStorage.removeItem('siy_token');
             localStorage.removeItem('siy_username');
             localStorage.removeItem('siy_usertype');
