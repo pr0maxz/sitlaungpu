@@ -24,6 +24,9 @@
             overflow-x: hidden; 
         }
 
+        /* ❌ ลบละอองเวทมนตร์เคลื่อนไหว */
+        body::before, body::after { display: none !important; }
+
         h1, h2, h3, h4 { font-family: 'Prompt', sans-serif; margin: 0; }
         
         /* 🚀 ลบ backdrop-filter เปลี่ยนเป็นสีทึบเพื่อประหยัดแรมการ์ดจอ */
@@ -37,6 +40,9 @@
             box-sizing: border-box; 
             box-shadow: 0 5px 20px rgba(0,0,0,0.9);
         }
+        
+        /* ❌ ปิดแอนิเมชันกรอบแสงวิ่งรอบกล่อง */
+        .main-container::before { display: none !important; }
         
         /* 🚀 ปิดแอนิเมชันมุมกระพริบ */
         .corner-decor { position: absolute; width: clamp(60px, 8vw, 110px); height: clamp(60px, 8vw, 110px); z-index: 20; pointer-events: none; opacity: 0.8; }
@@ -228,7 +234,7 @@
             .main-container::before {
                 display: none !important;
             }
-            .corner-decor, .noti-btn, .loading-text, .hero-center-img {
+            .corner-decor, .noti-btn, .hero-center-img {
                 animation: none !important;
             }
         }
@@ -243,7 +249,7 @@
         <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="corner-decor corner-bottom-right" alt="" width="110" height="110">
 
         <header>
-            <div class="site-title"><img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019626/logo.png" alt="ศิษย์หลวงปู่"></div>
+            <div class="site-title"><img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019626/logo.png" alt="ศิษย์หลวงปู่" width="300" height="100"></div>
             <nav>
                 <a href="index.html">หน้าแรก</a>
                 <a href="reader.html">สัตยาสาบาน</a>
@@ -254,21 +260,47 @@
 
         <div class="board-layout">
             <div class="board-main">
+                <a href="webboard.html" class="btn-back">กลับสู่ลานเสวนา</a>
+
                 <div class="breadcrumb">
-                    <a href="index.html">หน้าแรก</a> > <span style="color: #fff;">ลานเสวนา</span>
+                    <a href="webboard.html">ลานเสวนา</a> > <span id="dyn-category">กำลังอัญเชิญ...</span>
                 </div>
 
-                <div class="post-card" style="padding: 0; background: transparent; border: none; box-shadow: none;">
-                    
-                    <div class="comment-section-title">ความคิดเห็นจากผู้ร่วมลานเสวนา</div>
-                    
-                    <div id="commentsList">
-                        <div class="loading-text">กำลังสัมผัสร่องรอยวิญญาณ...</div>
+                <div class="post-card">
+                    <div class="post-header-meta">
+                        <div class="author-info">
+                            <div>
+                                <div style="display: flex; align-items: center; gap: 6px;">
+                                    <span class="author-name" id="dyn-author">ไม่ปรากฏนาม</span>
+                                    <span id="dyn-author-badge"></span>
+                                </div>
+                                <div class="post-time" id="dyn-time">โพสต์เมื่อ: -</div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-report" onclick="openReportModal('post', new URLSearchParams(window.location.search).get('id'))" id="btnReportPost" style="display: none;">🚨 แจ้งผู้คุมกฎ</button>
                     </div>
 
-                    <div id="commentAreaContainer"></div>
+                    <h1 class="post-title" id="dyn-title">กำลังอัญเชิญข้อความ...</h1>
+                    
+                    <div class="post-body" id="dyn-content">
+                        <div class="loading-text">กำลังรวบรวมชิ้นส่วนจารึก...</div>
+                    </div>
 
+                    <div style="border-top: 1px dashed rgba(138, 99, 21, 0.3); padding-top: 20px; display: flex; align-items: center; gap: 15px;">
+                        <button class="btn-like" id="btnLikeMainPost" onclick="likePostAction()">
+                            🙏 อนุโมทนา (<span id="dyn-likes">0</span>)
+                        </button>
+                        <span style="color: var(--text-muted); font-size: 0.85rem;">👀 <span id="dyn-views">0</span> วิว</span>
+                    </div>
                 </div>
+
+                <div class="comment-section-title">ความคิดเห็นจากผู้ร่วมลานเสวนา</div>
+                
+                <div id="commentsList">
+                    <div class="loading-text">กำลังสัมผัสร่องรอยวิญญาณ...</div>
+                </div>
+
+                <div id="commentAreaContainer"></div>
             </div>
 
             <div class="post-sidebar">
@@ -363,26 +395,17 @@
 
         let currentPostAuthorGlobal = ''; 
 
-        // ==========================================
-        // 🌟 ฟังก์ชันแปลง @ชื่อ ให้กลายเป็นป้ายเรืองแสง
-        // ==========================================
         function formatMentions(text) {
             const mentionRegex = /@([ก-๙a-zA-Z0-9_-]+)/g;
             return text.replace(mentionRegex, '<span class="user-mention">@$1</span>');
         }
 
-        // ==========================================
-        // 🌟 ฟังก์ชันดึงรายชื่อคนที่ถูก Tag ออกมาเป็น Array เพื่อส่งเข้า Database
-        // ==========================================
         function extractMentions(text) {
             const mentionRegex = /@([ก-๙a-zA-Z0-9_-]+)/g;
             const matches = [...text.matchAll(mentionRegex)];
             return [...new Set(matches.map(m => m[1]))]; 
         }
 
-        // ==========================================
-        // ⚡ ระบบกระแสจิตเรียลไทม์ (WebSocket) แบบป้องกันเบิ้ล
-        // ==========================================
         let telepathySocket;
         let lastLoadTime = 0;
 
@@ -473,7 +496,7 @@
                 } catch (error) { return []; }
             },
             
-            // 🌟 แก้ไขให้รับ Error Object จากหลังบ้านได้โดยตรง (ไม่ต้องดัก !response.ok แล้วทิ้งข้อมูล)
+            // 🌟 รองรับ Error Object เพื่อโชว์คูลดาวน์
             async saveComment(commentData) {
                 try {
                     const token = localStorage.getItem('siy_token');
@@ -488,7 +511,6 @@
                         body: JSON.stringify(commentData)
                     });
                     
-                    // ให้คืนค่า JSON ที่หลังบ้านส่งมาเสมอ (เพื่อรับ Error คูลดาวน์ 429)
                     return await response.json();
                 } catch (error) { return { success: false, error: 'เกิดการเชื่อมต่อขัดข้อง' }; }
             },
@@ -1029,6 +1051,7 @@
                     showCustomAlert('บันทึกจารึกสำเร็จ!');
                     loadComments(postId); 
                 } else {
+                    // 🌟 โชว์ Error ที่ได้จาก Server (เช่น ติดคูลดาวน์)
                     showCustomAlert(result.error || 'เกิดอาถรรพ์ขัดข้อง ส่งข้อความไม่สำเร็จ');
                 }
             } catch (e) {
@@ -1103,6 +1126,7 @@
                     showCustomAlert('ส่งคำตอบกลับสำเร็จ!');
                     loadComments(postId);
                 } else {
+                    // 🌟 โชว์ Error ที่ได้จาก Server (เช่น ติดคูลดาวน์)
                     showCustomAlert(result.error || 'เกิดอาถรรพ์ขัดข้อง ส่งคำตอบกลับไม่สำเร็จ');
                 }
             } catch (e) {
@@ -1217,7 +1241,7 @@
         });
 
         function handleLogout() {
-            localStorage.removeItem('siy_token'); // 🌟 ล้าง Token เมื่อออกจากระบบ
+            localStorage.removeItem('siy_token'); 
             localStorage.removeItem('siy_username'); 
             localStorage.removeItem('siy_usertype'); 
             localStorage.removeItem('siy_login_timestamp');
