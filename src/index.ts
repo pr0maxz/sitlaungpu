@@ -13,7 +13,7 @@ const app = new Hono<{ Bindings: Bindings }>()
 
 app.use('/api/*', cors())
 
-// 🌟 กุญแจอาคมสำหรับเข้ารหัส Token (เปลี่ยนหรือตั้งใน wrangler.jsonc ได้)
+// 🌟 กุญแจอาคมสำหรับเข้ารหัส Token
 const DEFAULT_JWT_SECRET = 'sitluangpu_telepathy_secret_token_2026'
 
 async function hashPassword(password: string, salt: string) {
@@ -44,38 +44,6 @@ async function verifyTurnstile(token: string, secret: string, ip: string) {
   const result = await fetch(url, { body: formData, method: 'POST' });
   const outcome: any = await result.json();
   return outcome.success;
-}
-
-// ==========================================
-// ⏳ ระบบค่ายกลสกัดดาวตก (Rate Limiter แบบฟรี 100%)
-// ==========================================
-const rateLimitMap = new Map<string, number[]>();
-
-function rateLimiter(limit: number, windowMs: number) {
-  return async (c: any, next: any) => {
-    const ip = c.req.header('CF-Connecting-IP') || 'unknown';
-    if (ip === 'unknown') return await next();
-
-    const now = Date.now();
-    const timestamps = rateLimitMap.get(ip) || [];
-    
-    // คัดกรองเอาเฉพาะเวลาที่อยู่ในช่วง Window (เช่น 1 นาทีที่ผ่านมา)
-    const recentRequests = timestamps.filter(time => now - time < windowMs);
-    
-    if (recentRequests.length >= limit) {
-      return c.json({ success: false, error: 'ท่านร่ายเวทมนตร์ถี่เกินไป โปรดพักหายใจสักครู่...' }, 429);
-    }
-    
-    recentRequests.push(now);
-    rateLimitMap.set(ip, recentRequests);
-    
-    // ล้างข้อมูลเก่าๆ ทิ้งเพื่อไม่ให้กิน Memory ของเซิร์ฟเวอร์ (Worker)
-    if (rateLimitMap.size > 1000) {
-      rateLimitMap.clear();
-    }
-
-    return await next();
-  };
 }
 
 // ==========================================
@@ -145,6 +113,8 @@ app.get('/api/fix-db', async (c) => {
     "ALTER TABLE comments ADD COLUMN likes INTEGER DEFAULT 0;",
     "ALTER TABLE users ADD COLUMN last_login INTEGER;",
     "ALTER TABLE users ADD COLUMN karma INTEGER DEFAULT 0;",
+    "ALTER TABLE users ADD COLUMN last_post_time INTEGER DEFAULT 0;",      // 🌟 เพิ่มคอลัมน์กันปั๊มกระทู้
+    "ALTER TABLE users ADD COLUMN last_comment_time INTEGER DEFAULT 0;",   // 🌟 เพิ่มคอลัมน์กันปั๊มคอมเมนต์
     `CREATE TABLE IF NOT EXISTS notifications (
         id TEXT PRIMARY KEY,
         recipient TEXT NOT NULL,
@@ -295,7 +265,7 @@ app.get('/api/me', async (c) => {
 })
 
 // ==========================================
-// 🚪 จัดการสมาชิก (ฝังการตรวจ Turnstile)
+// 🚪 จัดการสมาชิก 
 // ==========================================
 app.get('/api/users', async (c) => {
   const { results } = await c.env.DB.prepare("SELECT * FROM users").all()
@@ -310,8 +280,8 @@ app.post('/api/users', async (c) => {
   const body = await c.req.json()
   const { username, password, role, rank_name, last_login, turnstileToken } = body
   
-  // 🌟 ตรวจสอบ Turnstile CAPTCHA ป้องกัน Bot เข้าสู่ระบบ
-  const secretKey = c.env.TURNSTILE_SECRET || '1x0000000000000000000000000000000AA'; // ใส่ Secret ของจริงใน Cloudflare Dashboard
+  // 🌟 ตรวจสอบ Turnstile CAPTCHA ป้องกัน Bot
+  const secretKey = c.env.TURNSTILE_SECRET || '1x0000000000000000000000000000000AA';
   const ip = c.req.header('CF-Connecting-IP') || '';
 
   if (!turnstileToken) {
@@ -373,15 +343,14 @@ app.delete('/api/users/:username', async (c) => {
 })
 
 // ==========================================
-// 📜 จัดการกระทู้ (ฝัง Rate Limiter กันสแปม)
+// 📜 จัดการกระทู้ (มีระบบกันการสแปมปั๊มโพสต์ผ่าน DB)
 // ==========================================
 app.get('/api/posts', async (c) => {
   const { results } = await c.env.DB.prepare("SELECT * FROM posts ORDER BY id DESC").all()
   return c.json(results)
 })
 
-// 🌟 กางค่ายกล: ตั้งกระทู้ได้สูงสุด 3 กระทู้ ภายใน 1 นาที (60000ms)
-app.post('/api/posts', rateLimiter(3, 60000), async (c) => {
+app.post('/api/posts', async (c) => {
   const body = await c.req.json()
   
   const authUser = await getAuthenticatedUser(c)
@@ -391,6 +360,18 @@ app.post('/api/posts', rateLimiter(3, 60000), async (c) => {
     return c.json({ success: false, error: 'ไม่พบตัวตนผู้สลักจารึก' }, 401)
   }
 
+  const now = Date.now();
+
+  // 🌟 ระบบ Flood Control (กันสแปมตั้งกระทู้)
+  const user: any = await c.env.DB.prepare("SELECT last_post_time, role FROM users WHERE username = ?").bind(author).first();
+  if (user && String(user.role) !== '1') { // แอดมิน (ปรมัตถ์) โพสต์ได้รัวๆ
+    const lastPostTime = user.last_post_time || 0;
+    if (now - lastPostTime < 30000) { // ต้องเว้นระยะ 30 วินาทีถึงจะโพสต์กระทู้ใหม่ได้
+      const timeLeft = Math.ceil((30000 - (now - lastPostTime)) / 1000);
+      return c.json({ success: false, error: `ท่านร่ายเวทมนตร์ถี่เกินไป โปรดพักหายใจอีก ${timeLeft} วินาที` }, 429);
+    }
+  }
+
   const safeContent = sanitize(body.content)
   const isPinned = (body.pinned === true || body.pinned === 1 || body.pinned === '1') ? 1 : 0;
   
@@ -398,6 +379,8 @@ app.post('/api/posts', rateLimiter(3, 60000), async (c) => {
     "INSERT INTO posts (id, category, title, content, author, timestamp, pinned) VALUES (?, ?, ?, ?, ?, ?, ?)"
   ).bind(body.id, body.category, body.title, safeContent, author, body.timestamp, isPinned).run()
   
+  // อัปเดตเวลาโพสต์ล่าสุดให้ User นี้ และเพิ่มแต้มบุญ
+  await c.env.DB.prepare("UPDATE users SET last_post_time = ? WHERE username = ?").bind(now, author).run();
   await addKarma(c.env.DB, author, 2);
 
   return c.json({ success: true })
@@ -463,7 +446,7 @@ app.post('/api/posts/:postId/like', async (c) => {
 })
 
 // ==========================================
-// 💬 จัดการคอมเมนต์ (ฝัง Rate Limiter กันสแปม)
+// 💬 จัดการคอมเมนต์ (มีระบบกันการสแปมปั๊มโพสต์ผ่าน DB)
 // ==========================================
 app.get('/api/comments', async (c) => {
   const { results } = await c.env.DB.prepare("SELECT * FROM comments ORDER BY id ASC").all()
@@ -476,8 +459,7 @@ app.get('/api/posts/:postId/comments', async (c) => {
   return c.json(results)
 })
 
-// 🌟 กางค่ายกล: คอมเมนต์ได้สูงสุด 5 คอมเมนต์ ภายใน 1 นาที (60000ms)
-app.post('/api/comments', rateLimiter(5, 60000), async (c) => {
+app.post('/api/comments', async (c) => {
   const body = await c.req.json()
   
   const authUser = await getAuthenticatedUser(c)
@@ -487,12 +469,26 @@ app.post('/api/comments', rateLimiter(5, 60000), async (c) => {
     return c.json({ success: false, error: 'ไม่พบตัวตนผู้สลักความเห็น' }, 401)
   }
 
+  const now = Date.now();
+
+  // 🌟 ระบบ Flood Control (กันสแปมคอมเมนต์)
+  const user: any = await c.env.DB.prepare("SELECT last_comment_time, role FROM users WHERE username = ?").bind(author).first();
+  if (user && String(user.role) !== '1') {
+    const lastCommentTime = user.last_comment_time || 0;
+    if (now - lastCommentTime < 15000) { // ต้องเว้นระยะ 15 วินาทีถึงจะคอมเมนต์ใหม่ได้
+      const timeLeft = Math.ceil((15000 - (now - lastCommentTime)) / 1000);
+      return c.json({ success: false, error: `ท่านส่งกระแสจิตถี่เกินไป โปรดพักอีก ${timeLeft} วินาที` }, 429);
+    }
+  }
+
   const safeContent = sanitize(body.content)
   await c.env.DB.prepare(
     "INSERT INTO comments (id, post_id, author, content, timestamp) VALUES (?, ?, ?, ?, ?)"
   ).bind(body.id, body.postId, author, safeContent, body.timestamp).run()
   await c.env.DB.prepare("UPDATE posts SET replies = replies + 1 WHERE id = ?").bind(body.postId).run()
   
+  // อัปเดตเวลาคอมเมนต์ล่าสุดให้ User นี้ และเพิ่มแต้มบุญ
+  await c.env.DB.prepare("UPDATE users SET last_comment_time = ? WHERE username = ?").bind(now, author).run();
   await addKarma(c.env.DB, author, 1);
 
   return c.json({ success: true })
