@@ -24,9 +24,6 @@
             overflow-x: hidden; 
         }
 
-        /* ❌ ลบละอองเวทมนตร์เคลื่อนไหว */
-        body::before, body::after { display: none !important; }
-
         h1, h2, h3, h4 { font-family: 'Prompt', sans-serif; margin: 0; }
         
         /* 🚀 ลบ backdrop-filter เปลี่ยนเป็นสีทึบเพื่อประหยัดแรมการ์ดจอ */
@@ -40,9 +37,6 @@
             box-sizing: border-box; 
             box-shadow: 0 5px 20px rgba(0,0,0,0.9);
         }
-        
-        /* ❌ ปิดแอนิเมชันกรอบแสงวิ่งรอบกล่อง */
-        .main-container::before { display: none !important; }
         
         /* 🚀 ปิดแอนิเมชันมุมกระพริบ */
         .corner-decor { position: absolute; width: clamp(60px, 8vw, 110px); height: clamp(60px, 8vw, 110px); z-index: 20; pointer-events: none; opacity: 0.8; }
@@ -194,6 +188,10 @@
         .modal-corner { position: absolute; width: 60px; pointer-events: none; opacity: 0.8; } .mc-top-left { top: 12px; left: 12px; transform: scaleX(-1); } .mc-top-right { top: 12px; right: 12px; } .mc-bottom-left { bottom: 12px; left: 12px; transform: scaleX(-1) scaleY(-1); } .mc-bottom-right { bottom: 12px; right: 12px; transform: scaleY(-1); }
         .modal-header { text-align: center; margin-bottom: 20px; } .modal-header h3 { color: var(--gold-light); font-size: 1.5rem; margin-bottom: 5px; } .modal-header p { color: var(--gold-dark); font-size: 0.85rem; margin: 0; }
         
+        /* 🌟 คืนชีพปุ่มยืนยันให้ Modal */
+        .btn-submit-modal { background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; border: none; padding: 12px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-weight: bold; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: filter 0.2s; width: 80%; margin: 0 auto; display: block; }
+        .btn-submit-modal:hover { filter: brightness(1.15); }
+
         .form-group { margin-bottom: 20px; width: 100%; box-sizing: border-box; } .form-group label { display: block; color: var(--gold-main); font-size: 0.95rem; margin-bottom: 8px; } .form-input { width: 100%; background: rgba(0,0,0,0.6); border: 1px solid rgba(138, 99, 21, 0.5); color: #fff; padding: 12px 15px; border-radius: 6px; font-family: 'Sarabun', sans-serif; font-size: 1rem; box-sizing: border-box; } .form-input:focus { outline: none; border-color: var(--gold-light); }
         .password-wrapper { position: relative; display: flex; align-items: center; width: 100%; } .password-wrapper .form-input { padding-right: 60px; } .toggle-password { position: absolute; right: 15px; cursor: pointer; font-size: 0.9rem; color: var(--gold-main); opacity: 0.8; } .toggle-password:hover { opacity: 1; }
         .privacy-warning { background: rgba(168, 46, 46, 0.1); border-left: 3px solid #a82e2e; padding: 12px 15px; font-size: 0.8rem; color: #d1bfae; line-height: 1.5; margin-bottom: 25px; border-radius: 0 4px 4px 0; } .privacy-warning strong { color: #ff6b6b; }
@@ -217,26 +215,11 @@
         
         /* 🚀 อาคมลดภาระเครื่องขั้นเด็ดขาด (ลื่นปรี๊ด 100% บนแท็บเล็ตและมือถือ) */
         @media (max-width: 1200px), (hover: none) and (pointer: coarse) {
-            body {
-                background-attachment: scroll !important;
-            }
-            body::before, body::after {
-                display: none !important;
-            }
-            .main-container {
-                backdrop-filter: none !important;
-                -webkit-backdrop-filter: none !important;
-                background-color: rgba(7, 4, 2, 0.98) !important;
-                animation: none !important;
-                box-shadow: 0 5px 15px rgba(0,0,0,0.9) !important;
-                border: 1px solid var(--gold-main) !important; 
-            }
-            .main-container::before {
-                display: none !important;
-            }
-            .corner-decor, .noti-btn, .hero-center-img {
-                animation: none !important;
-            }
+            body { background-attachment: scroll !important; }
+            body::before, body::after { display: none !important; }
+            .main-container { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; background-color: rgba(7, 4, 2, 0.98) !important; animation: none !important; box-shadow: 0 5px 15px rgba(0,0,0,0.9) !important; border: 1px solid var(--gold-main) !important; }
+            .main-container::before { display: none !important; }
+            .corner-decor, .noti-btn, .loading-text { animation: none !important; }
         }
     </style>
 </head>
@@ -249,7 +232,7 @@
         <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="corner-decor corner-bottom-right" alt="" width="110" height="110">
 
         <header>
-            <div class="site-title"><img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019626/logo.png" alt="ศิษย์หลวงปู่" width="300" height="100"></div>
+            <div class="site-title"><img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019626/logo.png" alt="ศิษย์หลวงปู่"></div>
             <nav>
                 <a href="index.html">หน้าแรก</a>
                 <a href="reader.html">สัตยาสาบาน</a>
@@ -367,7 +350,7 @@
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-right" alt="" width="60" height="60">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-bottom-left" alt="" width="60" height="60">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-bottom-right" alt="" width="60" height="60">
-            <div class="modal-header"><h3 style="font-size: 1.4rem;">ประกาศสำนัก</h3></div>
+            <div class="modal-header" style="margin-bottom: 15px;"><h3 style="font-size: 1.4rem;">ประกาศสำนัก</h3></div>
             <p id="customAlertMessage" style="color: #e2d4c3; font-size: 1.05rem; margin-bottom: 25px; text-align:center;">ข้อความแจ้งเตือน</p>
             <button type="button" class="btn-submit-modal" onclick="closeCustomAlert()" id="customAlertBtn">รับทราบ</button>
         </div>
@@ -496,7 +479,6 @@
                 } catch (error) { return []; }
             },
             
-            // 🌟 รองรับ Error Object เพื่อโชว์คูลดาวน์
             async saveComment(commentData) {
                 try {
                     const token = localStorage.getItem('siy_token');
@@ -1241,7 +1223,7 @@
         });
 
         function handleLogout() {
-            localStorage.removeItem('siy_token'); 
+            localStorage.removeItem('siy_token'); // 🌟 ล้าง Token เมื่อออกจากระบบ
             localStorage.removeItem('siy_username'); 
             localStorage.removeItem('siy_usertype'); 
             localStorage.removeItem('siy_login_timestamp');
