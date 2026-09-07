@@ -127,6 +127,7 @@
         
         .btn-primary { display: block; width: 100%; text-align: center; background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; font-family: 'Prompt', sans-serif; font-weight: bold; padding: 12px; border-radius: 25px; font-size: 1.1rem; box-shadow: 0 5px 15px rgba(0,0,0,0.6); border: 1px solid #ffeba9; cursor: pointer; transition: filter 0.2s; text-decoration: none; box-sizing: border-box; white-space: normal; } .btn-primary:hover { filter: brightness(1.15); }
 
+        /* 🌟 สไตล์กล่องคัมภีร์ส่วนตัว (Bookmarks) */
         .bookmark-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: rgba(0,0,0,0.4); border: 1px dashed rgba(212, 175, 55, 0.3); border-radius: 6px; margin-bottom: 8px; transition: background 0.2s; }
         .bookmark-item:hover { background: rgba(212, 175, 55, 0.1); border-color: var(--gold-main); }
         .bookmark-link { flex: 1; color: var(--gold-light); text-decoration: none; font-size: 0.9rem; font-family: 'Prompt', sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-right: 10px; }
@@ -491,24 +492,32 @@
             async readNotification(id) {
                 try { await fetch(`${API_CONFIG.BASE_URL}/notifications/${id}/read`, { method: 'PUT' }); } catch(e) {}
             },
+            // 🌟 ปรับปรุงการดึง Bookmark ให้ปลอดภัยและเช็ค Token ของ D1 ให้ถูกต้อง
             async getBookmarks() {
                 try {
                     const token = localStorage.getItem('siy_token');
-                    if (!token) return [];
+                    const headers = {};
+                    if (token) {
+                        headers['Authorization'] = `Bearer ${token}`;
+                    }
                     const res = await fetch(`${API_CONFIG.BASE_URL}/bookmarks`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
+                        headers: headers
                     });
                     if (!res.ok) return [];
-                    return await res.json();
+                    const data = await res.json();
+                    return Array.isArray(data) ? data : [];
                 } catch (e) { return []; }
             },
             async removeBookmark(postId) {
                 try {
                     const token = localStorage.getItem('siy_token');
-                    if (!token) return;
+                    const headers = {};
+                    if (token) {
+                        headers['Authorization'] = `Bearer ${token}`;
+                    }
                     await fetch(`${API_CONFIG.BASE_URL}/bookmarks/${postId}`, {
                         method: 'DELETE',
-                        headers: { 'Authorization': `Bearer ${token}` }
+                        headers: headers
                     });
                 } catch (e) {}
             }
@@ -605,12 +614,13 @@
             });
         }
 
+        // 🌟 ฟังก์ชันเรนเดอร์คัมภีร์ส่วนตัวจาก D1 Database ที่ปรับให้เสถียรขึ้น
         async function renderBookmarks() {
             const widget = document.getElementById('bookmarkWidget');
             const container = document.getElementById('bookmarkListContainer');
-            const userType = localStorage.getItem('siy_usertype');
+            const savedUser = localStorage.getItem('siy_username');
 
-            if (userType === 'guest' || !localStorage.getItem('siy_token')) {
+            if (!savedUser || localStorage.getItem('siy_usertype') === 'guest') {
                 widget.style.display = 'none';
                 return;
             }
@@ -1086,6 +1096,7 @@
             localStorage.setItem('siy_login_timestamp', nowTimestamp.toString()); 
             closeRegisterModal(); 
             checkUserLoginStatus();
+            renderBookmarks(); // 🌟 รีเฟรชเรียกคัมภีร์ทันทีหลังล็อกอิน
         }
 
         function handleLogout() {
@@ -1094,6 +1105,7 @@
             localStorage.removeItem('siy_usertype'); 
             localStorage.removeItem('siy_login_timestamp');
             checkUserLoginStatus(); 
+            renderBookmarks(); // 🌟 ซ่อนคัมภีร์ทันทีหลังออกจากระบบ
             showCustomAlert('ท่านได้ออกจากระบบเรียบร้อยแล้ว');
         }
 
