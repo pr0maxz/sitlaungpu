@@ -6,7 +6,7 @@ type Bindings = {
   DB: D1Database
   TELEPATHY_ROOM: DurableObjectNamespace
   JWT_SECRET?: string
-  TURNSTILE_SECRET?: string // 🌟 เพิ่มตัวแปรสำหรับรับ Secret Key จากหน้า Dashboard
+  TURNSTILE_SECRET?: string
 }
 
 const app = new Hono<{ Bindings: Bindings }>()
@@ -32,7 +32,7 @@ function sanitize(text: string) {
 }
 
 // ==========================================
-// 🛡️ ฟังก์ชันตรวจสอบยันต์กันผี (Turnstile Verification)
+// 🛡️ ฟังก์ชันตรวจสอบยันต์กันผี (Turnstile)
 // ==========================================
 async function verifyTurnstile(token: string, secret: string, ip: string) {
   const formData = new FormData();
@@ -44,6 +44,38 @@ async function verifyTurnstile(token: string, secret: string, ip: string) {
   const result = await fetch(url, { body: formData, method: 'POST' });
   const outcome: any = await result.json();
   return outcome.success;
+}
+
+// ==========================================
+// ⏳ ระบบค่ายกลสกัดดาวตก (Rate Limiter แบบฟรี 100%)
+// ==========================================
+const rateLimitMap = new Map<string, number[]>();
+
+function rateLimiter(limit: number, windowMs: number) {
+  return async (c: any, next: any) => {
+    const ip = c.req.header('CF-Connecting-IP') || 'unknown';
+    if (ip === 'unknown') return await next();
+
+    const now = Date.now();
+    const timestamps = rateLimitMap.get(ip) || [];
+    
+    // คัดกรองเอาเฉพาะเวลาที่อยู่ในช่วง Window (เช่น 1 นาทีที่ผ่านมา)
+    const recentRequests = timestamps.filter(time => now - time < windowMs);
+    
+    if (recentRequests.length >= limit) {
+      return c.json({ success: false, error: 'ท่านร่ายเวทมนตร์ถี่เกินไป โปรดพักหายใจสักครู่...' }, 429);
+    }
+    
+    recentRequests.push(now);
+    rateLimitMap.set(ip, recentRequests);
+    
+    // ล้างข้อมูลเก่าๆ ทิ้งเพื่อไม่ให้กิน Memory ของเซิร์ฟเวอร์ (Worker)
+    if (rateLimitMap.size > 1000) {
+      rateLimitMap.clear();
+    }
+
+    return await next();
+  };
 }
 
 // ==========================================
@@ -279,7 +311,7 @@ app.post('/api/users', async (c) => {
   const { username, password, role, rank_name, last_login, turnstileToken } = body
   
   // 🌟 ตรวจสอบ Turnstile CAPTCHA ป้องกัน Bot เข้าสู่ระบบ
-  const secretKey = c.env.TURNSTILE_SECRET || '1x0000000000000000000000000000000AA'; // ใส่ Secret ของจริงใน Cloudflare Dashboard Variables
+  const secretKey = c.env.TURNSTILE_SECRET || '1x0000000000000000000000000000000AA'; // ใส่ Secret ของจริงใน Cloudflare Dashboard
   const ip = c.req.header('CF-Connecting-IP') || '';
 
   if (!turnstileToken) {
@@ -341,14 +373,15 @@ app.delete('/api/users/:username', async (c) => {
 })
 
 // ==========================================
-// 📜 จัดการกระทู้และคอมเมนต์ (Posts & Comments)
+// 📜 จัดการกระทู้ (ฝัง Rate Limiter กันสแปม)
 // ==========================================
 app.get('/api/posts', async (c) => {
   const { results } = await c.env.DB.prepare("SELECT * FROM posts ORDER BY id DESC").all()
   return c.json(results)
 })
 
-app.post('/api/posts', async (c) => {
+// 🌟 กางค่ายกล: ตั้งกระทู้ได้สูงสุด 3 กระทู้ ภายใน 1 นาที (60000ms)
+app.post('/api/posts', rateLimiter(3, 60000), async (c) => {
   const body = await c.req.json()
   
   const authUser = await getAuthenticatedUser(c)
@@ -429,6 +462,9 @@ app.post('/api/posts/:postId/like', async (c) => {
   }
 })
 
+// ==========================================
+// 💬 จัดการคอมเมนต์ (ฝัง Rate Limiter กันสแปม)
+// ==========================================
 app.get('/api/comments', async (c) => {
   const { results } = await c.env.DB.prepare("SELECT * FROM comments ORDER BY id ASC").all()
   return c.json(results)
@@ -440,7 +476,8 @@ app.get('/api/posts/:postId/comments', async (c) => {
   return c.json(results)
 })
 
-app.post('/api/comments', async (c) => {
+// 🌟 กางค่ายกล: คอมเมนต์ได้สูงสุด 5 คอมเมนต์ ภายใน 1 นาที (60000ms)
+app.post('/api/comments', rateLimiter(5, 60000), async (c) => {
   const body = await c.req.json()
   
   const authUser = await getAuthenticatedUser(c)
