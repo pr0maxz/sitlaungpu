@@ -128,6 +128,13 @@
         .search-btn { flex-shrink: 0; background: transparent; border: 1px solid var(--gold-dark); color: var(--gold-main); padding: 0 15px; border-radius: 25px; cursor: pointer; transition: background 0.2s; font-family: 'Prompt', sans-serif; white-space: nowrap; } .search-btn:hover { background: var(--gold-dark); color: #fff; }
         
         .btn-primary { display: block; width: 100%; text-align: center; background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; font-family: 'Prompt', sans-serif; font-weight: bold; padding: 12px; border-radius: 25px; font-size: 1.1rem; box-shadow: 0 5px 15px rgba(0,0,0,0.6); border: 1px solid #ffeba9; cursor: pointer; transition: filter 0.2s; text-decoration: none; box-sizing: border-box; white-space: normal; } .btn-primary:hover { filter: brightness(1.15); }
+
+        /* 🌟 สไตล์กล่องคัมภีร์ส่วนตัว (Bookmark Item) */
+        .bookmark-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: rgba(0,0,0,0.4); border: 1px dashed rgba(212, 175, 55, 0.3); border-radius: 6px; margin-bottom: 8px; transition: background 0.2s; }
+        .bookmark-item:hover { background: rgba(212, 175, 55, 0.1); border-color: var(--gold-main); }
+        .bookmark-link { flex: 1; color: var(--gold-light); text-decoration: none; font-size: 0.9rem; font-family: 'Prompt', sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-right: 10px; }
+        .btn-remove-bookmark { background: transparent; border: none; color: var(--danger-color); cursor: pointer; font-size: 1rem; opacity: 0.6; transition: opacity 0.2s; padding: 0 5px; }
+        .btn-remove-bookmark:hover { opacity: 1; }
         
         .site-footer { text-align: center; margin-top: 50px; padding-top: 20px; border-top: 1px dashed rgba(138, 99, 21, 0.3); width: 100%; box-sizing: border-box; }
         .site-footer p { color: var(--text-muted); font-family: 'Sarabun', sans-serif; font-size: 0.85rem; letter-spacing: 0.5px; margin: 0; }
@@ -152,7 +159,6 @@
         .noti-item.unread { background: rgba(212, 175, 55, 0.08); border-left: 3px solid var(--gold-main); }
         .noti-time { font-size: 0.7rem; color: var(--text-muted); text-align: right; }
 
-        /* 🚀 โหมดเบาพิเศษ: ปิด blur ใน Overlay ของ Modal เปลี่ยนเป็นสีทึบ */
         .sect-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(7, 4, 2, 0.95); z-index: 1000; justify-content: center; align-items: center; } 
         .sect-modal-overlay.active { display: flex; }
         .sect-modal-content { position: relative; background: linear-gradient(135deg, #1a120b, #0a0603); border: 1px solid var(--gold-main); border-radius: 12px; width: 90%; max-width: 450px; padding: 40px 30px 60px 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.9); box-sizing: border-box; }
@@ -179,6 +185,11 @@
         .btn-submit:disabled, .btn-submit.disabled { background: linear-gradient(180deg, #4a3b1a 0%, #2a1805 100%) !important; color: #8a7761 !important; border: 1px solid #5a4f35 !important; cursor: not-allowed !important; opacity: 0.6; }
         .btn-cancel { background: transparent; color: var(--text-muted); border: 1px solid var(--text-muted); padding: 12px 20px; border-radius: 25px; font-family: 'Prompt', sans-serif; cursor: pointer; transition: background 0.2s; } .btn-cancel:hover { background: rgba(255,255,255,0.1); color: #fff; }
         
+        .btn-submit-modal { background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; border: none; padding: 12px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-weight: bold; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: filter 0.2s; width: 80%; margin: 0 auto; display: block; }
+        .btn-submit-modal:hover { filter: brightness(1.15); }
+
+        .form-select { width: 100%; background: rgba(0,0,0,0.6); border: 1px solid rgba(138, 99, 21, 0.5); color: #fff; padding: 12px 15px; border-radius: 6px; font-size: 1rem; margin-bottom: 20px; font-family: 'Sarabun', sans-serif; } .form-select option { background: #1a120b; }
+
         @media (max-width: 950px) { .board-layout { grid-template-columns: 1fr; } .thread-stats { display: none; } }
         @media (max-width: 768px) {
             .site-title img { height: 65px !important; }
@@ -188,44 +199,15 @@
         }
         @media (max-width: 600px) { .main-container { padding: 45px 20px 40px 20px !important; width: 95%; margin-top: 30px; } }
         
-        /* 🛡️ สไตล์สำหรับกล่อง Turnstile (ยันต์กันผี) */
-        .captcha-box-turnstile {
-            background: rgba(212,175,55,0.05); 
-            border: 1px dashed var(--gold-dark); 
-            padding: 15px; 
-            border-radius: 6px; 
-            text-align: center; 
-            margin-bottom: 20px; 
-            width: 100%; 
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+        .captcha-box-turnstile { background: rgba(212,175,55,0.05); border: 1px dashed var(--gold-dark); padding: 15px; border-radius: 6px; text-align: center; margin-bottom: 20px; width: 100%; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; }
         .captcha-box-turnstile p { color: #e6dac3; margin: 0 0 10px 0; font-size: 0.9rem; }
         
-        /* 🚀 อาคมลดภาระเครื่องขั้นเด็ดขาด (ลื่นปรี๊ด 100% บนแท็บเล็ตและมือถือ) */
         @media (max-width: 1200px), (hover: none) and (pointer: coarse) {
-            body {
-                background-attachment: scroll !important;
-            }
-            body::before, body::after {
-                display: none !important;
-            }
-            .main-container {
-                backdrop-filter: none !important;
-                -webkit-backdrop-filter: none !important;
-                background-color: rgba(7, 4, 2, 0.98) !important;
-                animation: none !important;
-                box-shadow: 0 5px 15px rgba(0,0,0,0.9) !important;
-                border: 1px solid var(--gold-main) !important; 
-            }
-            .main-container::before {
-                display: none !important;
-            }
-            .corner-decor, .noti-btn, .hero-center-img {
-                animation: none !important;
-            }
+            body { background-attachment: scroll !important; }
+            body::before, body::after { display: none !important; }
+            .main-container { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; background-color: rgba(7, 4, 2, 0.98) !important; animation: none !important; box-shadow: 0 5px 15px rgba(0,0,0,0.9) !important; border: 1px solid var(--gold-main) !important; }
+            .main-container::before { display: none !important; }
+            .corner-decor, .noti-btn, .loading-text { animation: none !important; }
         }
     </style>
 </head>
@@ -238,7 +220,7 @@
         <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="corner-decor corner-bottom-right" alt="" width="110" height="110">
 
         <header>
-            <div class="site-title"><img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019626/logo.png" alt="ศิษย์หลวงปู่" width="300" height="100"></div>
+            <div class="site-title"><img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019626/logo.png" alt="ศิษย์หลวงปู่"></div>
             <nav>
                 <a href="index.html">หน้าแรก</a>
                 <a href="reader.html">สัตยาสาบาน</a>
@@ -315,6 +297,15 @@
                     </div>
                 </div>
 
+                <!-- 🌟 กล่องคัมภีร์ส่วนตัว (Bookmarks) 🌟 -->
+                <div class="widget" id="bookmarkWidget" style="display: none;">
+                    <h4 class="section-title" style="background: linear-gradient(180deg, #4a3b1a 0%, #2a1805 100%); border-color: #f5d77f; color: #fff;">🔖 คัมภีร์ส่วนตัว</h4>
+                    <div id="bookmarkListContainer" style="display: flex; flex-direction: column; margin-top: 15px;">
+                        <!-- ประวัติ Bookmark จะโชว์ที่นี่ -->
+                    </div>
+                </div>
+
+                <!-- กล่องรอยเท้าจารึก (Recently Viewed) -->
                 <div class="widget" id="historyWidget" style="display: none;">
                     <h4 class="section-title">รอยเท้าจารึก</h4>
                     <div id="historyListContainer" style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
@@ -445,7 +436,7 @@
         </div>
     </div>
 
-    <!-- Modal แจ้งเตือนทั่วไป -->
+    <!-- Modals แจ้งเตือนทั่วไป -->
     <div class="sect-modal-overlay" id="customAlertModal" style="z-index: 9999;">
         <div class="sect-modal-content" style="max-width: 350px; text-align: center; padding: 30px 20px 40px 20px;">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-left" alt="" width="60" height="60">
@@ -453,8 +444,8 @@
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-bottom-left" alt="" width="60" height="60">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-bottom-right" alt="" width="60" height="60">
             <div class="modal-header" style="margin-bottom: 15px;"><h3 style="font-size: 1.4rem;">ประกาศสำนัก</h3></div>
-            <p id="customAlertMessage" style="color: #e2d4c3; font-size: 1.05rem; margin-bottom: 25px; line-height: 1.5;">ข้อความแจ้งเตือน</p>
-            <button type="button" class="btn-submit" onclick="closeCustomAlert()" id="customAlertBtn" style="width: 80%; margin: 0 auto; display: block;">รับทราบ</button>
+            <p id="customAlertMessage" style="color: #e2d4c3; font-size: 1.05rem; margin-bottom: 25px; text-align:center;">ข้อความแจ้งเตือน</p>
+            <button type="button" class="btn-submit-modal" onclick="closeCustomAlert()" id="customAlertBtn">รับทราบ</button>
         </div>
     </div>
     
@@ -555,7 +546,7 @@
                 if (n.action_type === 'reply') actionText = 'ได้ตอบกลับข้อความของท่าน';
                 if (n.action_type === 'like_post') actionText = 'ได้ร่วมอนุโมทนาในกระทู้ของท่าน';
                 if (n.action_type === 'like_comment') actionText = 'ได้ร่วมอนุโมทนาในความเห็นของท่าน';
-                if (n.action_type === 'mention') actionText = 'ได้เอ่ยนามเรียกขานท่าน (Mention)';
+                if (n.action_type === 'mention') actionText = 'ได้เอ่ยนามเรียกขานท่าน';
 
                 const isUnreadClass = String(n.is_read) === '0' ? 'unread' : '';
                 
@@ -592,6 +583,7 @@
             }
         }
 
+        // 🌟 ฟังก์ชันเรนเดอร์ "รอยเท้าจารึก" (ประวัติการดู)
         function renderViewHistory() {
             const history = JSON.parse(localStorage.getItem('siy_view_history') || '[]');
             const widget = document.getElementById('historyWidget');
@@ -615,10 +607,50 @@
             });
         }
 
+        // 🌟 ฟังก์ชันเรนเดอร์ "คัมภีร์ส่วนตัว" (Bookmarks)
+        function renderBookmarks() {
+            const bookmarks = JSON.parse(localStorage.getItem('siy_bookmarks') || '[]');
+            const widget = document.getElementById('bookmarkWidget');
+            const container = document.getElementById('bookmarkListContainer');
+            
+            if (bookmarks.length === 0) {
+                widget.style.display = 'none';
+                return;
+            }
+            
+            widget.style.display = 'block';
+            container.innerHTML = '';
+            
+            bookmarks.forEach(item => {
+                const displayTitle = formatMentions(item.title);
+                container.innerHTML += `
+                    <div class="bookmark-item" id="bm-item-${item.id}">
+                        <a href="post.html?id=${item.id}" class="bookmark-link" title="${item.title}">${displayTitle}</a>
+                        <button class="btn-remove-bookmark" onclick="removeBookmark('${item.id}')" title="ลบออกจากคัมภีร์">✖</button>
+                    </div>
+                `;
+            });
+        }
+
+        // 🌟 ฟังก์ชันกดกากบาทเพื่อลบ Bookmark จากหน้า Webboard
+        function removeBookmark(postId) {
+            let bookmarks = JSON.parse(localStorage.getItem('siy_bookmarks') || '[]');
+            bookmarks = bookmarks.filter(b => String(b.id) !== String(postId));
+            localStorage.setItem('siy_bookmarks', JSON.stringify(bookmarks));
+            
+            const itemElement = document.getElementById(`bm-item-${postId}`);
+            if(itemElement) itemElement.remove();
+            
+            if (bookmarks.length === 0) {
+                document.getElementById('bookmarkWidget').style.display = 'none';
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             loadAndRenderPosts();
             checkUserLoginStatus();
             renderViewHistory(); 
+            renderBookmarks(); // 🌟 สั่งให้วาดกล่อง Bookmark ทันทีที่โหลดหน้า
 
             const hasAcceptedRules = localStorage.getItem('siy_webboard_rules_accepted');
             if (!hasAcceptedRules) {
@@ -954,7 +986,6 @@
             }
             document.getElementById('regUsername').value = '';
             document.getElementById('regPassword').value = '';
-            // ล้างค่า Turnstile ด้วยถ้ายกเลิก/เปิดใหม่
             try { turnstile.reset(); } catch(e) {}
             document.getElementById('registerModal').classList.add('active');
         }
@@ -994,7 +1025,6 @@
 
             if (currentModalMode === 'register') {
                 
-                // 🌟 ดึงค่าตรายางจาก Turnstile แทนการให้พิมพ์รหัสผ่าน
                 const turnstileToken = document.querySelector('[name="cf-turnstile-response"]')?.value;
                 if (!turnstileToken) {
                     showCustomAlert('กรุณารอระบบตรวจสอบวิญญาณสักครู่... หรือรีเฟรชหน้าเว็บใหม่');
@@ -1011,7 +1041,7 @@
                             role: '5',             
                             rank_name: 'เด็กวัด',
                             last_login: nowTimestamp,
-                            turnstileToken: turnstileToken // 🌟 ส่ง Token ไปยืนยันที่ Worker
+                            turnstileToken: turnstileToken 
                         })
                     });
                     const result = await res.json();

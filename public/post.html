@@ -105,6 +105,11 @@
         .btn-like:hover { background: var(--gold-main); color: #000; box-shadow: 0 0 10px rgba(212,175,55,0.4); }
         .btn-like.liked { background: var(--gold-main); color: #000; font-weight: bold; }
 
+        /* 🌟 ปุ่มบันทึกจารึก (Bookmark) */
+        .btn-save-bookmark { background: rgba(0,0,0,0.4); border: 1px solid var(--text-muted); color: var(--text-muted); padding: 4px 12px; border-radius: 20px; font-family: 'Prompt', sans-serif; font-size: 0.8rem; cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-save-bookmark:hover { background: rgba(212, 175, 55, 0.1); border-color: var(--gold-light); color: var(--gold-light); }
+        .btn-save-bookmark.saved { border-color: var(--gold-main); color: var(--gold-main); background: rgba(212, 175, 55, 0.05); }
+
         .comment-section-title { color: var(--gold-main); font-size: 1.3rem; margin-bottom: 20px; border-left: 4px solid var(--gold-main); padding-left: 10px; }
         #commentsList { min-height: 120px; }
 
@@ -207,13 +212,12 @@
         
         .loading-text { font-family: 'Prompt', sans-serif; color: var(--gold-main); text-align: center; padding: 40px; }
         
-        /* 🚀 อาคมลดภาระเครื่องขั้นเด็ดขาด (ลื่นปรี๊ด 100% บนแท็บเล็ตและมือถือ) */
         @media (max-width: 1200px), (hover: none) and (pointer: coarse) {
             body { background-attachment: scroll !important; }
             body::before, body::after { display: none !important; }
             .main-container { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; background-color: rgba(7, 4, 2, 0.98) !important; animation: none !important; box-shadow: 0 5px 15px rgba(0,0,0,0.9) !important; border: 1px solid var(--gold-main) !important; }
             .main-container::before { display: none !important; }
-            .corner-decor, .noti-btn, .loading-text, .hero-center-img { animation: none !important; }
+            .corner-decor, .noti-btn, .loading-text { animation: none !important; }
         }
     </style>
 </head>
@@ -263,11 +267,15 @@
                         <div class="loading-text">กำลังรวบรวมชิ้นส่วนจารึก...</div>
                     </div>
 
-                    <div style="border-top: 1px dashed rgba(138, 99, 21, 0.3); padding-top: 20px; display: flex; align-items: center; gap: 15px;">
+                    <div style="border-top: 1px dashed rgba(138, 99, 21, 0.3); padding-top: 20px; display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
                         <button class="btn-like" id="btnLikeMainPost" onclick="likePostAction()">
                             🙏 อนุโมทนา (<span id="dyn-likes">0</span>)
                         </button>
-                        <span style="color: var(--text-muted); font-size: 0.85rem;">👀 <span id="dyn-views">0</span> วิว</span>
+                        <!-- 🌟 ปุ่มบันทึกจารึกที่เพิ่มเข้ามา 🌟 -->
+                        <button class="btn-save-bookmark" id="btnSaveBookmarkPost" onclick="toggleBookmarkAction()" title="บันทึกเข้าคัมภีร์ส่วนตัว">
+                            🔖 บันทึกจารึก
+                        </button>
+                        <span style="color: var(--text-muted); font-size: 0.85rem; margin-left: auto;">👀 <span id="dyn-views">0</span> วิว</span>
                     </div>
                 </div>
 
@@ -373,6 +381,7 @@
         };
 
         let currentPostAuthorGlobal = ''; 
+        let globalPostDataForBookmark = null; // 🌟 เก็บข้อมูลกระทู้ไว้เผื่อกดเซฟ
 
         function formatMentions(text) {
             const mentionRegex = /@([ก-๙a-zA-Z0-9_-]+)/g;
@@ -683,6 +692,31 @@
                 if(btn) btn.innerHTML = originalText;
                 showCustomAlert('⚠️ อาถรรพ์สะท้อนกลับ! เชื่อมต่อหลังบ้านไม่สำเร็จ');
             }
+        }
+
+        // 🌟 ฟังก์ชัน สลับเปิด-ปิด การบันทึกคัมภีร์
+        function toggleBookmarkAction() {
+            if (!globalPostDataForBookmark) return;
+            
+            let bookmarks = JSON.parse(localStorage.getItem('siy_bookmarks') || '[]');
+            const postId = String(globalPostDataForBookmark.id);
+            const btn = document.getElementById('btnSaveBookmarkPost');
+
+            const isAlreadySaved = bookmarks.some(b => String(b.id) === postId);
+
+            if (isAlreadySaved) {
+                bookmarks = bookmarks.filter(b => String(b.id) !== postId);
+                btn.classList.remove('saved');
+                btn.innerHTML = '🔖 บันทึกจารึก';
+                showCustomAlert('นำออกจากคัมภีร์ส่วนตัวเรียบร้อยแล้ว');
+            } else {
+                bookmarks.unshift({ id: postId, title: globalPostDataForBookmark.title });
+                btn.classList.add('saved');
+                btn.innerHTML = '✨ บันทึกแล้ว';
+                showCustomAlert('เก็บบันทึกลงคัมภีร์ส่วนตัวเรียบร้อยแล้ว ท่านสามารถอ่านต่อได้ที่แถบด้านข้างของลานเสวนา');
+            }
+            
+            localStorage.setItem('siy_bookmarks', JSON.stringify(bookmarks));
         }
 
         let pendingConfirmAction = null;
@@ -1149,11 +1183,24 @@
             const postData = await ApiManager.getPostById(postId);
             
             if (postData && postData.title) {
+                globalPostDataForBookmark = postData; // 🌟 เก็บข้อมูลลงตัวแปรไว้เผื่อผู้ใช้กดปุ่ม Bookmark
+
                 let viewHistory = JSON.parse(localStorage.getItem('siy_view_history') || '[]');
                 viewHistory = viewHistory.filter(item => String(item.id) !== String(postId));
                 viewHistory.unshift({ id: postId, title: postData.title });
                 if (viewHistory.length > 5) viewHistory.pop();
                 localStorage.setItem('siy_view_history', JSON.stringify(viewHistory));
+
+                // 🌟 ตรวจสอบว่ากระทู้นี้ถูกบันทึกไว้ในคัมภีร์ส่วนตัวหรือยัง
+                const bookmarks = JSON.parse(localStorage.getItem('siy_bookmarks') || '[]');
+                const isBookmarked = bookmarks.some(b => String(b.id) === String(postId));
+                if (isBookmarked) {
+                    const bmBtn = document.getElementById('btnSaveBookmarkPost');
+                    if (bmBtn) {
+                        bmBtn.classList.add('saved');
+                        bmBtn.innerHTML = '✨ บันทึกแล้ว';
+                    }
+                }
             }
 
             if(!postData) {
@@ -1217,7 +1264,7 @@
         });
 
         function handleLogout() {
-            localStorage.removeItem('siy_token'); 
+            localStorage.removeItem('siy_token');
             localStorage.removeItem('siy_username'); 
             localStorage.removeItem('siy_usertype'); 
             localStorage.removeItem('siy_login_timestamp');
