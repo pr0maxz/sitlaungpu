@@ -6,6 +6,7 @@ type Bindings = {
   DB: D1Database
   TELEPATHY_ROOM: DurableObjectNamespace
   JWT_SECRET?: string
+  TURNSTILE_SECRET?: string // 🌟 เพิ่มตัวแปรสำหรับรับ Secret Key จากหน้า Dashboard
 }
 
 const app = new Hono<{ Bindings: Bindings }>()
@@ -28,6 +29,21 @@ function sanitize(text: string) {
   return text.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
              .replace(/on\w+="[^"]*"/gi, '')
              .replace(/on\w+='[^']*'/gi, '')
+}
+
+// ==========================================
+// 🛡️ ฟังก์ชันตรวจสอบยันต์กันผี (Turnstile Verification)
+// ==========================================
+async function verifyTurnstile(token: string, secret: string, ip: string) {
+  const formData = new FormData();
+  formData.append('secret', secret);
+  formData.append('response', token);
+  formData.append('remoteip', ip);
+
+  const url = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
+  const result = await fetch(url, { body: formData, method: 'POST' });
+  const outcome: any = await result.json();
+  return outcome.success;
 }
 
 // ==========================================
@@ -237,7 +253,6 @@ app.post('/api/admin/login', async (c) => {
   }
 });
 
-// ตรวจสอบ Token ของตัวเอง
 app.get('/api/me', async (c) => {
   const authUser = await getAuthenticatedUser(c)
   if (!authUser) return c.json({ authenticated: false }, 401)
@@ -248,7 +263,7 @@ app.get('/api/me', async (c) => {
 })
 
 // ==========================================
-// 🚪 จัดการสมาชิก 
+// 🚪 จัดการสมาชิก (ฝังการตรวจ Turnstile)
 // ==========================================
 app.get('/api/users', async (c) => {
   const { results } = await c.env.DB.prepare("SELECT * FROM users").all()
@@ -260,7 +275,22 @@ app.get('/api/users', async (c) => {
 })
 
 app.post('/api/users', async (c) => {
-  const { username, password, role, rank_name, last_login } = await c.req.json()
+  const body = await c.req.json()
+  const { username, password, role, rank_name, last_login, turnstileToken } = body
+  
+  // 🌟 ตรวจสอบ Turnstile CAPTCHA ป้องกัน Bot เข้าสู่ระบบ
+  const secretKey = c.env.TURNSTILE_SECRET || '1x0000000000000000000000000000000AA'; // ใส่ Secret ของจริงใน Cloudflare Dashboard Variables
+  const ip = c.req.header('CF-Connecting-IP') || '';
+
+  if (!turnstileToken) {
+      return c.json({ success: false, message: 'กรุณายืนยันตัวตนผ่านด่านตรวจสอบวิญญาณ' }, 403);
+  }
+
+  const isValidHuman = await verifyTurnstile(turnstileToken, secretKey, ip);
+  if (!isValidHuman) {
+      return c.json({ success: false, message: 'โดนสกัดกั้น! ตรวจพบสัมผัสวิญญาณร้าย (Bot)' }, 403);
+  }
+
   const salt = crypto.randomUUID()
   const hashed = await hashPassword(password, salt)
   try {
@@ -321,7 +351,6 @@ app.get('/api/posts', async (c) => {
 app.post('/api/posts', async (c) => {
   const body = await c.req.json()
   
-  // 🌟 ดึงตัวตนจริงจาก Token หากมี เพื่อป้องกันการปลอมนามแฝง
   const authUser = await getAuthenticatedUser(c)
   const author = authUser ? authUser.username : body.author
 
@@ -336,7 +365,6 @@ app.post('/api/posts', async (c) => {
     "INSERT INTO posts (id, category, title, content, author, timestamp, pinned) VALUES (?, ?, ?, ?, ?, ?, ?)"
   ).bind(body.id, body.category, body.title, safeContent, author, body.timestamp, isPinned).run()
   
-  // 🌟 ได้แต้มบุญ +2 จากการตั้งกระทู้
   await addKarma(c.env.DB, author, 2);
 
   return c.json({ success: true })
@@ -392,7 +420,6 @@ app.post('/api/posts/:postId/like', async (c) => {
         "INSERT INTO notifications (id, recipient, actor, action_type, post_id, is_read, timestamp) VALUES (?, ?, ?, 'like_post', ?, 0, ?)"
       ).bind(notiId, post.author, actor, postId, timeStr).run().catch(() => {})
 
-      // 🌟 เจ้าของกระทู้ได้แต้มบุญ +1
       await addKarma(c.env.DB, post.author, 1);
     }
 
@@ -416,7 +443,6 @@ app.get('/api/posts/:postId/comments', async (c) => {
 app.post('/api/comments', async (c) => {
   const body = await c.req.json()
   
-  // 🌟 ดึงตัวตนจริงจาก Token หากมี เพื่อป้องกันการปลอมนามแฝง
   const authUser = await getAuthenticatedUser(c)
   const author = authUser ? authUser.username : body.author
 
@@ -430,7 +456,6 @@ app.post('/api/comments', async (c) => {
   ).bind(body.id, body.postId, author, safeContent, body.timestamp).run()
   await c.env.DB.prepare("UPDATE posts SET replies = replies + 1 WHERE id = ?").bind(body.postId).run()
   
-  // 🌟 ได้แต้มบุญ +1 จากการตอบคอมเมนต์
   await addKarma(c.env.DB, author, 1);
 
   return c.json({ success: true })
@@ -467,7 +492,6 @@ app.post('/api/comments/:commentId/like', async (c) => {
         "INSERT INTO notifications (id, recipient, actor, action_type, post_id, is_read, timestamp) VALUES (?, ?, ?, 'like_comment', ?, 0, ?)"
       ).bind(notiId, comment.author, actor, comment.post_id || comment.postId, timeStr).run().catch(() => {})
 
-      // 🌟 เจ้าของคอมเมนต์ได้แต้มบุญ +1
       await addKarma(c.env.DB, comment.author, 1);
     }
 
@@ -541,7 +565,7 @@ app.put('/api/notifications/:id/read', async (c) => {
 })
 
 // ==========================================
-// ⚡ WebSocket Endpoint (พลังจิตเรียลไทม์ - เฟส 2)
+// ⚡ WebSocket Endpoint
 // ==========================================
 app.get('/api/ws', async (c) => {
   const upgradeHeader = c.req.header('Upgrade')
