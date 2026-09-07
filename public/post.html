@@ -133,69 +133,72 @@
         .btn-secondary-custom { background: transparent; border: 1px solid var(--gold-dark); color: var(--gold-light); padding: 10px 20px; border-radius: 20px; font-family: 'Prompt', sans-serif; font-size: 0.9rem; cursor: pointer; transition: all 0.3s; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
         .btn-secondary-custom:hover { background: rgba(212, 175, 55, 0.15); color: #fff; border-color: var(--gold-main); }
 
-        .widget { background: rgba(12, 7, 4, 0.85); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 8px; padding: 45px 20px 20px 20px; margin-top: 45px; margin-bottom: 40px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); position: relative; } 
-        .section-title { text-align: center; background: linear-gradient(180deg, #3a2511 0%, #150a03 100%); color: var(--gold-light); padding: 8px 25px; border: 1px solid var(--gold-main); border-radius: 8px; display: inline-block; position: absolute; top: -20px; left: 25px; font-size: 1.1rem; font-weight: 700; white-space: nowrap; box-shadow: 0 8px 16px rgba(0,0,0,0.9), inset 0 1px 2px rgba(255,255,255,0.15); letter-spacing: 1px; margin: 0; z-index: 5; }
-
-        .user-logged-in-profile { display: flex; flex-direction: column; align-items: center; margin-bottom: 15px; background: rgba(212, 175, 55, 0.05); padding: 15px; border-radius: 8px; border: 1px dashed var(--gold-dark); position: relative; } 
+        .widget { background: rgba(12, 7, 4, 0.85); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 8px; padding: 45px 20px 20px 20px; margin-top: 45px; margin-bottom: 40px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); position: relative; width: 100%; max-width: 100%; box-sizing: border-box; }
+        .user-status-box { text-align: center; width: 100%; } 
+        .user-logged-in-profile { display: flex; flex-direction: column; align-items: center; margin-bottom: 15px; background: rgba(212, 175, 55, 0.05); padding: 15px; border-radius: 8px; border: 1px dashed var(--gold-dark); width: 100%; box-sizing: border-box; } 
         .user-info-text { text-align: center; width: 100%; } 
-        .user-info-text h4 { color: var(--gold-light); font-size: 1.1rem; margin-bottom: 5px; } 
+        .user-info-text h4 { color: var(--gold-light); font-size: 1.1rem; margin-bottom: 5px; word-wrap: break-word; } 
         
-        .btn-logout { display: block; width: 100%; background: transparent; color: #ff6b6b; border: 1px solid rgba(168, 46, 46, 0.5); padding: 8px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-size: 0.9rem; cursor: pointer; transition: all 0.3s; } 
-        .btn-logout:hover { background: rgba(168, 46, 46, 0.1); border-color: #ff6b6b; }
+        .btn-logout { display: block; width: 100%; background: transparent; color: #ff6b6b; border: 1px solid rgba(168, 46, 46, 0.5); padding: 10px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-size: 0.95rem; cursor: pointer; transition: background 0.2s; box-sizing: border-box; } .btn-logout:hover { background: rgba(168, 46, 46, 0.1); }
+        
+        .search-wrapper { display: flex; gap: 8px; margin-bottom: 20px; width: 100%; box-sizing: border-box; } 
+        .search-input { flex: 1; min-width: 0; background: rgba(0,0,0,0.5); border: 1px solid var(--gold-dark); color: var(--gold-light); padding: 10px 15px; border-radius: 25px; font-family: 'Sarabun', sans-serif; width: 100%; box-sizing: border-box; } .search-input:focus { outline: none; border-color: var(--gold-main); } 
+        .search-btn { flex-shrink: 0; background: transparent; border: 1px solid var(--gold-dark); color: var(--gold-main); padding: 0 15px; border-radius: 25px; cursor: pointer; transition: background 0.2s; font-family: 'Prompt', sans-serif; white-space: nowrap; } .search-btn:hover { background: var(--gold-dark); color: #fff; }
+        
+        .btn-primary { display: block; width: 100%; text-align: center; background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; font-family: 'Prompt', sans-serif; font-weight: bold; padding: 12px; border-radius: 25px; font-size: 1.1rem; box-shadow: 0 5px 15px rgba(0,0,0,0.6); border: 1px solid #ffeba9; cursor: pointer; transition: filter 0.2s; text-decoration: none; box-sizing: border-box; white-space: normal; } .btn-primary:hover { filter: brightness(1.15); }
+        
+        .site-footer { text-align: center; margin-top: 50px; padding-top: 20px; border-top: 1px dashed rgba(138, 99, 21, 0.3); width: 100%; box-sizing: border-box; }
+        .site-footer p { color: var(--text-muted); font-family: 'Sarabun', sans-serif; font-size: 0.85rem; letter-spacing: 0.5px; margin: 0; }
+
+        .pagination { display: flex; justify-content: center; align-items: center; gap: 6px; margin-top: 25px; padding-bottom: 25px; flex-wrap: wrap; width: 100%; }
+        .page-btn { background: rgba(0,0,0,0.5); border: 1px solid rgba(138, 99, 21, 0.5); color: var(--gold-light); padding: 6px 14px; border-radius: 6px; cursor: pointer; transition: background 0.2s; font-family: 'Prompt', sans-serif; font-size: 0.9rem; min-width: 35px; text-align: center; }
+        .page-btn:hover:not(:disabled) { background: rgba(212,175,55,0.15); border-color: var(--gold-main); color: #fff; }
+        .page-btn.active { background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; font-weight: bold; border-color: var(--gold-light); }
+        .page-btn:disabled { opacity: 0.4; cursor: not-allowed; border-color: rgba(138, 99, 21, 0.2); }
 
         /* 🚀 ปิดแอนิเมชันปุ่มกระแสจิต */
         .noti-wrapper { position: absolute; top: -20px; right: 25px; z-index: 50; }
-        .noti-btn { background: rgba(7, 4, 2, 0.95); border: 1px solid var(--gold-main); border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; transition: all 0.3s ease; padding: 0; }
-        .noti-btn:hover { border-color: var(--gold-light); transform: scale(1.1); }
-        .noti-btn svg { width: 18px; height: 18px; fill: var(--gold-light); transition: transform 0.3s ease; }
+        .noti-btn { background: rgba(7, 4, 2, 0.95); border: 1px solid var(--gold-main); border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; padding: 0; }
+        .noti-btn:hover { border-color: var(--gold-light); }
+        .noti-btn svg { width: 18px; height: 18px; fill: var(--gold-light); }
         .noti-badge { position: absolute; top: -3px; right: -3px; background: linear-gradient(135deg, #ff6b6b, #a82e2e); color: white; font-size: 0.65rem; font-weight: bold; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; border: 1px solid #ffeea8; }
         
         .noti-dropdown { display: none; position: absolute; top: 45px; right: 0; width: 280px; background: rgba(15, 8, 3, 0.95); border: 1px solid var(--gold-dark); border-radius: 8px; box-shadow: 0 5px 20px rgba(0,0,0,0.9); z-index: 100; max-height: 350px; overflow-y: auto; text-align: left; }
         .noti-dropdown.active { display: block; }
         .noti-header { padding: 10px; border-bottom: 1px solid rgba(138, 99, 21, 0.3); color: var(--gold-main); font-family: 'Prompt', sans-serif; font-size: 0.9rem; font-weight: bold; text-align: center; background: rgba(0,0,0,0.3); }
-        .noti-item { padding: 12px 10px; border-bottom: 1px solid rgba(138, 99, 21, 0.2); font-size: 0.85rem; color: #d1bfae; cursor: pointer; transition: 0.3s; line-height: 1.4; display: flex; flex-direction: column; gap: 4px; }
+        .noti-item { padding: 12px 10px; border-bottom: 1px solid rgba(138, 99, 21, 0.2); font-size: 0.85rem; color: #d1bfae; cursor: pointer; transition: background 0.2s; line-height: 1.4; display: flex; flex-direction: column; gap: 4px; }
         .noti-item:hover { background: rgba(212, 175, 55, 0.1); }
         .noti-item.unread { background: rgba(212, 175, 55, 0.08); border-left: 3px solid var(--gold-main); }
         .noti-time { font-size: 0.7rem; color: var(--text-muted); text-align: right; }
 
-        .role-badge, .role-tag { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 0.75rem; font-family: 'Prompt', sans-serif; font-weight: 600; letter-spacing: 0.5px; vertical-align: middle; margin-left: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.6); }
-        .role-1 { background: linear-gradient(135deg, #f5d77f, #d4af37, #8a6315); color: #1a0f02 !important; border: 1px solid #ffeea8; box-shadow: 0 0 12px rgba(212,175,55,0.8), inset 0 0 6px rgba(255,255,255,0.6); font-weight: 700; } 
-        .role-2 { background: linear-gradient(135deg, #8e44ad, #4b0082); color: #e8daef !important; border: 1px solid #9b59b6; box-shadow: 0 0 10px rgba(142,68,173,0.8); } 
-        .role-3 { background: linear-gradient(135deg, #bdc3c7, #7f8c8d); color: #1a1a1a !important; border: 1px solid #ecf0f1; box-shadow: 0 0 8px rgba(189,195,199,0.8); } 
-        .role-4 { background: linear-gradient(135deg, #d35400, #a04000); color: #ffebcc !important; border: 1px solid #e67e22; box-shadow: 0 0 10px rgba(211,84,0,0.8); } 
-        .role-5 { background-color: rgba(138, 99, 21, 0.1); color: #a69477 !important; border: 1px solid #8a6315; box-shadow: none; font-weight: 600; }
-        .role-6 { background: linear-gradient(135deg, #27ae60, #145a32); color: #abebc6 !important; border: 1px solid #2ecc71; box-shadow: 0 0 10px rgba(46,204,113,0.8); font-weight: 700; } 
-        .role-guest { background-color: rgba(168, 46, 46, 0.15); color: #ff6b6b !important; border: 1px dashed #a82e2e; box-shadow: none; }
-
-        /* 🚀 ลบ blur ใน Overlay Modal เปลี่ยนเป็นสีทึบ */
-        .sect-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(7, 4, 2, 0.95); z-index: 1000; justify-content: center; align-items: center; } .sect-modal-overlay.active { display: flex; }
-        .sect-modal-content { position: relative; background: linear-gradient(135deg, #1a120b, #0a0603); border: 1px solid var(--gold-main); border-radius: 12px; width: 90%; max-width: 450px; padding: 40px 30px 60px 30px; box-shadow: 0 15px 40px rgba(0,0,0,0.9); box-sizing: border-box; }
+        /* 🚀 โหมดเบาพิเศษ: ปิด blur ใน Overlay ของ Modal เปลี่ยนเป็นสีทึบ */
+        .sect-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(7, 4, 2, 0.95); z-index: 1000; justify-content: center; align-items: center; } 
+        .sect-modal-overlay.active { display: flex; }
+        .sect-modal-content { position: relative; background: linear-gradient(135deg, #1a120b, #0a0603); border: 1px solid var(--gold-main); border-radius: 12px; width: 90%; max-width: 450px; padding: 40px 30px 60px 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.9); box-sizing: border-box; }
         
-        .modal-corner { position: absolute; width: 60px; height: 60px; pointer-events: none; opacity: 0.8; } 
-        .mc-top-left { top: 12px; left: 12px; transform: scaleX(-1); } 
-        .mc-top-right { top: 12px; right: 12px; } 
-        .mc-bottom-left { bottom: 12px; left: 12px; transform: scaleX(-1) scaleY(-1); } 
-        .mc-bottom-right { bottom: 12px; right: 12px; transform: scaleY(-1); }
+        .rules-modal-content { max-width: 650px; max-height: 85vh; display: flex; flex-direction: column; }
+        .rules-body-box { background: rgba(0,0,0,0.5); border: 1px solid rgba(138, 99, 21, 0.4); border-radius: 8px; padding: 15px 20px; max-height: 280px; overflow-y: auto; margin-bottom: 15px; text-align: left; font-size: 0.9rem; line-height: 1.6; color: #d1bfae; }
+        .rules-body-box h4 { color: var(--gold-main); margin-top: 12px; margin-bottom: 5px; font-size: 0.95rem; }
+        .rules-body-box ul, .rules-body-box ol { padding-left: 20px; margin: 5px 0; }
+        .rules-body-box li { margin-bottom: 6px; }
+        .scroll-warning-hint { font-size: 0.8rem; color: #ff6b6b; text-align: center; margin-bottom: 10px; font-style: italic; }
+        .checkbox-group { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; cursor: pointer; font-size: 0.95rem; color: var(--gold-light); text-align: left; transition: opacity 0.3s; }
+        .checkbox-group input[type="checkbox"] { accent-color: var(--gold-main); width: 18px; height: 18px; cursor: pointer; }
+
+        .modal-corner { position: absolute; width: 60px; pointer-events: none; opacity: 0.8; } .mc-top-left { top: 12px; left: 12px; transform: scaleX(-1); } .mc-top-right { top: 12px; right: 12px; } .mc-bottom-left { bottom: 12px; left: 12px; transform: scaleX(-1) scaleY(-1); } .mc-bottom-right { bottom: 12px; right: 12px; transform: scaleY(-1); }
+        .modal-header { text-align: center; margin-bottom: 20px; } .modal-header h3 { color: var(--gold-light); font-size: 1.5rem; margin-bottom: 5px; } .modal-header p { color: var(--gold-dark); font-size: 0.85rem; margin: 0; }
         
-        .btn-submit-modal { background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; border: none; padding: 12px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-weight: bold; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: all 0.3s; width: 80%; margin: 0 auto; display: block; }
-        .form-select { width: 100%; background: rgba(0,0,0,0.6); border: 1px solid rgba(138, 99, 21, 0.5); color: #fff; padding: 12px 15px; border-radius: 6px; font-size: 1rem; margin-bottom: 20px; font-family: 'Sarabun', sans-serif; } .form-select option { background: #1a120b; }
-
-        .ghost-warning-box {
-            background: linear-gradient(180deg, rgba(20, 9, 5, 0.8) 0%, rgba(7, 4, 2, 0.9) 100%);
-            border: 1px solid rgba(168, 46, 46, 0.4);
-            border-radius: 10px;
-            padding: clamp(20px, 4vw, 30px) clamp(15px, 3vw, 20px);
-            margin-top: 30px;
-            text-align: center;
-            box-shadow: inset 0 0 20px rgba(168, 46, 46, 0.05), 0 5px 15px rgba(0,0,0,0.5);
-        }
-        .ghost-warning-box h4 { color: #ff6b6b; font-size: clamp(1.1rem, 4vw, 1.25rem); margin-bottom: 12px; }
-        .ghost-warning-box p { color: #d1bfae; font-size: clamp(0.85rem, 3vw, 0.95rem); line-height: 1.8; margin-bottom: 20px; }
-        .ghost-line { display: block; margin-bottom: 6px; }
-        .ghost-btn-group { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-        .ghost-btn-group > * { flex: 1 1 auto; min-width: 140px; text-align: center; display: flex; align-items: center; justify-content: center; }
-
-        @media (max-width: 950px) { .post-layout { grid-template-columns: 1fr; } .replies-container { margin-left: 10px; border-left-width: 1px; } .comment-card.is-reply::before { width: 10px; left: -11px; } }
+        .form-group { margin-bottom: 20px; width: 100%; box-sizing: border-box; } .form-group label { display: block; color: var(--gold-main); font-size: 0.95rem; margin-bottom: 8px; } .form-input { width: 100%; background: rgba(0,0,0,0.6); border: 1px solid rgba(138, 99, 21, 0.5); color: #fff; padding: 12px 15px; border-radius: 6px; font-family: 'Sarabun', sans-serif; font-size: 1rem; box-sizing: border-box; } .form-input:focus { outline: none; border-color: var(--gold-light); }
+        .password-wrapper { position: relative; display: flex; align-items: center; width: 100%; } .password-wrapper .form-input { padding-right: 60px; } .toggle-password { position: absolute; right: 15px; cursor: pointer; font-size: 0.9rem; color: var(--gold-main); opacity: 0.8; } .toggle-password:hover { opacity: 1; }
+        .privacy-warning { background: rgba(168, 46, 46, 0.1); border-left: 3px solid #a82e2e; padding: 12px 15px; font-size: 0.8rem; color: #d1bfae; line-height: 1.5; margin-bottom: 25px; border-radius: 0 4px 4px 0; } .privacy-warning strong { color: #ff6b6b; }
+        
+        .modal-actions { display: flex; gap: 10px; width: 100%; box-sizing: border-box; } 
+        .btn-submit { flex: 1; background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; border: none; padding: 12px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-weight: bold; font-size: 1rem; cursor: pointer; transition: filter 0.2s; box-sizing: border-box; } 
+        .btn-submit:hover { filter: brightness(1.15); } 
+        .btn-submit:disabled, .btn-submit.disabled { background: linear-gradient(180deg, #4a3b1a 0%, #2a1805 100%) !important; color: #8a7761 !important; border: 1px solid #5a4f35 !important; cursor: not-allowed !important; opacity: 0.6; }
+        .btn-cancel { background: transparent; color: var(--text-muted); border: 1px solid var(--text-muted); padding: 12px 20px; border-radius: 25px; font-family: 'Prompt', sans-serif; cursor: pointer; transition: background 0.2s; } .btn-cancel:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        
+        @media (max-width: 950px) { .board-layout { grid-template-columns: 1fr; } .thread-stats { display: none; } }
         @media (max-width: 768px) {
             .site-title img { height: 65px !important; }
             nav { flex-wrap: nowrap !important; justify-content: flex-start; overflow-x: auto; scrollbar-width: none; border-radius: 40px; padding: 0 20px !important; height: 50px !important; }
@@ -203,9 +206,32 @@
             nav a { font-size: 0.95rem !important; flex-shrink: 0; }
         }
         @media (max-width: 600px) { .main-container { padding: 45px 20px 40px 20px !important; width: 95%; margin-top: 30px; } }
-        @media (max-width: 480px) { .ghost-btn-group { flex-direction: column; } .ghost-btn-group > * { width: 100%; max-width: 100%; flex: 1 1 100%; } }
         
         .loading-text { font-family: 'Prompt', sans-serif; color: var(--gold-main); text-align: center; padding: 40px; }
+        
+        /* 🚀 อาคมลดภาระเครื่องขั้นเด็ดขาด (ลื่นปรี๊ด 100% บนแท็บเล็ตและมือถือ) */
+        @media (max-width: 1200px), (hover: none) and (pointer: coarse) {
+            body {
+                background-attachment: scroll !important;
+            }
+            body::before, body::after {
+                display: none !important;
+            }
+            .main-container {
+                backdrop-filter: none !important;
+                -webkit-backdrop-filter: none !important;
+                background-color: rgba(7, 4, 2, 0.98) !important;
+                animation: none !important;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.9) !important;
+                border: 1px solid var(--gold-main) !important; 
+            }
+            .main-container::before {
+                display: none !important;
+            }
+            .corner-decor, .noti-btn, .loading-text, .hero-center-img {
+                animation: none !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -217,7 +243,7 @@
         <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="corner-decor corner-bottom-right" alt="" width="110" height="110">
 
         <header>
-            <div class="site-title"><img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019626/logo.png" alt="ศิษย์หลวงปู่" width="300" height="100"></div>
+            <div class="site-title"><img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019626/logo.png" alt="ศิษย์หลวงปู่"></div>
             <nav>
                 <a href="index.html">หน้าแรก</a>
                 <a href="reader.html">สัตยาสาบาน</a>
@@ -226,49 +252,23 @@
             </nav>
         </header>
 
-        <div class="post-layout">
-            <div class="post-main-content">
-                <a href="webboard.html" class="btn-back">กลับสู่ลานเสวนา</a>
-
+        <div class="board-layout">
+            <div class="board-main">
                 <div class="breadcrumb">
-                    <a href="webboard.html">ลานเสวนา</a> > <span id="dyn-category">กำลังอัญเชิญ...</span>
+                    <a href="index.html">หน้าแรก</a> > <span style="color: #fff;">ลานเสวนา</span>
                 </div>
 
-                <div class="post-card">
-                    <div class="post-header-meta">
-                        <div class="author-info">
-                            <div>
-                                <div style="display: flex; align-items: center; gap: 6px;">
-                                    <span class="author-name" id="dyn-author">ไม่ปรากฏนาม</span>
-                                    <span id="dyn-author-badge"></span>
-                                </div>
-                                <div class="post-time" id="dyn-time">โพสต์เมื่อ: -</div>
-                            </div>
-                        </div>
-                        <button type="button" class="btn-report" onclick="openReportModal('post', new URLSearchParams(window.location.search).get('id'))" id="btnReportPost" style="display: none;">🚨 แจ้งผู้คุมกฎ</button>
-                    </div>
-
-                    <h1 class="post-title" id="dyn-title">กำลังอัญเชิญข้อความ...</h1>
+                <div class="post-card" style="padding: 0; background: transparent; border: none; box-shadow: none;">
                     
-                    <div class="post-body" id="dyn-content">
-                        <div class="loading-text">กำลังรวบรวมชิ้นส่วนจารึก...</div>
+                    <div class="comment-section-title">ความคิดเห็นจากผู้ร่วมลานเสวนา</div>
+                    
+                    <div id="commentsList">
+                        <div class="loading-text">กำลังสัมผัสร่องรอยวิญญาณ...</div>
                     </div>
 
-                    <div style="border-top: 1px dashed rgba(138, 99, 21, 0.3); padding-top: 20px; display: flex; align-items: center; gap: 15px;">
-                        <button class="btn-like" id="btnLikeMainPost" onclick="likePostAction()">
-                            🙏 อนุโมทนา (<span id="dyn-likes">0</span>)
-                        </button>
-                        <span style="color: var(--text-muted); font-size: 0.85rem;">👀 <span id="dyn-views">0</span> วิว</span>
-                    </div>
-                </div>
+                    <div id="commentAreaContainer"></div>
 
-                <div class="comment-section-title">ความคิดเห็นจากผู้ร่วมลานเสวนา</div>
-                
-                <div id="commentsList">
-                    <div class="loading-text" style="padding: 20px;">กำลังสัมผัสร่องรอยวิญญาณ...</div>
                 </div>
-
-                <div id="commentAreaContainer"></div>
             </div>
 
             <div class="post-sidebar">
@@ -363,17 +363,26 @@
 
         let currentPostAuthorGlobal = ''; 
 
+        // ==========================================
+        // 🌟 ฟังก์ชันแปลง @ชื่อ ให้กลายเป็นป้ายเรืองแสง
+        // ==========================================
         function formatMentions(text) {
             const mentionRegex = /@([ก-๙a-zA-Z0-9_-]+)/g;
             return text.replace(mentionRegex, '<span class="user-mention">@$1</span>');
         }
 
+        // ==========================================
+        // 🌟 ฟังก์ชันดึงรายชื่อคนที่ถูก Tag ออกมาเป็น Array เพื่อส่งเข้า Database
+        // ==========================================
         function extractMentions(text) {
             const mentionRegex = /@([ก-๙a-zA-Z0-9_-]+)/g;
             const matches = [...text.matchAll(mentionRegex)];
             return [...new Set(matches.map(m => m[1]))]; 
         }
 
+        // ==========================================
+        // ⚡ ระบบกระแสจิตเรียลไทม์ (WebSocket) แบบป้องกันเบิ้ล
+        // ==========================================
         let telepathySocket;
         let lastLoadTime = 0;
 
@@ -422,15 +431,24 @@
                 }
             };
 
-            telepathySocket.onclose = () => { setTimeout(connectTelepathy, 5000); };
-            telepathySocket.onerror = (err) => { console.error("❌ กระแสจิตขัดข้อง:", err); };
+            telepathySocket.onclose = () => {
+                setTimeout(connectTelepathy, 5000); 
+            };
+            
+            telepathySocket.onerror = (err) => {
+                console.error("❌ กระแสจิตขัดข้อง:", err);
+            };
         }
 
         connectTelepathy();
 
         function broadcastAction(actionType, targetId, extraData = {}) {
             if (telepathySocket && telepathySocket.readyState === WebSocket.OPEN) {
-                telepathySocket.send(JSON.stringify({ type: actionType, targetId: targetId, ...extraData }));
+                telepathySocket.send(JSON.stringify({
+                    type: actionType,
+                    targetId: targetId,
+                    ...extraData
+                }));
             }
         }
 
@@ -454,23 +472,39 @@
                     return await response2.json();
                 } catch (error) { return []; }
             },
+            
+            // 🌟 แก้ไขให้รับ Error Object จากหลังบ้านได้โดยตรง (ไม่ต้องดัก !response.ok แล้วทิ้งข้อมูล)
             async saveComment(commentData) {
                 try {
                     const token = localStorage.getItem('siy_token');
                     const headers = { 'Content-Type': 'application/json' };
-                    if (token) { headers['Authorization'] = `Bearer ${token}`; }
-                    const response = await fetch(`${API_CONFIG.BASE_URL}/comments`, { method: 'POST', headers: headers, body: JSON.stringify(commentData) });
-                    if (!response.ok) return { success: false };
+                    if (token) {
+                        headers['Authorization'] = `Bearer ${token}`;
+                    }
+
+                    const response = await fetch(`${API_CONFIG.BASE_URL}/comments`, {
+                        method: 'POST',
+                        headers: headers,
+                        body: JSON.stringify(commentData)
+                    });
+                    
+                    // ให้คืนค่า JSON ที่หลังบ้านส่งมาเสมอ (เพื่อรับ Error คูลดาวน์ 429)
                     return await response.json();
-                } catch (error) { return { success: false }; }
+                } catch (error) { return { success: false, error: 'เกิดการเชื่อมต่อขัดข้อง' }; }
             },
+            
             async deleteComment(commentId) {
                 try {
                     const token = localStorage.getItem('siy_token');
                     const headers = {};
-                    if (token) { headers['Authorization'] = `Bearer ${token}`; }
-                    const response = await fetch(`${API_CONFIG.BASE_URL}/comments/${commentId}`, { method: 'DELETE', headers: headers });
-                    if (!response.ok) return { success: false };
+                    if (token) {
+                        headers['Authorization'] = `Bearer ${token}`;
+                    }
+
+                    const response = await fetch(`${API_CONFIG.BASE_URL}/comments/${commentId}`, { 
+                        method: 'DELETE',
+                        headers: headers 
+                    });
                     return await response.json();
                 } catch (error) { return { success: false }; }
             },
@@ -478,9 +512,16 @@
                 try {
                     const token = localStorage.getItem('siy_token');
                     const headers = { 'Content-Type': 'application/json' };
-                    if (token) { headers['Authorization'] = `Bearer ${token}`; }
+                    if (token) {
+                        headers['Authorization'] = `Bearer ${token}`;
+                    }
+
                     const actor = localStorage.getItem('siy_username') || 'วิญญาณเร่ร่อน';
-                    const res = await fetch(`${API_CONFIG.BASE_URL}/posts/${postId}/like`, { method: 'POST', headers: headers, body: JSON.stringify({ actor }) });
+                    const res = await fetch(`${API_CONFIG.BASE_URL}/posts/${postId}/like`, { 
+                        method: 'POST',
+                        headers: headers,
+                        body: JSON.stringify({ actor })
+                    });
                     return await res.json();
                 } catch (e) { return { success: false }; }
             },
@@ -488,15 +529,25 @@
                 try {
                     const token = localStorage.getItem('siy_token');
                     const headers = { 'Content-Type': 'application/json' };
-                    if (token) { headers['Authorization'] = `Bearer ${token}`; }
+                    if (token) {
+                        headers['Authorization'] = `Bearer ${token}`;
+                    }
+
                     const actor = localStorage.getItem('siy_username') || 'วิญญาณเร่ร่อน';
-                    const res = await fetch(`${API_CONFIG.BASE_URL}/comments/${commentId}/like`, { method: 'POST', headers: headers, body: JSON.stringify({ actor }) });
+                    const res = await fetch(`${API_CONFIG.BASE_URL}/comments/${commentId}/like`, { 
+                        method: 'POST',
+                        headers: headers,
+                        body: JSON.stringify({ actor })
+                    });
                     return await res.json();
                 } catch (e) { return { success: false }; }
             },
+
             async sendNotification(data) {
                 try {
-                    await fetch(`${API_CONFIG.BASE_URL}/notifications`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+                    await fetch(`${API_CONFIG.BASE_URL}/notifications`, {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
+                    });
                 } catch (e) {}
             },
             async getNotifications(username) {
@@ -510,13 +561,16 @@
             }
         };
 
-        function toggleNotiDropdown() { document.getElementById('notiDropdownBox').classList.toggle('active'); }
+        function toggleNotiDropdown() {
+            document.getElementById('notiDropdownBox').classList.toggle('active');
+        }
 
         async function loadNotifications() {
             const savedUser = localStorage.getItem('siy_username');
             if (!savedUser || localStorage.getItem('siy_usertype') === 'guest') return;
 
             document.getElementById('notiContainer').style.display = 'block';
+            
             const notis = await ApiManager.getNotifications(savedUser);
             const notiListContent = document.getElementById('notiListContent');
             const badgeCount = document.getElementById('notiBadgeCount');
@@ -532,14 +586,16 @@
 
             notis.forEach(n => {
                 if (String(n.is_read) === '0') unreadCount++;
+                
                 let actionText = '';
                 if (n.action_type === 'comment') actionText = 'ได้สลักความเห็นในกระทู้ของท่าน';
                 if (n.action_type === 'reply') actionText = 'ได้ตอบกลับข้อความของท่าน';
                 if (n.action_type === 'like_post') actionText = 'ได้ร่วมอนุโมทนาในกระทู้ของท่าน';
                 if (n.action_type === 'like_comment') actionText = 'ได้ร่วมอนุโมทนาในความเห็นของท่าน';
-                if (n.action_type === 'mention') actionText = 'ได้เอ่ยนามเรียกขานท่าน';
+                if (n.action_type === 'mention') actionText = 'ได้เอ่ยนามเรียกขานท่าน (Mention)';
 
                 const isUnreadClass = String(n.is_read) === '0' ? 'unread' : '';
+                
                 notiListContent.innerHTML += `
                     <div class="noti-item ${isUnreadClass}" onclick="handleNotiClick('${n.id}', '${n.post_id}')">
                         <div><strong style="color: var(--gold-light);">${n.actor}</strong> ${actionText}</div>
@@ -548,14 +604,20 @@
                 `;
             });
 
-            if (unreadCount > 0) { badgeCount.textContent = unreadCount; badgeCount.style.display = 'inline-block'; } 
-            else { badgeCount.style.display = 'none'; }
+            if (unreadCount > 0) {
+                badgeCount.textContent = unreadCount;
+                badgeCount.style.display = 'inline-block';
+            } else {
+                badgeCount.style.display = 'none';
+            }
         }
 
         async function handleNotiClick(notiId, postId) {
             await ApiManager.readNotification(notiId);
             const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('id') === postId) {
+            const currentPostId = urlParams.get('id');
+            
+            if (currentPostId === postId) {
                 loadNotifications();
                 document.getElementById('notiDropdownBox').classList.remove('active');
                 window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
@@ -567,8 +629,12 @@
         async function likePostAction() {
             const urlParams = new URLSearchParams(window.location.search);
             const postId = urlParams.get('id');
+            
             const likedPosts = JSON.parse(localStorage.getItem('siy_liked_posts') || '[]');
-            if (likedPosts.includes(postId)) { showCustomAlert('ท่านได้ส่งจิตอนุโมทนาให้จารึกนี้ไปแล้ว 🙏'); return; }
+            if (likedPosts.includes(postId)) {
+                showCustomAlert('ท่านได้ส่งจิตอนุโมทนาให้จารึกนี้ไปแล้ว 🙏');
+                return;
+            }
 
             const btn = document.getElementById('btnLikeMainPost');
             const originalText = btn.innerHTML;
@@ -578,9 +644,11 @@
             if (result && result.success) {
                 likedPosts.push(postId);
                 localStorage.setItem('siy_liked_posts', JSON.stringify(likedPosts));
+                
                 document.getElementById('dyn-likes').textContent = result.likes;
                 btn.classList.add('liked');
                 btn.innerHTML = `🙏 อนุโมทนา (<span id="dyn-likes">${result.likes}</span>)`;
+
                 broadcastAction('LIKE_UPDATE', postId, { newLikes: result.likes, isComment: false });
             } else {
                 btn.innerHTML = originalText;
@@ -590,7 +658,10 @@
 
         async function likeCommentAction(commentId) {
             const likedComments = JSON.parse(localStorage.getItem('siy_liked_comments') || '[]');
-            if (likedComments.includes(commentId)) { showCustomAlert('ท่านได้ส่งจิตอนุโมทนาให้ข้อความนี้ไปแล้ว 🙏'); return; }
+            if (likedComments.includes(commentId)) {
+                showCustomAlert('ท่านได้ส่งจิตอนุโมทนาให้ข้อความนี้ไปแล้ว 🙏');
+                return;
+            }
 
             const btn = document.getElementById(`btn-like-comment-${commentId}`);
             const originalText = btn ? btn.innerHTML : '';
@@ -600,11 +671,13 @@
             if (result && result.success) {
                 likedComments.push(commentId);
                 localStorage.setItem('siy_liked_comments', JSON.stringify(likedComments));
+                
                 document.getElementById(`comment-like-count-${commentId}`).textContent = result.likes;
                 if(btn) {
                     btn.classList.add('liked');
                     btn.innerHTML = `🙏 อนุโมทนา (<span id="comment-like-count-${commentId}">${result.likes}</span>)`;
                 }
+
                 broadcastAction('LIKE_UPDATE', commentId, { newLikes: result.likes, isComment: true });
             } else {
                 if(btn) btn.innerHTML = originalText;
@@ -641,7 +714,6 @@
             document.getElementById('reportModal').classList.add('active');
         }
         function closeReportModal() { document.getElementById('reportModal').classList.remove('active'); }
-        
         async function submitReport() {
             const btn = document.getElementById('confirmReportBtn');
             btn.textContent = 'กำลังส่งม้าเร็ว...'; btn.disabled = true;
@@ -957,7 +1029,7 @@
                     showCustomAlert('บันทึกจารึกสำเร็จ!');
                     loadComments(postId); 
                 } else {
-                    showCustomAlert('เกิดอาถรรพ์ขัดข้อง ส่งข้อความไม่สำเร็จ');
+                    showCustomAlert(result.error || 'เกิดอาถรรพ์ขัดข้อง ส่งข้อความไม่สำเร็จ');
                 }
             } catch (e) {
                 showCustomAlert('เกิดอาถรรพ์ขัดข้องในการเชื่อมต่อ');
@@ -1031,7 +1103,7 @@
                     showCustomAlert('ส่งคำตอบกลับสำเร็จ!');
                     loadComments(postId);
                 } else {
-                    showCustomAlert('เกิดอาถรรพ์ขัดข้อง ส่งคำตอบกลับไม่สำเร็จ');
+                    showCustomAlert(result.error || 'เกิดอาถรรพ์ขัดข้อง ส่งคำตอบกลับไม่สำเร็จ');
                 }
             } catch (e) {
                 showCustomAlert('เกิดอาถรรพ์ขัดข้องในการเชื่อมต่อ');
@@ -1145,7 +1217,7 @@
         });
 
         function handleLogout() {
-            localStorage.removeItem('siy_token'); 
+            localStorage.removeItem('siy_token'); // 🌟 ล้าง Token เมื่อออกจากระบบ
             localStorage.removeItem('siy_username'); 
             localStorage.removeItem('siy_usertype'); 
             localStorage.removeItem('siy_login_timestamp');
