@@ -113,8 +113,8 @@ app.get('/api/fix-db', async (c) => {
     "ALTER TABLE comments ADD COLUMN likes INTEGER DEFAULT 0;",
     "ALTER TABLE users ADD COLUMN last_login INTEGER;",
     "ALTER TABLE users ADD COLUMN karma INTEGER DEFAULT 0;",
-    "ALTER TABLE users ADD COLUMN last_post_time INTEGER DEFAULT 0;",      // 🌟 เพิ่มคอลัมน์กันปั๊มกระทู้
-    "ALTER TABLE users ADD COLUMN last_comment_time INTEGER DEFAULT 0;",   // 🌟 เพิ่มคอลัมน์กันปั๊มคอมเมนต์
+    "ALTER TABLE users ADD COLUMN last_post_time INTEGER DEFAULT 0;",
+    "ALTER TABLE users ADD COLUMN last_comment_time INTEGER DEFAULT 0;",
     `CREATE TABLE IF NOT EXISTS notifications (
         id TEXT PRIMARY KEY,
         recipient TEXT NOT NULL,
@@ -132,6 +132,12 @@ app.get('/api/fix-db', async (c) => {
         reason TEXT NOT NULL,
         timestamp TEXT NOT NULL,
         status TEXT DEFAULT 'pending'
+    );`,
+    `CREATE TABLE IF NOT EXISTS bookmarks (
+        id TEXT PRIMARY KEY,
+        username TEXT NOT NULL,
+        post_id TEXT NOT NULL,
+        timestamp TEXT NOT NULL
     );`
   ]
 
@@ -144,6 +150,62 @@ app.get('/api/fix-db', async (c) => {
     }
   }
   return c.json({ message: "อัปเกรดฐานข้อมูลเรียบร้อยแล้ว!", logs })
+})
+
+// ==========================================
+// 🔖 ระบบคัมภีร์ส่วนตัว (Bookmarks System)
+// ==========================================
+app.get('/api/bookmarks', async (c) => {
+  const authUser = await getAuthenticatedUser(c)
+  if (!authUser) return c.json({ success: false, error: 'ยังไม่ได้ยืนยันตัวตน' }, 401)
+
+  try {
+    const { results } = await c.env.DB.prepare(
+      "SELECT b.*, p.title FROM bookmarks b JOIN posts p ON b.post_id = p.id WHERE b.username = ? ORDER BY b.id DESC"
+    ).bind(authUser.username).all()
+    return c.json(results || [])
+  } catch (e: any) {
+    return c.json({ success: false, error: e.message }, 500)
+  }
+})
+
+app.post('/api/bookmarks', async (c) => {
+  const authUser = await getAuthenticatedUser(c)
+  if (!authUser) return c.json({ success: false, error: 'ยังไม่ได้ยืนยันตัวตน' }, 401)
+
+  const { postId } = await c.req.json()
+  if (!postId) return c.json({ success: false, error: 'ไม่พบรหัสจารึก' }, 400)
+
+  try {
+    const id = `${authUser.username}_${postId}`
+    const thaiMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.']
+    const now = new Date()
+    const timeStr = now.getDate() + ' ' + thaiMonths[now.getMonth()] + ' ' + (now.getFullYear() + 543)
+
+    await c.env.DB.prepare(
+      "INSERT OR REPLACE INTO bookmarks (id, username, post_id, timestamp) VALUES (?, ?, ?, ?)"
+    ).bind(id, authUser.username, String(postId), timeStr).run()
+
+    return c.json({ success: true })
+  } catch (e: any) {
+    return c.json({ success: false, error: e.message }, 500)
+  }
+})
+
+app.delete('/api/bookmarks/:postId', async (c) => {
+  const authUser = await getAuthenticatedUser(c)
+  if (!authUser) return c.json({ success: false, error: 'ยังไม่ได้ยืนยันตัวตน' }, 401)
+
+  const postId = c.req.param('postId')
+  try {
+    await c.env.DB.prepare(
+      "DELETE FROM bookmarks WHERE username = ? AND post_id = ?"
+    ).bind(authUser.username, String(postId)).run()
+
+    return c.json({ success: true })
+  } catch (e: any) {
+    return c.json({ success: false, error: e.message }, 500)
+  }
 })
 
 // ==========================================
@@ -280,7 +342,6 @@ app.post('/api/users', async (c) => {
   const body = await c.req.json()
   const { username, password, role, rank_name, last_login, turnstileToken } = body
   
-  // 🌟 ตรวจสอบ Turnstile CAPTCHA ป้องกัน Bot
   const secretKey = c.env.TURNSTILE_SECRET || '1x0000000000000000000000000000000AA';
   const ip = c.req.header('CF-Connecting-IP') || '';
 
@@ -343,7 +404,7 @@ app.delete('/api/users/:username', async (c) => {
 })
 
 // ==========================================
-// 📜 จัดการกระทู้ (มีระบบกันการสแปมปั๊มโพสต์ผ่าน DB)
+// 📜 จัดการกระทู้
 // ==========================================
 app.get('/api/posts', async (c) => {
   const { results } = await c.env.DB.prepare("SELECT * FROM posts ORDER BY id DESC").all()
@@ -362,11 +423,10 @@ app.post('/api/posts', async (c) => {
 
   const now = Date.now();
 
-  // 🌟 ระบบ Flood Control (กันสแปมตั้งกระทู้)
   const user: any = await c.env.DB.prepare("SELECT last_post_time, role FROM users WHERE username = ?").bind(author).first();
-  if (user && String(user.role) !== '1') { // แอดมิน (ปรมัตถ์) โพสต์ได้รัวๆ
+  if (user && String(user.role) !== '1') {
     const lastPostTime = user.last_post_time || 0;
-    if (now - lastPostTime < 30000) { // ต้องเว้นระยะ 30 วินาทีถึงจะโพสต์กระทู้ใหม่ได้
+    if (now - lastPostTime < 30000) {
       const timeLeft = Math.ceil((30000 - (now - lastPostTime)) / 1000);
       return c.json({ success: false, error: `ท่านร่ายเวทมนตร์ถี่เกินไป โปรดพักหายใจอีก ${timeLeft} วินาที` }, 429);
     }
@@ -379,7 +439,6 @@ app.post('/api/posts', async (c) => {
     "INSERT INTO posts (id, category, title, content, author, timestamp, pinned) VALUES (?, ?, ?, ?, ?, ?, ?)"
   ).bind(body.id, body.category, body.title, safeContent, author, body.timestamp, isPinned).run()
   
-  // อัปเดตเวลาโพสต์ล่าสุดให้ User นี้ และเพิ่มแต้มบุญ
   await c.env.DB.prepare("UPDATE users SET last_post_time = ? WHERE username = ?").bind(now, author).run();
   await addKarma(c.env.DB, author, 2);
 
@@ -412,6 +471,7 @@ app.delete('/api/posts/:id', async (c) => {
   const id = c.req.param('id')
   await c.env.DB.prepare("DELETE FROM posts WHERE id = ?").bind(id).run()
   await c.env.DB.prepare("DELETE FROM comments WHERE post_id = ?").bind(id).run()
+  await c.env.DB.prepare("DELETE FROM bookmarks WHERE post_id = ?").bind(id).run()
   return c.json({ success: true })
 })
 
@@ -446,7 +506,7 @@ app.post('/api/posts/:postId/like', async (c) => {
 })
 
 // ==========================================
-// 💬 จัดการคอมเมนต์ (มีระบบกันการสแปมปั๊มโพสต์ผ่าน DB)
+// 💬 จัดการคอมเมนต์
 // ==========================================
 app.get('/api/comments', async (c) => {
   const { results } = await c.env.DB.prepare("SELECT * FROM comments ORDER BY id ASC").all()
@@ -471,11 +531,10 @@ app.post('/api/comments', async (c) => {
 
   const now = Date.now();
 
-  // 🌟 ระบบ Flood Control (กันสแปมคอมเมนต์)
   const user: any = await c.env.DB.prepare("SELECT last_comment_time, role FROM users WHERE username = ?").bind(author).first();
   if (user && String(user.role) !== '1') {
     const lastCommentTime = user.last_comment_time || 0;
-    if (now - lastCommentTime < 15000) { // ต้องเว้นระยะ 15 วินาทีถึงจะคอมเมนต์ใหม่ได้
+    if (now - lastCommentTime < 15000) {
       const timeLeft = Math.ceil((15000 - (now - lastCommentTime)) / 1000);
       return c.json({ success: false, error: `ท่านส่งกระแสจิตถี่เกินไป โปรดพักอีก ${timeLeft} วินาที` }, 429);
     }
@@ -487,7 +546,6 @@ app.post('/api/comments', async (c) => {
   ).bind(body.id, body.postId, author, safeContent, body.timestamp).run()
   await c.env.DB.prepare("UPDATE posts SET replies = replies + 1 WHERE id = ?").bind(body.postId).run()
   
-  // อัปเดตเวลาคอมเมนต์ล่าสุดให้ User นี้ และเพิ่มแต้มบุญ
   await c.env.DB.prepare("UPDATE users SET last_comment_time = ? WHERE username = ?").bind(now, author).run();
   await addKarma(c.env.DB, author, 1);
 
