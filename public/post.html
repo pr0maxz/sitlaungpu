@@ -97,8 +97,11 @@
         
         .post-card { background: rgba(12, 7, 4, 0.85); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 10px; padding: 30px; margin-bottom: 30px; width: 100%; box-sizing: border-box; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
         .post-header-meta { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(138, 99, 21, 0.3); padding-bottom: 15px; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
-        .author-info { display: flex; align-items: center; gap: 12px; }
-        .author-name { color: var(--gold-light); font-family: 'Prompt', sans-serif; font-size: 1.1rem; } .post-time { font-size: 0.8rem; color: var(--text-muted); }
+        .author-info { display: flex; flex-direction: column; gap: 5px; }
+        .author-name-group { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .author-name { color: var(--gold-light); font-family: 'Prompt', sans-serif; font-size: 1.1rem; } 
+        .post-time { font-size: 0.85rem; color: var(--text-muted); }
+        
         .post-title { color: var(--gold-light); font-size: 1.8rem; font-family: 'Prompt', sans-serif; margin-bottom: 20px; word-break: break-word; } 
         
         .post-body { line-height: 1.8; color: #e2d4c3; font-size: 1.05rem; margin-bottom: 30px; word-wrap: break-word; overflow-wrap: break-word; min-height: 150px; } 
@@ -113,6 +116,7 @@
 
         .comment-card { background: rgba(10, 5, 2, 0.6); border: 1px solid rgba(138, 99, 21, 0.2); border-radius: 8px; padding: 20px; margin-bottom: 15px; width: 100%; box-sizing: border-box; word-break: break-word; } 
         .comment-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 5px; } 
+        .comment-author-group { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
         .comment-author { color: var(--gold-main); font-weight: bold; font-family: 'Prompt', sans-serif; }
         .comment-body { color: #d1bfae; line-height: 1.6; word-break: break-word; margin-bottom: 12px; }
         
@@ -150,12 +154,15 @@
         .user-status-box { text-align: center; width: 100%; } 
         .user-logged-in-profile { display: flex; flex-direction: column; align-items: center; margin-bottom: 15px; background: rgba(212, 175, 55, 0.05); padding: 15px; border-radius: 8px; border: 1px dashed var(--gold-dark); width: 100%; box-sizing: border-box; } 
         .user-info-text { text-align: center; width: 100%; } 
-        .user-info-text h4 { color: var(--gold-light); font-size: 1.1rem; margin-bottom: 5px; word-wrap: break-word; } 
+        
+        /* 🌟 คืนชีพการจัดกลางและระยะห่างของชื่อใน Status Box */
+        .user-info-text-inner { display: flex; flex-direction: column; align-items: center; gap: 6px; margin-bottom: 8px; }
+        .user-info-text h4 { color: var(--gold-light); font-size: 1.1rem; margin: 0; word-wrap: break-word; } 
         
         .btn-logout { display: block; width: 100%; background: transparent; color: #ff6b6b; border: 1px solid rgba(168, 46, 46, 0.5); padding: 10px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-size: 0.95rem; cursor: pointer; transition: background 0.2s; box-sizing: border-box; } .btn-logout:hover { background: rgba(168, 46, 46, 0.1); }
         
         /* 🌟 คืนชีพป้ายยศทั้งหมด 100% ไม่ยุ่งกับแอนิเมชัน */
-        .role-badge, .role-tag { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 0.75rem; font-family: 'Prompt', sans-serif; font-weight: 600; letter-spacing: 0.5px; vertical-align: middle; margin-left: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.6); }
+        .role-badge, .role-tag { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 0.75rem; font-family: 'Prompt', sans-serif; font-weight: 600; letter-spacing: 0.5px; vertical-align: middle; box-shadow: 0 2px 4px rgba(0,0,0,0.6); }
         .role-1 { background: linear-gradient(135deg, #f5d77f, #d4af37, #8a6315); color: #1a0f02 !important; border: 1px solid #ffeea8; box-shadow: 0 0 12px rgba(212,175,55,0.8), inset 0 0 6px rgba(255,255,255,0.6); font-weight: 700; } 
         .role-2 { background: linear-gradient(135deg, #4a1c60, #240b36); color: #e5b3ff !important; border: 1px solid #9b59b6; box-shadow: 0 0 6px rgba(155,89,182,0.4); } 
         .role-3 { background: linear-gradient(135deg, #6c7a86, #262c30); color: #d6dfe5 !important; border: 1px solid #94a6b5; box-shadow: 0 0 6px rgba(148,166,181,0.4); } 
@@ -187,7 +194,7 @@
         .modal-corner { position: absolute; width: 60px; pointer-events: none; opacity: 0.8; } .mc-top-left { top: 12px; left: 12px; transform: scaleX(-1); } .mc-top-right { top: 12px; right: 12px; } .mc-bottom-left { bottom: 12px; left: 12px; transform: scaleX(-1) scaleY(-1); } .mc-bottom-right { bottom: 12px; right: 12px; transform: scaleY(-1); }
         .modal-header { text-align: center; margin-bottom: 20px; } .modal-header h3 { color: var(--gold-light); font-size: 1.5rem; margin-bottom: 5px; } .modal-header p { color: var(--gold-dark); font-size: 0.85rem; margin: 0; }
         
-        /* 🌟 คืนชีพปุ่มยืนยันให้ Modal */
+        /* 🌟 คืนชีพปุ่มยืนยันให้ Modal แบบไม่เด้งให้เปลืองทรัพยากร */
         .btn-submit-modal { background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; border: none; padding: 12px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-weight: bold; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: filter 0.2s; width: 80%; margin: 0 auto; display: block; }
         .btn-submit-modal:hover { filter: brightness(1.15); }
 
@@ -219,7 +226,7 @@
             body::before, body::after { display: none !important; }
             .main-container { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; background-color: rgba(7, 4, 2, 0.98) !important; animation: none !important; box-shadow: 0 5px 15px rgba(0,0,0,0.9) !important; border: 1px solid var(--gold-main) !important; }
             .main-container::before { display: none !important; }
-            .corner-decor, .noti-btn, .loading-text { animation: none !important; }
+            .corner-decor, .noti-btn, .loading-text, .hero-center-img { animation: none !important; }
         }
     </style>
 </head>
@@ -232,7 +239,7 @@
         <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="corner-decor corner-bottom-right" alt="" width="110" height="110">
 
         <header>
-            <div class="site-title"><img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019626/logo.png" alt="ศิษย์หลวงปู่"></div>
+            <div class="site-title"><img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019626/logo.png" alt="ศิษย์หลวงปู่" width="300" height="100"></div>
             <nav>
                 <a href="index.html">หน้าแรก</a>
                 <a href="reader.html">สัตยาสาบาน</a>
@@ -311,8 +318,10 @@
                     <div class="user-logged-in-profile" style="margin-top: 10px;">
                         <div class="user-info-text">
                             <!-- 🌟 คืนโครงสร้างเดิมในกล่องสถานะสำนัก -->
-                            <h4 id="displayUsername" style="text-align: center; margin-bottom: 5px;">นามแฝง</h4>
-                            <div id="displayUserBadge" style="margin-bottom: 8px;"></div>
+                            <div class="user-info-text-inner">
+                                <h4 id="displayUsername">นามแฝง</h4>
+                                <div id="displayUserBadge"></div>
+                            </div>
                         </div>
                     </div>
                     <button onclick="handleLogout()" class="btn-logout" id="logoutBtnText">ออกจากระบบ (ลบตัวตน)</button>
@@ -380,26 +389,17 @@
 
         let currentPostAuthorGlobal = ''; 
 
-        // ==========================================
-        // 🌟 ฟังก์ชันแปลง @ชื่อ ให้กลายเป็นป้ายเรืองแสง
-        // ==========================================
         function formatMentions(text) {
             const mentionRegex = /@([ก-๙a-zA-Z0-9_-]+)/g;
             return text.replace(mentionRegex, '<span class="user-mention">@$1</span>');
         }
 
-        // ==========================================
-        // 🌟 ฟังก์ชันดึงรายชื่อคนที่ถูก Tag ออกมาเป็น Array เพื่อส่งเข้า Database
-        // ==========================================
         function extractMentions(text) {
             const mentionRegex = /@([ก-๙a-zA-Z0-9_-]+)/g;
             const matches = [...text.matchAll(mentionRegex)];
             return [...new Set(matches.map(m => m[1]))]; 
         }
 
-        // ==========================================
-        // ⚡ ระบบกระแสจิตเรียลไทม์ (WebSocket) แบบป้องกันเบิ้ล
-        // ==========================================
         let telepathySocket;
         let lastLoadTime = 0;
 
@@ -708,7 +708,7 @@
         }
         function closeConfirmModal() { document.getElementById('customConfirmModal').classList.remove('active'); }
         document.getElementById('customConfirmBtn').addEventListener('click', async () => {
-            closeModal('customConfirmModal');
+            closeConfirmModal(); // 🌟 แก้ไขบั๊กลบแล้ว!
             if (pendingConfirmAction) { await pendingConfirmAction(); pendingConfirmAction = null; }
         });
 
@@ -949,18 +949,6 @@
             }
         }
 
-        function deleteCommentAction(commentId, postId) {
-            showCustomConfirm('ท่านแน่ใจหรือไม่ว่าต้องการ <strong>ทำลาย</strong> ความคิดเห็นนี้ทิ้งไปชั่วนิรันดร์?', async () => {
-                const result = await ApiManager.deleteComment(commentId);
-                if(result.success !== false) {
-                    showCustomAlert('ทำลายร่องรอยวิญญาณเรียบร้อยแล้ว');
-                    loadComments(postId);
-                } else {
-                    showCustomAlert('เกิดอาถรรพ์ขัดข้อง ลบไม่ได้!');
-                }
-            });
-        }
-
         function validateComment(content) {
             if (content.includes('[REPLY_TO:')) return { valid: false, error: '⚠️ ไม่อนุญาตให้พิมพ์แท็กระบบ' };
             const htmlTags = content.match(/<\/?[a-z][a-z0-9]*\b[^>]*>/gi);
@@ -1044,7 +1032,6 @@
                     showCustomAlert('บันทึกจารึกสำเร็จ!');
                     loadComments(postId); 
                 } else {
-                    // 🌟 โชว์ Error ที่ได้จาก Server (เช่น ติดคูลดาวน์)
                     showCustomAlert(result.error || 'เกิดอาถรรพ์ขัดข้อง ส่งข้อความไม่สำเร็จ');
                 }
             } catch (e) {
@@ -1119,7 +1106,6 @@
                     showCustomAlert('ส่งคำตอบกลับสำเร็จ!');
                     loadComments(postId);
                 } else {
-                    // 🌟 โชว์ Error ที่ได้จาก Server (เช่น ติดคูลดาวน์)
                     showCustomAlert(result.error || 'เกิดอาถรรพ์ขัดข้อง ส่งคำตอบกลับไม่สำเร็จ');
                 }
             } catch (e) {
