@@ -188,19 +188,27 @@
         .modal-corner { position: absolute; width: 60px; pointer-events: none; opacity: 0.8; } .mc-top-left { top: 12px; left: 12px; transform: scaleX(-1); } .mc-top-right { top: 12px; right: 12px; } .mc-bottom-left { bottom: 12px; left: 12px; transform: scaleX(-1) scaleY(-1); } .mc-bottom-right { bottom: 12px; right: 12px; transform: scaleY(-1); }
         .modal-header { text-align: center; margin-bottom: 20px; } .modal-header h3 { color: var(--gold-light); font-size: 1.5rem; margin-bottom: 5px; } .modal-header p { color: var(--gold-dark); font-size: 0.85rem; margin: 0; }
         
-        .btn-submit-modal { background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; border: none; padding: 12px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-weight: bold; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: filter 0.2s; width: 80%; margin: 0 auto; display: block; }
+        .btn-submit-modal { 
+            background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); 
+            color: #150a03 !important; 
+            border: 1px solid #ffeba9; 
+            padding: 12px; 
+            border-radius: 25px; 
+            font-family: 'Prompt', sans-serif; 
+            font-weight: bold; 
+            font-size: 1rem; 
+            cursor: pointer; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5); 
+            transition: filter 0.2s; 
+            width: 80%; 
+            margin: 0 auto; 
+            display: block; 
+            text-align: center;
+            text-decoration: none;
+        }
         .btn-submit-modal:hover { filter: brightness(1.15); }
 
-        .form-select { width: 100%; background: rgba(0,0,0,0.6); border: 1px solid rgba(138, 99, 21, 0.5); color: #fff; padding: 12px 15px; border-radius: 6px; font-size: 1rem; margin-bottom: 20px; font-family: 'Sarabun', sans-serif; } .form-select option { background: #1a120b; }
-
-        .ghost-warning-box { background: linear-gradient(180deg, rgba(20, 9, 5, 0.8) 0%, rgba(7, 4, 2, 0.9) 100%); border: 1px solid rgba(168, 46, 46, 0.4); border-radius: 10px; padding: clamp(20px, 4vw, 30px) clamp(15px, 3vw, 20px); margin-top: 30px; text-align: center; box-shadow: inset 0 0 20px rgba(168, 46, 46, 0.05), 0 5px 15px rgba(0,0,0,0.5); }
-        .ghost-warning-box h4 { color: #ff6b6b; font-size: clamp(1.1rem, 4vw, 1.25rem); margin-bottom: 12px; }
-        .ghost-warning-box p { color: #d1bfae; font-size: clamp(0.85rem, 3vw, 0.95rem); line-height: 1.8; margin-bottom: 20px; }
-        .ghost-line { display: block; margin-bottom: 6px; }
-        .ghost-btn-group { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-        .ghost-btn-group > * { flex: 1 1 auto; min-width: 140px; text-align: center; display: flex; align-items: center; justify-content: center; }
-
-        @media (max-width: 950px) { .post-layout { grid-template-columns: 1fr; } .replies-container { margin-left: 10px; border-left-width: 1px; } .comment-card.is-reply::before { width: 10px; left: -11px; } }
+        @media (max-width: 950px) { .post-layout { grid-template-columns: 1fr; } .thread-stats { display: none; } }
         @media (max-width: 768px) {
             .site-title img { height: 65px !important; }
             nav { flex-wrap: nowrap !important; justify-content: flex-start; overflow-x: auto; scrollbar-width: none; border-radius: 40px; padding: 0 20px !important; height: 50px !important; }
@@ -208,7 +216,6 @@
             nav a { font-size: 0.95rem !important; flex-shrink: 0; }
         }
         @media (max-width: 600px) { .main-container { padding: 45px 20px 40px 20px !important; width: 95%; margin-top: 30px; } }
-        @media (max-width: 480px) { .ghost-btn-group { flex-direction: column; } .ghost-btn-group > * { width: 100%; max-width: 100%; flex: 1 1 100%; } }
         
         .loading-text { font-family: 'Prompt', sans-serif; color: var(--gold-main); text-align: center; padding: 40px; }
         
@@ -217,7 +224,7 @@
             body::before, body::after { display: none !important; }
             .main-container { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; background-color: rgba(7, 4, 2, 0.98) !important; animation: none !important; box-shadow: 0 5px 15px rgba(0,0,0,0.9) !important; border: 1px solid var(--gold-main) !important; }
             .main-container::before { display: none !important; }
-            .corner-decor, .noti-btn, .loading-text { animation: none !important; }
+            .corner-decor, .noti-btn, .loading-text, .hero-center-img { animation: none !important; }
         }
     </style>
 </head>
@@ -230,7 +237,7 @@
         <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="corner-decor corner-bottom-right" alt="" width="110" height="110">
 
         <header>
-            <div class="site-title"><img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019626/logo.png" alt="ศิษย์หลวงปู่" width="300" height="100"></div>
+            <div class="site-title"><img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019626/logo.png" alt="ศิษย์หลวงปู่"></div>
             <nav>
                 <a href="index.html">หน้าแรก</a>
                 <a href="reader.html">สัตยาสาบาน</a>
@@ -271,7 +278,7 @@
                         <button class="btn-like" id="btnLikeMainPost" onclick="likePostAction()">
                             🙏 อนุโมทนา (<span id="dyn-likes">0</span>)
                         </button>
-                        <!-- 🌟 ปุ่มบันทึกจารึกที่เพิ่มเข้ามา 🌟 -->
+                        <!-- 🌟 ปุ่มบันทึกจารึกเชื่อม D1 Database -->
                         <button class="btn-save-bookmark" id="btnSaveBookmarkPost" onclick="toggleBookmarkAction()" title="บันทึกเข้าคัมภีร์ส่วนตัว">
                             🔖 บันทึกจารึก
                         </button>
@@ -381,7 +388,6 @@
         };
 
         let currentPostAuthorGlobal = ''; 
-        let globalPostDataForBookmark = null; // 🌟 เก็บข้อมูลกระทู้ไว้เผื่อกดเซฟ
 
         function formatMentions(text) {
             const mentionRegex = /@([ก-๙a-zA-Z0-9_-]+)/g;
@@ -483,32 +489,25 @@
                     return await response2.json();
                 } catch (error) { return []; }
             },
-            
             async saveComment(commentData) {
                 try {
                     const token = localStorage.getItem('siy_token');
                     const headers = { 'Content-Type': 'application/json' };
-                    if (token) {
-                        headers['Authorization'] = `Bearer ${token}`;
-                    }
+                    if (token) { headers['Authorization'] = `Bearer ${token}`; }
 
                     const response = await fetch(`${API_CONFIG.BASE_URL}/comments`, {
                         method: 'POST',
                         headers: headers,
                         body: JSON.stringify(commentData)
                     });
-                    
                     return await response.json();
                 } catch (error) { return { success: false, error: 'เกิดการเชื่อมต่อขัดข้อง' }; }
             },
-            
             async deleteComment(commentId) {
                 try {
                     const token = localStorage.getItem('siy_token');
                     const headers = {};
-                    if (token) {
-                        headers['Authorization'] = `Bearer ${token}`;
-                    }
+                    if (token) { headers['Authorization'] = `Bearer ${token}`; }
 
                     const response = await fetch(`${API_CONFIG.BASE_URL}/comments/${commentId}`, { 
                         method: 'DELETE',
@@ -521,9 +520,7 @@
                 try {
                     const token = localStorage.getItem('siy_token');
                     const headers = { 'Content-Type': 'application/json' };
-                    if (token) {
-                        headers['Authorization'] = `Bearer ${token}`;
-                    }
+                    if (token) { headers['Authorization'] = `Bearer ${token}`; }
 
                     const actor = localStorage.getItem('siy_username') || 'วิญญาณเร่ร่อน';
                     const res = await fetch(`${API_CONFIG.BASE_URL}/posts/${postId}/like`, { 
@@ -538,9 +535,7 @@
                 try {
                     const token = localStorage.getItem('siy_token');
                     const headers = { 'Content-Type': 'application/json' };
-                    if (token) {
-                        headers['Authorization'] = `Bearer ${token}`;
-                    }
+                    if (token) { headers['Authorization'] = `Bearer ${token}`; }
 
                     const actor = localStorage.getItem('siy_username') || 'วิญญาณเร่ร่อน';
                     const res = await fetch(`${API_CONFIG.BASE_URL}/comments/${commentId}/like`, { 
@@ -551,14 +546,6 @@
                     return await res.json();
                 } catch (e) { return { success: false }; }
             },
-
-            async sendNotification(data) {
-                try {
-                    await fetch(`${API_CONFIG.BASE_URL}/notifications`, {
-                        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
-                    });
-                } catch (e) {}
-            },
             async getNotifications(username) {
                 try {
                     const res = await fetch(`${API_CONFIG.BASE_URL}/notifications/${username}`);
@@ -567,6 +554,46 @@
             },
             async readNotification(id) {
                 try { await fetch(`${API_CONFIG.BASE_URL}/notifications/${id}/read`, { method: 'PUT' }); } catch(e) {}
+            },
+            // 🌟 ดึงข้อมูล Bookmark จาก D1
+            async getBookmarks() {
+                try {
+                    const token = localStorage.getItem('siy_token');
+                    if (!token) return [];
+                    const res = await fetch(`${API_CONFIG.BASE_URL}/bookmarks`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (!res.ok) return [];
+                    const data = await res.json();
+                    return Array.isArray(data) ? data : [];
+                } catch (e) { return []; }
+            },
+            // 🌟 บันทึก Bookmark ลง D1
+            async saveBookmark(postId) {
+                try {
+                    const token = localStorage.getItem('siy_token');
+                    if (!token) return { success: false };
+                    const res = await fetch(`${API_CONFIG.BASE_URL}/bookmarks`, {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}` 
+                        },
+                        body: JSON.stringify({ postId })
+                    });
+                    return await res.json();
+                } catch (e) { return { success: false }; }
+            },
+            // 🌟 ลบ Bookmark จาก D1
+            async removeBookmark(postId) {
+                try {
+                    const token = localStorage.getItem('siy_token');
+                    if (!token) return;
+                    await fetch(`${API_CONFIG.BASE_URL}/bookmarks/${postId}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                } catch (e) {}
             }
         };
 
@@ -694,29 +721,36 @@
             }
         }
 
-        // 🌟 ฟังก์ชัน สลับเปิด-ปิด การบันทึกคัมภีร์
-        function toggleBookmarkAction() {
-            if (!globalPostDataForBookmark) return;
-            
-            let bookmarks = JSON.parse(localStorage.getItem('siy_bookmarks') || '[]');
-            const postId = String(globalPostDataForBookmark.id);
+        // 🌟 ฟังก์ชันกดบันทึก/ยกเลิก Bookmark ผ่าน D1 Database อย่างถูกต้อง
+        async function toggleBookmarkAction() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const postId = urlParams.get('id');
+            if (!postId) return;
+
+            const token = localStorage.getItem('siy_token');
+            if (!token) {
+                showCustomAlert('⚠️ ท่านยังไม่ได้เข้าสู่ระบบ ไม่สามารถบันทึกคัมภีร์ได้');
+                return;
+            }
+
             const btn = document.getElementById('btnSaveBookmarkPost');
+            const isSaved = btn.classList.contains('saved');
 
-            const isAlreadySaved = bookmarks.some(b => String(b.id) === postId);
-
-            if (isAlreadySaved) {
-                bookmarks = bookmarks.filter(b => String(b.id) !== postId);
+            if (isSaved) {
+                await ApiManager.removeBookmark(postId);
                 btn.classList.remove('saved');
                 btn.innerHTML = '🔖 บันทึกจารึก';
                 showCustomAlert('นำออกจากคัมภีร์ส่วนตัวเรียบร้อยแล้ว');
             } else {
-                bookmarks.unshift({ id: postId, title: globalPostDataForBookmark.title });
-                btn.classList.add('saved');
-                btn.innerHTML = '✨ บันทึกแล้ว';
-                showCustomAlert('เก็บบันทึกลงคัมภีร์ส่วนตัวเรียบร้อยแล้ว ท่านสามารถอ่านต่อได้ที่แถบด้านข้างของลานเสวนา');
+                const res = await ApiManager.saveBookmark(postId);
+                if (res && res.success) {
+                    btn.classList.add('saved');
+                    btn.innerHTML = '✨ บันทึกแล้ว';
+                    showCustomAlert('เก็บบันทึกลงคัมภีร์ส่วนตัวเรียบร้อยแล้ว ท่านสามารถอ่านต่อได้ที่แถบด้านข้างของลานเสวนา');
+                } else {
+                    showCustomAlert('⚠️ เกิดข้อผิดพลาด ไม่สามารถบันทึกคัมภีร์ได้');
+                }
             }
-            
-            localStorage.setItem('siy_bookmarks', JSON.stringify(bookmarks));
         }
 
         let pendingConfirmAction = null;
@@ -1183,7 +1217,7 @@
             const postData = await ApiManager.getPostById(postId);
             
             if (postData && postData.title) {
-                globalPostDataForBookmark = postData; // 🌟 เก็บข้อมูลลงตัวแปรไว้เผื่อผู้ใช้กดปุ่ม Bookmark
+                globalPostDataForBookmark = postData;
 
                 let viewHistory = JSON.parse(localStorage.getItem('siy_view_history') || '[]');
                 viewHistory = viewHistory.filter(item => String(item.id) !== String(postId));
@@ -1191,9 +1225,9 @@
                 if (viewHistory.length > 5) viewHistory.pop();
                 localStorage.setItem('siy_view_history', JSON.stringify(viewHistory));
 
-                // 🌟 ตรวจสอบว่ากระทู้นี้ถูกบันทึกไว้ในคัมภีร์ส่วนตัวหรือยัง
-                const bookmarks = JSON.parse(localStorage.getItem('siy_bookmarks') || '[]');
-                const isBookmarked = bookmarks.some(b => String(b.id) === String(postId));
+                // 🌟 ตรวจสอบสถานะ Bookmark จาก D1 Database เมื่อเปิดหน้าอ่านกระทู้
+                const userBookmarks = await ApiManager.getBookmarks();
+                const isBookmarked = userBookmarks.some(b => String(b.post_id) === String(postId));
                 if (isBookmarked) {
                     const bmBtn = document.getElementById('btnSaveBookmarkPost');
                     if (bmBtn) {
@@ -1264,7 +1298,7 @@
         });
 
         function handleLogout() {
-            localStorage.removeItem('siy_token');
+            localStorage.removeItem('siy_token'); 
             localStorage.removeItem('siy_username'); 
             localStorage.removeItem('siy_usertype'); 
             localStorage.removeItem('siy_login_timestamp');
