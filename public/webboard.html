@@ -127,7 +127,7 @@
         
         .btn-primary { display: block; width: 100%; text-align: center; background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; font-family: 'Prompt', sans-serif; font-weight: bold; padding: 12px; border-radius: 25px; font-size: 1.1rem; box-shadow: 0 5px 15px rgba(0,0,0,0.6); border: 1px solid #ffeba9; cursor: pointer; transition: filter 0.2s; text-decoration: none; box-sizing: border-box; white-space: normal; } .btn-primary:hover { filter: brightness(1.15); }
 
-        /* 🌟 สไตล์กล่องคัมภีร์ส่วนตัว (ดึงข้อมูลจาก D1) พร้อมระบบเลื่อน Scrollbar ป้องกันกล่องทะลุจอ */
+        /* 🌟 สไตล์กล่องคัมภีร์ส่วนตัว (Bookmarks) */
         .bookmark-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: rgba(0,0,0,0.4); border: 1px dashed rgba(212, 175, 55, 0.3); border-radius: 6px; margin-bottom: 8px; transition: background 0.2s; }
         .bookmark-item:hover { background: rgba(212, 175, 55, 0.1); border-color: var(--gold-main); }
         .bookmark-link { flex: 1; color: var(--gold-light); text-decoration: none; font-size: 0.9rem; font-family: 'Prompt', sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-right: 10px; }
@@ -183,6 +183,27 @@
         .btn-submit:disabled, .btn-submit.disabled { background: linear-gradient(180deg, #4a3b1a 0%, #2a1805 100%) !important; color: #8a7761 !important; border: 1px solid #5a4f35 !important; cursor: not-allowed !important; opacity: 0.6; }
         .btn-cancel { background: transparent; color: var(--text-muted); border: 1px solid var(--text-muted); padding: 12px 20px; border-radius: 25px; font-family: 'Prompt', sans-serif; cursor: pointer; transition: background 0.2s; } .btn-cancel:hover { background: rgba(255,255,255,0.1); color: #fff; }
         
+        /* 🌟 คืนชีพปุ่มทองคำให้ Modal แจ้งเตือน สมบูรณ์แบบเหมือนเดิม 100% */
+        .btn-submit-modal { 
+            background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); 
+            color: #150a03 !important; 
+            border: 1px solid #ffeba9; 
+            padding: 12px; 
+            border-radius: 25px; 
+            font-family: 'Prompt', sans-serif; 
+            font-weight: bold; 
+            font-size: 1rem; 
+            cursor: pointer; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5); 
+            transition: filter 0.2s; 
+            width: 80%; 
+            margin: 0 auto; 
+            display: block; 
+            text-align: center;
+            text-decoration: none;
+        }
+        .btn-submit-modal:hover { filter: brightness(1.15); }
+
         @media (max-width: 950px) { .board-layout { grid-template-columns: 1fr; } .thread-stats { display: none; } }
         @media (max-width: 768px) {
             .site-title img { height: 65px !important; }
@@ -292,16 +313,12 @@
                 <!-- 🌟 กล่องคัมภีร์ส่วนตัว (Bookmarks) จาก D1 Database -->
                 <div class="widget" id="bookmarkWidget" style="display: none;">
                     <h4 class="section-title" style="background: linear-gradient(180deg, #4a3b1a 0%, #2a1805 100%); border-color: #f5d77f; color: #fff;">🔖 คัมภีร์ส่วนตัว</h4>
-                    <div id="bookmarkListContainer" style="display: flex; flex-direction: column; margin-top: 15px; max-height: 250px; overflow-y: auto;">
-                        <!-- รายการ Bookmark จะถูกดึงมาแสดงที่นี่ -->
-                    </div>
+                    <div id="bookmarkListContainer" style="display: flex; flex-direction: column; margin-top: 15px; max-height: 250px; overflow-y: auto;"></div>
                 </div>
 
                 <div class="widget" id="historyWidget" style="display: none;">
                     <h4 class="section-title">รอยเท้าจารึก</h4>
-                    <div id="historyListContainer" style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
-                        <!-- ประวัติจะถูกนำมาแสดงที่นี่ -->
-                    </div>
+                    <div id="historyListContainer" style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;"></div>
                 </div>
                 
             </div>
@@ -341,13 +358,6 @@
                     <li><strong>อาญาแห่งผู้คุมกฎ:</strong> ทีมงานผู้คุมกฎมีสิทธิ์ขาดในการทำลายศิลาจารึก ขับไล่สมาชิก หรือปิดประตูสำนักได้ทันทีโดยไม่ต้องแจ้งล่วงหน้า</li>
                     <li><strong>ประกาศิตปัดความรับผิดชอบ:</strong> ถ้อยคำและภาพในลานเสวนาเป็นสิ่งที่สาธารณชนร้อยเรียงขึ้น ทางสำนักและผู้คุมกฎมิได้เห็นพ้องและ "ไม่ขอรับผิดชอบ" ต่อความเสียหายใดๆ ทั้งสิ้น ผู้เสพข้อมูลพึงใช้วิจารณญาณด้วยตนเอง</li>
                 </ol>
-                <h4 style="margin-top: 15px;">❖ คำแนะนำในการตั้งนามแฝง (ฉายาแห่งสำนัก):</h4>
-                <ul>
-                    <li>ห้ามใช้ชื่อหยาบคาย เป็นคำผวน หรือส่อไปในทางลามกอนาจาร</li>
-                    <li>ห้ามมีข้อมูลส่วนตัวปะปน เช่น ชื่อ-นามสกุลจริง หรือเบอร์โทรศัพท์</li>
-                    <li>ห้ามใช้ชื่อคล้ายคลึงกับสมาชิกเดิมเพื่อสร้างความสับสน (เช่น ตัวจริง, ตัวปลอม)</li>
-                    <li>ห้ามใช้ตัวอักษรหรือตัวเลขซ้ำอย่างไร้ความหมาย (เช่น 5555)</li>
-                </ul>
             </div>
 
             <div class="scroll-warning-hint" id="scrollWarningHint">⬇️ กรุณาเลื่อนอ่านกฎประกาศิตด้านบนให้ถึงบรรทัดสุดท้ายก่อน จึงจะสามารถกดยอมรับได้</div>
@@ -364,7 +374,7 @@
         </div>
     </div>
 
-    <!-- Modal สมัครสมาชิก / เข้าสู่ระบบ (ฝัง Turnstile) -->
+    <!-- Modal สมัครสมาชิก / เข้าสู่ระบบ -->
     <div class="sect-modal-overlay" id="registerModal">
         <div class="sect-modal-content">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-left" alt="" width="60" height="60">
@@ -376,12 +386,11 @@
                 <p id="modalSubTitle">ลงนามเพื่อเข้าร่วมลานเสวนา</p>
             </div>
             <div class="privacy-warning" id="modalWarning">
-                <strong>❖ กฎแห่งลานเสวนา:</strong> เพื่อป้องกันการสวมรอย ระบบจะไม่บันทึกข้อมูลส่วนตัวใดๆ ของท่าน ข้อมูลนี้ใช้เพื่อยืนยันตัวตนในเว็บนี้ <strong>เท่านั้น</strong> <br><br>
-                โปรดตั้งรหัสผ่านให้ <strong>แตกต่าง</strong> จากเว็บไซต์อื่นที่ท่านเคยใช้งาน และหากลืมรหัสผ่าน ท่านต้องสร้างนามแฝงใหม่เท่านั้น
+                <strong>❖ กฎแห่งลานเสวนา:</strong> เพื่อป้องกันการสวมรอย ระบบจะไม่บันทึกข้อมูลส่วนตัวใดๆ ของท่าน ข้อมูลนี้ใช้เพื่อยืนยันตัวตนในเว็บนี้ <strong>เท่านั้น</strong>
             </div>
             <div class="form-group">
                 <label id="usernameLabel">นามแฝง (Username)</label>
-                <input type="text" id="regUsername" class="form-input" placeholder="ภาษาไทยเท่านั้น" oninput="this.value = this.value.replace(/[a-zA-Z]/g, '')" onpaste="setTimeout(() => { this.value = this.value.replace(/[a-zA-Z]/g, ''); }, 10)">
+                <input type="text" id="regUsername" class="form-input" placeholder="ภาษาไทยเท่านั้น" oninput="this.value = this.value.replace(/[a-zA-Z]/g, '')">
             </div>
             <div class="form-group">
                 <label>รหัสผ่านลับ (Password)</label>
@@ -399,28 +408,6 @@
             <div class="modal-actions">
                 <button type="button" class="btn-cancel" onclick="closeRegisterModal()">ถอยกลับ</button>
                 <button type="button" class="btn-submit" id="modalSubmitBtn" onclick="handleSubmitAction()">ลงนาม</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal เข้าใช้งานแบบไม่ระบุตัวตน -->
-    <div class="sect-modal-overlay" id="guestCaptchaModal">
-        <div class="sect-modal-content">
-            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-left" alt="" width="60" height="60">
-            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-right" alt="" width="60" height="60">
-            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-bottom-left" alt="" width="60" height="60">
-            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-bottom-right" alt="" width="60" height="60">
-            <div class="modal-header">
-                <h3>พิธีกรรมเปิดทางวิญญาณ</h3>
-                <p>พิสูจน์ตนก่อนเข้าสู่โหมดไร้ร่าง</p>
-            </div>
-            <div class="captcha-box-turnstile" style="margin-top: 15px;">
-                <p><strong>ด่านทดสอบกันผี:</strong> จงพิมพ์คำว่า "ไร้เงา"</p>
-                <input type="text" id="guestCaptchaInput" class="form-input" style="text-align: center; width: 80%;">
-            </div>
-            <div class="modal-actions">
-                <button type="button" class="btn-cancel" onclick="closeGuestCaptchaModal()">ถอยกลับ</button>
-                <button type="button" class="btn-submit" onclick="verifyGuestCaptcha()">เข้าลานเสวนา</button>
             </div>
         </div>
     </div>
@@ -502,7 +489,6 @@
             async readNotification(id) {
                 try { await fetch(`${API_CONFIG.BASE_URL}/notifications/${id}/read`, { method: 'PUT' }); } catch(e) {}
             },
-            // 🌟 ดึงข้อมูลคัมภีร์ส่วนตัวจาก D1 Database
             async getBookmarks() {
                 try {
                     const token = localStorage.getItem('siy_token');
@@ -514,7 +500,6 @@
                     return await res.json();
                 } catch (e) { return []; }
             },
-            // 🌟 ลบคัมภีร์ส่วนตัวออกจาก D1 Database
             async removeBookmark(postId) {
                 try {
                     const token = localStorage.getItem('siy_token');
@@ -618,7 +603,6 @@
             });
         }
 
-        // 🌟 ฟังก์ชันเรนเดอร์คัมภีร์ส่วนตัวจาก D1 Database
         async function renderBookmarks() {
             const widget = document.getElementById('bookmarkWidget');
             const container = document.getElementById('bookmarkListContainer');
@@ -665,7 +649,7 @@
             loadAndRenderPosts();
             checkUserLoginStatus();
             renderViewHistory(); 
-            renderBookmarks(); // 🌟 โหลดคัมภีร์ส่วนตัว
+            renderBookmarks();
 
             const hasAcceptedRules = localStorage.getItem('siy_webboard_rules_accepted');
             if (!hasAcceptedRules) {
@@ -1006,21 +990,6 @@
         }
 
         function closeRegisterModal() { document.getElementById('registerModal').classList.remove('active'); }
-
-        function openGuestCaptchaModal() { 
-            document.getElementById('guestCaptchaInput').value = ''; 
-            document.getElementById('guestCaptchaModal').classList.add('active'); 
-        }
-
-        function closeGuestCaptchaModal() { document.getElementById('guestCaptchaModal').classList.remove('active'); }
-
-        function verifyGuestCaptcha() {
-            if (document.getElementById('guestCaptchaInput').value.trim() !== 'ไร้เงา') {
-                showCustomAlert('ตอบคำถามกันผีไม่ถูกต้อง (ต้องพิมพ์คำว่า "ไร้เงา")'); return;
-            }
-            closeGuestCaptchaModal();
-            enterAsAnonymous();
-        }
 
         async function handleSubmitAction() {
             const usernameInput = document.getElementById('regUsername').value.trim();
