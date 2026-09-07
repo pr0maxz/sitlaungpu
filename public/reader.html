@@ -17,11 +17,14 @@
             --gold-dark: #8a6315; 
             --text-muted: #8a7761; 
         }
+
+        /* 🚀 โหมดรีดพลัง: เปลี่ยนเป็น scroll และปิดแอนิเมชันพื้นหลังทั้งหมด */
         body { 
             margin: 0; padding: 0; width: 100%; min-height: 100vh; 
             background-color: var(--bg-deep); 
             background-image: radial-gradient(circle at 50% 50%, var(--bg-glow) 0%, var(--bg-deep) 90%); 
-            background-attachment: fixed; color: #d1bfae; 
+            background-attachment: scroll; /* ลดอาการหน่วงเวลาไถจอ */
+            color: #d1bfae; 
             font-family: 'Sarabun', sans-serif; overflow-x: hidden; 
             user-select: none;
             -webkit-user-select: none;
@@ -29,35 +32,31 @@
             -ms-user-select: none;
         }
         
-        body::before { content: ""; position: fixed; top: -50vh; left: -50vw; width: 200vw; height: 200vh; z-index: -2; pointer-events: none; background-image: radial-gradient(2px 2px at 40px 60px, var(--gold-light), transparent), radial-gradient(1.5px 1.5px at 150px 120px, var(--gold-main), transparent), radial-gradient(2.5px 2.5px at 90px 200px, var(--gold-light), transparent), radial-gradient(1.5px 1.5px at 110px 90px, var(--gold-light), transparent); background-size: 200px 200px; opacity: 0.4; animation: floatingMagic 15s linear infinite; will-change: transform; }
-        body::after { content: ""; position: fixed; top: -50vh; left: -50vw; width: 200vw; height: 200vh; z-index: -1; pointer-events: none; background-image: radial-gradient(3px 3px at 20px 30px, var(--gold-main), transparent), radial-gradient(2px 2px at 120px 80px, var(--gold-light), transparent), radial-gradient(3px 3px at 220px 150px, var(--gold-dark), transparent); background-size: 350px 350px; opacity: 0.25; animation: floatingMagic2 22s linear infinite; will-change: transform; }
-        @keyframes floatingMagic { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(200px, -200px, 0); } } 
-        @keyframes floatingMagic2 { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-350px, -350px, 0); } }
+        /* ❌ ลบละอองเวทมนตร์เคลื่อนไหว */
+        body::before, body::after { display: none !important; }
 
         h1, h2, h3, h4 { font-family: 'Prompt', sans-serif; margin: 0; }
         
-        @property --ring-angle { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
-        @keyframes containerPulse { 0% { box-shadow: 0 0 30px rgba(0,0,0,0.8), inset 0 0 20px rgba(212,175,55,0.02); } 50% { box-shadow: 0 0 50px rgba(212,175,55,0.15), inset 0 0 40px rgba(212,175,55,0.08); } 100% { box-shadow: 0 0 30px rgba(0,0,0,0.8), inset 0 0 20px rgba(212,175,55,0.02); } }
-        @keyframes ringRotate { to { --ring-angle: 360deg; } }
-        
-        /* 🌟 Responsive Container พร้อมล็อค padding ด้านบน */
+        /* 🚀 โหมดรีดพลัง: ลบ backdrop-filter เปลี่ยนเป็นสีทึบเพื่อประหยัดแรมการ์ดจอ */
         .main-container { 
             position: relative; isolation: isolate; max-width: 1200px; width: 94%; 
             margin: clamp(20px, 4vw, 40px) auto; 
             padding: clamp(20px, 4vw, 40px) clamp(15px, 3vw, 30px) clamp(30px, 5vw, 60px) clamp(15px, 3vw, 30px); 
-            padding-top: 45px !important; /* ล็อคระยะขอบด้านบนให้เท่ากันทุกหน้า */
-            background-color: rgba(7, 4, 2, 0.85); border: 1px solid var(--gold-dark); border-radius: 16px; backdrop-filter: blur(10px); animation: containerPulse 6s infinite alternate; 
+            padding-top: 45px !important; 
+            background-color: rgba(7, 4, 2, 0.98); /* ใช้สีทึบแทนกระจกฝ้า */
+            border: 1px solid var(--gold-dark); border-radius: 16px; 
+            box-shadow: 0 5px 20px rgba(0,0,0,0.9);
         }
-        .main-container::before { content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1px; background: conic-gradient(from var(--ring-angle), transparent 0deg, var(--gold-main) 25deg, transparent 70deg, transparent 180deg, var(--gold-light) 205deg, transparent 250deg, transparent 360deg); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: ringRotate 10s linear infinite; pointer-events: none; z-index: -1; }
+        /* ❌ ปิดกรอบแสงวิ่งรอบกล่อง */
+        .main-container::before { display: none !important; }
         
-        @keyframes bracketGlow { 0%, 100% { opacity: 0.7; filter: drop-shadow(0 0 2px rgba(212,175,55,0.3)); } 50% { opacity: 1; filter: drop-shadow(0 0 8px rgba(212,175,55,0.7)); } }
-        .corner-decor { position: absolute; width: clamp(45px, 8vw, 110px); height: clamp(45px, 8vw, 110px); z-index: 20; pointer-events: none; animation: bracketGlow 3s ease-in-out infinite; }
+        /* ❌ ปิดแอนิเมชันมุมกระพริบ */
+        .corner-decor { position: absolute; width: clamp(45px, 8vw, 110px); height: clamp(45px, 8vw, 110px); z-index: 20; pointer-events: none; opacity: 0.8; }
         .corner-top-left { top: 12px; left: 12px; transform: scaleX(-1); } 
         .corner-top-right { top: 12px; right: 12px; } 
         .corner-bottom-left { bottom: 12px; left: 12px; transform: scaleX(-1) scaleY(-1); } 
         .corner-bottom-right { bottom: 12px; right: 12px; transform: scaleY(-1); }
         
-        /* 🌟 โค้ดมาตรฐาน: ล็อค Header และ Logo ให้อยู่กึ่งกลางเป๊ะ */
         header { 
             text-align: center; 
             margin: 0 auto 40px auto !important; 
@@ -68,84 +67,27 @@
             flex-direction: column;
             align-items: center;
         }
-        .site-title { 
-            margin: 0 0 25px 0 !important; 
-            line-height: 0; 
-        }
-        .site-title img { 
-            height: 85px !important; /* ล็อคความสูงตายตัว ไม่ให้ดิ้น */
-            width: auto !important; 
-            filter: drop-shadow(0 5px 15px rgba(0,0,0,1)) drop-shadow(0 0 20px rgba(212,175,55,0.4)); 
-        }
+        .site-title { margin: 0 0 25px 0 !important; line-height: 0; }
+        .site-title img { height: 85px !important; width: auto !important; filter: drop-shadow(0 5px 15px rgba(0,0,0,1)); }
 
-        /* 🌟 โค้ดมาตรฐาน: ล็อค Navigation Bar ให้สูงและกว้างเท่ากันทุกหน้า */
         nav { 
-            display: flex; 
-            flex-wrap: wrap; 
-            justify-content: center; 
-            align-items: center;
-            gap: 15px; 
-            background: linear-gradient(to bottom, #1f1107, #070402); 
-            border: 1px solid var(--gold-dark); 
-            border-radius: 50px; 
-            padding: 0 30px !important; 
-            box-shadow: 0 5px 20px rgba(0,0,0,0.9); 
-            width: 100%;
-            max-width: 800px !important; 
-            height: 55px !important; /* ล็อคความสูงแท็บเมนู */
-            margin: 0 auto !important; 
-            box-sizing: border-box;
+            display: flex; flex-wrap: wrap; justify-content: center; align-items: center;
+            gap: 15px; background: linear-gradient(to bottom, #1f1107, #070402); 
+            border: 1px solid var(--gold-dark); border-radius: 50px; 
+            padding: 0 30px !important; box-shadow: 0 5px 20px rgba(0,0,0,0.9); 
+            width: 100%; max-width: 800px !important; height: 55px !important; 
+            margin: 0 auto !important; box-sizing: border-box;
         }
-        nav a { 
-            color: var(--gold-light); 
-            text-decoration: none; 
-            font-size: 1.05rem !important; /* ล็อคขนาดฟอนต์ให้ตายตัว */
-            padding: 5px 15px; 
-            transition: all 0.3s; 
-            position: relative; 
-            white-space: nowrap; 
-            line-height: 1;
-        }
-        nav a:hover, nav a.active { 
-            color: #fff; 
-            text-shadow: 0 0 10px var(--gold-main); 
-        }
-        nav a::after { 
-            content: ''; 
-            position: absolute; 
-            bottom: -10px; /* ปรับขีดสีทองให้อยู่ห่างจากตัวหนังสือพอดี */
-            left: 50%; 
-            transform: translateX(-50%); 
-            width: 0; 
-            height: 2px; 
-            background-color: var(--gold-main); 
-            transition: width 0.3s; 
-        }
-        nav a:hover::after, nav a.active::after { 
-            width: 100%; 
-        }
+        nav a { color: var(--gold-light); text-decoration: none; font-size: 1.05rem !important; padding: 5px 15px; transition: color 0.2s; position: relative; white-space: nowrap; line-height: 1; }
+        nav a:hover, nav a.active { color: #fff; text-shadow: 0 0 10px var(--gold-main); }
+        nav a::after { content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 2px; background-color: var(--gold-main); transition: width 0.2s; }
+        nav a:hover::after, nav a.active::after { width: 100%; }
 
-        /* 🌟 โค้ดมาตรฐาน: กฎสำหรับหน้าจอมือถือ (ล็อคสัดส่วนเช่นกัน) */
         @media (max-width: 768px) {
-            .site-title img { 
-                height: 65px !important; /* ขนาดย่อสำหรับมือถือ */
-            }
-            nav { 
-                flex-wrap: nowrap !important; /* 🌟 ยันต์กันเมนูตกบรรทัด บังคับให้อยู่บรรทัดเดียว */
-                justify-content: flex-start; 
-                overflow-x: auto; 
-                scrollbar-width: none; 
-                border-radius: 40px; 
-                padding: 0 20px !important;
-                height: 50px !important; /* ลดความสูงลงนิดหน่อยบนมือถือ */
-                mask-image: linear-gradient(to right, transparent 0, black 20px, black calc(100% - 20px), transparent 100%);
-                -webkit-mask-image: linear-gradient(to right, transparent 0, black 20px, black calc(100% - 20px), transparent 100%);
-            }
+            .site-title img { height: 65px !important; }
+            nav { flex-wrap: nowrap !important; justify-content: flex-start; overflow-x: auto; scrollbar-width: none; border-radius: 40px; padding: 0 20px !important; height: 50px !important; }
             nav::-webkit-scrollbar { display: none; }
-            nav a { 
-                font-size: 0.95rem !important; 
-                flex-shrink: 0;
-            }
+            nav a { font-size: 0.95rem !important; flex-shrink: 0; }
         }
 
         .board-layout { display: flex; justify-content: center; margin-top: 10px; width: 100%; }
@@ -153,231 +95,96 @@
         
         .breadcrumb { font-size: clamp(0.8rem, 2vw, 0.9rem); color: var(--text-muted); margin-bottom: 20px; text-align: left; } 
         .breadcrumb a { color: var(--gold-light); text-decoration: none; }
-        .btn-back { display: inline-flex; align-items: center; gap: 8px; color: var(--gold-light); text-decoration: none; margin-bottom: 15px; font-size: clamp(0.85rem, 2vw, 0.95rem); transition: 0.3s; }
+        .btn-back { display: inline-flex; align-items: center; gap: 8px; color: var(--gold-light); text-decoration: none; margin-bottom: 15px; font-size: clamp(0.85rem, 2vw, 0.95rem); transition: 0.2s; }
         .btn-back:hover { text-shadow: 0 0 8px var(--gold-main); }
 
         /* 🌟 ตัวปรับขนาดฟอนต์ */
-        .category-block { background: rgba(12, 7, 4, 0.7); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 8px; margin-top: 35px; margin-bottom: 30px; padding: clamp(35px, 6vw, 55px) clamp(15px, 4vw, 45px) clamp(25px, 5vw, 45px) clamp(15px, 4vw, 45px); box-shadow: inset 0 0 15px rgba(0,0,0,0.8), 0 5px 15px rgba(0,0,0,0.5); position: relative; }
-        .section-title { text-align: center; background: linear-gradient(180deg, #3a2511 0%, #150a03 100%); color: var(--gold-light); padding: 8px clamp(20px, 4vw, 30px); border: 1px solid var(--gold-main); border-radius: 8px; display: inline-block; position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-size: clamp(1rem, 2.5vw, 1.15rem); font-weight: 700; white-space: nowrap; box-shadow: 0 8px 16px rgba(0,0,0,0.9), inset 0 1px 2px rgba(255,255,255,0.15); text-shadow: 0 2px 4px rgba(0,0,0,0.8); letter-spacing: 1px; margin: 0; z-index: 5; }
+        .category-block { background: rgba(12, 7, 4, 0.9); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 8px; margin-top: 35px; margin-bottom: 30px; padding: clamp(35px, 6vw, 55px) clamp(15px, 4vw, 45px) clamp(25px, 5vw, 45px) clamp(15px, 4vw, 45px); box-shadow: 0 5px 15px rgba(0,0,0,0.5); position: relative; }
+        .section-title { text-align: center; background: linear-gradient(180deg, #3a2511 0%, #150a03 100%); color: var(--gold-light); padding: 8px clamp(20px, 4vw, 30px); border: 1px solid var(--gold-main); border-radius: 8px; display: inline-block; position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-size: clamp(1rem, 2.5vw, 1.15rem); font-weight: 700; white-space: nowrap; box-shadow: 0 8px 16px rgba(0,0,0,0.9); letter-spacing: 1px; margin: 0; z-index: 5; }
 
         .reader-controls { display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-bottom: clamp(20px, 4vw, 35px); border-bottom: 1px solid rgba(138, 99, 21, 0.3); padding-bottom: 15px; }
         .font-btn-group { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: center; }
-        .btn-tool { background: rgba(0,0,0,0.6); border: 1px solid var(--gold-dark); color: var(--gold-light); padding: 6px 14px; border-radius: 6px; font-family: 'Prompt', sans-serif; font-size: 0.85rem; cursor: pointer; transition: all 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-        .btn-tool:hover { background: var(--gold-dark); color: #fff; box-shadow: 0 0 8px rgba(212,175,55,0.4); }
+        .btn-tool { background: rgba(0,0,0,0.6); border: 1px solid var(--gold-dark); color: var(--gold-light); padding: 6px 14px; border-radius: 6px; font-family: 'Prompt', sans-serif; font-size: 0.85rem; cursor: pointer; transition: background 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .btn-tool:hover { background: var(--gold-dark); color: #fff; }
 
         /* 🌟 Typography ยืดหยุ่นด้วย Clamp */
         .novel-title-text { color: var(--gold-light); font-size: clamp(1.4rem, 4vw, 2rem); font-family: 'Prompt', sans-serif; margin-bottom: 10px; text-align: center; text-shadow: 0 2px 10px rgba(212,175,55,0.2); line-height: 1.4; }
         .novel-chapter-sub { color: var(--text-muted); font-size: clamp(0.85rem, 2vw, 0.95rem); margin-bottom: clamp(25px, 5vw, 40px); text-align: center; }
         
-        /* 🌟 เนื้อหานิยายแบบ Responsive ป้องกันการตัดคำมั่วซั่ว */
+        /* 🌟 เนื้อหานิยายแบบ Responsive */
         .novel-body-text { 
-            line-height: 1.9; 
-            color: #dfd0c0; 
-            font-size: 1.1rem; 
-            text-align: left; 
-            
-            /* ควบคุมการตัดคำภาษาไทยให้สวยงาม */
-            word-break: normal; 
-            overflow-wrap: break-word; 
-            
-            min-height: 400px; 
-            transition: font-size 0.2s ease;
+            line-height: 1.9; color: #dfd0c0; font-size: 1.1rem; text-align: left; 
+            word-break: normal; overflow-wrap: break-word; min-height: 400px; 
+            /* ❌ ปิดแอนิเมชัน transition ขยายฟอนต์เพื่อให้ทำงานเร็วขึ้นทันที */
         }
         
-        .novel-body-text p { 
-            margin-bottom: clamp(18px, 3vw, 24px); 
-            text-indent: clamp(1.5em, 4vw, 2.5em); 
-        }
-        
-        .scene-divider { 
-            text-align: center; 
-            color: var(--gold-main); 
-            margin: clamp(30px, 6vw, 45px) 0; 
-            font-size: 1.2rem; 
-            letter-spacing: 8px; 
-        }
+        .novel-body-text p { margin-bottom: clamp(18px, 3vw, 24px); text-indent: clamp(1.5em, 4vw, 2.5em); }
+        .scene-divider { text-align: center; color: var(--gold-main); margin: clamp(30px, 6vw, 45px) 0; font-size: 1.2rem; letter-spacing: 8px; }
 
         .novel-body-text img {
-            max-width: 100% !important;
-            height: auto !important;
-            display: block;
-            margin: clamp(15px, 4vw, 25px) auto;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: transform 0.2s ease, opacity 0.2s ease;
+            max-width: 100% !important; height: auto !important; display: block;
+            margin: clamp(15px, 4vw, 25px) auto; border-radius: 8px; cursor: pointer;
             box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-        }
-        .novel-body-text img:hover {
-            opacity: 0.9;
-            transform: scale(1.01);
         }
 
         .image-modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100vw; height: 100vh;
-            background-color: rgba(0, 0, 0, 0.95);
-            z-index: 99999;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            padding: 10px;
+            display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: rgba(0, 0, 0, 0.95); z-index: 99999; justify-content: center;
+            align-items: center; cursor: pointer; padding: 10px;
+            /* ❌ ปิดแอนิเมชัน fadeIn */
         }
-        .image-modal-overlay.active {
-            display: flex;
-            animation: fadeIn 0.2s ease;
-        }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .image-modal-content {
-            max-width: 95vw;
-            max-height: 95vh;
-            border-radius: 6px;
-            box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
-            object-fit: contain;
-            cursor: default;
-        }
+        .image-modal-overlay.active { display: flex; }
+        .image-modal-content { max-width: 95vw; max-height: 95vh; border-radius: 6px; box-shadow: 0 0 30px rgba(212, 175, 55, 0.3); object-fit: contain; cursor: default; }
 
         /* 🌟 กล่องกลอนจัดใหม่ให้ยืดหยุ่น */
         .poem-box {
             text-align: center; color: var(--gold-light); margin: clamp(30px, 6vw, 50px) auto; 
             font-style: italic; line-height: 2.2; font-size: 1.05em;
             background: rgba(212, 175, 55, 0.05); padding: clamp(20px, 4vw, 30px) clamp(10px, 3vw, 30px); 
-            border-radius: 12px; border: 1px dashed rgba(212, 175, 55, 0.3);
-            max-width: 85%;
+            border-radius: 12px; border: 1px dashed rgba(212, 175, 55, 0.3); max-width: 85%;
         }
 
         /* 🌟 กลุ่มปุ่มด้านล่างแบบ Responsive */
-        .bottom-action-group {
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            gap: 15px; 
-            margin-top: 60px; 
-            border-top: 1px dashed rgba(138, 99, 21, 0.3); 
-            padding-top: 40px; 
-            flex-wrap: wrap; 
-            width: 100%;
-        }
+        .bottom-action-group { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 60px; border-top: 1px dashed rgba(138, 99, 21, 0.3); padding-top: 40px; flex-wrap: wrap; width: 100%; }
         
         .btn-primary { 
-            display: inline-flex; 
-            justify-content: center;
-            align-items: center;
-            text-align: center; 
-            background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); 
-            color: #150a03; 
-            font-family: 'Prompt', sans-serif; 
-            font-weight: bold; 
-            padding: 12px 24px; 
-            border-radius: 25px; 
-            font-size: clamp(0.9rem, 2vw, 1rem); 
-            box-shadow: 0 5px 15px rgba(0,0,0,0.6), inset 0 2px 4px rgba(255,255,255,0.4); 
-            border: 1px solid #ffeba9; 
-            cursor: pointer; 
-            transition: all 0.3s; 
-            text-decoration: none; 
-            flex: 1 1 auto;
-            min-width: 160px;
-            max-width: 250px;
+            display: inline-flex; justify-content: center; align-items: center; text-align: center; 
+            background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; 
+            font-family: 'Prompt', sans-serif; font-weight: bold; padding: 12px 24px; border-radius: 25px; 
+            font-size: clamp(0.9rem, 2vw, 1rem); box-shadow: 0 5px 15px rgba(0,0,0,0.6); 
+            border: 1px solid #ffeba9; cursor: pointer; transition: filter 0.2s; text-decoration: none; 
+            flex: 1 1 auto; min-width: 160px; max-width: 250px;
         } 
-        .btn-primary:hover { 
-            filter: brightness(1.15); 
-            transform: translateY(-2px); 
-        }
+        .btn-primary:hover { filter: brightness(1.15); }
 
         .site-footer { text-align: center; margin-top: 50px; padding-top: 20px; border-top: 1px dashed rgba(138, 99, 21, 0.3); }
-        .site-footer p { color: var(--text-muted); font-family: 'Sarabun', sans-serif; font-size: 0.85rem; letter-spacing: 0.5px; margin: 0; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9); }
+        .site-footer p { color: var(--text-muted); font-family: 'Sarabun', sans-serif; font-size: 0.85rem; letter-spacing: 0.5px; margin: 0; }
 
-        /* 🌟 Media Queries สำหรับอุปกรณ์มือถือจอเล็ก */
         @media (max-width: 600px) { 
-            .reader-controls { justify-content: center; } /* จัดกลางตัวปรับฟอนต์ในมือถือ */
+            .reader-controls { justify-content: center; } 
             .poem-box { max-width: 100%; font-size: 1em; padding: 20px 15px; }
-            /* ปุ่มล่างพับซ้อนกันแบบเต็มจอในมือถือ */
             .bottom-action-group { flex-direction: column; gap: 12px; margin-top: 40px; padding-top: 30px; }
             .btn-primary { width: 100%; max-width: 100%; }
         }
 
         /* 🌟 แบนเนอร์จดจำจุดอ่านล่าสุด (Responsive) */
         #resume-scroll-banner {
-            position: fixed;
-            bottom: clamp(15px, 3vw, 20px);
-            right: clamp(15px, 3vw, 20px);
-            left: clamp(15px, 3vw, auto); /* ให้ขยายเต็มพื้นที่ด้านล่างถ้าย่อจอ */
-            background: linear-gradient(135deg, #1a120b, #0a0603);
-            border: 1px solid var(--gold-main, #d4af37);
-            color: var(--gold-light, #f5d77f);
-            padding: clamp(10px, 2vw, 12px) clamp(15px, 3vw, 20px);
-            border-radius: 30px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.8);
-            display: none;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            z-index: 9999;
-            font-family: 'Prompt', sans-serif;
-            font-size: clamp(0.8rem, 2vw, 0.9rem);
-            animation: slideUp 0.4s ease;
-        }
-        @keyframes slideUp {
-            from { transform: translateY(50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+            position: fixed; bottom: clamp(15px, 3vw, 20px); right: clamp(15px, 3vw, 20px); left: clamp(15px, 3vw, auto); 
+            background: linear-gradient(135deg, #1a120b, #0a0603); border: 1px solid var(--gold-main, #d4af37);
+            color: var(--gold-light, #f5d77f); padding: clamp(10px, 2vw, 12px) clamp(15px, 3vw, 20px);
+            border-radius: 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.8);
+            display: none; align-items: center; justify-content: space-between; gap: 12px; z-index: 9999;
+            font-family: 'Prompt', sans-serif; font-size: clamp(0.8rem, 2vw, 0.9rem);
+            /* ❌ ปิดแอนิเมชัน slideUp ให้เด้งขึ้นมาเลย */
         }
         .resume-btn-group { display: flex; align-items: center; gap: 8px; }
         #resume-scroll-banner button {
-            background: var(--gold-main, #d4af37);
-            color: #150a03;
-            border: none;
-            padding: 5px clamp(10px, 2vw, 12px);
-            border-radius: 15px;
-            font-weight: bold;
-            cursor: pointer;
-            font-family: 'Prompt', sans-serif;
-            font-size: clamp(0.75rem, 2vw, 0.85rem);
-            white-space: nowrap;
+            background: var(--gold-main, #d4af37); color: #150a03; border: none;
+            padding: 5px clamp(10px, 2vw, 12px); border-radius: 15px; font-weight: bold;
+            cursor: pointer; font-family: 'Prompt', sans-serif; font-size: clamp(0.75rem, 2vw, 0.85rem); white-space: nowrap;
         }
-        #resume-scroll-banner button:hover {
-            filter: brightness(1.2);
-        }
-        #resume-scroll-banner .close-banner {
-            background: transparent;
-            color: #8a7761;
-            padding: 0 5px;
-            font-size: 1rem;
-        }
-
-        /* 🚀 อาคมลดภาระเครื่องขั้นเด็ดขาด (ลื่นปรี๊ด 100% บนแท็บเล็ตและมือถือ) */
-        @media (max-width: 1200px), (hover: none) and (pointer: coarse) {
-            /* 1. ปลดล็อกพื้นหลัง fixed ตัวการที่ทำให้เลื่อนจอแล้วกระตุก */
-            body {
-                background-attachment: scroll !important;
-            }
-
-            /* 2. ซ่อนละอองเวทมนตร์ขนาดยักษ์ (200vw x 200vh) */
-            body::before, body::after {
-                display: none !important;
-            }
-
-            /* 3. ปิดกระจกฝ้า (Blur) และเพิ่มขอบสีทองแบบนิ่งๆ แทน */
-            .main-container {
-                backdrop-filter: none !important;
-                -webkit-backdrop-filter: none !important;
-                background-color: rgba(7, 4, 2, 0.98) !important;
-                animation: none !important;
-                box-shadow: 0 5px 15px rgba(0,0,0,0.9) !important;
-                border: 1px solid var(--gold-main) !important; /* วาดเส้นขอบตรงนี้แทน */
-            }
-            
-            /* 4. ซ่อนตัวทำกรอบแสงวิ่ง (ต้นเหตุของพื้นหลังสีทอง) ปิดทิ้งไปเลย */
-            .main-container::before {
-                display: none !important;
-            }
-
-            /* 5. ปิดแอนิเมชันลูกเล่นจุกจิกทั้งหมด */
-            .corner-decor, .loading-text {
-                animation: none !important;
-            }
-        }
+        #resume-scroll-banner button:hover { filter: brightness(1.2); }
+        #resume-scroll-banner .close-banner { background: transparent; color: #8a7761; padding: 0 5px; font-size: 1rem; }
     </style>
 </head>
 <body>
