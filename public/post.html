@@ -105,7 +105,6 @@
         .btn-like:hover { background: var(--gold-main); color: #000; box-shadow: 0 0 10px rgba(212,175,55,0.4); }
         .btn-like.liked { background: var(--gold-main); color: #000; font-weight: bold; }
 
-        /* 🌟 ปุ่มบันทึกจารึก (Bookmark) */
         .btn-save-bookmark { background: rgba(0,0,0,0.4); border: 1px solid var(--text-muted); color: var(--text-muted); padding: 4px 12px; border-radius: 20px; font-family: 'Prompt', sans-serif; font-size: 0.8rem; cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; gap: 6px; }
         .btn-save-bookmark:hover { background: rgba(212, 175, 55, 0.1); border-color: var(--gold-light); color: var(--gold-light); }
         .btn-save-bookmark.saved { border-color: var(--gold-main); color: var(--gold-main); background: rgba(212, 175, 55, 0.05); }
@@ -188,25 +187,17 @@
         .modal-corner { position: absolute; width: 60px; pointer-events: none; opacity: 0.8; } .mc-top-left { top: 12px; left: 12px; transform: scaleX(-1); } .mc-top-right { top: 12px; right: 12px; } .mc-bottom-left { bottom: 12px; left: 12px; transform: scaleX(-1) scaleY(-1); } .mc-bottom-right { bottom: 12px; right: 12px; transform: scaleY(-1); }
         .modal-header { text-align: center; margin-bottom: 20px; } .modal-header h3 { color: var(--gold-light); font-size: 1.5rem; margin-bottom: 5px; } .modal-header p { color: var(--gold-dark); font-size: 0.85rem; margin: 0; }
         
-        .btn-submit-modal { 
-            background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); 
-            color: #150a03 !important; 
-            border: 1px solid #ffeba9; 
-            padding: 12px; 
-            border-radius: 25px; 
-            font-family: 'Prompt', sans-serif; 
-            font-weight: bold; 
-            font-size: 1rem; 
-            cursor: pointer; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5); 
-            transition: filter 0.2s; 
-            width: 80%; 
-            margin: 0 auto; 
-            display: block; 
-            text-align: center;
-            text-decoration: none;
-        }
+        .btn-submit-modal { background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; border: none; padding: 12px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-weight: bold; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: filter 0.2s; width: 80%; margin: 0 auto; display: block; }
         .btn-submit-modal:hover { filter: brightness(1.15); }
+
+        .form-select { width: 100%; background: rgba(0,0,0,0.6); border: 1px solid rgba(138, 99, 21, 0.5); color: #fff; padding: 12px 15px; border-radius: 6px; font-size: 1rem; margin-bottom: 20px; font-family: 'Sarabun', sans-serif; } .form-select option { background: #1a120b; }
+
+        .ghost-warning-box { background: linear-gradient(180deg, rgba(20, 9, 5, 0.8) 0%, rgba(7, 4, 2, 0.9) 100%); border: 1px solid rgba(168, 46, 46, 0.4); border-radius: 10px; padding: clamp(20px, 4vw, 30px) clamp(15px, 3vw, 20px); margin-top: 30px; text-align: center; box-shadow: inset 0 0 20px rgba(168, 46, 46, 0.05), 0 5px 15px rgba(0,0,0,0.5); }
+        .ghost-warning-box h4 { color: #ff6b6b; font-size: clamp(1.1rem, 4vw, 1.25rem); margin-bottom: 12px; }
+        .ghost-warning-box p { color: #d1bfae; font-size: clamp(0.85rem, 3vw, 0.95rem); line-height: 1.8; margin-bottom: 20px; }
+        .ghost-line { display: block; margin-bottom: 6px; }
+        .ghost-btn-group { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+        .ghost-btn-group > * { flex: 1 1 auto; min-width: 140px; text-align: center; display: flex; align-items: center; justify-content: center; }
 
         @media (max-width: 950px) { .post-layout { grid-template-columns: 1fr; } .replies-container { margin-left: 10px; border-left-width: 1px; } .comment-card.is-reply::before { width: 10px; left: -11px; } }
         @media (max-width: 768px) {
@@ -225,7 +216,7 @@
             body::before, body::after { display: none !important; }
             .main-container { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; background-color: rgba(7, 4, 2, 0.98) !important; animation: none !important; box-shadow: 0 5px 15px rgba(0,0,0,0.9) !important; border: 1px solid var(--gold-main) !important; }
             .main-container::before { display: none !important; }
-            .corner-decor, .noti-btn, .loading-text { animation: none !important; }
+            .corner-decor, .noti-btn, .loading-text, .hero-center-img { animation: none !important; }
         }
     </style>
 </head>
@@ -460,17 +451,21 @@
 
         connectTelepathy();
 
-        function broadcastAction(actionType, targetId, extraData = {}) {
-            if (telepathySocket && telepathySocket.readyState === WebSocket.OPEN) {
-                telepathySocket.send(JSON.stringify({
-                    type: actionType,
-                    targetId: targetId,
-                    ...extraData
-                }));
-            }
-        }
+        // 🌟 อาวุธลับ 1: สร้างระบบ Global Cache ให้ Users เพื่อไม่ให้โหลดซ้ำซ้อนจนพัง
+        let globalUsersCache = null;
 
         const ApiManager = {
+            async fetchUsersOnce() {
+                if (globalUsersCache) return globalUsersCache;
+                try {
+                    const response = await fetch(`${API_CONFIG.BASE_URL}/users`);
+                    if (!response.ok) return {};
+                    const usersArray = await response.json();
+                    globalUsersCache = {};
+                    usersArray.forEach(u => { globalUsersCache[u.username] = u; });
+                    return globalUsersCache;
+                } catch (e) { return {}; }
+            },
             async getPostById(id) {
                 try {
                     const response = await fetch(`${API_CONFIG.BASE_URL}/posts/${id}`);
@@ -478,16 +473,12 @@
                     return await response.json();
                 } catch (error) { return null; }
             },
+            // 🌟 อาวุธลับ 2: เปลี่ยนไปดึงเฉพาะคอมเมนต์ของกระทู้นี้ ไม่กวาดหมดทั้ง Database
             async getComments(postId) {
                 try {
-                    const response = await fetch(`${API_CONFIG.BASE_URL}/comments`);
-                    if (response.ok) {
-                        const comments = await response.json();
-                        return comments.filter(c => String(c.post_id || c.postId) === String(postId)).sort((a, b) => parseInt(a.id) - parseInt(b.id));
-                    }
-                    const response2 = await fetch(`${API_CONFIG.BASE_URL}/posts/${postId}/comments`);
-                    if (!response2.ok) return [];
-                    return await response2.json();
+                    const response = await fetch(`${API_CONFIG.BASE_URL}/posts/${postId}/comments`);
+                    if (!response.ok) return [];
+                    return await response.json();
                 } catch (error) { return []; }
             },
             async saveComment(commentData) {
@@ -556,7 +547,6 @@
             async readNotification(id) {
                 try { await fetch(`${API_CONFIG.BASE_URL}/notifications/${id}/read`, { method: 'PUT' }); } catch(e) {}
             },
-            // 🌟 ดึงข้อมูล Bookmark จาก D1 Database
             async getBookmarks() {
                 try {
                     const token = localStorage.getItem('siy_token');
@@ -569,7 +559,6 @@
                     return Array.isArray(data) ? data : [];
                 } catch (e) { return []; }
             },
-            // 🌟 บันทึก Bookmark ลง D1 Database
             async saveBookmark(postId) {
                 try {
                     const token = localStorage.getItem('siy_token');
@@ -585,7 +574,6 @@
                     return await res.json();
                 } catch (e) { return { success: false, error: 'เกิดข้อผิดพลาดในการเชื่อมต่อ' }; }
             },
-            // 🌟 ลบ Bookmark จาก D1 Database
             async removeBookmark(postId) {
                 try {
                     const token = localStorage.getItem('siy_token');
@@ -722,7 +710,6 @@
             }
         }
 
-        // 🌟 ฟังก์ชันกดบันทึก/ยกเลิก Bookmark เชื่อมโยง D1 Database อย่างสมบูรณ์
         async function toggleBookmarkAction() {
             const urlParams = new URLSearchParams(window.location.search);
             const postId = urlParams.get('id');
@@ -831,17 +818,16 @@
         async function getRoleBadgeFromAPI(username) {
             if (!username) return '<span class="role-badge role-5">เด็กวัด</span>';
             if (username.toUpperCase() === 'ADMIN') { return '<span class="role-badge role-1">ปรมัตถ์</span>'; }
-            try {
-                const res = await fetch(`${API_CONFIG.BASE_URL}/users`);
-                const usersDB = await res.json();
-                const user = usersDB.find(u => u.username === username);
-                if (user) {
-                    let role = String(user.role || '5');
-                    let rank = user.rank_name || getRoleTitleName(role);
-                    let roleClass = rank === 'ตัวละคร' ? 'role-6' : `role-${role}`;
-                    return `<span class="role-badge ${roleClass}">${rank}</span>`;
-                }
-            } catch (e) {}
+            
+            // 🌟 ใช้ Global Cache แทนการยิง API ซ้ำซ้อน
+            const usersMap = await ApiManager.fetchUsersOnce();
+            const user = usersMap[username];
+            if (user) {
+                let role = String(user.role || '5');
+                let rank = user.rank_name || getRoleTitleName(role);
+                let roleClass = rank === 'ตัวละคร' ? 'role-6' : `role-${role}`;
+                return `<span class="role-badge ${roleClass}">${rank}</span>`;
+            }
             return '<span class="role-badge role-5">เด็กวัด</span>';
         }
 
@@ -862,13 +848,11 @@
             const container = document.getElementById('commentsList');
             
             try {
-                const [comments, usersRes] = await Promise.all([
+                // 🌟 ใช้ Global Cache ดึงทีเดียวจบ
+                const [comments, usersMap] = await Promise.all([
                     ApiManager.getComments(postId),
-                    fetch(`${API_CONFIG.BASE_URL}/users`).then(r => r.ok ? r.json() : []).catch(() => [])
+                    ApiManager.fetchUsersOnce()
                 ]);
-                
-                const usersMap = {};
-                usersRes.forEach(u => { usersMap[u.username] = u; });
 
                 const savedUser = localStorage.getItem('siy_username');
                 const userType = localStorage.getItem('siy_usertype');
@@ -1190,13 +1174,15 @@
                 showCustomAlert('เขตหวงห้าม! ท่านยังไม่ได้เลือกสถานะทางเข้า', 'webboard.html'); return;
             }
 
+            // 🌟 ชาร์จ Global Cache ทันทีที่โหลดหน้าเสร็จ
+            await ApiManager.fetchUsersOnce();
+
             loadNotifications();
 
             let currentUserRole = '5'; let currentUserRank = 'เด็กวัด';
             try {
-                const userRes = await fetch(`${API_CONFIG.BASE_URL}/users`);
-                const usersDB = await userRes.json();
-                const foundUser = usersDB.find(u => u.username === savedUser);
+                const usersMap = await ApiManager.fetchUsersOnce();
+                const foundUser = usersMap[savedUser];
                 if (foundUser) {
                     currentUserRole = String(foundUser.role || '5');
                     currentUserRank = foundUser.rank_name || getRoleTitleName(currentUserRole); 
@@ -1226,7 +1212,6 @@
                 if (viewHistory.length > 5) viewHistory.pop();
                 localStorage.setItem('siy_view_history', JSON.stringify(viewHistory));
 
-                // 🌟 ตรวจสอบสถานะ Bookmark จาก D1 Database เมื่อเปิดหน้าอ่านกระทู้
                 const userBookmarks = await ApiManager.getBookmarks();
                 const isBookmarked = userBookmarks.some(b => String(b.post_id) === String(postId));
                 if (isBookmarked) {
