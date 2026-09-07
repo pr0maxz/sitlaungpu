@@ -208,7 +208,7 @@
         }
         .btn-submit-modal:hover { filter: brightness(1.15); }
 
-        @media (max-width: 950px) { .post-layout { grid-template-columns: 1fr; } .thread-stats { display: none; } }
+        @media (max-width: 950px) { .post-layout { grid-template-columns: 1fr; } .replies-container { margin-left: 10px; border-left-width: 1px; } .comment-card.is-reply::before { width: 10px; left: -11px; } }
         @media (max-width: 768px) {
             .site-title img { height: 65px !important; }
             nav { flex-wrap: nowrap !important; justify-content: flex-start; overflow-x: auto; scrollbar-width: none; border-radius: 40px; padding: 0 20px !important; height: 50px !important; }
@@ -216,6 +216,7 @@
             nav a { font-size: 0.95rem !important; flex-shrink: 0; }
         }
         @media (max-width: 600px) { .main-container { padding: 45px 20px 40px 20px !important; width: 95%; margin-top: 30px; } }
+        @media (max-width: 480px) { .ghost-btn-group { flex-direction: column; } .ghost-btn-group > * { width: 100%; max-width: 100%; flex: 1 1 100%; } }
         
         .loading-text { font-family: 'Prompt', sans-serif; color: var(--gold-main); text-align: center; padding: 40px; }
         
@@ -224,7 +225,7 @@
             body::before, body::after { display: none !important; }
             .main-container { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; background-color: rgba(7, 4, 2, 0.98) !important; animation: none !important; box-shadow: 0 5px 15px rgba(0,0,0,0.9) !important; border: 1px solid var(--gold-main) !important; }
             .main-container::before { display: none !important; }
-            .corner-decor, .noti-btn, .loading-text, .hero-center-img { animation: none !important; }
+            .corner-decor, .noti-btn, .loading-text { animation: none !important; }
         }
     </style>
 </head>
@@ -237,7 +238,7 @@
         <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="corner-decor corner-bottom-right" alt="" width="110" height="110">
 
         <header>
-            <div class="site-title"><img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019626/logo.png" alt="ศิษย์หลวงปู่"></div>
+            <div class="site-title"><img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019626/logo.png" alt="ศิษย์หลวงปู่" width="300" height="100"></div>
             <nav>
                 <a href="index.html">หน้าแรก</a>
                 <a href="reader.html">สัตยาสาบาน</a>
@@ -555,7 +556,7 @@
             async readNotification(id) {
                 try { await fetch(`${API_CONFIG.BASE_URL}/notifications/${id}/read`, { method: 'PUT' }); } catch(e) {}
             },
-            // 🌟 ดึงข้อมูล Bookmark จาก D1
+            // 🌟 ดึงข้อมูล Bookmark จาก D1 Database
             async getBookmarks() {
                 try {
                     const token = localStorage.getItem('siy_token');
@@ -568,11 +569,11 @@
                     return Array.isArray(data) ? data : [];
                 } catch (e) { return []; }
             },
-            // 🌟 บันทึก Bookmark ลง D1
+            // 🌟 บันทึก Bookmark ลง D1 Database
             async saveBookmark(postId) {
                 try {
                     const token = localStorage.getItem('siy_token');
-                    if (!token) return { success: false };
+                    if (!token) return { success: false, error: 'ไม่พบตรายางวิญญาณ' };
                     const res = await fetch(`${API_CONFIG.BASE_URL}/bookmarks`, {
                         method: 'POST',
                         headers: { 
@@ -582,9 +583,9 @@
                         body: JSON.stringify({ postId })
                     });
                     return await res.json();
-                } catch (e) { return { success: false }; }
+                } catch (e) { return { success: false, error: 'เกิดข้อผิดพลาดในการเชื่อมต่อ' }; }
             },
-            // 🌟 ลบ Bookmark จาก D1
+            // 🌟 ลบ Bookmark จาก D1 Database
             async removeBookmark(postId) {
                 try {
                     const token = localStorage.getItem('siy_token');
@@ -721,7 +722,7 @@
             }
         }
 
-        // 🌟 ฟังก์ชันกดบันทึก/ยกเลิก Bookmark ผ่าน D1 Database อย่างถูกต้อง
+        // 🌟 ฟังก์ชันกดบันทึก/ยกเลิก Bookmark เชื่อมโยง D1 Database อย่างสมบูรณ์
         async function toggleBookmarkAction() {
             const urlParams = new URLSearchParams(window.location.search);
             const postId = urlParams.get('id');
@@ -748,7 +749,7 @@
                     btn.innerHTML = '✨ บันทึกแล้ว';
                     showCustomAlert('เก็บบันทึกลงคัมภีร์ส่วนตัวเรียบร้อยแล้ว ท่านสามารถอ่านต่อได้ที่แถบด้านข้างของลานเสวนา');
                 } else {
-                    showCustomAlert('⚠️ เกิดข้อผิดพลาด ไม่สามารถบันทึกคัมภีร์ได้');
+                    showCustomAlert('⚠️ ' + (res.error || 'ไม่สามารถบันทึกคัมภีร์ได้'));
                 }
             }
         }
