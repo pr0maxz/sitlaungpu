@@ -615,7 +615,6 @@ app.post('/api/comments/:commentId/like', async (c) => {
       const now = new Date()
       const timeStr = now.getDate() + ' ' + thaiMonths[now.getMonth()] + ' ' + (now.getFullYear() + 543) + ' | ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ' น.'
       
-      // 🌟 บันทึกแจ้งเตือนโดยฝังรหัสคอมเมนต์ (#comment-...) ไปด้วย
       const targetPostId = `${comment.post_id || comment.postId}#comment-${commentId}`;
       
       await c.env.DB.prepare(
@@ -690,6 +689,35 @@ app.put('/api/notifications/:id/read', async (c) => {
       return c.json({ success: false, error: error.message }, 500)
   }
 })
+
+// 🌟 ระบบแผนที่เว็บสำหรับ SEO
+app.get('/sitemap.xml', async (c) => {
+  try {
+    const { results } = await c.env.DB.prepare("SELECT id, timestamp FROM posts ORDER BY id DESC").all();
+    
+    // ⚠️ เปลี่ยนลิงก์ด้านล่างนี้ให้เป็น URL ของเว็บคุณจริงๆ
+    const baseUrl = 'https://sitluangpu.pages.dev'; 
+    
+    let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+    xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+    
+    xml += `  <url>\n    <loc>${baseUrl}/index.html</loc>\n    <priority>1.0</priority>\n  </url>\n`;
+    xml += `  <url>\n    <loc>${baseUrl}/webboard.html</loc>\n    <priority>0.9</priority>\n  </url>\n`;
+
+    if (results) {
+      results.forEach((post: any) => {
+        xml += `  <url>\n    <loc>${baseUrl}/post.html?id=${post.id}</loc>\n    <priority>0.8</priority>\n  </url>\n`;
+      });
+    }
+    
+    xml += `</urlset>`;
+    
+    c.header('Content-Type', 'application/xml');
+    return c.text(xml);
+  } catch (e: any) {
+    return c.text('Error generating sitemap', 500);
+  }
+});
 
 app.get('/api/ws', async (c) => {
   const upgradeHeader = c.req.header('Upgrade')
