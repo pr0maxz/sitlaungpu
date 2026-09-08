@@ -23,6 +23,7 @@
             background-image: radial-gradient(circle at 50% 0%, var(--bg-glow) 0%, var(--bg-deep) 70%); 
             background-attachment: fixed; color: var(--text-light); 
             font-family: 'Sarabun', sans-serif; min-height: 100vh; display: flex; flex-direction: column; 
+            font-size: 0.85rem; 
         }
         
         h1, h2, h3, h4 { font-family: 'Prompt', sans-serif; color: var(--gold-light); margin: 0; }
@@ -30,99 +31,99 @@
         /* 💎 Header */
         .admin-header { 
             background: linear-gradient(180deg, #150a03 0%, #070402 100%); 
-            border-bottom: 1px solid var(--border-color); padding: 12px 25px; 
+            border-bottom: 1px solid var(--border-color); padding: 8px 15px; 
             display: flex; justify-content: space-between; align-items: center; 
-            box-shadow: 0 5px 20px rgba(0,0,0,0.8); width: 100%; position: sticky; top: 0; z-index: 100;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.8); width: 100%; position: sticky; top: 0; z-index: 100;
         }
-        .admin-title { display: flex; align-items: center; gap: 15px; min-width: 0; } 
-        .admin-title img { height: 35px; width: auto; flex-shrink: 0; filter: drop-shadow(0 2px 5px rgba(212,175,55,0.3)); }
-        .admin-title h3 { font-size: clamp(1rem, 2vw, 1.2rem); letter-spacing: 0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .admin-title { display: flex; align-items: center; gap: 10px; min-width: 0; } 
+        .admin-title img { height: 26px; width: auto; flex-shrink: 0; filter: drop-shadow(0 2px 5px rgba(212,175,55,0.3)); }
+        .admin-title h3 { font-size: clamp(0.85rem, 1.5vw, 1rem); letter-spacing: 0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
-        .admin-header-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+        .admin-header-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
         
         /* 💎 Layout & Sidebar */
-        .admin-layout { display: grid; grid-template-columns: 240px 1fr; flex: 1; width: 100%; max-width: 1400px; margin: 0 auto; padding: 20px; gap: 20px; }
+        .admin-layout { display: grid; grid-template-columns: 200px 1fr; flex: 1; width: 100%; max-width: 1400px; margin: 0 auto; padding: 12px; gap: 12px; }
         
         .admin-sidebar { 
             background: var(--panel-bg); border: 1px solid var(--border-color); 
-            border-radius: 12px; padding: 15px 12px; display: flex; flex-direction: column; gap: 6px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6); align-self: start; position: sticky; top: 80px;
+            border-radius: 8px; padding: 10px 8px; display: flex; flex-direction: column; gap: 4px; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.6); align-self: start; position: sticky; top: 60px;
         }
         
         .nav-btn { 
             background: transparent; border: 1px solid transparent; color: var(--text-muted); 
-            padding: 10px 15px; border-radius: 8px; font-family: 'Prompt', sans-serif; font-size: 0.9rem; 
-            text-align: left; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 10px; 
+            padding: 6px 10px; border-radius: 6px; font-family: 'Prompt', sans-serif; font-size: 0.8rem; 
+            text-align: left; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px; 
             width: 100%; white-space: nowrap; 
         }
         .nav-btn:hover { background: rgba(212, 175, 55, 0.08); color: var(--gold-light); }
-        .nav-btn.active { background: linear-gradient(90deg, rgba(212,175,55,0.15) 0%, transparent 100%); border-left: 3px solid var(--gold-main); color: var(--gold-light); font-weight: bold; padding-left: 12px; }
+        .nav-btn.active { background: linear-gradient(90deg, rgba(212,175,55,0.15) 0%, transparent 100%); border-left: 3px solid var(--gold-main); color: var(--gold-light); font-weight: bold; padding-left: 10px; }
         
         /* 💎 Main Content */
         .admin-content { min-width: 0; width: 100%; }
-        .tab-pane { display: none; width: 100%; animation: fadeIn 0.3s ease-out; } .tab-pane.active { display: block; }
+        .tab-pane { display: none; width: 100%; animation: fadeIn 0.2s ease-out; } .tab-pane.active { display: block; }
         
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
         /* 💎 Cards & Panels */
         .panel-card { 
             background: var(--card-bg); border: 1px solid var(--border-color); 
-            border-radius: 12px; padding: 25px; margin-bottom: 20px; 
-            box-shadow: 0 8px 25px rgba(0,0,0,0.7); width: 100%; position: relative; overflow: hidden;
+            border-radius: 8px; padding: 15px; margin-bottom: 12px; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.7); width: 100%; position: relative; overflow: hidden;
         }
-        .panel-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, var(--gold-dark), var(--gold-main), var(--gold-light)); opacity: 0.7; }
+        .panel-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, var(--gold-dark), var(--gold-main), var(--gold-light)); opacity: 0.7; }
         
-        .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px dashed rgba(138, 99, 21, 0.4); padding-bottom: 12px; flex-wrap: wrap; gap: 12px; width: 100%; }
-        .panel-header h3 { font-size: clamp(1.1rem, 2vw, 1.3rem); letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; }
+        .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px dashed rgba(138, 99, 21, 0.4); padding-bottom: 8px; flex-wrap: wrap; gap: 10px; width: 100%; }
+        .panel-header h3 { font-size: clamp(0.95rem, 1.5vw, 1.1rem); letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; }
         
         /* 💎 Dashboard Elements */
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; width: 100%; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 12px; width: 100%; }
         .stat-card { 
             background: linear-gradient(135deg, rgba(31, 17, 7, 0.9), rgba(10, 5, 2, 0.95)); 
-            border: 1px solid rgba(212,175,55,0.2); border-radius: 10px; padding: 20px 15px; 
-            text-align: center; box-shadow: inset 0 2px 10px rgba(0,0,0,0.5), 0 4px 8px rgba(0,0,0,0.4);
+            border: 1px solid rgba(212,175,55,0.2); border-radius: 6px; padding: 12px 10px; 
+            text-align: center; box-shadow: inset 0 2px 8px rgba(0,0,0,0.5), 0 3px 6px rgba(0,0,0,0.4);
             transition: transform 0.3s;
         }
-        .stat-card:hover { transform: translateY(-3px); border-color: var(--gold-dark); }
-        .stat-icon { font-size: 1.6rem; margin-bottom: 8px; opacity: 0.9; filter: drop-shadow(0 0 8px rgba(212,175,55,0.3)); }
-        .stat-card h4 { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 5px; font-weight: 500; } 
-        .stat-card .number { font-size: 1.8rem; color: var(--gold-light); font-weight: bold; font-family: 'Prompt', sans-serif; text-shadow: 0 0 10px rgba(212,175,55,0.4); line-height: 1; }
+        .stat-card:hover { transform: translateY(-2px); border-color: var(--gold-dark); }
+        .stat-icon { font-size: 1.2rem; margin-bottom: 4px; opacity: 0.9; filter: drop-shadow(0 0 5px rgba(212,175,55,0.3)); }
+        .stat-card h4 { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px; font-weight: 500; } 
+        .stat-card .number { font-size: 1.4rem; color: var(--gold-light); font-weight: bold; font-family: 'Prompt', sans-serif; text-shadow: 0 0 8px rgba(212,175,55,0.4); line-height: 1; }
 
-        .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
-        .dashboard-col { display: flex; flex-direction: column; gap: 20px; }
+        .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: start; }
+        .dashboard-col { display: flex; flex-direction: column; gap: 12px; }
         
-        .progress-section { width: 100%; margin-bottom: 12px; }
-        .progress-label { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--gold-light); margin-bottom: 6px; font-family: 'Prompt', sans-serif; }
-        .progress-track { width: 100%; height: 6px; background: rgba(0,0,0,0.5); border-radius: 3px; overflow: hidden; border: 1px solid rgba(138, 99, 21, 0.3); }
-        .progress-fill { height: 100%; border-radius: 3px; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); }
+        .progress-section { width: 100%; margin-bottom: 8px; }
+        .progress-label { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--gold-light); margin-bottom: 4px; font-family: 'Prompt', sans-serif; }
+        .progress-track { width: 100%; height: 4px; background: rgba(0,0,0,0.5); border-radius: 2px; overflow: hidden; border: 1px solid rgba(138, 99, 21, 0.3); }
+        .progress-fill { height: 100%; border-radius: 2px; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); }
         
-        .list-item { padding: 10px 12px; border-bottom: 1px solid rgba(138, 99, 21, 0.15); transition: background 0.2s; border-radius: 6px; display: flex; flex-direction: column; gap: 3px; }
+        .list-item { padding: 6px 8px; border-bottom: 1px solid rgba(138, 99, 21, 0.15); transition: background 0.2s; border-radius: 4px; display: flex; flex-direction: column; gap: 2px; }
         .list-item:hover { background: rgba(212, 175, 55, 0.05); }
         .list-item:last-child { border-bottom: none; }
-        .list-title { font-family: 'Prompt', sans-serif; color: var(--gold-light); font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; text-decoration: none; }
+        .list-title { font-family: 'Prompt', sans-serif; color: var(--gold-light); font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; text-decoration: none; }
         .list-title:hover { color: #fff; text-decoration: underline; }
-        .list-meta { font-size: 0.75rem; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center; }
+        .list-meta { font-size: 0.65rem; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center; }
         
-        .user-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-bottom: 1px solid rgba(138, 99, 21, 0.15); border-radius: 6px; transition: 0.2s; }
+        .user-item { display: flex; align-items: center; justify-content: space-between; padding: 6px 8px; border-bottom: 1px solid rgba(138, 99, 21, 0.15); border-radius: 4px; transition: 0.2s; }
         .user-item:hover { background: rgba(212, 175, 55, 0.05); }
         .user-item:last-child { border-bottom: none; }
-        .user-info { display: flex; align-items: center; gap: 8px; }
-        .karma-score { font-family: 'Prompt', sans-serif; font-weight: bold; color: var(--gold-main); font-size: 1rem; text-shadow: 0 0 10px rgba(212,175,55,0.4); }
+        .user-info { display: flex; align-items: center; gap: 6px; }
+        .karma-score { font-family: 'Prompt', sans-serif; font-weight: bold; color: var(--gold-main); font-size: 0.85rem; text-shadow: 0 0 8px rgba(212,175,55,0.4); }
 
-        /* 💎 Tables (🌟 นำคำสั่ง overflow: hidden ที่ทำปุ่มหายออก) */
-        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 8px; border: 1px solid rgba(138, 99, 21, 0.2); margin-bottom: 15px; background: rgba(0,0,0,0.3); }
-        .data-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.88rem; text-align: left; min-width: 850px; table-layout: fixed; }
-        .data-table th, .data-table td { padding: 12px 14px; border-bottom: 1px solid rgba(138, 99, 21, 0.1); vertical-align: middle; }
-        .data-table th { background: rgba(31, 17, 7, 0.95); color: var(--gold-main); font-family: 'Prompt', sans-serif; font-weight: 600; font-size: 0.85rem; white-space: nowrap; letter-spacing: 0.5px; position: sticky; top: 0; z-index: 10; }
+        /* 💎 Tables (🌟 แก้ไขความกว้างและห้าม Wrap) */
+        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 6px; border: 1px solid rgba(138, 99, 21, 0.2); margin-bottom: 10px; background: rgba(0,0,0,0.3); }
+        .data-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.75rem; text-align: left; min-width: 850px; table-layout: fixed; } /* ขยายฐานนิดนึงกันพัง */
+        .data-table th, .data-table td { padding: 6px 8px; border-bottom: 1px solid rgba(138, 99, 21, 0.1); vertical-align: middle; }
+        .data-table th { background: rgba(31, 17, 7, 0.95); color: var(--gold-main); font-family: 'Prompt', sans-serif; font-weight: 600; font-size: 0.75rem; white-space: nowrap; letter-spacing: 0.5px; position: sticky; top: 0; z-index: 10; }
         .data-table tbody tr { transition: background 0.2s; }
         .data-table tbody tr:hover { background: rgba(212, 175, 55, 0.06); }
         .data-table tbody tr:last-child td { border-bottom: none; }
         
         /* 💎 Buttons */
-        .btn { padding: 6px 14px; border-radius: 20px; font-family: 'Prompt', sans-serif; font-size: 0.8rem; font-weight: 500; cursor: pointer; border: none; transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 5px; white-space: nowrap; box-shadow: 0 2px 6px rgba(0,0,0,0.4); }
+        .btn { padding: 4px 10px; border-radius: 12px; font-family: 'Prompt', sans-serif; font-size: 0.7rem; font-weight: 500; cursor: pointer; border: none; transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 4px; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.4); }
         .btn:active { transform: scale(0.95); }
         .btn-gold { background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; font-weight: 700; border: 1px solid #ffeba9; } 
-        .btn-gold:hover { filter: brightness(1.15); box-shadow: 0 4px 12px rgba(212,175,55,0.4); }
+        .btn-gold:hover { filter: brightness(1.15); box-shadow: 0 3px 8px rgba(212,175,55,0.4); }
         .btn-edit { background: rgba(212, 175, 55, 0.1); color: var(--gold-light); border: 1px solid var(--gold-dark); } 
         .btn-edit:hover { background: var(--gold-main); color: #150a03; border-color: var(--gold-light); }
         .btn-delete { background: rgba(168, 46, 46, 0.15); color: #ff8c8c; border: 1px solid rgba(168, 46, 46, 0.6); } 
@@ -130,66 +131,65 @@
         .btn-pin { background: rgba(115, 201, 144, 0.15); color: #9ce8b9; border: 1px solid rgba(115, 201, 144, 0.6); } 
         .btn-pin:hover { background: var(--success-color); color: #000; border-color: #d1f2dd; }
         
-        /* 🌟 ปุ่มเลื่อนอันดับ */
-        .btn-reorder { background: transparent; color: var(--text-muted); border: 1px dashed rgba(212, 175, 55, 0.3); width: 26px; height: 26px; padding: 0; font-size: 0.7rem; border-radius: 6px; box-shadow: none; display: inline-flex; justify-content: center; align-items: center; }
+        .btn-reorder { background: transparent; color: var(--text-muted); border: 1px dashed rgba(212, 175, 55, 0.3); width: 20px; height: 20px; padding: 0; font-size: 0.6rem; border-radius: 4px; box-shadow: none; display: inline-flex; justify-content: center; align-items: center; }
         .btn-reorder:hover { background: rgba(212, 175, 55, 0.2); color: var(--gold-light); border-style: solid; border-color: var(--gold-main); }
         
         /* 💎 Badges */
-        .role-badge, .role-tag { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-family: 'Prompt', sans-serif; font-weight: 600; letter-spacing: 0.5px; vertical-align: middle; box-shadow: 0 2px 4px rgba(0,0,0,0.6); }
-        .role-1 { background: linear-gradient(135deg, #f5d77f, #d4af37, #8a6315); color: #1a0f02 !important; border: 1px solid #ffeea8; box-shadow: 0 0 10px rgba(212,175,55,0.6), inset 0 0 6px rgba(255,255,255,0.6); } 
+        .role-badge, .role-tag { display: inline-block; padding: 1px 6px; border-radius: 12px; font-size: 0.65rem; font-family: 'Prompt', sans-serif; font-weight: 600; letter-spacing: 0.5px; vertical-align: middle; box-shadow: 0 2px 4px rgba(0,0,0,0.6); }
+        .role-1 { background: linear-gradient(135deg, #f5d77f, #d4af37, #8a6315); color: #1a0f02 !important; border: 1px solid #ffeea8; box-shadow: 0 0 8px rgba(212,175,55,0.6), inset 0 0 4px rgba(255,255,255,0.6); } 
         .role-2 { background: linear-gradient(135deg, #4a1c60, #240b36); color: #e5b3ff !important; border: 1px solid #9b59b6; } 
         .role-3 { background: linear-gradient(135deg, #6c7a86, #262c30); color: #d6dfe5 !important; border: 1px solid #94a6b5; } 
         .role-4 { background: linear-gradient(135deg, #8a4818, #422008); color: #e8a67c !important; border: 1px solid #b86226; } 
-        .role-5 { background: linear-gradient(135deg, #4a3b22, #241c0e); color: #e8cd9c !important; border: 1px solid #8a6315; box-shadow: inset 0 0 8px rgba(255,255,255,0.05); } 
-        .role-6 { background: linear-gradient(135deg, #27ae60, #145a32); color: #abebc6 !important; border: 1px solid #2ecc71; box-shadow: 0 0 8px rgba(46,204,113,0.5); } 
+        .role-5 { background: linear-gradient(135deg, #4a3b22, #241c0e); color: #e8cd9c !important; border: 1px solid #8a6315; box-shadow: inset 0 0 6px rgba(255,255,255,0.05); } 
+        .role-6 { background: linear-gradient(135deg, #27ae60, #145a32); color: #abebc6 !important; border: 1px solid #2ecc71; box-shadow: 0 0 6px rgba(46,204,113,0.5); } 
         
-        .admin-badge { background: rgba(115, 201, 144, 0.15); border: 1px solid var(--success-dark); color: var(--success-color); padding: 3px 8px; border-radius: 20px; font-size: 0.7rem; font-family: 'Prompt', sans-serif; white-space: nowrap; font-weight: bold; }
+        .admin-badge { background: rgba(115, 201, 144, 0.15); border: 1px solid var(--success-dark); color: var(--success-color); padding: 1px 6px; border-radius: 12px; font-size: 0.65rem; font-family: 'Prompt', sans-serif; white-space: nowrap; font-weight: bold; }
 
         /* 💎 Forms & Filters */
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; width: 100%; }
-        .form-group { margin-bottom: 15px; width: 100%; } 
-        .form-group label { display: block; color: var(--gold-light); font-size: 0.85rem; margin-bottom: 6px; font-family: 'Prompt', sans-serif; font-weight: 500; }
-        .form-control { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid rgba(138, 99, 21, 0.4); color: #fff; padding: 10px 14px; border-radius: 8px; font-family: 'Sarabun', sans-serif; font-size: 0.95rem; transition: all 0.3s; }
-        .form-control:focus { outline: none; border-color: var(--gold-main); background: rgba(0,0,0,0.8); box-shadow: 0 0 8px rgba(212,175,55,0.2); }
-        .form-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23d4af37' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 35px; }
-        .form-select option { background: #1a120b; color: #d1bfae; padding: 8px; }
-        textarea.form-control { resize: vertical; min-height: 90px; line-height: 1.5; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; width: 100%; }
+        .form-group { margin-bottom: 12px; width: 100%; } 
+        .form-group label { display: block; color: var(--gold-light); font-size: 0.75rem; margin-bottom: 4px; font-family: 'Prompt', sans-serif; font-weight: 500; }
+        .form-control { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid rgba(138, 99, 21, 0.4); color: #fff; padding: 6px 10px; border-radius: 6px; font-family: 'Sarabun', sans-serif; font-size: 0.8rem; transition: all 0.3s; }
+        .form-control:focus { outline: none; border-color: var(--gold-main); background: rgba(0,0,0,0.8); box-shadow: 0 0 6px rgba(212,175,55,0.2); }
+        .form-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' fill='%23d4af37' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; padding-right: 25px; }
+        .form-select option { background: #1a120b; color: #d1bfae; padding: 4px; }
+        textarea.form-control { resize: vertical; min-height: 60px; line-height: 1.4; }
 
-        .filter-toolbar { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; background: rgba(10,5,2,0.6); padding: 12px; border-radius: 10px; border: 1px dashed rgba(212,175,55,0.2); }
-        .search-input { flex: 2; min-width: 180px; padding: 8px 16px; border-radius: 20px; border: 1px solid var(--gold-dark); background: rgba(0,0,0,0.6); color: #fff; font-family: 'Sarabun', sans-serif; outline: none; transition: 0.3s; font-size: 0.9rem; }
-        .search-input:focus { border-color: var(--gold-main); box-shadow: 0 0 8px rgba(212,175,55,0.2); }
-        .filter-select { flex: 1; min-width: 150px; padding: 8px 14px; border-radius: 20px; border: 1px solid var(--gold-dark); background: rgba(0,0,0,0.6); color: var(--gold-light); font-family: 'Sarabun', sans-serif; outline: none; font-size: 0.9rem; }
+        .filter-toolbar { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; background: rgba(10,5,2,0.6); padding: 8px; border-radius: 6px; border: 1px dashed rgba(212,175,55,0.2); }
+        .search-input { flex: 2; min-width: 140px; padding: 4px 12px; border-radius: 15px; border: 1px solid var(--gold-dark); background: rgba(0,0,0,0.6); color: #fff; font-family: 'Sarabun', sans-serif; outline: none; transition: 0.3s; font-size: 0.75rem; }
+        .search-input:focus { border-color: var(--gold-main); box-shadow: 0 0 6px rgba(212,175,55,0.2); }
+        .filter-select { flex: 1; min-width: 120px; padding: 4px 10px; border-radius: 15px; border: 1px solid var(--gold-dark); background: rgba(0,0,0,0.6); color: var(--gold-light); font-family: 'Sarabun', sans-serif; outline: none; font-size: 0.75rem; }
 
         /* 💎 Pagination */
-        .pagination { display: flex; justify-content: center; align-items: center; gap: 6px; margin-top: 15px; flex-wrap: wrap; }
-        .page-btn { padding: 6px 12px; background: rgba(0,0,0,0.6); border: 1px solid rgba(138, 99, 21, 0.4); border-radius: 6px; color: var(--gold-light); cursor: pointer; transition: 0.3s; font-family: 'Prompt', sans-serif; font-size: 0.85rem; }
+        .pagination { display: flex; justify-content: center; align-items: center; gap: 4px; margin-top: 10px; flex-wrap: wrap; }
+        .page-btn { padding: 4px 8px; background: rgba(0,0,0,0.6); border: 1px solid rgba(138, 99, 21, 0.4); border-radius: 4px; color: var(--gold-light); cursor: pointer; transition: 0.3s; font-family: 'Prompt', sans-serif; font-size: 0.75rem; }
         .page-btn:hover:not(:disabled) { background: rgba(212,175,55,0.15); border-color: var(--gold-main); color: #fff; }
         .page-btn.active { background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; font-weight: bold; border-color: #ffeba9; }
         .page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         
         /* 💎 Modals */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(7, 4, 2, 0.95); z-index: 1000; justify-content: center; align-items: center; padding: 15px; backdrop-filter: blur(4px); } .modal-overlay.active { display: flex; animation: fadeIn 0.2s; }
-        .modal-box { background: linear-gradient(135deg, #1f1107, #0a0603); border: 1px solid var(--gold-main); border-radius: 12px; width: 100%; max-width: 500px; padding: 30px 25px; position: relative; box-shadow: 0 15px 40px rgba(0,0,0,0.9), inset 0 0 15px rgba(212,175,55,0.1); max-height: 90vh; overflow-y: auto; }
-        .modal-box::-webkit-scrollbar { width: 5px; } .modal-box::-webkit-scrollbar-thumb { background: var(--gold-dark); border-radius: 3px; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(7, 4, 2, 0.95); z-index: 1000; justify-content: center; align-items: center; padding: 15px; backdrop-filter: blur(3px); } .modal-overlay.active { display: flex; animation: fadeIn 0.2s; }
+        .modal-box { background: linear-gradient(135deg, #1f1107, #0a0603); border: 1px solid var(--gold-main); border-radius: 8px; width: 100%; max-width: 450px; padding: 20px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.9), inset 0 0 10px rgba(212,175,55,0.1); max-height: 90vh; overflow-y: auto; }
+        .modal-box::-webkit-scrollbar { width: 4px; } .modal-box::-webkit-scrollbar-thumb { background: var(--gold-dark); border-radius: 2px; }
         
         /* 📱 Responsive Design */
         @media (max-width: 992px) { 
-            .admin-layout { grid-template-columns: 1fr; padding: 15px; gap: 15px; } 
+            .admin-layout { grid-template-columns: 1fr; padding: 8px; gap: 8px; } 
             .dashboard-grid { grid-template-columns: 1fr; }
-            .admin-sidebar { flex-direction: row; overflow-x: auto; padding: 10px; gap: 8px; white-space: nowrap; border: 1px solid var(--border-color); position: relative; top: 0; border-radius: 10px; } 
+            .admin-sidebar { flex-direction: row; overflow-x: auto; padding: 8px; gap: 6px; white-space: nowrap; border: 1px solid var(--border-color); position: relative; top: 0; border-radius: 6px; } 
             .admin-sidebar::-webkit-scrollbar { display: none; }
-            .nav-btn { padding: 8px 12px; font-size: 0.85rem; width: auto; flex-shrink: 0; justify-content: center; } 
+            .nav-btn { padding: 6px 10px; font-size: 0.75rem; width: auto; flex-shrink: 0; justify-content: center; } 
         }
         @media (max-width: 600px) {
-            .admin-header { padding: 10px 15px; flex-direction: column; align-items: flex-start; gap: 10px; }
-            .admin-header-actions { width: 100%; justify-content: space-between; gap: 8px; }
-            .admin-title img { height: 28px; }
-            .panel-card { padding: 15px 12px; }
+            .admin-header { padding: 8px 12px; flex-direction: column; align-items: flex-start; gap: 6px; }
+            .admin-header-actions { width: 100%; justify-content: space-between; gap: 6px; }
+            .admin-title img { height: 22px; }
+            .panel-card { padding: 12px 10px; }
             .filter-toolbar { flex-direction: column; }
             .search-input, .filter-select { width: 100%; min-width: 100%; }
-            .data-table th, .data-table td { padding: 8px 10px; font-size: 0.8rem; }
-            .btn { padding: 5px 10px; font-size: 0.75rem; }
-            .modal-box { padding: 20px 15px; }
+            .data-table th, .data-table td { padding: 4px 6px; font-size: 0.7rem; }
+            .btn { padding: 3px 8px; font-size: 0.65rem; }
+            .modal-box { padding: 15px 12px; }
         }
     </style>
 </head>
@@ -202,7 +202,7 @@
         </div>
         <div class="admin-header-actions">
             <span class="admin-badge" id="stat-api-mode">🛡️ API Mode</span>
-            <span id="currentAdminName" style="color: var(--gold-light); font-weight: bold; font-family: 'Prompt', sans-serif; font-size: 0.85rem;"></span>
+            <span id="currentAdminName" style="color: var(--gold-light); font-weight: bold; font-family: 'Prompt', sans-serif; font-size: 0.75rem;"></span>
             <a href="index.html" class="btn btn-edit">เว็บหลัก ↗</a>
             <button onclick="handleAdminLogout()" class="btn btn-delete">ออกจากระบบ</button>
         </div>
@@ -241,7 +241,7 @@
                     <div class="stat-card">
                         <div class="stat-icon">🟢</div>
                         <h4>สถานะเซิร์ฟเวอร์</h4>
-                        <div class="number" style="font-size: 1.1rem; margin-top: 8px; color: var(--success-color);">ออนไลน์ปกติ</div>
+                        <div class="number" style="font-size: 0.95rem; margin-top: 6px; color: var(--success-color);">ออนไลน์ปกติ</div>
                     </div>
                 </div>
 
@@ -258,36 +258,36 @@
                                 <div class="progress-track"><div class="progress-fill" id="stat-cat2-bar" style="width: 0%; background: #ffb17a;"></div></div>
                             </div>
                             
-                            <hr style="border: 0; border-top: 1px dashed rgba(138, 99, 21, 0.4); margin: 20px 0;">
+                            <hr style="border: 0; border-top: 1px dashed rgba(138, 99, 21, 0.4); margin: 12px 0;">
                             
-                            <div class="panel-header" style="margin-bottom: 12px; border:none; padding:0;"><h3>⚡ คีย์ลัดการจัดการด่วน</h3></div>
-                            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <div class="panel-header" style="margin-bottom: 8px; border:none; padding:0;"><h3>⚡ คีย์ลัดด่วน</h3></div>
+                            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
                                 <button class="btn btn-gold" onclick="openPostModal()">+ สลักกระทู้</button>
                                 <button class="btn btn-gold" onclick="openUserModal()">+ รับศิษย์ใหม่</button>
-                                <button class="btn btn-edit" onclick="resetDefaultMockData()" style="margin-left: auto;">🔄 รีเซ็ตระบบ</button>
+                                <button class="btn btn-edit" onclick="resetDefaultMockData()" style="margin-left: auto;">🔄 รีเซ็ต</button>
                             </div>
                         </div>
 
                         <div class="panel-card" style="margin-bottom: 0;">
                             <div class="panel-header"><h3>📝 ความเคลื่อนไหวล่าสุด</h3></div>
                             <div id="latest-posts-container" style="display: flex; flex-direction: column;">
-                                <div style="text-align: center; color: var(--text-muted); padding: 20px;">กำลังอัญเชิญข้อมูล...</div>
+                                <div style="text-align: center; color: var(--text-muted); padding: 10px;">กำลังอัญเชิญข้อมูล...</div>
                             </div>
                         </div>
                     </div>
 
                     <div class="dashboard-col">
                         <div class="panel-card" style="margin-bottom: 0;">
-                            <div class="panel-header"><h3>🏆 ทำเนียบผู้มีบารมี (Top Karma)</h3></div>
+                            <div class="panel-header"><h3>🏆 ทำเนียบผู้มีบารมี</h3></div>
                             <div id="top-users-container" style="display: flex; flex-direction: column;">
-                                <div style="text-align: center; color: var(--text-muted); padding: 20px;">กำลังอัญเชิญข้อมูล...</div>
+                                <div style="text-align: center; color: var(--text-muted); padding: 10px;">กำลังอัญเชิญข้อมูล...</div>
                             </div>
                         </div>
 
                         <div class="panel-card" style="margin-bottom: 0;">
-                            <div class="panel-header"><h3 style="color: #ffb17a;">🔥 คัมภีร์ยอดฮิต (Top Views)</h3></div>
+                            <div class="panel-header"><h3 style="color: #ffb17a;">🔥 คัมภีร์ยอดฮิต</h3></div>
                             <div id="popular-posts-container" style="display: flex; flex-direction: column;">
-                                <div style="text-align: center; color: var(--text-muted); padding: 20px;">กำลังอัญเชิญข้อมูล...</div>
+                                <div style="text-align: center; color: var(--text-muted); padding: 10px;">กำลังอัญเชิญข้อมูล...</div>
                             </div>
                         </div>
                     </div>
@@ -312,39 +312,38 @@
                     </div>
 
                     <div id="section-cat1">
-                        <h4 style="margin-bottom: 10px; margin-top: 10px; color: var(--gold-main); font-size: 1rem; border-left: 3px solid var(--gold-main); padding-left: 8px;">หมวดหมู่: นิยาย "สัตยาสาบาน"</h4>
-                        <div class="table-responsive" style="margin-bottom: 10px;">
+                        <h4 style="margin-bottom: 6px; margin-top: 8px; color: var(--gold-main); font-size: 0.85rem; border-left: 2px solid var(--gold-main); padding-left: 6px;">หมวดหมู่: นิยาย "สัตยาสาบาน"</h4>
+                        <div class="table-responsive" style="margin-bottom: 8px;">
                             <table class="data-table">
                                 <thead>
                                     <tr>
-                                        <!-- 🌟 ปรับขนาดคอลัมน์ให้เผื่อพื้นที่ปุ่มแล้ว -->
-                                        <th style="width: 10%;">รหัสอ้างอิง</th>
-                                        <th style="width: 35%;">หัวข้อเรื่อง</th>
-                                        <th style="width: 15%;">สถานะ</th>
-                                        <th style="width: 15%;">ผู้เขียน</th>
-                                        <th style="width: 25%; min-width: 270px;">จัดการ</th>
+                                        <th style="width: 12%;">รหัสอ้างอิง</th>
+                                        <th style="width: 38%;">หัวข้อเรื่อง</th>
+                                        <th style="width: 12%;">สถานะ</th>
+                                        <th style="width: 13%;">ผู้เขียน</th>
+                                        <th style="width: 25%; min-width: 220px;">จัดการ</th>
                                     </tr>
                                 </thead>
-                                <tbody id="posts-table-body-cat1"><tr><td colspan="5" style="text-align:center; padding: 20px;">กำลังอัญเชิญข้อมูล...</td></tr></tbody>
+                                <tbody id="posts-table-body-cat1"><tr><td colspan="5" style="text-align:center; padding: 15px;">กำลังอัญเชิญข้อมูล...</td></tr></tbody>
                             </table>
                         </div>
-                        <div id="postPaginationCat1" class="pagination" style="margin-bottom: 25px;"></div>
+                        <div id="postPaginationCat1" class="pagination" style="margin-bottom: 15px;"></div>
                     </div>
 
                     <div id="section-cat2">
-                        <h4 style="margin-bottom: 10px; color: var(--gold-main); font-size: 1rem; border-left: 3px solid var(--gold-main); padding-left: 8px;">หมวดหมู่: คุยกับศิษย์หลวงปู่</h4>
+                        <h4 style="margin-bottom: 6px; color: var(--gold-main); font-size: 0.85rem; border-left: 2px solid var(--gold-main); padding-left: 6px;">หมวดหมู่: คุยกับศิษย์หลวงปู่</h4>
                         <div class="table-responsive">
                             <table class="data-table">
                                 <thead>
                                     <tr>
-                                        <th style="width: 10%;">รหัสอ้างอิง</th>
-                                        <th style="width: 35%;">หัวข้อเรื่อง</th>
-                                        <th style="width: 15%;">สถานะ</th>
-                                        <th style="width: 15%;">ผู้เขียน</th>
-                                        <th style="width: 25%; min-width: 270px;">จัดการ</th>
+                                        <th style="width: 12%;">รหัสอ้างอิง</th>
+                                        <th style="width: 38%;">หัวข้อเรื่อง</th>
+                                        <th style="width: 12%;">สถานะ</th>
+                                        <th style="width: 13%;">ผู้เขียน</th>
+                                        <th style="width: 25%; min-width: 220px;">จัดการ</th>
                                     </tr>
                                 </thead>
-                                <tbody id="posts-table-body-cat2"><tr><td colspan="5" style="text-align:center; padding: 20px;">กำลังอัญเชิญข้อมูล...</td></tr></tbody>
+                                <tbody id="posts-table-body-cat2"><tr><td colspan="5" style="text-align:center; padding: 15px;">กำลังอัญเชิญข้อมูล...</td></tr></tbody>
                             </table>
                         </div>
                         <div id="postPaginationCat2" class="pagination"></div>
@@ -386,17 +385,18 @@
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th style="width: 8%;">ลำดับ</th>
+                                    <!-- 🌟 จัดสรรพื้นที่คอลัมน์ใหม่ให้ปุ่มจัดการมีที่อยู่ -->
+                                    <th style="width: 7%;">ลำดับ</th>
                                     <th style="width: 18%;">นามแฝง (Username)</th>
-                                    <th style="width: 15%;">รหัสผ่านลับ</th>
+                                    <th style="width: 14%;">รหัสผ่านลับ</th>
                                     <th style="width: 12%;">ระดับขั้น</th>
-                                    <th style="width: 12%;">แต้มบุญ</th>
-                                    <th style="width: 15%;">ใช้งานล่าสุด</th>
-                                    <th style="width: 8%; text-align: center;">จัดเรียง</th>
-                                    <th style="width: 12%; min-width: 180px;">จัดการ</th>
+                                    <th style="width: 9%;">แต้มบุญ</th>
+                                    <th style="width: 13%;">ใช้งานล่าสุด</th>
+                                    <th style="width: 7%; text-align: center;">จัดเรียง</th>
+                                    <th style="width: 20%; min-width: 150px;">จัดการ</th>
                                 </tr>
                             </thead>
-                            <tbody id="users-table-body"><tr><td colspan="8" style="text-align:center; padding: 20px;">กำลังอัญเชิญข้อมูล...</td></tr></tbody>
+                            <tbody id="users-table-body"><tr><td colspan="8" style="text-align:center; padding: 15px;">กำลังอัญเชิญข้อมูล...</td></tr></tbody>
                         </table>
                     </div>
                     <div id="userPagination" class="pagination"></div>
@@ -419,10 +419,10 @@
                                     <th style="width: 12%;">ประเภท</th>
                                     <th style="width: 15%;">รหัสอ้างอิง (ID)</th>
                                     <th style="width: 15%;">เวลาที่แจ้ง</th>
-                                    <th style="width: 18%; min-width: 200px;">จัดการ</th>
+                                    <th style="width: 18%; min-width: 150px;">จัดการ</th>
                                 </tr>
                             </thead>
-                            <tbody id="reports-table-body"><tr><td colspan="6" style="text-align:center; padding: 20px;">กำลังอัญเชิญข้อมูล...</td></tr></tbody>
+                            <tbody id="reports-table-body"><tr><td colspan="6" style="text-align:center; padding: 15px;">กำลังอัญเชิญข้อมูล...</td></tr></tbody>
                         </table>
                     </div>
                 </div>
@@ -430,7 +430,7 @@
 
             <!-- 🌟 Tab CMS Index -->
             <div id="tab-cms-index" class="tab-pane">
-                <div class="panel-card" style="max-width: 700px;">
+                <div class="panel-card" style="max-width: 600px;">
                     <div class="panel-header"><h3>🏠 ปรับแต่งหน้าแรก (Hero Section)</h3></div>
                     <form id="hero-cms-form" onsubmit="saveHeroCMS(event)">
                         <div class="form-group">
@@ -455,8 +455,8 @@
                                 <input type="text" id="cms-hero-btn-url" class="form-control" placeholder="เช่น webboard.html" required>
                             </div>
                         </div>
-                        <hr style="border: 0; border-top: 1px dashed rgba(138, 99, 21, 0.4); margin: 20px 0;">
-                        <button type="submit" class="btn btn-gold" style="width: 100%; padding: 10px; font-size: 0.95rem;">💾 บันทึกการเปลี่ยนแปลง</button>
+                        <hr style="border: 0; border-top: 1px dashed rgba(138, 99, 21, 0.4); margin: 15px 0;">
+                        <button type="submit" class="btn btn-gold" style="width: 100%; padding: 8px; font-size: 0.85rem;">💾 บันทึกการเปลี่ยนแปลง</button>
                     </form>
                 </div>
             </div>
@@ -467,7 +467,7 @@
     <!-- 🔮 Modals -->
     <div class="modal-overlay" id="postModal">
         <div class="modal-box">
-            <h3 id="postModalTitle" style="margin-bottom: 15px; text-align: center; font-size: 1.2rem;">เพิ่มกระทู้ใหม่</h3>
+            <h3 id="postModalTitle" style="margin-bottom: 12px; text-align: center; font-size: 1.05rem;">เพิ่มกระทู้ใหม่</h3>
             <form id="postForm" onsubmit="submitPostForm(event)">
                 <input type="hidden" id="edit-post-id">
                 <input type="hidden" id="edit-post-pinned">
@@ -480,8 +480,8 @@
                 </div>
                 <div class="form-group"><label>หัวข้อเรื่อง</label><input type="text" id="edit-post-title" class="form-control" required></div>
                 <div class="form-group"><label>ผู้เขียน</label><input type="text" id="edit-post-author" class="form-control" required></div>
-                <div class="form-group"><label>เนื้อหา (รองรับเว้นบรรทัด)</label><textarea id="edit-post-content" class="form-control" rows="5" required></textarea></div>
-                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                <div class="form-group"><label>เนื้อหา (รองรับเว้นบรรทัด)</label><textarea id="edit-post-content" class="form-control" rows="4" required></textarea></div>
+                <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 15px;">
                     <button type="button" class="btn btn-edit" onclick="closeModal('postModal')">ยกเลิก</button>
                     <button type="submit" class="btn btn-gold" id="btnSavePost">บันทึกข้อมูล</button>
                 </div>
@@ -490,8 +490,8 @@
     </div>
 
     <div class="modal-overlay" id="userModal">
-        <div class="modal-box" style="max-width: 400px;">
-            <h3 id="userModalTitle" style="margin-bottom: 15px; text-align: center; font-size: 1.2rem;">เพิ่มสมาชิกใหม่</h3>
+        <div class="modal-box" style="max-width: 360px;">
+            <h3 id="userModalTitle" style="margin-bottom: 12px; text-align: center; font-size: 1.05rem;">เพิ่มสมาชิกใหม่</h3>
             <form id="userForm" onsubmit="submitUserForm(event)">
                 <input type="hidden" id="edit-user-old-username">
                 <div class="form-group"><label>นามแฝง (Username)</label><input type="text" id="edit-user-name" class="form-control" required></div>
@@ -507,7 +507,7 @@
                         <option value="1">ปรมัตถ์ (แอดมิน)</option>
                     </select>
                 </div>
-                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 15px;">
                     <button type="button" class="btn btn-edit" onclick="closeModal('userModal')">ยกเลิก</button>
                     <button type="submit" class="btn btn-gold" id="btnSaveUser">บันทึกข้อมูล</button>
                 </div>
@@ -516,20 +516,20 @@
     </div>
 
     <div class="modal-overlay" id="customAlertModal" style="z-index: 9999;">
-        <div class="modal-box" style="max-width: 320px; text-align: center; padding: 30px 25px;">
-            <h3 style="font-size: 1.2rem; margin-bottom: 12px;">ประกาศแจ้งเตือน</h3>
-            <p id="customAlertMessage" style="color: #e2d4c3; font-size: 0.9rem; margin-bottom: 20px; line-height: 1.5;"></p>
-            <button type="button" class="btn btn-gold" onclick="closeModal('customAlertModal')" style="width: 100%; padding: 10px;">รับทราบ</button>
+        <div class="modal-box" style="max-width: 280px; text-align: center; padding: 20px 15px;">
+            <h3 style="font-size: 1rem; margin-bottom: 8px;">ประกาศแจ้งเตือน</h3>
+            <p id="customAlertMessage" style="color: #e2d4c3; font-size: 0.8rem; margin-bottom: 15px; line-height: 1.4;"></p>
+            <button type="button" class="btn btn-gold" onclick="closeModal('customAlertModal')" style="width: 100%; padding: 6px;">รับทราบ</button>
         </div>
     </div>
 
     <div class="modal-overlay" id="customConfirmModal" style="z-index: 9999;">
-        <div class="modal-box" style="max-width: 340px; text-align: center; padding: 30px 25px;">
-            <h3 style="font-size: 1.2rem; margin-bottom: 12px; color: var(--danger-color);">⚠️ ยืนยันการดำเนินการ</h3>
-            <p id="customConfirmMessage" style="color: #e2d4c3; font-size: 0.9rem; margin-bottom: 25px; line-height: 1.5;"></p>
-            <div style="display: flex; gap: 10px; justify-content: center;">
-                <button type="button" class="btn btn-edit" onclick="closeModal('customConfirmModal')" style="width: 50%; padding: 8px;">ถอยกลับ</button>
-                <button type="button" class="btn btn-delete" id="customConfirmBtn" style="width: 50%; padding: 8px;">ยืนยันลบ</button>
+        <div class="modal-box" style="max-width: 300px; text-align: center; padding: 20px 15px;">
+            <h3 style="font-size: 1rem; margin-bottom: 8px; color: var(--danger-color);">⚠️ ยืนยันการดำเนินการ</h3>
+            <p id="customConfirmMessage" style="color: #e2d4c3; font-size: 0.8rem; margin-bottom: 15px; line-height: 1.4;"></p>
+            <div style="display: flex; gap: 8px; justify-content: center;">
+                <button type="button" class="btn btn-edit" onclick="closeModal('customConfirmModal')" style="width: 50%; padding: 6px;">ถอยกลับ</button>
+                <button type="button" class="btn btn-delete" id="customConfirmBtn" style="width: 50%; padding: 6px;">ยืนยันลบ</button>
             </div>
         </div>
     </div>
@@ -545,28 +545,28 @@
         let filteredPostsCat2 = [];
         let currentPostPage1 = 1;
         let currentPostPage2 = 1;
-        const POSTS_PER_PAGE_ADMIN = 10;
+        const POSTS_PER_PAGE_ADMIN = 15; 
 
         let globalUsersData = [];
         let filteredUsersData = [];
         let currentUserPage = 1;
-        const USERS_PER_PAGE = 10;
+        const USERS_PER_PAGE = 15; 
 
         function checkIsPinned(val) {
             return val === true || val === 1 || val === '1' || val === 'true';
         }
 
         function timeSinceLastLogin(timestamp) {
-            if (!timestamp) return '<span style="color:var(--text-muted); font-size:0.8rem;">ไม่ปรากฏร่องรอย</span>';
+            if (!timestamp) return '<span style="color:var(--text-muted); font-size:0.7rem;">ไม่ปรากฏร่องรอย</span>';
             const now = new Date();
             const past = new Date(Number(timestamp) || timestamp);
-            if (isNaN(past.getTime())) return '<span style="color:var(--text-muted); font-size:0.8rem;">ไม่ปรากฏร่องรอย</span>';
+            if (isNaN(past.getTime())) return '<span style="color:var(--text-muted); font-size:0.7rem;">ไม่ปรากฏร่องรอย</span>';
             const diffTime = Math.abs(now - past);
             const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
             const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
             const diffMinutes = Math.floor(diffTime / (1000 * 60));
             if (diffDays > 0) return `<span style="color:${diffDays > 30 ? 'var(--danger-color)' : 'var(--text-light)'};">${diffDays} วันที่แล้ว</span>`;
-            if (diffHours > 0) return `<span style="color:var(--success-color);">${diffHours} ชั่วโมงที่แล้ว</span>`;
+            if (diffHours > 0) return `<span style="color:var(--success-color);">${diffHours} ชม.ที่แล้ว</span>`;
             if (diffMinutes > 0) return `<span style="color:var(--success-color);">${diffMinutes} นาทีที่แล้ว</span>`;
             return '<span style="color:var(--success-color); font-weight:bold;">เพิ่งเข้ามา</span>';
         }
@@ -734,7 +734,6 @@
             document.getElementById('stat-reports-count').textContent = reports.length;
             loadReportsData();
             
-            // 🌟 1. คำนวณสัดส่วนหมวดหมู่กระทู้ สำหรับ Dashboard
             const cat1Count = globalPostsData.filter(p => String(p.category) === '1').length;
             const cat2Count = globalPostsData.filter(p => String(p.category) === '2').length;
             const totalCat = cat1Count + cat2Count || 1; 
@@ -747,7 +746,6 @@
                 document.getElementById('stat-cat2-bar').style.width = `${(cat2Count / totalCat) * 100}%`;
             }, 100);
 
-            // 🌟 2. ดึงความเคลื่อนไหวล่าสุด 5 อันดับแรก
             const latestPostsContainer = document.getElementById('latest-posts-container');
             const latestPosts = globalPostsData.slice(0, 5); 
             
@@ -762,10 +760,9 @@
                     </a>
                 `).join('');
             } else {
-                latestPostsContainer.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 15px;">ยังไม่มีความเคลื่อนไหว</div>';
+                latestPostsContainer.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 10px;">ยังไม่มีความเคลื่อนไหว</div>';
             }
 
-            // 🌟 3. ทำเนียบผู้มีบารมี (Top Karma Users)
             const topUsersContainer = document.getElementById('top-users-container');
             const topUsers = [...globalUsersData].sort((a, b) => (b.karma || 0) - (a.karma || 0)).slice(0, 5);
             
@@ -773,9 +770,9 @@
                 topUsersContainer.innerHTML = topUsers.map(u => `
                     <div class="user-item">
                         <div class="user-info">
-                            <span style="font-size: 1.1rem;">👤</span>
-                            <div style="display:flex; flex-direction:column; gap:2px;">
-                                <div style="color: #fff; font-family: 'Prompt', sans-serif; font-size: 0.9rem;">${u.username}</div>
+                            <span style="font-size: 0.9rem;">👤</span>
+                            <div style="display:flex; flex-direction:column; gap:1px;">
+                                <div style="color: #fff; font-family: 'Prompt', sans-serif; font-size: 0.8rem;">${u.username}</div>
                                 <div>${getRoleBadge(u)}</div>
                             </div>
                         </div>
@@ -783,10 +780,9 @@
                     </div>
                 `).join('');
             } else {
-                topUsersContainer.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 15px;">ยังไม่มีข้อมูลสมาชิก</div>';
+                topUsersContainer.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 10px;">ยังไม่มีข้อมูลสมาชิก</div>';
             }
 
-            // 🌟 4. คัมภีร์ยอดฮิต (Trending Posts)
             const popularPostsContainer = document.getElementById('popular-posts-container');
             const popularPosts = [...globalPostsData].sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 5);
 
@@ -801,10 +797,9 @@
                     </a>
                 `).join('');
             } else {
-                popularPostsContainer.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 15px;">สถิติยอดฮิตยังไม่ปรากฏ</div>';
+                popularPostsContainer.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 10px;">สถิติยอดฮิตยังไม่ปรากฏ</div>';
             }
 
-            // โหลด CMS หน้าแรก
             const cms = await AdminAPI.getCMS();
             if (cms) {
                 document.getElementById('cms-hero-subtitle').value = cms.heroSubtitle || cms.hero_subtitle || cms.subtitle || ''; 
@@ -854,7 +849,7 @@
             tbody.innerHTML = '';
 
             if (data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 20px; color: var(--text-muted);">ไม่พบข้อมูลกระทู้ในหมวดนี้</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 10px; color: var(--text-muted);">ไม่พบข้อมูล</td></tr>`;
                 const pageContainer = document.getElementById(`postPaginationCat${categoryId}`);
                 if (pageContainer) pageContainer.innerHTML = '';
                 return;
@@ -873,16 +868,16 @@
 
             postsToShow.forEach(p => {
                 const isPinned = checkIsPinned(p.pinned);
-                const pinBtnHtml = `<button class="btn ${isPinned ? 'btn-edit' : 'btn-pin'}" onclick="togglePinPost('${p.id}')">${isPinned ? '📍 ถอดหมุด' : '📌 ปักหมุด'}</button>`;
+                const pinBtnHtml = `<button class="btn ${isPinned ? 'btn-edit' : 'btn-pin'}" onclick="togglePinPost('${p.id}')">${isPinned ? '📍 ถอด' : '📌 ปัก'}</button>`;
                 
-                // 🌟 เลิกซ่อน overflow แบบตายตัว และบังคับ flex-wrap: wrap เพื่อไม่ให้ปุ่มหลุดจอ
+                // 🌟 ใส่ flex-wrap: nowrap; ให้ปุ่มเรียงกันสวยงาม
                 const rowHtml = `<tr>
-                    <td style="max-width: 90px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-muted); font-family: monospace;">${String(p.id).substring(0, 8)}...</td>
-                    <td><strong style="color: var(--gold-light); font-size: 0.95rem;">${p.title}</strong></td>
-                    <td>${isPinned ? '<span class="admin-badge" style="border-color:var(--gold-main); color:var(--gold-main); padding:3px 8px; font-size:0.7rem;">📌 ปักหมุดแล้ว</span>' : '<span style="color:var(--text-muted);">ทั่วไป</span>'}</td>
+                    <td style="color: var(--text-muted); font-family: monospace;">${String(p.id).substring(0, 8)}...</td>
+                    <td><strong style="color: var(--gold-light); font-size: 0.8rem;">${p.title}</strong></td>
+                    <td>${isPinned ? '<span class="admin-badge" style="border-color:var(--gold-main); color:var(--gold-main);">📌 ปักหมุด</span>' : '<span style="color:var(--text-muted); font-size:0.75rem;">ทั่วไป</span>'}</td>
                     <td>${p.author}</td>
                     <td>
-                        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                        <div style="display:flex; gap:6px; flex-wrap:nowrap;">
                             ${pinBtnHtml} 
                             <button class="btn btn-edit" onclick="editPost('${p.id}')">✏️ แก้ไข</button> 
                             <button class="btn btn-delete" onclick="deletePost('${p.id}')">🗑️ ลบ</button>
@@ -901,13 +896,13 @@
             if (totalPages <= 1) { container.innerHTML = ''; return; }
 
             const currentPage = categoryId === 1 ? currentPostPage1 : currentPostPage2;
-            let html = `<button class="page-btn" ${currentPage === 1 ? 'disabled' : ''} onclick="renderPostsPage(${categoryId}, ${currentPage - 1})">« ย้อนกลับ</button>`;
+            let html = `<button class="page-btn" ${currentPage === 1 ? 'disabled' : ''} onclick="renderPostsPage(${categoryId}, ${currentPage - 1})">« ย้อน</button>`;
             for (let i = 1; i <= totalPages; i++) {
                 if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
                     html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="renderPostsPage(${categoryId}, ${i})">${i}</button>`;
-                } else if (i === currentPage - 2 || i === currentPage + 2) { html += `<span style="color: var(--gold-dark); padding: 0 5px;">...</span>`; }
+                } else if (i === currentPage - 2 || i === currentPage + 2) { html += `<span style="color: var(--gold-dark); padding: 0 3px;">...</span>`; }
             }
-            html += `<button class="page-btn" ${currentPage === totalPages ? 'disabled' : ''} onclick="renderPostsPage(${categoryId}, ${currentPage + 1})">ถัดไป »</button>`;
+            html += `<button class="page-btn" ${currentPage === totalPages ? 'disabled' : ''} onclick="renderPostsPage(${categoryId}, ${currentPage + 1})">หน้าถัดไป »</button>`;
             container.innerHTML = html;
         }
 
@@ -956,7 +951,7 @@
             const tbody = document.getElementById('users-table-body');
             tbody.innerHTML = '';
             if (filteredUsersData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 20px; color: var(--text-muted);">ไม่พบข้อมูลสมาชิกตามเงื่อนไข</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 10px; color: var(--text-muted);">ไม่พบข้อมูล</td></tr>';
                 document.getElementById('userPagination').innerHTML = '';
                 return;
             }
@@ -977,22 +972,23 @@
                 const displayLastLogin = timeSinceLastLogin(u.last_login || u.login_timestamp);
                 const userKarma = u.karma || 0;
                 
-                let reorderBtns = `<div style="display:flex; gap:4px; justify-content:center;">`;
-                if (absoluteIndex > 0) reorderBtns += `<button class="btn-reorder" onclick="moveUserRow(${absoluteIndex}, -1)" title="เลื่อนขึ้น">▲</button>`;
-                if (absoluteIndex < filteredUsersData.length - 1) reorderBtns += `<button class="btn-reorder" onclick="moveUserRow(${absoluteIndex}, 1)" title="เลื่อนลง">▼</button>`;
+                // 🌟 ใส่ flex-wrap: nowrap; ให้ปุ่มเรียงแนวนอน
+                let reorderBtns = `<div style="display:flex; gap:3px; justify-content:center; flex-wrap:nowrap;">`;
+                if (absoluteIndex > 0) reorderBtns += `<button class="btn-reorder" onclick="moveUserRow(${absoluteIndex}, -1)" title="ขึ้น">▲</button>`;
+                if (absoluteIndex < filteredUsersData.length - 1) reorderBtns += `<button class="btn-reorder" onclick="moveUserRow(${absoluteIndex}, 1)" title="ลง">▼</button>`;
                 reorderBtns += `</div>`;
 
                 tbody.innerHTML += `
                     <tr>
                         <td style="color: var(--text-muted);">${globalIndex}</td>
-                        <td><strong style="color: #fff; font-size: 0.95rem;">${u.username}</strong></td>
-                        <td><code style="background: rgba(0,0,0,0.5); padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(138,99,21,0.3); color: var(--gold-light); font-size:0.8rem;">${u.password || '-'}</code></td>
+                        <td><strong style="color: #fff; font-size: 0.85rem;">${u.username}</strong></td>
+                        <td><code style="background: rgba(0,0,0,0.5); padding: 2px 4px; border-radius: 4px; border: 1px solid rgba(138,99,21,0.3); color: var(--gold-light); font-size:0.75rem;">${u.password || '-'}</code></td>
                         <td>${displayRole}</td>
-                        <td><strong style="color:var(--gold-light); font-size: 1rem;">${userKarma}</strong> <span style="font-size: 0.75rem; color: var(--text-muted);">แต้ม</span></td>
+                        <td><strong style="color:var(--gold-light); font-size: 0.9rem;">${userKarma}</strong> <span style="font-size: 0.7rem; color: var(--text-muted);">แต้ม</span></td>
                         <td>${displayLastLogin}</td>
                         <td>${reorderBtns}</td>
                         <td>
-                            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                            <div style="display:flex; gap:6px; flex-wrap:nowrap;">
                                 <button class="btn btn-edit" onclick="editUser('${u.username}')">✏️ แก้ไข</button> 
                                 <button class="btn btn-delete" onclick="deleteUser('${u.username}')">🗑️ ลบ</button>
                             </div>
@@ -1008,11 +1004,11 @@
             const container = document.getElementById('userPagination');
             if (totalPages <= 1) { container.innerHTML = ''; return; }
 
-            let html = `<button class="page-btn" ${currentUserPage === 1 ? 'disabled' : ''} onclick="renderUsersPage(${currentUserPage - 1})">« ย้อนกลับ</button>`;
+            let html = `<button class="page-btn" ${currentUserPage === 1 ? 'disabled' : ''} onclick="renderUsersPage(${currentUserPage - 1})">« ย้อน</button>`;
             for (let i = 1; i <= totalPages; i++) {
                 if (i === 1 || i === totalPages || (i >= currentUserPage - 1 && i <= currentUserPage + 1)) {
                     html += `<button class="page-btn ${i === currentUserPage ? 'active' : ''}" onclick="renderUsersPage(${i})">${i}</button>`;
-                } else if (i === currentUserPage - 2 || i === currentUserPage + 2) { html += `<span style="color: var(--gold-dark); padding: 0 5px;">...</span>`; }
+                } else if (i === currentUserPage - 2 || i === currentUserPage + 2) { html += `<span style="color: var(--gold-dark); padding: 0 3px;">...</span>`; }
             }
             html += `<button class="page-btn" ${currentUserPage === totalPages ? 'disabled' : ''} onclick="renderUsersPage(${currentUserPage + 1})">ถัดไป »</button>`;
             container.innerHTML = html;
@@ -1027,7 +1023,7 @@
                     posts[postIndex].pinned = currentPinned ? 0 : 1; 
                     await AdminAPI.savePost(posts[postIndex]);
                     await loadAdminData();
-                    showCustomAlert(currentPinned ? '📍 ถอดหมุดกระทู้สำเร็จแล้ว' : '📌 ปักหมุดกระทู้สำเร็จแล้ว');
+                    showCustomAlert(currentPinned ? '📍 ถอดหมุดสำเร็จ' : '📌 ปักหมุดสำเร็จ');
                 }
             } catch (err) { showCustomAlert('⚠️ เกิดอาถรรพ์ขัดข้อง: ' + err.message); }
         }
@@ -1050,7 +1046,7 @@
         }
         function editPost(id) { openPostModal(id); }
         async function submitPostForm(e) {
-            e.preventDefault(); document.getElementById('btnSavePost').textContent = 'กำลังส่งข้อมูล...';
+            e.preventDefault(); document.getElementById('btnSavePost').textContent = 'รอ...';
             try {
                 const data = { 
                     id: document.getElementById('edit-post-id').value, 
@@ -1061,21 +1057,21 @@
                     pinned: parseInt(document.getElementById('edit-post-pinned').value) || 0 
                 };
                 await AdminAPI.savePost(data); 
-                document.getElementById('btnSavePost').textContent = 'บันทึกข้อมูล'; 
+                document.getElementById('btnSavePost').textContent = 'บันทึก'; 
                 closeModal('postModal'); 
                 loadAdminData(); 
-                showCustomAlert('✅ บันทึกข้อมูลกระทู้เรียบร้อยแล้ว');
+                showCustomAlert('✅ บันทึกสำเร็จ');
             } catch (err) {
-                document.getElementById('btnSavePost').textContent = 'บันทึกข้อมูล';
+                document.getElementById('btnSavePost').textContent = 'บันทึก';
                 showCustomAlert('❌ เกิดข้อผิดพลาด: ' + err.message);
             }
         }
 
         function deletePost(id) { 
-            showCustomConfirm('ท่านแน่ใจหรือไม่ว่าต้องการ <strong>ทำลาย</strong> ศิลาจารึกนี้ทิ้งไปตลอดกาล?', async () => {
+            showCustomConfirm('แน่ใจหรือไม่ว่าต้องการลบ?', async () => {
                 await AdminAPI.deletePost(id); 
                 loadAdminData(); 
-                showCustomAlert('🗑️ ทำลายศิลาจารึกเรียบร้อยแล้ว'); 
+                showCustomAlert('🗑️ ลบเรียบร้อยแล้ว'); 
             });
         }
 
@@ -1101,7 +1097,7 @@
         function editUser(username) { openUserModal(username); }
 
         async function submitUserForm(e) {
-            e.preventDefault(); document.getElementById('btnSaveUser').textContent = 'กำลังส่งข้อมูล...';
+            e.preventDefault(); document.getElementById('btnSaveUser').textContent = 'รอ...';
             const oldUsername = document.getElementById('edit-user-old-username').value;
             const roleSelectVal = document.getElementById('edit-user-role').value;
             
@@ -1127,16 +1123,16 @@
                 await AdminAPI.saveUser(data, oldUsername); 
                 closeModal('userModal'); 
                 loadAdminData(); 
-                showCustomAlert('✅ บันทึกข้อมูลสมาชิกเรียบร้อยแล้ว'); 
-            } catch (err) { showCustomAlert('❌ นามแฝงนี้มีผู้ใช้งานอยู่แล้ว'); }
-            document.getElementById('btnSaveUser').textContent = 'บันทึกข้อมูล';
+                showCustomAlert('✅ บันทึกสำเร็จ'); 
+            } catch (err) { showCustomAlert('❌ ชื่อนี้ซ้ำ'); }
+            document.getElementById('btnSaveUser').textContent = 'บันทึก';
         }
 
         function deleteUser(username) { 
-            showCustomConfirm(`ท่านแน่ใจหรือไม่ว่าต้องการขับไล่ <strong>"${username}"</strong> ออกจากสำนัก?`, async () => {
+            showCustomConfirm(`แน่ใจหรือไม่ว่าต้องการลบ "${username}" ?`, async () => {
                 await AdminAPI.deleteUser(username); 
                 loadAdminData(); 
-                showCustomAlert('🗑️ ขับไล่ศิษย์ออกจากสำนักเรียบร้อยแล้ว'); 
+                showCustomAlert('🗑️ ลบเรียบร้อยแล้ว'); 
             });
         }
 
@@ -1146,28 +1142,29 @@
 
             tbody.innerHTML = '';
             if (!reports || reports.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 20px; color: var(--text-muted);">ยังไม่มีการแจ้งเบาะแสในขณะนี้</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 10px; color: var(--text-muted);">ไม่มีข้อมูล</td></tr>';
                 return;
             }
 
             reports.forEach(r => {
-                const targetText = r.target_type === 'post' ? 'กระทู้หลัก' : 'ความคิดเห็น';
+                const targetText = r.target_type === 'post' ? 'กระทู้หลัก' : 'ความเห็น';
                 let inspectBtn = '';
                 if (r.target_type === 'post') {
                     inspectBtn = `<a href="post.html?id=${r.target_id}" target="_blank" class="btn btn-gold">🔍 ตรวจสอบ</a>`;
                 } else {
-                    inspectBtn = `<button class="btn btn-edit" onclick="showCustomAlert('การตรวจสอบคอมเมนต์ ให้เข้าไปค้นหากระทู้ที่มีรหัสดังกล่าว')">🔍 ตรวจสอบ</button>`;
+                    inspectBtn = `<button class="btn btn-edit" onclick="showCustomAlert('ให้เข้าไปค้นหากระทู้ที่มีรหัสดังกล่าว')">🔍 ตรวจสอบ</button>`;
                 }
 
+                // 🌟 ใส่ flex-wrap: nowrap; ให้ปุ่มเรียงแนวนอน
                 tbody.innerHTML += `
                     <tr>
                         <td><strong style="color: #fff;">${r.reporter}</strong></td>
                         <td style="color: #ffb17a; font-weight: 500;">${r.reason}</td>
                         <td><span class="role-badge role-4">${targetText}</span></td>
                         <td><code style="color: var(--gold-light); font-family: monospace;">${r.target_id.substring(0, 10)}...</code></td>
-                        <td><span class="post-time" style="font-size:0.8rem; color: var(--text-muted);">${r.timestamp}</span></td>
+                        <td><span class="post-time" style="font-size:0.7rem; color: var(--text-muted);">${r.timestamp}</span></td>
                         <td>
-                            <div style="display:flex; gap:6px;">
+                            <div style="display:flex; gap:6px; flex-wrap:nowrap;">
                                 ${inspectBtn}
                                 <button class="btn btn-delete" onclick="deleteReport('${r.id}')">🧹 ปัดตก</button>
                             </div>
@@ -1178,10 +1175,10 @@
         }
 
         function deleteReport(id) {
-            showCustomConfirm('ท่านต้องการล้างประวัติการแจ้งเบาะแสนี้ใช่หรือไม่?', async () => {
+            showCustomConfirm('ต้องการล้างประวัติการแจ้งนี้ใช่หรือไม่?', async () => {
                 await AdminAPI.deleteReport(id);
                 loadAdminData(); 
-                showCustomAlert('✅ เคลียร์เบาะแสเรียบร้อยแล้ว');
+                showCustomAlert('✅ เคลียร์เรียบร้อย');
             });
         }
 
@@ -1198,16 +1195,16 @@
                 hero_subtitle: subtitleVal, hero_desc: descVal, hero_img: imgVal, hero_btn_text: btnTextVal, hero_btn_url: btnUrlVal
             };
             await AdminAPI.saveCMS(data); 
-            showCustomAlert('✅ บันทึกข้อมูลส่วนหน้าแรก (Hero) เรียบร้อยแล้ว');
+            showCustomAlert('✅ บันทึกหน้าแรกเรียบร้อยแล้ว');
         }
         
         function resetDefaultMockData() { 
-            showCustomConfirm('⚠️ คำเตือน: หากดำเนินการ ข้อมูลทั้งหมดจะถูกล้างและกลับไปเป็นค่าเริ่มต้น ท่านแน่ใจหรือไม่?', () => {
+            showCustomConfirm('⚠️ ข้อมูลทั้งหมดจะถูกล้าง แน่ใจหรือไม่?', () => {
                 localStorage.removeItem('siy_posts'); 
                 localStorage.removeItem('siy_users'); 
                 localStorage.removeItem('siy_index_cms'); 
                 loadAdminData(); 
-                showCustomAlert('🔄 รีเซ็ตข้อมูลระบบกลับสู่ค่าเริ่มต้นเรียบร้อยแล้ว'); 
+                showCustomAlert('🔄 รีเซ็ตเรียบร้อย'); 
             });
         }
 
