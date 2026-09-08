@@ -77,9 +77,11 @@ async function getAuthenticatedUser(c: any): Promise<{ username: string; role: s
   }
 }
 
+// 🌟 อัปเกรดระบบจัดอันดับ หากได้ "ยศพิเศษ" ที่แอดมินสร้างใหม่ แต้มบุญจะไม่ลดยศให้
 function calculateRank(karma: number, currentRole: string, currentRankName: string) {
-  if (currentRole === '1' || currentRankName === 'ตัวละคร') {
-    return { role: currentRole, rank_name: currentRankName, nextRankMsg: 'ยศพิเศษเฉพาะกิจ' };
+  const standardRoles = ['2', '3', '4', '5'];
+  if (currentRole === '1' || currentRankName === 'ตัวละคร' || (!standardRoles.includes(String(currentRole)) && currentRole !== '')) {
+    return { role: currentRole, rank_name: currentRankName, nextRankMsg: 'ยศพิเศษแต่งตั้ง / ข้อยกเว้น' };
   }
   
   if (karma >= 51) return { role: '2', rank_name: 'ตติยภูมิ', nextRankMsg: 'ตบะขั้นสูงสุดของศิษย์ทั่วไป' };
@@ -140,6 +142,15 @@ app.get('/api/fix-db', async (c) => {
         username TEXT NOT NULL,
         post_id TEXT NOT NULL,
         timestamp TEXT NOT NULL
+    );`,
+    // 🌟 เพิ่มตารางสำหรับโรงตีเหล็ก (ระบบสร้างยศ)
+    `CREATE TABLE IF NOT EXISTS roles (
+        id TEXT PRIMARY KEY,
+        rank_name TEXT NOT NULL,
+        bg_color TEXT NOT NULL,
+        text_color TEXT NOT NULL,
+        border_color TEXT,
+        level INTEGER DEFAULT 5
     );`
   ]
 
@@ -153,6 +164,64 @@ app.get('/api/fix-db', async (c) => {
   }
   return c.json({ message: "อัปเกรดฐานข้อมูลเรียบร้อยแล้ว!", logs })
 })
+
+// ==========================================
+// 🎨 โรงตีเหล็ก - ระบบจัดการยศพิเศษ (Dynamic Roles)
+// ==========================================
+app.get('/api/roles', async (c) => {
+  try {
+    const { results } = await c.env.DB.prepare("SELECT * FROM roles ORDER BY level ASC, rank_name ASC").all()
+    return c.json(results || [])
+  } catch(e) {
+    return c.json([])
+  }
+})
+
+app.post('/api/roles', async (c) => {
+  const authUser = await getAuthenticatedUser(c)
+  if (!authUser || String(authUser.role) !== '1') return c.json({ success: false, error: 'ละเมิดข้อห้าม! การเข้าถึงจำกัดเฉพาะปรมัตถ์เท่านั้น' }, 403)
+  
+  const body = await c.req.json()
+  try {
+    const id = `dynamic_${crypto.randomUUID().substring(0, 8)}`
+    await c.env.DB.prepare(
+      "INSERT INTO roles (id, rank_name, bg_color, text_color, border_color, level) VALUES (?, ?, ?, ?, ?, ?)"
+    ).bind(id, body.rank_name, body.bg_color, body.text_color, body.border_color || '', body.level || 5).run()
+    return c.json({ success: true, id })
+  } catch (e: any) {
+    return c.json({ success: false, error: e.message }, 500)
+  }
+})
+
+app.put('/api/roles/:id', async (c) => {
+  const authUser = await getAuthenticatedUser(c)
+  if (!authUser || String(authUser.role) !== '1') return c.json({ success: false, error: 'ละเมิดข้อห้าม!' }, 403)
+  
+  const id = c.req.param('id')
+  const body = await c.req.json()
+  try {
+    await c.env.DB.prepare(
+      "UPDATE roles SET rank_name = ?, bg_color = ?, text_color = ?, border_color = ?, level = ? WHERE id = ?"
+    ).bind(body.rank_name, body.bg_color, body.text_color, body.border_color || '', body.level || 5, id).run()
+    return c.json({ success: true })
+  } catch (e: any) {
+    return c.json({ success: false, error: e.message }, 500)
+  }
+})
+
+app.delete('/api/roles/:id', async (c) => {
+  const authUser = await getAuthenticatedUser(c)
+  if (!authUser || String(authUser.role) !== '1') return c.json({ success: false, error: 'ละเมิดข้อห้าม!' }, 403)
+
+  const id = c.req.param('id')
+  try {
+    await c.env.DB.prepare("DELETE FROM roles WHERE id = ?").bind(id).run()
+    return c.json({ success: true })
+  } catch (e: any) {
+    return c.json({ success: false, error: e.message }, 500)
+  }
+})
+
 
 // ==========================================
 // 🔖 ระบบคัมภีร์ส่วนตัว (Bookmarks System)
