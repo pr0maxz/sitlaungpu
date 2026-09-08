@@ -27,38 +27,38 @@
         }
         
         h1, h2, h3, h4 { font-family: 'Prompt', sans-serif; color: var(--gold-light); margin: 0; }
-        a { text-decoration: none; color: inherit; } /* 🌟 ล้างขีดเส้นใต้สีน้ำเงินของลิงก์ทั่วทั้งระบบ */
+        a { text-decoration: none; color: inherit; }
         
         /* 💎 Header */
         .admin-header { 
             background: linear-gradient(180deg, #150a03 0%, #070402 100%); 
-            border-bottom: 1px solid var(--border-color); padding: 8px 15px; 
+            border-bottom: 1px solid var(--border-color); padding: 12px 25px; 
             display: flex; justify-content: space-between; align-items: center; 
             box-shadow: 0 4px 15px rgba(0,0,0,0.8); width: 100%; position: sticky; top: 0; z-index: 100;
         }
         .admin-title { display: flex; align-items: center; gap: 10px; min-width: 0; } 
-        .admin-title img { height: 26px; width: auto; flex-shrink: 0; filter: drop-shadow(0 2px 5px rgba(212,175,55,0.3)); }
-        .admin-title h3 { font-size: clamp(0.85rem, 1.5vw, 1rem); letter-spacing: 0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .admin-title img { height: 28px; width: auto; flex-shrink: 0; filter: drop-shadow(0 2px 5px rgba(212,175,55,0.3)); }
+        .admin-title h3 { font-size: clamp(0.9rem, 1.5vw, 1.1rem); letter-spacing: 0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
-        .admin-header-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+        .admin-header-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
         
-        /* 💎 Layout & Sidebar */
-        .admin-layout { display: grid; grid-template-columns: 200px 1fr; flex: 1; width: 100%; max-width: 1400px; margin: 0 auto; padding: 12px; gap: 12px; }
+        /* 💎 Layout & Sidebar (🌟 ขยายช่องว่าง Layout) */
+        .admin-layout { display: grid; grid-template-columns: 200px 1fr; flex: 1; width: 100%; max-width: 1400px; margin: 0 auto; padding: 24px 20px; gap: 24px; }
         
         .admin-sidebar { 
             background: var(--panel-bg); border: 1px solid var(--border-color); 
-            border-radius: 8px; padding: 10px 8px; display: flex; flex-direction: column; gap: 4px; 
-            box-shadow: 0 8px 20px rgba(0,0,0,0.6); align-self: start; position: sticky; top: 60px;
+            border-radius: 8px; padding: 12px 10px; display: flex; flex-direction: column; gap: 6px; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.6); align-self: start; position: sticky; top: 75px;
         }
         
         .nav-btn { 
             background: transparent; border: 1px solid transparent; color: var(--text-muted); 
-            padding: 6px 10px; border-radius: 6px; font-family: 'Prompt', sans-serif; font-size: 0.8rem; 
+            padding: 8px 12px; border-radius: 6px; font-family: 'Prompt', sans-serif; font-size: 0.85rem; 
             text-align: left; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px; 
             width: 100%; white-space: nowrap; 
         }
         .nav-btn:hover { background: rgba(212, 175, 55, 0.08); color: var(--gold-light); }
-        .nav-btn.active { background: linear-gradient(90deg, rgba(212,175,55,0.15) 0%, transparent 100%); border-left: 3px solid var(--gold-main); color: var(--gold-light); font-weight: bold; padding-left: 10px; }
+        .nav-btn.active { background: linear-gradient(90deg, rgba(212,175,55,0.15) 0%, transparent 100%); border-left: 3px solid var(--gold-main); color: var(--gold-light); font-weight: bold; padding-left: 12px; }
         
         /* 💎 Main Content */
         .admin-content { min-width: 0; width: 100%; }
@@ -66,65 +66,67 @@
         
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* 💎 Cards & Panels */
+        /* 💎 Cards & Panels (🌟 เพิ่ม Margin ระหว่างการ์ดให้หายใจได้) */
         .panel-card { 
             background: var(--card-bg); border: 1px solid var(--border-color); 
-            border-radius: 8px; padding: 15px; margin-bottom: 12px; 
+            border-radius: 10px; padding: 20px; margin-bottom: 24px; 
             box-shadow: 0 5px 15px rgba(0,0,0,0.7); width: 100%; position: relative; overflow: hidden;
         }
         .panel-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, var(--gold-dark), var(--gold-main), var(--gold-light)); opacity: 0.7; }
         
-        .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px dashed rgba(138, 99, 21, 0.4); padding-bottom: 8px; flex-wrap: wrap; gap: 10px; width: 100%; }
-        .panel-header h3 { font-size: clamp(0.95rem, 1.5vw, 1.1rem); letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; }
+        .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px dashed rgba(138, 99, 21, 0.4); padding-bottom: 10px; flex-wrap: wrap; gap: 10px; width: 100%; }
+        .panel-header h3 { font-size: clamp(1rem, 1.5vw, 1.15rem); letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; }
         
-        /* 💎 Dashboard Elements */
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 12px; width: 100%; }
+        /* 💎 Dashboard Elements (🌟 เพิ่มช่องว่างระหว่างกล่องสถิติ) */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-bottom: 24px; width: 100%; }
         .stat-card { 
             background: linear-gradient(135deg, rgba(31, 17, 7, 0.9), rgba(10, 5, 2, 0.95)); 
-            border: 1px solid rgba(212,175,55,0.2); border-radius: 6px; padding: 10px; 
+            border: 1px solid rgba(212,175,55,0.2); border-radius: 8px; padding: 15px 12px; 
             text-align: center; box-shadow: inset 0 2px 8px rgba(0,0,0,0.5), 0 3px 6px rgba(0,0,0,0.4);
             display: flex; flex-direction: column; justify-content: center; align-items: center;
         }
-        .stat-icon { font-size: 1.2rem; margin-bottom: 2px; opacity: 0.9; filter: drop-shadow(0 0 5px rgba(212,175,55,0.3)); }
-        .stat-card h4 { font-size: 0.7rem; color: var(--text-muted); margin-bottom: 2px; font-weight: 500; } 
-        .stat-card .number { font-size: 1.3rem; color: var(--gold-light); font-weight: bold; font-family: 'Prompt', sans-serif; line-height: 1; }
+        .stat-icon { font-size: 1.3rem; margin-bottom: 6px; opacity: 0.9; filter: drop-shadow(0 0 5px rgba(212,175,55,0.3)); }
+        .stat-card h4 { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px; font-weight: 500; } 
+        .stat-card .number { font-size: 1.5rem; color: var(--gold-light); font-weight: bold; font-family: 'Prompt', sans-serif; line-height: 1; }
 
-        .dashboard-grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; align-items: start; margin-bottom: 12px; }
+        /* 🌟 ขยายระยะห่างระหว่างคอลัมน์ Dashboard */
+        .dashboard-grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; align-items: start; margin-bottom: 16px; }
+        .dashboard-col { display: flex; flex-direction: column; gap: 24px; }
         
-        .progress-section { width: 100%; margin-bottom: 8px; }
-        .progress-label { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--gold-light); margin-bottom: 4px; font-family: 'Prompt', sans-serif; }
-        .progress-track { width: 100%; height: 4px; background: rgba(0,0,0,0.5); border-radius: 2px; overflow: hidden; border: 1px solid rgba(138, 99, 21, 0.3); }
-        .progress-fill { height: 100%; border-radius: 2px; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); }
+        .progress-section { width: 100%; margin-bottom: 10px; }
+        .progress-label { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--gold-light); margin-bottom: 6px; font-family: 'Prompt', sans-serif; }
+        .progress-track { width: 100%; height: 5px; background: rgba(0,0,0,0.5); border-radius: 3px; overflow: hidden; border: 1px solid rgba(138, 99, 21, 0.3); }
+        .progress-fill { height: 100%; border-radius: 3px; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); }
         
-        .list-item { padding: 6px 8px; border-bottom: 1px solid rgba(138, 99, 21, 0.15); transition: background 0.2s; border-radius: 4px; display: flex; flex-direction: column; gap: 2px; text-decoration: none; color: inherit; } /* 🌟 ล้างขีดเส้นใต้สีน้ำเงิน */
+        .list-item { padding: 8px 10px; border-bottom: 1px solid rgba(138, 99, 21, 0.15); transition: background 0.2s; border-radius: 4px; display: flex; flex-direction: column; gap: 4px; text-decoration: none; color: inherit; }
         .list-item:hover { background: rgba(212, 175, 55, 0.05); }
         .list-item:last-child { border-bottom: none; }
-        .list-title { font-family: 'Prompt', sans-serif; color: var(--gold-light); font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; text-decoration: none; }
+        .list-title { font-family: 'Prompt', sans-serif; color: var(--gold-light); font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; text-decoration: none; }
         .list-title:hover { color: #fff; text-decoration: underline; }
-        .list-meta { font-size: 0.65rem; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center; }
+        .list-meta { font-size: 0.7rem; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center; }
         
-        .user-item { display: flex; align-items: center; justify-content: space-between; padding: 6px 8px; border-bottom: 1px solid rgba(138, 99, 21, 0.15); border-radius: 4px; transition: 0.2s; }
+        .user-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; border-bottom: 1px solid rgba(138, 99, 21, 0.15); border-radius: 4px; transition: 0.2s; }
         .user-item:hover { background: rgba(212, 175, 55, 0.05); }
         .user-item:last-child { border-bottom: none; }
-        .user-info { display: flex; align-items: center; gap: 6px; }
-        .karma-score { font-family: 'Prompt', sans-serif; font-weight: bold; color: var(--gold-main); font-size: 0.85rem; text-shadow: 0 0 8px rgba(212,175,55,0.4); }
+        .user-info { display: flex; align-items: center; gap: 8px; }
+        .karma-score { font-family: 'Prompt', sans-serif; font-weight: bold; color: var(--gold-main); font-size: 0.9rem; text-shadow: 0 0 8px rgba(212,175,55,0.4); }
 
-        .health-row { display: flex; justify-content: space-between; font-size: 0.75rem; border-bottom: 1px dashed rgba(138,99,21,0.2); padding: 6px 0; }
+        .health-row { display: flex; justify-content: space-between; font-size: 0.75rem; border-bottom: 1px dashed rgba(138,99,21,0.2); padding: 8px 0; }
         .health-row:last-child { border: none; }
         .health-value { font-family: monospace; color: var(--gold-light); font-weight: bold; }
 
         /* 💎 Tables */
-        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 6px; border: 1px solid rgba(138, 99, 21, 0.2); margin-bottom: 10px; background: rgba(0,0,0,0.3); }
-        .data-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.75rem; text-align: left; min-width: 750px; table-layout: fixed; }
-        .data-table th, .data-table td { padding: 6px 8px; border-bottom: 1px solid rgba(138, 99, 21, 0.1); vertical-align: middle; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 8px; border: 1px solid rgba(138, 99, 21, 0.2); margin-bottom: 10px; background: rgba(0,0,0,0.3); }
+        .data-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.8rem; text-align: left; min-width: 800px; table-layout: fixed; }
+        .data-table th, .data-table td { padding: 8px 12px; border-bottom: 1px solid rgba(138, 99, 21, 0.1); vertical-align: middle; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .data-table td.wrap-text { white-space: normal; }
-        .data-table th { background: rgba(31, 17, 7, 0.95); color: var(--gold-main); font-family: 'Prompt', sans-serif; font-weight: 600; font-size: 0.75rem; letter-spacing: 0.5px; position: sticky; top: 0; z-index: 10; }
+        .data-table th { background: rgba(31, 17, 7, 0.95); color: var(--gold-main); font-family: 'Prompt', sans-serif; font-weight: 600; font-size: 0.8rem; letter-spacing: 0.5px; position: sticky; top: 0; z-index: 10; }
         .data-table tbody tr { transition: background 0.2s; }
         .data-table tbody tr:hover { background: rgba(212, 175, 55, 0.06); }
         .data-table tbody tr:last-child td { border-bottom: none; }
         
         /* 💎 Buttons */
-        .btn { padding: 4px 10px; border-radius: 12px; font-family: 'Prompt', sans-serif; font-size: 0.7rem; font-weight: 500; cursor: pointer; border: none; transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 4px; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.4); }
+        .btn { padding: 5px 12px; border-radius: 12px; font-family: 'Prompt', sans-serif; font-size: 0.75rem; font-weight: 500; cursor: pointer; border: none; transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 4px; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.4); }
         .btn:active { transform: scale(0.95); }
         .btn-gold { background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; font-weight: 700; border: 1px solid #ffeba9; } 
         .btn-gold:hover { filter: brightness(1.15); box-shadow: 0 3px 8px rgba(212,175,55,0.4); }
@@ -135,11 +137,11 @@
         .btn-pin { background: rgba(115, 201, 144, 0.15); color: #9ce8b9; border: 1px solid rgba(115, 201, 144, 0.6); } 
         .btn-pin:hover { background: var(--success-color); color: #000; border-color: #d1f2dd; }
         
-        .btn-reorder { background: transparent; color: var(--text-muted); border: 1px dashed rgba(212, 175, 55, 0.3); width: 20px; height: 20px; padding: 0; font-size: 0.6rem; border-radius: 4px; box-shadow: none; display: inline-flex; justify-content: center; align-items: center; }
+        .btn-reorder { background: transparent; color: var(--text-muted); border: 1px dashed rgba(212, 175, 55, 0.3); width: 22px; height: 22px; padding: 0; font-size: 0.65rem; border-radius: 4px; box-shadow: none; display: inline-flex; justify-content: center; align-items: center; }
         .btn-reorder:hover { background: rgba(212, 175, 55, 0.2); color: var(--gold-light); border-style: solid; border-color: var(--gold-main); }
         
         /* 💎 Badges */
-        .role-badge, .role-tag { display: inline-block; padding: 1px 6px; border-radius: 12px; font-size: 0.65rem; font-family: 'Prompt', sans-serif; font-weight: 600; letter-spacing: 0.5px; vertical-align: middle; box-shadow: 0 2px 4px rgba(0,0,0,0.6); }
+        .role-badge, .role-tag { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; font-family: 'Prompt', sans-serif; font-weight: 600; letter-spacing: 0.5px; vertical-align: middle; box-shadow: 0 2px 4px rgba(0,0,0,0.6); }
         .role-1 { background: linear-gradient(135deg, #f5d77f, #d4af37, #8a6315); color: #1a0f02 !important; border: 1px solid #ffeea8; box-shadow: 0 0 8px rgba(212,175,55,0.6), inset 0 0 4px rgba(255,255,255,0.6); } 
         .role-2 { background: linear-gradient(135deg, #4a1c60, #240b36); color: #e5b3ff !important; border: 1px solid #9b59b6; } 
         .role-3 { background: linear-gradient(135deg, #6c7a86, #262c30); color: #d6dfe5 !important; border: 1px solid #94a6b5; } 
@@ -147,53 +149,53 @@
         .role-5 { background: linear-gradient(135deg, #4a3b22, #241c0e); color: #e8cd9c !important; border: 1px solid #8a6315; box-shadow: inset 0 0 6px rgba(255,255,255,0.05); } 
         .role-6 { background: linear-gradient(135deg, #27ae60, #145a32); color: #abebc6 !important; border: 1px solid #2ecc71; box-shadow: 0 0 6px rgba(46,204,113,0.5); } 
         
-        .admin-badge { background: rgba(115, 201, 144, 0.15); border: 1px solid var(--success-dark); color: var(--success-color); padding: 1px 6px; border-radius: 12px; font-size: 0.65rem; font-family: 'Prompt', sans-serif; white-space: nowrap; font-weight: bold; }
+        .admin-badge { background: rgba(115, 201, 144, 0.15); border: 1px solid var(--success-dark); color: var(--success-color); padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; font-family: 'Prompt', sans-serif; white-space: nowrap; font-weight: bold; }
 
         /* 💎 Forms & Filters */
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; width: 100%; }
-        .form-group { margin-bottom: 12px; width: 100%; } 
-        .form-group label { display: block; color: var(--gold-light); font-size: 0.75rem; margin-bottom: 4px; font-family: 'Prompt', sans-serif; font-weight: 500; }
-        .form-control { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid rgba(138, 99, 21, 0.4); color: #fff; padding: 6px 10px; border-radius: 6px; font-family: 'Sarabun', sans-serif; font-size: 0.8rem; transition: all 0.3s; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; width: 100%; }
+        .form-group { margin-bottom: 15px; width: 100%; } 
+        .form-group label { display: block; color: var(--gold-light); font-size: 0.8rem; margin-bottom: 6px; font-family: 'Prompt', sans-serif; font-weight: 500; }
+        .form-control { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid rgba(138, 99, 21, 0.4); color: #fff; padding: 8px 12px; border-radius: 6px; font-family: 'Sarabun', sans-serif; font-size: 0.85rem; transition: all 0.3s; }
         .form-control:focus { outline: none; border-color: var(--gold-main); background: rgba(0,0,0,0.8); box-shadow: 0 0 6px rgba(212,175,55,0.2); }
-        .form-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' fill='%23d4af37' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; padding-right: 25px; }
-        .form-select option { background: #1a120b; color: #d1bfae; padding: 4px; }
-        textarea.form-control { resize: vertical; min-height: 60px; line-height: 1.4; }
+        .form-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23d4af37' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 30px; }
+        .form-select option { background: #1a120b; color: #d1bfae; padding: 6px; }
+        textarea.form-control { resize: vertical; min-height: 80px; line-height: 1.4; }
 
-        .filter-toolbar { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; background: rgba(10,5,2,0.6); padding: 8px; border-radius: 6px; border: 1px dashed rgba(212,175,55,0.2); }
-        .search-input { flex: 2; min-width: 140px; padding: 4px 12px; border-radius: 15px; border: 1px solid var(--gold-dark); background: rgba(0,0,0,0.6); color: #fff; font-family: 'Sarabun', sans-serif; outline: none; transition: 0.3s; font-size: 0.75rem; }
+        .filter-toolbar { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; background: rgba(10,5,2,0.6); padding: 10px; border-radius: 8px; border: 1px dashed rgba(212,175,55,0.2); }
+        .search-input { flex: 2; min-width: 160px; padding: 6px 14px; border-radius: 20px; border: 1px solid var(--gold-dark); background: rgba(0,0,0,0.6); color: #fff; font-family: 'Sarabun', sans-serif; outline: none; transition: 0.3s; font-size: 0.85rem; }
         .search-input:focus { border-color: var(--gold-main); box-shadow: 0 0 6px rgba(212,175,55,0.2); }
-        .filter-select { flex: 1; min-width: 120px; padding: 4px 10px; border-radius: 15px; border: 1px solid var(--gold-dark); background: rgba(0,0,0,0.6); color: var(--gold-light); font-family: 'Sarabun', sans-serif; outline: none; font-size: 0.75rem; }
+        .filter-select { flex: 1; min-width: 140px; padding: 6px 12px; border-radius: 20px; border: 1px solid var(--gold-dark); background: rgba(0,0,0,0.6); color: var(--gold-light); font-family: 'Sarabun', sans-serif; outline: none; font-size: 0.85rem; }
 
         /* 💎 Pagination */
-        .pagination { display: flex; justify-content: center; align-items: center; gap: 4px; margin-top: 10px; flex-wrap: wrap; }
-        .page-btn { padding: 4px 8px; background: rgba(0,0,0,0.6); border: 1px solid rgba(138, 99, 21, 0.4); border-radius: 4px; color: var(--gold-light); cursor: pointer; transition: 0.3s; font-family: 'Prompt', sans-serif; font-size: 0.75rem; }
+        .pagination { display: flex; justify-content: center; align-items: center; gap: 6px; margin-top: 15px; flex-wrap: wrap; }
+        .page-btn { padding: 6px 10px; background: rgba(0,0,0,0.6); border: 1px solid rgba(138, 99, 21, 0.4); border-radius: 6px; color: var(--gold-light); cursor: pointer; transition: 0.3s; font-family: 'Prompt', sans-serif; font-size: 0.8rem; }
         .page-btn:hover:not(:disabled) { background: rgba(212,175,55,0.15); border-color: var(--gold-main); color: #fff; }
         .page-btn.active { background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; font-weight: bold; border-color: #ffeba9; }
         .page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         
         /* 💎 Modals */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(7, 4, 2, 0.95); z-index: 1000; justify-content: center; align-items: center; padding: 15px; backdrop-filter: blur(3px); } .modal-overlay.active { display: flex; animation: fadeIn 0.2s; }
-        .modal-box { background: linear-gradient(135deg, #1f1107, #0a0603); border: 1px solid var(--gold-main); border-radius: 8px; width: 100%; max-width: 450px; padding: 20px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.9), inset 0 0 10px rgba(212,175,55,0.1); max-height: 90vh; overflow-y: auto; }
-        .modal-box::-webkit-scrollbar { width: 4px; } .modal-box::-webkit-scrollbar-thumb { background: var(--gold-dark); border-radius: 2px; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(7, 4, 2, 0.95); z-index: 1000; justify-content: center; align-items: center; padding: 15px; backdrop-filter: blur(4px); } .modal-overlay.active { display: flex; animation: fadeIn 0.2s; }
+        .modal-box { background: linear-gradient(135deg, #1f1107, #0a0603); border: 1px solid var(--gold-main); border-radius: 10px; width: 100%; max-width: 480px; padding: 25px; position: relative; box-shadow: 0 15px 40px rgba(0,0,0,0.9), inset 0 0 15px rgba(212,175,55,0.1); max-height: 90vh; overflow-y: auto; }
+        .modal-box::-webkit-scrollbar { width: 5px; } .modal-box::-webkit-scrollbar-thumb { background: var(--gold-dark); border-radius: 3px; }
         
         /* 📱 Responsive Design */
         @media (max-width: 992px) { 
-            .admin-layout { grid-template-columns: 1fr; padding: 8px; gap: 8px; } 
+            .admin-layout { grid-template-columns: 1fr; padding: 12px; gap: 12px; } 
             .dashboard-grid-3 { grid-template-columns: 1fr; }
-            .admin-sidebar { flex-direction: row; overflow-x: auto; padding: 8px; gap: 6px; white-space: nowrap; border: 1px solid var(--border-color); position: relative; top: 0; border-radius: 6px; } 
+            .admin-sidebar { flex-direction: row; overflow-x: auto; padding: 10px; gap: 8px; white-space: nowrap; border: 1px solid var(--border-color); position: relative; top: 0; border-radius: 8px; } 
             .admin-sidebar::-webkit-scrollbar { display: none; }
-            .nav-btn { padding: 6px 10px; font-size: 0.75rem; width: auto; flex-shrink: 0; justify-content: center; } 
+            .nav-btn { padding: 8px 12px; font-size: 0.85rem; width: auto; flex-shrink: 0; justify-content: center; } 
         }
         @media (max-width: 600px) {
-            .admin-header { padding: 8px 12px; flex-direction: column; align-items: flex-start; gap: 6px; }
-            .admin-header-actions { width: 100%; justify-content: space-between; gap: 6px; }
-            .admin-title img { height: 22px; }
-            .panel-card { padding: 12px 10px; }
+            .admin-header { padding: 10px 15px; flex-direction: column; align-items: flex-start; gap: 8px; }
+            .admin-header-actions { width: 100%; justify-content: space-between; gap: 8px; }
+            .admin-title img { height: 24px; }
+            .panel-card { padding: 15px 12px; margin-bottom: 15px; }
             .filter-toolbar { flex-direction: column; }
             .search-input, .filter-select { width: 100%; min-width: 100%; }
-            .data-table th, .data-table td { padding: 4px 6px; font-size: 0.7rem; }
-            .btn { padding: 3px 8px; font-size: 0.65rem; }
-            .modal-box { padding: 15px 12px; }
+            .data-table th, .data-table td { padding: 6px 8px; font-size: 0.75rem; }
+            .btn { padding: 4px 10px; font-size: 0.7rem; }
+            .modal-box { padding: 20px 15px; }
         }
     </style>
 </head>
@@ -206,7 +208,7 @@
         </div>
         <div class="admin-header-actions">
             <span class="admin-badge" id="stat-api-mode">🛡️ API Mode</span>
-            <span id="currentAdminName" style="color: var(--gold-light); font-weight: bold; font-family: 'Prompt', sans-serif; font-size: 0.75rem;"></span>
+            <span id="currentAdminName" style="color: var(--gold-light); font-weight: bold; font-family: 'Prompt', sans-serif; font-size: 0.8rem;"></span>
             <a href="index.html" class="btn btn-edit">เว็บหลัก ↗</a>
             <button onclick="handleAdminLogout()" class="btn btn-delete">ออกจากระบบ</button>
         </div>
@@ -266,7 +268,7 @@
                     <div class="stat-card" style="border-color: rgba(115, 201, 144, 0.4);">
                         <div class="stat-icon">🟢</div>
                         <h4 style="color: var(--success-color);">สถานะ API</h4>
-                        <div class="number" style="font-size: 1rem; margin-top: 5px; color: var(--success-color);">ONLINE</div>
+                        <div class="number" style="font-size: 1.1rem; margin-top: 6px; color: var(--success-color);">ONLINE</div>
                     </div>
                 </div>
 
@@ -333,7 +335,7 @@
                         </div>
 
                         <!-- Quick Actions Moved Here -->
-                        <div class="panel-card" style="margin-bottom: 0; display:flex; gap:6px; flex-wrap:wrap; justify-content:center;">
+                        <div class="panel-card" style="margin-bottom: 0; display:flex; gap:8px; flex-wrap:wrap; justify-content:center;">
                             <button class="btn btn-gold" onclick="openPostModal()">+ สลักกระทู้</button>
                             <button class="btn btn-gold" onclick="openUserModal()">+ รับศิษย์</button>
                             <button class="btn btn-edit" onclick="resetDefaultMockData()">🔄 รีเซ็ต DB</button>
@@ -342,21 +344,21 @@
                         <div class="panel-card" style="margin-bottom: 0;">
                             <div class="panel-header"><h3>📝 ความเคลื่อนไหวล่าสุด</h3></div>
                             <div id="latest-posts-container" style="display: flex; flex-direction: column;">
-                                <div style="text-align: center; color: var(--text-muted); padding: 10px;">กำลังอัญเชิญข้อมูล...</div>
+                                <div style="text-align: center; color: var(--text-muted); padding: 15px;">กำลังอัญเชิญข้อมูล...</div>
                             </div>
                         </div>
 
                         <div class="panel-card" style="margin-bottom: 0; border-color: rgba(115, 201, 144, 0.4);">
                             <div class="panel-header"><h3>📌 จารึกที่ถูกปักหมุดไว้</h3></div>
                             <div id="pinned-posts-container" style="display: flex; flex-direction: column;">
-                                <div style="text-align: center; color: var(--text-muted); padding: 10px;">กำลังอัญเชิญข้อมูล...</div>
+                                <div style="text-align: center; color: var(--text-muted); padding: 15px;">กำลังอัญเชิญข้อมูล...</div>
                             </div>
                         </div>
                         
                         <div class="panel-card" style="margin-bottom: 0;">
                             <div class="panel-header"><h3 style="color: var(--success-color);">🟢 ศิษย์ที่ปรากฏตัวล่าสุด</h3></div>
                             <div id="recent-users-container" style="display: flex; flex-direction: column;">
-                                <div style="text-align: center; color: var(--text-muted); padding: 10px;">กำลังอัญเชิญข้อมูล...</div>
+                                <div style="text-align: center; color: var(--text-muted); padding: 15px;">กำลังอัญเชิญข้อมูล...</div>
                             </div>
                         </div>
                     </div>
@@ -367,28 +369,28 @@
                         <div class="panel-card" style="margin-bottom: 0; border-color: rgba(255, 107, 107, 0.4);">
                             <div class="panel-header"><h3 style="color: var(--danger-color);">🚨 เบาะแสด่วน (ล่าสุด)</h3></div>
                             <div id="urgent-reports-container" style="display: flex; flex-direction: column;">
-                                <div style="text-align: center; color: var(--text-muted); padding: 10px;">ไม่มีเบาะแสค้างตรวจสอบ</div>
+                                <div style="text-align: center; color: var(--text-muted); padding: 15px;">ไม่มีเบาะแสค้างตรวจสอบ</div>
                             </div>
                         </div>
 
                         <div class="panel-card" style="margin-bottom: 0;">
                             <div class="panel-header"><h3>🏆 ทำเนียบแต้มบุญสูงสุด</h3></div>
                             <div id="top-users-container" style="display: flex; flex-direction: column;">
-                                <div style="text-align: center; color: var(--text-muted); padding: 10px;">กำลังอัญเชิญข้อมูล...</div>
+                                <div style="text-align: center; color: var(--text-muted); padding: 15px;">กำลังอัญเชิญข้อมูล...</div>
                             </div>
                         </div>
 
                         <div class="panel-card" style="margin-bottom: 0;">
                             <div class="panel-header"><h3 style="color: #ffb17a;">🔥 คัมภีร์ยอดฮิต (Top Views)</h3></div>
                             <div id="popular-posts-container" style="display: flex; flex-direction: column;">
-                                <div style="text-align: center; color: var(--text-muted); padding: 10px;">กำลังอัญเชิญข้อมูล...</div>
+                                <div style="text-align: center; color: var(--text-muted); padding: 15px;">กำลังอัญเชิญข้อมูล...</div>
                             </div>
                         </div>
 
                         <div class="panel-card" style="margin-bottom: 0;">
                             <div class="panel-header"><h3 style="color: var(--gold-main);">🙏 ได้รับอนุโมทนาสูงสุด</h3></div>
                             <div id="top-liked-posts-container" style="display: flex; flex-direction: column;">
-                                <div style="text-align: center; color: var(--text-muted); padding: 10px;">กำลังอัญเชิญข้อมูล...</div>
+                                <div style="text-align: center; color: var(--text-muted); padding: 15px;">กำลังอัญเชิญข้อมูล...</div>
                             </div>
                         </div>
 
@@ -414,8 +416,8 @@
                     </div>
 
                     <div id="section-cat1">
-                        <h4 style="margin-bottom: 6px; margin-top: 8px; color: var(--gold-main); font-size: 0.85rem; border-left: 2px solid var(--gold-main); padding-left: 6px;">หมวดหมู่: นิยาย "สัตยาสาบาน"</h4>
-                        <div class="table-responsive" style="margin-bottom: 8px;">
+                        <h4 style="margin-bottom: 8px; margin-top: 10px; color: var(--gold-main); font-size: 0.9rem; border-left: 2px solid var(--gold-main); padding-left: 8px;">หมวดหมู่: นิยาย "สัตยาสาบาน"</h4>
+                        <div class="table-responsive" style="margin-bottom: 12px;">
                             <table class="data-table">
                                 <thead>
                                     <tr>
@@ -429,11 +431,11 @@
                                 <tbody id="posts-table-body-cat1"><tr><td colspan="5" style="text-align:center; padding: 15px;">กำลังอัญเชิญข้อมูล...</td></tr></tbody>
                             </table>
                         </div>
-                        <div id="postPaginationCat1" class="pagination" style="margin-bottom: 15px;"></div>
+                        <div id="postPaginationCat1" class="pagination" style="margin-bottom: 20px;"></div>
                     </div>
 
                     <div id="section-cat2">
-                        <h4 style="margin-bottom: 6px; color: var(--gold-main); font-size: 0.85rem; border-left: 2px solid var(--gold-main); padding-left: 6px;">หมวดหมู่: คุยกับศิษย์หลวงปู่</h4>
+                        <h4 style="margin-bottom: 8px; color: var(--gold-main); font-size: 0.9rem; border-left: 2px solid var(--gold-main); padding-left: 8px;">หมวดหมู่: คุยกับศิษย์หลวงปู่</h4>
                         <div class="table-responsive">
                             <table class="data-table">
                                 <thead>
@@ -531,7 +533,7 @@
 
             <!-- 🌟 Tab CMS Index -->
             <div id="tab-cms-index" class="tab-pane">
-                <div class="panel-card" style="max-width: 600px;">
+                <div class="panel-card" style="max-width: 700px;">
                     <div class="panel-header"><h3>🏠 ปรับแต่งหน้าแรก (Hero Section)</h3></div>
                     <form id="hero-cms-form" onsubmit="saveHeroCMS(event)">
                         <div class="form-group">
@@ -556,8 +558,8 @@
                                 <input type="text" id="cms-hero-btn-url" class="form-control" placeholder="เช่น webboard.html" required>
                             </div>
                         </div>
-                        <hr style="border: 0; border-top: 1px dashed rgba(138, 99, 21, 0.4); margin: 15px 0;">
-                        <button type="submit" class="btn btn-gold" style="width: 100%; padding: 8px; font-size: 0.85rem;">💾 บันทึกการเปลี่ยนแปลง</button>
+                        <hr style="border: 0; border-top: 1px dashed rgba(138, 99, 21, 0.4); margin: 20px 0;">
+                        <button type="submit" class="btn btn-gold" style="width: 100%; padding: 10px; font-size: 0.95rem;">💾 บันทึกการเปลี่ยนแปลง</button>
                     </form>
                 </div>
             </div>
@@ -568,7 +570,7 @@
     <!-- 🔮 Modals -->
     <div class="modal-overlay" id="postModal">
         <div class="modal-box">
-            <h3 id="postModalTitle" style="margin-bottom: 12px; text-align: center; font-size: 1.05rem;">เพิ่มกระทู้ใหม่</h3>
+            <h3 id="postModalTitle" style="margin-bottom: 15px; text-align: center; font-size: 1.1rem;">เพิ่มกระทู้ใหม่</h3>
             <form id="postForm" onsubmit="submitPostForm(event)">
                 <input type="hidden" id="edit-post-id">
                 <input type="hidden" id="edit-post-pinned">
@@ -581,8 +583,8 @@
                 </div>
                 <div class="form-group"><label>หัวข้อเรื่อง</label><input type="text" id="edit-post-title" class="form-control" required></div>
                 <div class="form-group"><label>ผู้เขียน</label><input type="text" id="edit-post-author" class="form-control" required></div>
-                <div class="form-group"><label>เนื้อหา (รองรับเว้นบรรทัด)</label><textarea id="edit-post-content" class="form-control" rows="4" required></textarea></div>
-                <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 15px;">
+                <div class="form-group"><label>เนื้อหา (รองรับเว้นบรรทัด)</label><textarea id="edit-post-content" class="form-control" rows="5" required></textarea></div>
+                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
                     <button type="button" class="btn btn-edit" onclick="closeModal('postModal')">ยกเลิก</button>
                     <button type="submit" class="btn btn-gold" id="btnSavePost">บันทึกข้อมูล</button>
                 </div>
@@ -591,8 +593,8 @@
     </div>
 
     <div class="modal-overlay" id="userModal">
-        <div class="modal-box" style="max-width: 360px;">
-            <h3 id="userModalTitle" style="margin-bottom: 12px; text-align: center; font-size: 1.05rem;">เพิ่มสมาชิกใหม่</h3>
+        <div class="modal-box" style="max-width: 400px;">
+            <h3 id="userModalTitle" style="margin-bottom: 15px; text-align: center; font-size: 1.1rem;">เพิ่มสมาชิกใหม่</h3>
             <form id="userForm" onsubmit="submitUserForm(event)">
                 <input type="hidden" id="edit-user-old-username">
                 <div class="form-group"><label>นามแฝง (Username)</label><input type="text" id="edit-user-name" class="form-control" required></div>
@@ -608,7 +610,7 @@
                         <option value="1">ปรมัตถ์ (แอดมิน)</option>
                     </select>
                 </div>
-                <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 15px;">
+                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
                     <button type="button" class="btn btn-edit" onclick="closeModal('userModal')">ยกเลิก</button>
                     <button type="submit" class="btn btn-gold" id="btnSaveUser">บันทึกข้อมูล</button>
                 </div>
@@ -617,20 +619,20 @@
     </div>
 
     <div class="modal-overlay" id="customAlertModal" style="z-index: 9999;">
-        <div class="modal-box" style="max-width: 280px; text-align: center; padding: 20px 15px;">
-            <h3 style="font-size: 1rem; margin-bottom: 8px;">ประกาศแจ้งเตือน</h3>
-            <p id="customAlertMessage" style="color: #e2d4c3; font-size: 0.8rem; margin-bottom: 15px; line-height: 1.4;"></p>
-            <button type="button" class="btn btn-gold" onclick="closeModal('customAlertModal')" style="width: 100%; padding: 6px;">รับทราบ</button>
+        <div class="modal-box" style="max-width: 300px; text-align: center; padding: 25px 20px;">
+            <h3 style="font-size: 1.1rem; margin-bottom: 10px;">ประกาศแจ้งเตือน</h3>
+            <p id="customAlertMessage" style="color: #e2d4c3; font-size: 0.85rem; margin-bottom: 20px; line-height: 1.5;"></p>
+            <button type="button" class="btn btn-gold" onclick="closeModal('customAlertModal')" style="width: 100%; padding: 8px;">รับทราบ</button>
         </div>
     </div>
 
     <div class="modal-overlay" id="customConfirmModal" style="z-index: 9999;">
-        <div class="modal-box" style="max-width: 300px; text-align: center; padding: 20px 15px;">
-            <h3 style="font-size: 1rem; margin-bottom: 8px; color: var(--danger-color);">⚠️ ยืนยันการดำเนินการ</h3>
-            <p id="customConfirmMessage" style="color: #e2d4c3; font-size: 0.8rem; margin-bottom: 15px; line-height: 1.4;"></p>
-            <div style="display: flex; gap: 8px; justify-content: center;">
-                <button type="button" class="btn btn-edit" onclick="closeModal('customConfirmModal')" style="width: 50%; padding: 6px;">ถอยกลับ</button>
-                <button type="button" class="btn btn-delete" id="customConfirmBtn" style="width: 50%; padding: 6px;">ยืนยันลบ</button>
+        <div class="modal-box" style="max-width: 320px; text-align: center; padding: 25px 20px;">
+            <h3 style="font-size: 1.1rem; margin-bottom: 10px; color: var(--danger-color);">⚠️ ยืนยันการดำเนินการ</h3>
+            <p id="customConfirmMessage" style="color: #e2d4c3; font-size: 0.85rem; margin-bottom: 20px; line-height: 1.5;"></p>
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button type="button" class="btn btn-edit" onclick="closeModal('customConfirmModal')" style="width: 50%; padding: 8px;">ถอยกลับ</button>
+                <button type="button" class="btn btn-delete" id="customConfirmBtn" style="width: 50%; padding: 8px;">ยืนยันลบ</button>
             </div>
         </div>
     </div>
@@ -658,10 +660,10 @@
         }
 
         function timeSinceLastLogin(timestamp) {
-            if (!timestamp) return '<span style="color:var(--text-muted); font-size:0.65rem;">ไม่ปรากฏร่องรอย</span>';
+            if (!timestamp) return '<span style="color:var(--text-muted); font-size:0.7rem;">ไม่ปรากฏร่องรอย</span>';
             const now = new Date();
             const past = new Date(Number(timestamp) || timestamp);
-            if (isNaN(past.getTime())) return '<span style="color:var(--text-muted); font-size:0.65rem;">ไม่ปรากฏร่องรอย</span>';
+            if (isNaN(past.getTime())) return '<span style="color:var(--text-muted); font-size:0.7rem;">ไม่ปรากฏร่องรอย</span>';
             const diffTime = Math.abs(now - past);
             const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
             const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
