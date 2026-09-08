@@ -109,16 +109,16 @@
         .user-info { display: flex; align-items: center; gap: 8px; }
         .karma-score { font-family: 'Prompt', sans-serif; font-weight: bold; color: var(--gold-main); font-size: 1rem; text-shadow: 0 0 10px rgba(212,175,55,0.4); }
 
-        /* 💎 Tables (🌟 ปรับให้เล็กลง กระชับ ดูแน่นเป็นมืออาชีพ) */
+        /* 💎 Tables */
         .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 8px; border: 1px solid rgba(138, 99, 21, 0.2); margin-bottom: 15px; background: rgba(0,0,0,0.3); }
-        .data-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.88rem; text-align: left; min-width: 800px; }
-        .data-table th, .data-table td { padding: 10px 14px; border-bottom: 1px solid rgba(138, 99, 21, 0.1); vertical-align: middle; }
+        .data-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.88rem; text-align: left; min-width: 800px; table-layout: fixed; } /* 🌟 ล็อคโครงสร้าง Layout */
+        .data-table th, .data-table td { padding: 10px 14px; border-bottom: 1px solid rgba(138, 99, 21, 0.1); vertical-align: middle; overflow: hidden; text-overflow: ellipsis; }
         .data-table th { background: rgba(31, 17, 7, 0.95); color: var(--gold-main); font-family: 'Prompt', sans-serif; font-weight: 600; font-size: 0.85rem; white-space: nowrap; letter-spacing: 0.5px; position: sticky; top: 0; z-index: 10; }
         .data-table tbody tr { transition: background 0.2s; }
         .data-table tbody tr:hover { background: rgba(212, 175, 55, 0.06); }
         .data-table tbody tr:last-child td { border-bottom: none; }
         
-        /* 💎 Buttons (🌟 ย่อปุ่มให้สลิม เพรียวบาง) */
+        /* 💎 Buttons */
         .btn { padding: 6px 14px; border-radius: 20px; font-family: 'Prompt', sans-serif; font-size: 0.8rem; font-weight: 500; cursor: pointer; border: none; transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 5px; white-space: nowrap; box-shadow: 0 2px 6px rgba(0,0,0,0.4); }
         .btn:active { transform: scale(0.95); }
         .btn-gold { background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; font-weight: 700; border: 1px solid #ffeba9; } 
@@ -130,11 +130,11 @@
         .btn-pin { background: rgba(115, 201, 144, 0.15); color: #9ce8b9; border: 1px solid rgba(115, 201, 144, 0.6); } 
         .btn-pin:hover { background: var(--success-color); color: #000; border-color: #d1f2dd; }
         
-        /* 🌟 ปุ่มเลื่อนอันดับ (เล็กกะทัดรัด) */
+        /* 🌟 ปุ่มเลื่อนอันดับ */
         .btn-reorder { background: transparent; color: var(--text-muted); border: 1px dashed rgba(212, 175, 55, 0.3); width: 26px; height: 26px; padding: 0; font-size: 0.7rem; border-radius: 6px; box-shadow: none; display: inline-flex; justify-content: center; align-items: center; }
         .btn-reorder:hover { background: rgba(212, 175, 55, 0.2); color: var(--gold-light); border-style: solid; border-color: var(--gold-main); }
         
-        /* 💎 Badges (🌟 ป้ายยศกระชับพื้นที่) */
+        /* 💎 Badges */
         .role-badge, .role-tag { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-family: 'Prompt', sans-serif; font-weight: 600; letter-spacing: 0.5px; vertical-align: middle; box-shadow: 0 2px 4px rgba(0,0,0,0.6); }
         .role-1 { background: linear-gradient(135deg, #f5d77f, #d4af37, #8a6315); color: #1a0f02 !important; border: 1px solid #ffeea8; box-shadow: 0 0 10px rgba(212,175,55,0.6), inset 0 0 6px rgba(255,255,255,0.6); } 
         .role-2 { background: linear-gradient(135deg, #4a1c60, #240b36); color: #e5b3ff !important; border: 1px solid #9b59b6; } 
@@ -146,7 +146,7 @@
         .admin-badge { background: rgba(115, 201, 144, 0.15); border: 1px solid var(--success-dark); color: var(--success-color); padding: 3px 8px; border-radius: 20px; font-size: 0.7rem; font-family: 'Prompt', sans-serif; white-space: nowrap; font-weight: bold; }
 
         /* 💎 Forms & Filters */
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; width: 100%; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; width: 100%; }
         .form-group { margin-bottom: 15px; width: 100%; } 
         .form-group label { display: block; color: var(--gold-light); font-size: 0.85rem; margin-bottom: 6px; font-family: 'Prompt', sans-serif; font-weight: 500; }
         .form-control { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid rgba(138, 99, 21, 0.4); color: #fff; padding: 10px 14px; border-radius: 8px; font-family: 'Sarabun', sans-serif; font-size: 0.95rem; transition: all 0.3s; }
@@ -219,7 +219,7 @@
 
         <main class="admin-content">
 
-            <!-- 🌟 Tab Dashboard (ศูนย์บัญชาการ) -->
+            <!-- 🌟 Tab Dashboard -->
             <div id="tab-dashboard" class="tab-pane active">
                 
                 <div class="stats-grid">
@@ -246,9 +246,7 @@
                 </div>
 
                 <div class="dashboard-grid">
-                    <!-- คอลัมน์ 1 -->
                     <div class="dashboard-col">
-                        <!-- สัดส่วนข้อมูล -->
                         <div class="panel-card" style="margin-bottom: 0;">
                             <div class="panel-header"><h3>📊 สัดส่วนข้อมูลในสำนัก</h3></div>
                             <div class="progress-section">
@@ -270,7 +268,6 @@
                             </div>
                         </div>
 
-                        <!-- ความเคลื่อนไหวล่าสุด -->
                         <div class="panel-card" style="margin-bottom: 0;">
                             <div class="panel-header"><h3>📝 ความเคลื่อนไหวล่าสุด</h3></div>
                             <div id="latest-posts-container" style="display: flex; flex-direction: column;">
@@ -279,9 +276,7 @@
                         </div>
                     </div>
 
-                    <!-- คอลัมน์ 2 -->
                     <div class="dashboard-col">
-                        <!-- ทำเนียบศิษย์เอก -->
                         <div class="panel-card" style="margin-bottom: 0;">
                             <div class="panel-header"><h3>🏆 ทำเนียบผู้มีบารมี (Top Karma)</h3></div>
                             <div id="top-users-container" style="display: flex; flex-direction: column;">
@@ -289,7 +284,6 @@
                             </div>
                         </div>
 
-                        <!-- กระทู้ยอดฮิต -->
                         <div class="panel-card" style="margin-bottom: 0;">
                             <div class="panel-header"><h3 style="color: #ffb17a;">🔥 คัมภีร์ยอดฮิต (Top Views)</h3></div>
                             <div id="popular-posts-container" style="display: flex; flex-direction: column;">
@@ -300,7 +294,7 @@
                 </div>
             </div>
 
-            <!-- Tab Posts -->
+            <!-- 🌟 Tab Posts -->
             <div id="tab-posts" class="tab-pane">
                 <div class="panel-card">
                     <div class="panel-header">
@@ -321,7 +315,16 @@
                         <h4 style="margin-bottom: 10px; margin-top: 10px; color: var(--gold-main); font-size: 1rem; border-left: 3px solid var(--gold-main); padding-left: 8px;">หมวดหมู่: นิยาย "สัตยาสาบาน"</h4>
                         <div class="table-responsive" style="margin-bottom: 10px;">
                             <table class="data-table">
-                                <thead><tr><th>รหัสอ้างอิง</th><th>หัวข้อเรื่อง</th><th>สถานะ</th><th>ผู้เขียน</th><th>จัดการ</th></tr></thead>
+                                <thead>
+                                    <tr>
+                                        <!-- 🌟 ล็อคขนาดความกว้างตารางให้ทั้ง 2 หมวดเท่ากันเป๊ะ -->
+                                        <th style="width: 12%;">รหัสอ้างอิง</th>
+                                        <th style="width: 40%;">หัวข้อเรื่อง</th>
+                                        <th style="width: 13%;">สถานะ</th>
+                                        <th style="width: 15%;">ผู้เขียน</th>
+                                        <th style="width: 20%; min-width: 260px;">จัดการ</th>
+                                    </tr>
+                                </thead>
                                 <tbody id="posts-table-body-cat1"><tr><td colspan="5" style="text-align:center; padding: 20px;">กำลังอัญเชิญข้อมูล...</td></tr></tbody>
                             </table>
                         </div>
@@ -332,7 +335,15 @@
                         <h4 style="margin-bottom: 10px; color: var(--gold-main); font-size: 1rem; border-left: 3px solid var(--gold-main); padding-left: 8px;">หมวดหมู่: คุยกับศิษย์หลวงปู่</h4>
                         <div class="table-responsive">
                             <table class="data-table">
-                                <thead><tr><th>รหัสอ้างอิง</th><th>หัวข้อเรื่อง</th><th>สถานะ</th><th>ผู้เขียน</th><th>จัดการ</th></tr></thead>
+                                <thead>
+                                    <tr>
+                                        <th style="width: 12%;">รหัสอ้างอิง</th>
+                                        <th style="width: 40%;">หัวข้อเรื่อง</th>
+                                        <th style="width: 13%;">สถานะ</th>
+                                        <th style="width: 15%;">ผู้เขียน</th>
+                                        <th style="width: 20%; min-width: 260px;">จัดการ</th>
+                                    </tr>
+                                </thead>
                                 <tbody id="posts-table-body-cat2"><tr><td colspan="5" style="text-align:center; padding: 20px;">กำลังอัญเชิญข้อมูล...</td></tr></tbody>
                             </table>
                         </div>
@@ -341,7 +352,7 @@
                 </div>
             </div>
 
-            <!-- Tab Users -->
+            <!-- 🌟 Tab Users -->
             <div id="tab-users" class="tab-pane">
                 <div class="panel-card">
                     <div class="panel-header">
@@ -375,14 +386,14 @@
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>ลำดับ</th>
-                                    <th>นามแฝง (Username)</th>
-                                    <th>รหัสผ่านลับ</th>
-                                    <th>ระดับขั้น</th>
-                                    <th>แต้มบุญ</th>
-                                    <th>ใช้งานล่าสุด</th>
-                                    <th style="text-align: center;">จัดเรียง</th>
-                                    <th>จัดการ</th>
+                                    <th style="width: 8%;">ลำดับ</th>
+                                    <th style="width: 18%;">นามแฝง (Username)</th>
+                                    <th style="width: 15%;">รหัสผ่านลับ</th>
+                                    <th style="width: 12%;">ระดับขั้น</th>
+                                    <th style="width: 12%;">แต้มบุญ</th>
+                                    <th style="width: 15%;">ใช้งานล่าสุด</th>
+                                    <th style="width: 8%; text-align: center;">จัดเรียง</th>
+                                    <th style="width: 12%; min-width: 180px;">จัดการ</th>
                                 </tr>
                             </thead>
                             <tbody id="users-table-body"><tr><td colspan="8" style="text-align:center; padding: 20px;">กำลังอัญเชิญข้อมูล...</td></tr></tbody>
@@ -392,7 +403,7 @@
                 </div>
             </div>
 
-            <!-- Tab แจ้งเบาะแส (Reports) -->
+            <!-- 🌟 Tab Reports -->
             <div id="tab-reports" class="tab-pane">
                 <div class="panel-card">
                     <div class="panel-header">
@@ -403,12 +414,12 @@
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>ผู้แจ้ง</th>
-                                    <th>สาเหตุการแจ้ง</th>
-                                    <th>ประเภท</th>
-                                    <th>รหัสอ้างอิง (ID)</th>
-                                    <th>เวลาที่แจ้ง</th>
-                                    <th>จัดการ</th>
+                                    <th style="width: 15%;">ผู้แจ้ง</th>
+                                    <th style="width: 25%;">สาเหตุการแจ้ง</th>
+                                    <th style="width: 12%;">ประเภท</th>
+                                    <th style="width: 15%;">รหัสอ้างอิง (ID)</th>
+                                    <th style="width: 15%;">เวลาที่แจ้ง</th>
+                                    <th style="width: 18%; min-width: 200px;">จัดการ</th>
                                 </tr>
                             </thead>
                             <tbody id="reports-table-body"><tr><td colspan="6" style="text-align:center; padding: 20px;">กำลังอัญเชิญข้อมูล...</td></tr></tbody>
@@ -417,7 +428,7 @@
                 </div>
             </div>
 
-            <!-- Tab CMS Index -->
+            <!-- 🌟 Tab CMS Index -->
             <div id="tab-cms-index" class="tab-pane">
                 <div class="panel-card" style="max-width: 700px;">
                     <div class="panel-header"><h3>🏠 ปรับแต่งหน้าแรก (Hero Section)</h3></div>
@@ -864,13 +875,14 @@
                 const isPinned = checkIsPinned(p.pinned);
                 const pinBtnHtml = `<button class="btn ${isPinned ? 'btn-edit' : 'btn-pin'}" onclick="togglePinPost('${p.id}')">${isPinned ? '📍 ถอดหมุด' : '📌 ปักหมุด'}</button>`;
                 
+                // 🌟 บังคับ flex-wrap: nowrap เพื่อไม่ให้ปุ่มตกลงมาซ้อนกัน
                 const rowHtml = `<tr>
-                    <td style="max-width: 90px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-muted); font-family: monospace;">${String(p.id).substring(0, 8)}...</td>
+                    <td style="color: var(--text-muted); font-family: monospace;">${String(p.id).substring(0, 8)}...</td>
                     <td><strong style="color: var(--gold-light); font-size: 0.95rem;">${p.title}</strong></td>
                     <td>${isPinned ? '<span class="admin-badge" style="border-color:var(--gold-main); color:var(--gold-main); padding:3px 8px; font-size:0.7rem;">📌 ปักหมุดแล้ว</span>' : '<span style="color:var(--text-muted);">ทั่วไป</span>'}</td>
                     <td>${p.author}</td>
                     <td>
-                        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                        <div style="display:flex; gap:6px; flex-wrap:nowrap;">
                             ${pinBtnHtml} 
                             <button class="btn btn-edit" onclick="editPost('${p.id}')">✏️ แก้ไข</button> 
                             <button class="btn btn-delete" onclick="deletePost('${p.id}')">🗑️ ลบ</button>
