@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
-import { sign, verify, decode } from 'hono/jwt' // 🌟 เพิ่มอาวุธลับ decode
+import { sign, verify, decode } from 'hono/jwt' 
 
 type Bindings = {
   DB: D1Database
@@ -11,14 +11,12 @@ type Bindings = {
 
 const app = new Hono<{ Bindings: Bindings }>()
 
-// 🌟 ปลดล็อก CORS ให้ยอมรับ Authorization ทะลุทะลวง
 app.use('/api/*', cors({
   origin: '*',
   allowHeaders: ['Content-Type', 'Authorization'],
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
 }))
 
-// กุญแจอาคมสำหรับเข้ารหัส Token
 const DEFAULT_JWT_SECRET = 'sitluangpu_telepathy_secret_token_2026'
 
 async function hashPassword(password: string, salt: string) {
@@ -55,19 +53,16 @@ async function generateToken(payload: { username: string; role: string; rank_nam
   }, secret)
 }
 
-// 🌟 ปรับปรุงการตรวจสอบตัวตน ให้ทะลุทะลวงทุกปัญหา Token
 async function getAuthenticatedUser(c: any): Promise<{ username: string; role: string; rank_name: string } | null> {
   const authHeader = c.req.header('Authorization') || c.req.header('authorization');
   if (!authHeader) return null;
   
-  // ตัดคำว่า Bearer ออกอย่างปลอดภัย
   const token = authHeader.replace(/^Bearer\s+/i, '').trim();
   
   try {
     const secret = c.env.JWT_SECRET || DEFAULT_JWT_SECRET;
     return await verify(token, secret) as any;
   } catch (e) {
-    // 🌟 อาวุธลับ: ถ้า Verify พัง (กุญแจไม่ตรง/หมดอายุ) ให้ทำการแกะ Token ตรงๆ
     try {
       const decoded = decode(token);
       return decoded.payload as any;
@@ -77,7 +72,6 @@ async function getAuthenticatedUser(c: any): Promise<{ username: string; role: s
   }
 }
 
-// 🌟 อัปเกรดระบบจัดอันดับ หากได้ "ยศพิเศษ" ที่แอดมินสร้างใหม่ แต้มบุญจะไม่ลดยศให้
 function calculateRank(karma: number, currentRole: string, currentRankName: string) {
   const standardRoles = ['2', '3', '4', '5'];
   if (currentRole === '1' || currentRankName === 'ตัวละคร' || (!standardRoles.includes(String(currentRole)) && currentRole !== '')) {
@@ -143,7 +137,6 @@ app.get('/api/fix-db', async (c) => {
         post_id TEXT NOT NULL,
         timestamp TEXT NOT NULL
     );`,
-    // 🌟 เพิ่มตารางสำหรับโรงตีเหล็ก (ระบบสร้างยศ)
     `CREATE TABLE IF NOT EXISTS roles (
         id TEXT PRIMARY KEY,
         rank_name TEXT NOT NULL,
@@ -165,9 +158,6 @@ app.get('/api/fix-db', async (c) => {
   return c.json({ message: "อัปเกรดฐานข้อมูลเรียบร้อยแล้ว!", logs })
 })
 
-// ==========================================
-// 🎨 โรงตีเหล็ก - ระบบจัดการยศพิเศษ (Dynamic Roles)
-// ==========================================
 app.get('/api/roles', async (c) => {
   try {
     const { results } = await c.env.DB.prepare("SELECT * FROM roles ORDER BY level ASC, rank_name ASC").all()
@@ -222,10 +212,6 @@ app.delete('/api/roles/:id', async (c) => {
   }
 })
 
-
-// ==========================================
-// 🔖 ระบบคัมภีร์ส่วนตัว (Bookmarks System)
-// ==========================================
 app.get('/api/bookmarks', async (c) => {
   const authUser = await getAuthenticatedUser(c)
   if (!authUser) return c.json([], 200)
@@ -280,9 +266,6 @@ app.delete('/api/bookmarks/:postId', async (c) => {
   }
 })
 
-// ==========================================
-// 🚨 ระบบแจ้งเบาะแส (Report System) 
-// ==========================================
 app.get('/api/reports', async (c) => {
   try {
     const { results } = await c.env.DB.prepare("SELECT * FROM reports ORDER BY id DESC").all()
@@ -312,9 +295,6 @@ app.delete('/api/reports/:id', async (c) => {
   }
 })
 
-// ==========================================
-// 🔑 ระบบเข้าสู่ระบบทั่วไป & แอดมิน (Auth & Token)
-// ==========================================
 app.post('/api/login', async (c) => {
   try {
     const { username, password } = await c.req.json()
@@ -398,9 +378,6 @@ app.get('/api/me', async (c) => {
   return c.json({ authenticated: true, user: { ...user, nextRankMsg: rankInfo.nextRankMsg } })
 })
 
-// ==========================================
-// 🚪 จัดการสมาชิก 
-// ==========================================
 app.get('/api/users', async (c) => {
   const { results } = await c.env.DB.prepare("SELECT * FROM users").all()
   const usersWithKarmaInfo = results.map((u: any) => {
@@ -414,7 +391,6 @@ app.post('/api/users', async (c) => {
   const body = await c.req.json()
   const { username, password, role, rank_name, last_login, bot_check } = body
   
-  // 🌟 เช็คคำปฏิญาณ (Custom Text CAPTCHA) ว่าพิมพ์มาถูกไหม
   if (bot_check !== 'สัตยาสาบาน') {
       return c.json({ success: false, message: 'โดนสกัดกั้น! คำปฏิญาณยืนยันตัวตนไม่ถูกต้อง' }, 403);
   }
@@ -468,9 +444,6 @@ app.delete('/api/users/:username', async (c) => {
   return c.json({ success: true })
 })
 
-// ==========================================
-// 📜 จัดการกระทู้
-// ==========================================
 app.get('/api/posts', async (c) => {
   const { results } = await c.env.DB.prepare("SELECT * FROM posts ORDER BY id DESC").all()
   return c.json(results)
@@ -537,6 +510,8 @@ app.delete('/api/posts/:id', async (c) => {
   await c.env.DB.prepare("DELETE FROM posts WHERE id = ?").bind(id).run()
   await c.env.DB.prepare("DELETE FROM comments WHERE post_id = ?").bind(id).run()
   await c.env.DB.prepare("DELETE FROM bookmarks WHERE post_id = ?").bind(id).run()
+  // 🌟 เพิ่มให้ลบการแจ้งเตือนที่เกี่ยวข้องกับกระทู้นี้ออกด้วย
+  await c.env.DB.prepare("DELETE FROM notifications WHERE post_id = ?").bind(id).run().catch(()=>{})
   return c.json({ success: true })
 })
 
@@ -570,9 +545,6 @@ app.post('/api/posts/:postId/like', async (c) => {
   }
 })
 
-// ==========================================
-// 💬 จัดการคอมเมนต์
-// ==========================================
 app.get('/api/comments', async (c) => {
   const { results } = await c.env.DB.prepare("SELECT * FROM comments ORDER BY id ASC").all()
   return c.json(results)
@@ -679,9 +651,6 @@ app.post('/api/cms', async (c) => {
   return c.json({ success: true })
 })
 
-// ==========================================
-// 🔮 ระบบแจ้งเตือน (Notifications)
-// ==========================================
 app.get('/api/notifications/:username', async (c) => {
   const username = c.req.param('username')
   try {
@@ -720,9 +689,6 @@ app.put('/api/notifications/:id/read', async (c) => {
   }
 })
 
-// ==========================================
-// ⚡ WebSocket Endpoint
-// ==========================================
 app.get('/api/ws', async (c) => {
   const upgradeHeader = c.req.header('Upgrade')
   if (upgradeHeader !== 'websocket') {
@@ -735,9 +701,6 @@ app.get('/api/ws', async (c) => {
 
 export default app
 
-// ==========================================
-// 🔮 Durable Object สำหรับกระจายคลื่นกระแสจิต (Broadcast)
-// ==========================================
 export class TelepathyRoom {
   state: DurableObjectState
   sessions: Set<WebSocket>

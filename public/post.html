@@ -389,12 +389,12 @@
 
         function formatMentions(text) {
             if(!text) return '';
-            const mentionRegex = /@([ก-๙a-zA-Z0-9_-]+)/g;
+            const mentionRegex = /@([\u0E00-\u0E7Fa-zA-Z0-9_-]+)/g;
             return text.replace(mentionRegex, '<span class="user-mention">@$1</span>');
         }
 
         function extractMentions(text) {
-            const mentionRegex = /@([ก-๙a-zA-Z0-9_-]+)/g;
+            const mentionRegex = /@([\u0E00-\u0E7Fa-zA-Z0-9_-]+)/g;
             const matches = [...text.matchAll(mentionRegex)];
             return [...new Set(matches.map(m => m[1]))]; 
         }
@@ -453,7 +453,7 @@
 
         let globalUsersCache = null;
         let fetchUsersPromise = null;
-        let globalRolesCache = null; // 🌟 Cache ยศพิเศษ
+        let globalRolesCache = null;
 
         const ApiManager = {
             fetchUsersOnce() {
@@ -470,7 +470,6 @@
                     .catch(() => ({}));
                 return fetchUsersPromise;
             },
-            // 🌟 ดึงข้อมูลโรงตีเหล็ก
             fetchRolesCache() {
                 if (globalRolesCache) return Promise.resolve(globalRolesCache);
                 return fetch(`${API_CONFIG.BASE_URL}/roles`)
@@ -549,6 +548,15 @@
             },
             async readNotification(id) {
                 try { await fetch(`${API_CONFIG.BASE_URL}/notifications/${id}/read`, { method: 'PUT' }); } catch(e) {}
+            },
+            async sendNotification(data) {
+                try {
+                    await fetch(`${API_CONFIG.BASE_URL}/notifications`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                } catch (e) {}
             },
             async getBookmarks() {
                 try {
@@ -779,7 +787,6 @@
             }
         }
 
-        // 🌟 อัปเกรดระบบเรนเดอร์ป้ายยศในหน้าอ่านกระทู้ (รองรับยศ Custom Colors)
         function formatBadgeFromUsersMap(username, usersMap, rolesList = []) {
             if (!username) return '<span class="role-badge role-5">เด็กวัด</span>';
             if (username.toUpperCase() === 'ADMIN') return '<span class="role-badge role-1">ปรมัตถ์</span>';
@@ -960,8 +967,7 @@
             showCustomConfirm('ท่านแน่ใจหรือไม่ว่าต้องการ <strong>ทำลาย</strong> ความคิดเห็นนี้ทิ้งไปชั่วนิรันดร์?', async () => {
                 const result = await ApiManager.deleteComment(commentId);
                 if(result.success !== false) {
-                    showCustomAlert('ทำลายร่องรอยวิญญาณเรียบร้อยแล้ว');
-                    loadComments(postId);
+                    showCustomAlert('ทำลายร่องรอยวิญญาณเรียบร้อยแล้ว', window.location.href);
                 } else {
                     showCustomAlert('เกิดอาถรรพ์ขัดข้อง ลบไม่ได้!');
                 }
@@ -1048,8 +1054,8 @@
                     }
 
                     broadcastAction('NEW_COMMENT', postId, { postId: postId });
-                    showCustomAlert('บันทึกจารึกสำเร็จ!');
-                    loadComments(postId); 
+                    // 🌟 แจ้งเตือนเสร็จให้รีเฟรชหน้าเว็บอัตโนมัติ
+                    showCustomAlert('บันทึกจารึกสำเร็จ!', window.location.href);
                 } else {
                     showCustomAlert(result.error || 'เกิดอาถรรพ์ขัดข้อง ส่งข้อความไม่สำเร็จ');
                 }
@@ -1122,8 +1128,8 @@
                     }
 
                     broadcastAction('NEW_COMMENT', postId, { postId: postId });
-                    showCustomAlert('ส่งคำตอบกลับสำเร็จ!');
-                    loadComments(postId);
+                    // 🌟 แจ้งเตือนเสร็จให้รีเฟรชหน้าเว็บอัตโนมัติ
+                    showCustomAlert('ส่งคำตอบกลับสำเร็จ!', window.location.href);
                 } else {
                     showCustomAlert(result.error || 'เกิดอาถรรพ์ขัดข้อง ส่งคำตอบกลับไม่สำเร็จ');
                 }
@@ -1144,7 +1150,7 @@
             }
 
             const usersPromise = ApiManager.fetchUsersOnce();
-            const rolesPromise = ApiManager.fetchRolesCache(); // 🌟 โหลดโรงตีเหล็กแบบขนาน
+            const rolesPromise = ApiManager.fetchRolesCache(); 
             loadNotifications();
 
             document.getElementById('displayUsername').textContent = savedUser;
