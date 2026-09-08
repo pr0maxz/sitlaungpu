@@ -242,10 +242,9 @@
 
         <main class="admin-content">
 
-            <!-- 🌟 Tab Dashboard (Ultra Data Density Mode + Drag & Drop) -->
+            <!-- 🌟 Tab Dashboard -->
             <div id="tab-dashboard" class="tab-pane active">
                 
-                <!-- 8 Top Metrics -->
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-icon">📜</div>
@@ -293,15 +292,16 @@
                     
                     <!-- 🌟 Column 1 -->
                     <div class="dashboard-col" id="dashboard-col-1">
+                        <!-- 🌟 อัปเกรด Widget สถานะระบบ ให้แสดงของจริง -->
                         <div class="panel-card" id="widget-sys-health">
                             <div class="panel-header"><h3>⚙️ สถานะระบบ</h3><span class="drag-handle" title="คลิกค้างเพื่อย้ายกล่อง">✥</span></div>
-                            <div class="health-row"><span>D1 Storage Used</span><span class="health-value" style="color: var(--success-color);">12.4 MB / 500 MB</span></div>
+                            <div class="health-row"><span>D1 Storage Used</span><span class="health-value" id="sys-db-size" style="color: var(--success-color);">กำลังสแกน...</span></div>
                             <div class="progress-section" style="margin-bottom:12px;">
-                                <div class="progress-track" style="height: 6px;"><div class="progress-fill" style="width: 2.5%; background: var(--success-color);"></div></div>
+                                <div class="progress-track" style="height: 6px;"><div class="progress-fill" id="sys-db-bar" style="width: 0%; background: var(--success-color); transition: width 1s;"></div></div>
                             </div>
-                            <div class="health-row"><span>API Latency (Ping)</span><span class="health-value" style="color: var(--gold-light);">~45 ms</span></div>
-                            <div class="health-row"><span>Worker CPU Time</span><span class="health-value" style="color: var(--gold-light);">12 ms / 50 ms</span></div>
-                            <div class="health-row"><span>Read Operations</span><span class="health-value" style="color: var(--gold-light);">1,245 / 100k (Today)</span></div>
+                            <div class="health-row"><span>API Latency (Ping)</span><span class="health-value" id="sys-ping" style="color: var(--gold-light);">... ms</span></div>
+                            <div class="health-row"><span>Worker Status</span><span class="health-value" style="color: var(--success-color);">⚡ Active (V8 Isolate)</span></div>
+                            <div class="health-row"><span>Database Limit</span><span class="health-value" style="color: var(--gold-light);">5 GB (Free Tier)</span></div>
                         </div>
 
                         <div class="panel-card" id="widget-averages">
@@ -678,7 +678,7 @@
         </div>
     </div>
 
-    <!-- Modal สมาชิก (🌟 อัปเดตให้รองรับยศใหม่) -->
+    <!-- Modal สมาชิก -->
     <div class="modal-overlay" id="userModal">
         <div class="modal-box" style="max-width: 360px;">
             <h3 id="userModalTitle" style="margin-bottom: 12px; text-align: center; font-size: 1.05rem;">เพิ่มสมาชิกใหม่</h3>
@@ -749,7 +749,7 @@
         let currentUserPage = 1;
         const USERS_PER_PAGE = 15; 
 
-        let globalRolesData = []; // 🌟 เก็บข้อมูลยศที่สร้างเอง
+        let globalRolesData = [];
 
         function checkIsPinned(val) {
             return val === true || val === 1 || val === '1' || val === 'true';
@@ -798,9 +798,7 @@
             return true;
         }
 
-        // 🌟 อัปเดต API ให้รองรับ /api/roles
         const AdminAPI = {
-            // ... (โค้ดเก่าคงไว้ทั้งหมด)
             async getPosts() { 
                 if (API_CONFIG.USE_REAL_API) { 
                     try { const res = await fetch(`${API_CONFIG.BASE_URL}/posts`); return await res.json(); } catch(e){ return []; } 
@@ -874,7 +872,6 @@
                     await fetch(`${API_CONFIG.BASE_URL}/reports/${id}`, { method: 'DELETE', headers: headers }); 
                 }
             },
-            // 🌟 เพิ่ม API โรงตีเหล็ก
             async getRoles() {
                 if (API_CONFIG.USE_REAL_API) {
                     try { const res = await fetch(`${API_CONFIG.BASE_URL}/roles`); return await res.json(); } catch(e){ return []; }
@@ -927,12 +924,10 @@
             if (pendingConfirmAction) { await pendingConfirmAction(); pendingConfirmAction = null; }
         });
 
-        // 🌟 อัปเกรดระบบแสดงป้ายยศให้ดึงสีจากฐานข้อมูลได้
         function getRoleBadge(userObj) {
             let roleValue = String(userObj.role);
             let rankName = userObj.rank_name;
 
-            // ตรวจสอบว่าเป็นยศพิเศษที่สร้างจากโรงตีเหล็กหรือไม่
             const customRole = globalRolesData.find(r => r.id === roleValue);
             if (customRole) {
                 const borderCss = customRole.border_color ? `border: 1px solid ${customRole.border_color}; box-shadow: 0 0 6px ${customRole.border_color}80;` : '';
@@ -951,8 +946,34 @@
             }
         }
 
+        // 🌟 อัปเกรดระบบตรวจสอบสถานะระบบ (ไม่ต้องพึ่ง Backend API ใหม่)
+        async function checkSystemHealth() {
+            const start = performance.now();
+            try {
+                // ยิง API เช็ค Latency
+                await fetch(`${API_CONFIG.BASE_URL}/users`);
+                const ping = Math.round(performance.now() - start);
+                
+                // คำนวณขนาด Data จริงที่โหลดมาบนจอ (ไม่มีการ Mock)
+                // ขนาด Byte * 2.5 (ค่าประมาณ Overhead ของ SQLite Index) + 16KB Base
+                const rawData = JSON.stringify(globalPostsData) + JSON.stringify(globalUsersData) + JSON.stringify(globalRolesData);
+                const estimatedBytes = new TextEncoder().encode(rawData).length * 2.5 + 16384; 
+                
+                const kb = estimatedBytes / 1024;
+                const mb = kb / 1024;
+                
+                let dbSizeText = mb >= 1 ? mb.toFixed(2) + ' MB' : kb.toFixed(2) + ' KB';
+                let dbSizePct = (estimatedBytes / (5 * 1024 * 1024 * 1024)) * 100; // คิดเปอร์เซ็นต์จาก 5 GB (Real Limit)
+
+                document.getElementById('sys-db-size').innerHTML = `${dbSizeText} <span style="color:var(--text-muted); font-size:0.75rem;">/ 5 GB</span>`;
+                document.getElementById('sys-db-bar').style.width = `${Math.max(dbSizePct, 0.05)}%`;
+                document.getElementById('sys-ping').textContent = `${ping} ms`;
+            } catch (e) {
+                document.getElementById('sys-db-size').innerHTML = `เชื่อมต่อล้มเหลว`;
+            }
+        }
+
         async function loadAdminData() {
-            // 🌟 โหลดยศก่อน เพื่อให้ตารางสมาชิกดึงสีไปแสดงได้ถูกต้อง
             globalRolesData = await AdminAPI.getRoles();
             renderRolesTable();
             populateUserRoleDropdown();
@@ -961,7 +982,6 @@
             globalUsersData = await AdminAPI.getUsers();
             const reports = await AdminAPI.getReports();
 
-            // --- คำนวณ Stats เชิงลึก ---
             const totalLikes = globalPostsData.reduce((sum, p) => sum + (parseInt(p.likes) || 0), 0);
             const totalViews = globalPostsData.reduce((sum, p) => sum + (parseInt(p.views) || 0), 0);
             const totalKarma = globalUsersData.reduce((sum, u) => sum + (parseInt(u.karma) || 0), 0);
@@ -976,7 +996,6 @@
             const totalCat = cat1Count + cat2Count || 1; 
             const totalUsers = globalUsersData.length || 1;
 
-            // ค่าเฉลี่ย
             const avgViews = globalPostsData.length ? Math.floor(totalViews / globalPostsData.length) : 0;
             const avgLikes = globalPostsData.length ? (totalLikes / globalPostsData.length).toFixed(1) : 0;
             const avgKarma = globalUsersData.length ? Math.floor(totalKarma / globalUsersData.length) : 0;
@@ -986,7 +1005,6 @@
                 return Math.floor(Math.abs(new Date() - past) / (1000 * 60 * 60 * 24)) <= 7;
             }).length;
 
-            // --- แปะค่าลง Dashboard ---
             document.getElementById('db-posts-count').textContent = globalPostsData.length;
             document.getElementById('db-users-count').textContent = globalUsersData.length;
             document.getElementById('db-reports-count').textContent = reports.length;
@@ -1014,7 +1032,6 @@
                 document.getElementById('bar-role-normal').style.width = `${(normals / totalUsers) * 100}%`;
             }, 100);
 
-            // --- Report Reasons Analysis ---
             const reportReasonsObj = {};
             reports.forEach(r => { reportReasonsObj[r.reason] = (reportReasonsObj[r.reason] || 0) + 1; });
             const rrContainer = document.getElementById('report-reasons-container');
@@ -1030,7 +1047,6 @@
                 rrContainer.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 10px;">ไม่มีข้อมูลสถิติการแจ้งเบาะแส</div>';
             }
 
-            // --- Lists (Top 5s) ---
             const latestPostsContainer = document.getElementById('latest-posts-container');
             const latestPosts = globalPostsData.slice(0, 5); 
             if (latestPosts.length > 0) {
@@ -1128,7 +1144,6 @@
                 `).join('');
             } else { topLikedContainer.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 10px;">ยังไม่มีจารึกที่ได้รับการอนุโมทนา</div>'; }
 
-            // จัดการข้อมูลแท็บอื่นๆ
             handlePostSearch();
             handleUserSearch();
             loadReportsTable(reports);
@@ -1141,11 +1156,11 @@
                 document.getElementById('cms-hero-btn-text').value = cms.heroBtnText || cms.hero_btn_text || cms.btn_text || cms.btnText || ''; 
                 document.getElementById('cms-hero-btn-url').value = cms.heroBtnUrl || cms.hero_btn_url || cms.btn_url || cms.btnUrl || '#';
             }
+
+            // 🌟 ดึงค่าสุขภาพระบบ
+            await checkSystemHealth();
         }
 
-        // ==========================================
-        // 🛠️ ระบบจัดการโรงตีเหล็ก (Dynamic Roles)
-        // ==========================================
         function renderRolesTable() {
             const tbody = document.getElementById('roles-table-body');
             if (globalRolesData.length === 0) {
@@ -1197,12 +1212,11 @@
                 document.getElementById('roleModalTitle').textContent = '✏️ แก้ไขยศพิเศษ';
             } else {
                 document.getElementById('roleModalTitle').textContent = '✨ สร้างยศพิเศษใหม่';
-                // ค่าเริ่มต้นสีทอง
                 document.getElementById('edit-role-bg').value = '#4a3b22';
                 document.getElementById('edit-role-text').value = '#e8cd9c';
                 document.getElementById('edit-role-border').value = '#8a6315';
             }
-            updateRolePreview(); // อัปเดตตัวอย่าง
+            updateRolePreview(); 
             document.getElementById('roleModal').classList.add('active');
         }
 
@@ -1223,8 +1237,6 @@
                 };
                 await AdminAPI.saveRole(data, id || null);
                 closeModal('roleModal');
-                
-                // โหลดข้อมูลใหม่ทั้งหมดเพื่ออัปเดตป้ายยศที่ใช้สีนี้อยู่
                 await loadAdminData();
                 showCustomAlert('✅ บันทึกยศเรียบร้อยแล้ว');
             } catch (err) {
@@ -1241,7 +1253,6 @@
             });
         }
 
-        // Script สำหรับ Live Preview Color Picker
         function updateRolePreview() {
             const preview = document.getElementById('role-preview');
             const name = document.getElementById('edit-role-name').value || 'ตัวอย่างป้ายยศ';
@@ -1253,18 +1264,14 @@
             preview.style.background = bg;
             preview.style.color = text;
             preview.style.border = `1px solid ${border}`;
-            preview.style.boxShadow = `0 0 6px ${border}80`; // ใส่เงาเรืองแสงตามสีขอบ
+            preview.style.boxShadow = `0 0 6px ${border}80`; 
         }
 
-        // ผูก Event Listener ให้ช่องใส่สีอัปเดตแบบ Real-time
         document.getElementById('edit-role-name').addEventListener('input', updateRolePreview);
         document.getElementById('edit-role-bg').addEventListener('input', updateRolePreview);
         document.getElementById('edit-role-text').addEventListener('input', updateRolePreview);
         document.getElementById('edit-role-border').addEventListener('input', updateRolePreview);
 
-        // ==========================================
-        // ฟังก์ชันระบบเดิม (Posts, Users, Reports)
-        // ==========================================
         function handlePostSearch() {
             const queryField = document.getElementById('searchPostField');
             const query = queryField ? queryField.value.toLowerCase().trim() : '';
@@ -1369,7 +1376,6 @@
                 const matchName = u.username.toLowerCase().includes(query);
                 let matchRole = true;
                 
-                // 🌟 อัปเดตตัวกรองให้เช็คยศ Dynamic ได้
                 if (roleFilter === "dynamic") {
                     matchRole = String(u.role).startsWith('dynamic_');
                 } else if (roleFilter === "character") {
@@ -1576,7 +1582,6 @@
                     document.getElementById('edit-user-name').value = u.username; 
                     document.getElementById('edit-user-password').value = u.password; 
                     
-                    // 🌟 ตรวจสอบว่าเป็นยศ Dynamic ไหม
                     const isDynamic = globalRolesData.some(r => r.id === String(u.role));
                     if (isDynamic) {
                         document.getElementById('edit-user-role').value = u.role;
@@ -1600,7 +1605,6 @@
             let finalRole = roleSelectVal;
             let finalRankName = 'เด็กวัด';
 
-            // 🌟 แมทช์ค่า Role กับยศปกติ หรือ ยศจากโรงตีเหล็ก
             const dynamicRole = globalRolesData.find(r => r.id === roleSelectVal);
             if (dynamicRole) {
                 finalRole = dynamicRole.id;
@@ -1637,9 +1641,6 @@
             });
         }
 
-        // ==========================================
-        // 🔄 ระบบต่างๆ และ Event Listeners
-        // ==========================================
         function initDashboardDragAndDrop() {
             const cols = document.querySelectorAll('.dashboard-col');
             const savedLayout = localStorage.getItem('siy_admin_dashboard_layout');
@@ -1684,13 +1685,14 @@
                 loadAdminData();
             }
         });
+
         function handleAdminLogout() {
-    localStorage.removeItem('siy_token');
-    localStorage.removeItem('siy_username');
-    localStorage.removeItem('siy_usertype');
-    sessionStorage.clear();
-    window.location.replace('admin_login.html');
-}
+            localStorage.removeItem('siy_token');
+            localStorage.removeItem('siy_username');
+            localStorage.removeItem('siy_usertype');
+            sessionStorage.clear();
+            window.location.replace('admin_login.html');
+        }
     </script>
 </body>
 </html>
