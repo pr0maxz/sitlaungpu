@@ -1684,6 +1684,13 @@
                 loadAdminData();
             }
         });
+        function handleAdminLogout() {
+    localStorage.removeItem('siy_token');
+    localStorage.removeItem('siy_username');
+    localStorage.removeItem('siy_usertype');
+    sessionStorage.clear();
+    window.location.replace('admin_login.html');
+}
     </script>
 </body>
 </html>
