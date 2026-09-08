@@ -389,21 +389,18 @@
 
         let currentPostAuthorGlobal = ''; 
 
-        // 🌟 กู้คืนความสามารถแปลง @แท็ก ให้กดเพื่อหาเจ้าของคอมเมนต์ได้
         function formatMentions(text) {
             if(!text) return '';
             const mentionRegex = /@([\u0E00-\u0E7Fa-zA-Z0-9_-]+)/g;
             return text.replace(mentionRegex, '<span class="user-mention" onclick="scrollToUserComment(\'$1\')" title="ค้นหาจารึกของผู้นี้">@$1</span>');
         }
 
-        // 🌟 อัปเกรด Regex ภาษาไทยให้ครอบคลุมการดึงชื่อไปส่งแจ้งเตือน 100%
         function extractMentions(text) {
             const mentionRegex = /@([\u0E00-\u0E7Fa-zA-Z0-9_-]+)/g;
             const matches = [...text.matchAll(mentionRegex)];
             return [...new Set(matches.map(m => m[1]))]; 
         }
 
-        // 🌟 เลื่อนจอไปหาคอมเมนต์แรกของคนที่เรากด @ แท็กชื่อ
         function scrollToUserComment(username) {
             const comments = document.querySelectorAll(`.comment-card[data-author="${username}"]`);
             if (comments.length > 0) {
@@ -417,7 +414,6 @@
             }
         }
 
-        // 🌟 เลื่อนจอไปหาคอมเมนต์ต้นทาง (เมื่อกดปุ่มตอบกลับคุณ...)
         function scrollToComment(commentId) {
             const target = document.getElementById(`comment-${commentId}`);
             if (target) {
@@ -488,7 +484,6 @@
         let fetchUsersPromise = null;
         let globalRolesCache = null;
 
-        // 🌟 กู้ชีพ ApiManager กลับมาแบบสมบูรณ์ 100% ป้องกันหน้าเว็บพัง
         const ApiManager = {
             fetchUsersOnce() {
                 if (globalUsersCache) return Promise.resolve(globalUsersCache);
@@ -675,20 +670,16 @@
             }
         }
 
-        // 🌟 บังคับเปลี่ยนหน้าพร้อมส่งคำสั่งไปเลื่อนจอหาคอมเมนต์
         async function handleNotiClick(notiId, postIdStr) {
             await ApiManager.readNotification(notiId);
             
-            // เช็คว่าตอนนี้อยู่หน้าเดียวกับที่แจ้งเตือนจะพาไปไหม
             const currentPostId = new URLSearchParams(window.location.search).get('id');
             const targetPostId = postIdStr.split('#')[0];
             
             if (window.location.pathname.endsWith('post.html') && currentPostId === targetPostId) {
-                // อยู่หน้าเดิม แค่เปลี่ยน Hash แล้วรีเฟรชให้คอมเมนต์โหลดใหม่+เลื่อนจอ
                 window.location.href = `post.html?id=${postIdStr}`;
                 setTimeout(() => { window.location.reload(); }, 100);
             } else {
-                // ไปหน้าใหม่เลย
                 window.location.href = `post.html?id=${postIdStr}`;
             }
         }
@@ -785,7 +776,6 @@
             if (pendingConfirmAction) { await pendingConfirmAction(); pendingConfirmAction = null; }
         });
 
-        // 🌟 แก้ไข Alert ให้รับการ Refresh ได้อย่างสมบูรณ์ ป้องกันบั๊กหน้าค้าง
         function showCustomAlert(message, reloadOnClose = false) {
             document.getElementById('customAlertMessage').innerHTML = message;
             const modal = document.getElementById('customAlertModal');
@@ -1012,7 +1002,6 @@
 
                 container.innerHTML = outputHtml;
 
-                // 🌟 ระบบสแกนหาคอมเมนต์เป้าหมาย (Auto-Scroll) ทำงานหลังจัดเรียงคอมเมนต์เสร็จ
                 setTimeout(() => {
                     if (window.location.hash && window.location.hash.startsWith('#comment-')) {
                         const targetId = window.location.hash.substring(1);
@@ -1101,7 +1090,6 @@
                     textarea.value = ''; 
                     
                     const mentionedUsers = extractMentions(content);
-                    // 🌟 แฝงรหัสคอมเมนต์ (#comment-id) เข้าไปในแจ้งเตือน
                     for (const mentionedUser of mentionedUsers) {
                         if (mentionedUser !== author) {
                             await ApiManager.sendNotification({
@@ -1175,7 +1163,6 @@
                     textarea.value = '';
 
                     const mentionedUsers = extractMentions(content);
-                    // 🌟 แฝงรหัสคอมเมนต์ (#comment-id) เข้าไปในแจ้งเตือน
                     for (const mentionedUser of mentionedUsers) {
                         if (mentionedUser !== author) { 
                             await ApiManager.sendNotification({
@@ -1213,7 +1200,6 @@
             }
         }
 
-        // 🌟 รองรับกรณีที่ผู้ใช้อยู่หน้าเดียวกับคอมเมนต์ แล้วมีคนอัปเดต Hash จากหน้าอื่น
         window.addEventListener('hashchange', () => {
             if (window.location.hash && window.location.hash.startsWith('#comment-')) {
                 const targetId = window.location.hash.substring(1);
@@ -1247,7 +1233,7 @@
 
             const commentArea = document.getElementById('commentAreaContainer');
             if (userType === 'guest') {
-                document.getElementById('logoutBtnText').textContent = 'ลบตัวตน (สละร่าง)';
+                document.getElementById('logoutBtnText').textContent = 'ออกจากระบบ'; // เปลี่ยนตรงนี้ให้เป็นออกจากระบบ
                 commentArea.innerHTML = `
                     <div class="ghost-warning-box">
                         <div style="font-size: 2.5rem; margin-bottom: 10px; filter: drop-shadow(0 0 8px rgba(168, 46, 46, 0.8));">👻</div>
@@ -1258,7 +1244,6 @@
                             <span class="ghost-line" style="margin-top: 5px;">ท่านสามารถรับรู้ได้เพียงอดีต แต่ไม่อาจสลักวาจาใดๆ ลงในหน้าจารึกนี้ได้</span>
                         </p>
                         <div class="ghost-btn-group">
-                            <button onclick="handleLogout()" class="btn-submit-comment" style="background: linear-gradient(180deg, #a82e2e 0%, #5c1414 100%); color: #ffd1d1; border: 1px solid #ff6b6b;">สละร่างเพื่อจุติใหม่</button>
                             <a href="webboard.html" class="btn-secondary-custom">เร้นกายกลับลานเสวนา</a>
                         </div>
                     </div>
