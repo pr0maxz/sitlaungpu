@@ -109,10 +109,10 @@
         .user-info { display: flex; align-items: center; gap: 8px; }
         .karma-score { font-family: 'Prompt', sans-serif; font-weight: bold; color: var(--gold-main); font-size: 1rem; text-shadow: 0 0 10px rgba(212,175,55,0.4); }
 
-        /* 💎 Tables */
+        /* 💎 Tables (🌟 นำคำสั่ง overflow: hidden ที่ทำปุ่มหายออก) */
         .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 8px; border: 1px solid rgba(138, 99, 21, 0.2); margin-bottom: 15px; background: rgba(0,0,0,0.3); }
-        .data-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.88rem; text-align: left; min-width: 800px; table-layout: fixed; } /* 🌟 ล็อคโครงสร้าง Layout */
-        .data-table th, .data-table td { padding: 10px 14px; border-bottom: 1px solid rgba(138, 99, 21, 0.1); vertical-align: middle; overflow: hidden; text-overflow: ellipsis; }
+        .data-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.88rem; text-align: left; min-width: 850px; table-layout: fixed; }
+        .data-table th, .data-table td { padding: 12px 14px; border-bottom: 1px solid rgba(138, 99, 21, 0.1); vertical-align: middle; }
         .data-table th { background: rgba(31, 17, 7, 0.95); color: var(--gold-main); font-family: 'Prompt', sans-serif; font-weight: 600; font-size: 0.85rem; white-space: nowrap; letter-spacing: 0.5px; position: sticky; top: 0; z-index: 10; }
         .data-table tbody tr { transition: background 0.2s; }
         .data-table tbody tr:hover { background: rgba(212, 175, 55, 0.06); }
@@ -317,12 +317,12 @@
                             <table class="data-table">
                                 <thead>
                                     <tr>
-                                        <!-- 🌟 ล็อคขนาดความกว้างตารางให้ทั้ง 2 หมวดเท่ากันเป๊ะ -->
-                                        <th style="width: 12%;">รหัสอ้างอิง</th>
-                                        <th style="width: 40%;">หัวข้อเรื่อง</th>
-                                        <th style="width: 13%;">สถานะ</th>
+                                        <!-- 🌟 ปรับขนาดคอลัมน์ให้เผื่อพื้นที่ปุ่มแล้ว -->
+                                        <th style="width: 10%;">รหัสอ้างอิง</th>
+                                        <th style="width: 35%;">หัวข้อเรื่อง</th>
+                                        <th style="width: 15%;">สถานะ</th>
                                         <th style="width: 15%;">ผู้เขียน</th>
-                                        <th style="width: 20%; min-width: 260px;">จัดการ</th>
+                                        <th style="width: 25%; min-width: 270px;">จัดการ</th>
                                     </tr>
                                 </thead>
                                 <tbody id="posts-table-body-cat1"><tr><td colspan="5" style="text-align:center; padding: 20px;">กำลังอัญเชิญข้อมูล...</td></tr></tbody>
@@ -337,11 +337,11 @@
                             <table class="data-table">
                                 <thead>
                                     <tr>
-                                        <th style="width: 12%;">รหัสอ้างอิง</th>
-                                        <th style="width: 40%;">หัวข้อเรื่อง</th>
-                                        <th style="width: 13%;">สถานะ</th>
+                                        <th style="width: 10%;">รหัสอ้างอิง</th>
+                                        <th style="width: 35%;">หัวข้อเรื่อง</th>
+                                        <th style="width: 15%;">สถานะ</th>
                                         <th style="width: 15%;">ผู้เขียน</th>
-                                        <th style="width: 20%; min-width: 260px;">จัดการ</th>
+                                        <th style="width: 25%; min-width: 270px;">จัดการ</th>
                                     </tr>
                                 </thead>
                                 <tbody id="posts-table-body-cat2"><tr><td colspan="5" style="text-align:center; padding: 20px;">กำลังอัญเชิญข้อมูล...</td></tr></tbody>
@@ -875,14 +875,14 @@
                 const isPinned = checkIsPinned(p.pinned);
                 const pinBtnHtml = `<button class="btn ${isPinned ? 'btn-edit' : 'btn-pin'}" onclick="togglePinPost('${p.id}')">${isPinned ? '📍 ถอดหมุด' : '📌 ปักหมุด'}</button>`;
                 
-                // 🌟 บังคับ flex-wrap: nowrap เพื่อไม่ให้ปุ่มตกลงมาซ้อนกัน
+                // 🌟 เลิกซ่อน overflow แบบตายตัว และบังคับ flex-wrap: wrap เพื่อไม่ให้ปุ่มหลุดจอ
                 const rowHtml = `<tr>
-                    <td style="color: var(--text-muted); font-family: monospace;">${String(p.id).substring(0, 8)}...</td>
+                    <td style="max-width: 90px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-muted); font-family: monospace;">${String(p.id).substring(0, 8)}...</td>
                     <td><strong style="color: var(--gold-light); font-size: 0.95rem;">${p.title}</strong></td>
                     <td>${isPinned ? '<span class="admin-badge" style="border-color:var(--gold-main); color:var(--gold-main); padding:3px 8px; font-size:0.7rem;">📌 ปักหมุดแล้ว</span>' : '<span style="color:var(--text-muted);">ทั่วไป</span>'}</td>
                     <td>${p.author}</td>
                     <td>
-                        <div style="display:flex; gap:6px; flex-wrap:nowrap;">
+                        <div style="display:flex; gap:6px; flex-wrap:wrap;">
                             ${pinBtnHtml} 
                             <button class="btn btn-edit" onclick="editPost('${p.id}')">✏️ แก้ไข</button> 
                             <button class="btn btn-delete" onclick="deletePost('${p.id}')">🗑️ ลบ</button>
