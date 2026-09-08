@@ -127,7 +127,6 @@
         
         .btn-primary { display: block; width: 100%; text-align: center; background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; font-family: 'Prompt', sans-serif; font-weight: bold; padding: 12px; border-radius: 25px; font-size: 1.1rem; box-shadow: 0 5px 15px rgba(0,0,0,0.6); border: 1px solid #ffeba9; cursor: pointer; transition: filter 0.2s; text-decoration: none; box-sizing: border-box; white-space: normal; } .btn-primary:hover { filter: brightness(1.15); }
 
-        /* 🌟 สไตล์กล่องคัมภีร์ส่วนตัว (Bookmarks) */
         .bookmark-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: rgba(0,0,0,0.4); border: 1px dashed rgba(212, 175, 55, 0.3); border-radius: 6px; margin-bottom: 8px; transition: background 0.2s; }
         .bookmark-item:hover { background: rgba(212, 175, 55, 0.1); border-color: var(--gold-main); }
         .bookmark-link { flex: 1; color: var(--gold-light); text-decoration: none; font-size: 0.9rem; font-family: 'Prompt', sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-right: 10px; }
@@ -211,16 +210,6 @@
             nav a { font-size: 0.95rem !important; flex-shrink: 0; }
         }
         @media (max-width: 600px) { .main-container { padding: 45px 20px 40px 20px !important; width: 95%; margin-top: 30px; } }
-        
-        .loading-text { font-family: 'Prompt', sans-serif; color: var(--gold-main); text-align: center; padding: 40px; }
-        
-        @media (max-width: 1200px), (hover: none) and (pointer: coarse) {
-            body { background-attachment: scroll !important; }
-            body::before, body::after { display: none !important; }
-            .main-container { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; background-color: rgba(7, 4, 2, 0.98) !important; animation: none !important; box-shadow: 0 5px 15px rgba(0,0,0,0.9) !important; border: 1px solid var(--gold-main) !important; }
-            .main-container::before { display: none !important; }
-            .corner-decor, .noti-btn, .loading-text { animation: none !important; }
-        }
     </style>
 </head>
 <body>
@@ -309,19 +298,14 @@
                     </div>
                 </div>
 
-                <!-- 🌟 กล่องคัมภีร์ส่วนตัว (Bookmarks) จาก D1 Database -->
                 <div class="widget" id="bookmarkWidget" style="display: none;">
                     <h4 class="section-title" style="background: linear-gradient(180deg, #4a3b1a 0%, #2a1805 100%); border-color: #f5d77f; color: #f5d77f;">จารึกส่วนตัว</h4>
-                    <div id="bookmarkListContainer" style="display: flex; flex-direction: column; margin-top: 15px; max-height: 250px; overflow-y: auto;">
-                        <!-- รายการ Bookmark จะถูกดึงมาแสดงที่นี่ -->
-                    </div>
+                    <div id="bookmarkListContainer" style="display: flex; flex-direction: column; margin-top: 15px; max-height: 250px; overflow-y: auto;"></div>
                 </div>
 
                 <div class="widget" id="historyWidget" style="display: none;">
                     <h4 class="section-title">รอยเท้าจารึก</h4>
-                    <div id="historyListContainer" style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
-                        <!-- ประวัติจะถูกนำมาแสดงที่นี่ -->
-                    </div>
+                    <div id="historyListContainer" style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;"></div>
                 </div>
                 
             </div>
@@ -332,7 +316,7 @@
         </footer>
     </div>
 
-    <!-- 📜 Modal ประกาศิตกฎระเบียบ -->
+    <!-- Modal ประกาศิตกฎระเบียบ -->
     <div class="sect-modal-overlay" id="webboardRulesModal">
         <div class="sect-modal-content rules-modal-content">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-left" alt="" width="60" height="60">
@@ -492,7 +476,6 @@
             async readNotification(id) {
                 try { await fetch(`${API_CONFIG.BASE_URL}/notifications/${id}/read`, { method: 'PUT' }); } catch(e) {}
             },
-            // 🌟 ปรับปรุงการดึง Bookmark ให้ปลอดภัยและเช็ค Token ของ D1 ให้ถูกต้อง
             async getBookmarks() {
                 try {
                     const token = localStorage.getItem('siy_token');
@@ -520,6 +503,14 @@
                         headers: headers
                     });
                 } catch (e) {}
+            },
+            // 🌟 เพิ่มฟังก์ชันดึงโรงตีเหล็ก (Dynamic Roles Cache)
+            async fetchRolesCache() {
+                try {
+                    const res = await fetch(`${API_CONFIG.BASE_URL}/roles`);
+                    if(!res.ok) return [];
+                    return await res.json();
+                } catch(e) { return []; }
             }
         };
 
@@ -614,7 +605,6 @@
             });
         }
 
-        // 🌟 ฟังก์ชันเรนเดอร์คัมภีร์ส่วนตัวจาก D1 Database ที่ปรับให้เสถียรขึ้น
         async function renderBookmarks() {
             const widget = document.getElementById('bookmarkWidget');
             const container = document.getElementById('bookmarkListContainer');
@@ -754,19 +744,29 @@
             }
         }
 
+        // 🌟 อัปเกรดระบบแปลงป้ายยศให้รองรับสีสันจากโรงตีเหล็ก
         async function getRoleBadgeFromAPI(username) {
             if (!username) return '<span class="role-badge role-5">เด็กวัด</span>';
             if (username.toUpperCase() === 'ADMIN') {
                 return '<span class="role-badge role-1">ปรมัตถ์</span>';
             }
             try {
-                const res = await fetch(`${API_CONFIG.BASE_URL}/users`);
-                const usersDB = await res.json();
+                const [resUsers, roles] = await Promise.all([
+                    fetch(`${API_CONFIG.BASE_URL}/users`),
+                    ApiManager.fetchRolesCache()
+                ]);
+                const usersDB = await resUsers.json();
                 const user = usersDB.find(u => u.username === username);
                 if (user) {
-                    let role = String(user.role || '5');
-                    let rank = user.rank_name || getRoleTitleName(role);
-                    let roleClass = rank === 'ตัวละคร' ? 'role-6' : `role-${role}`;
+                    let roleVal = String(user.role || '5');
+                    const customRole = roles.find(r => r.id === roleVal);
+                    if (customRole) {
+                        const borderCss = customRole.border_color ? `border: 1px solid ${customRole.border_color}; box-shadow: 0 0 6px ${customRole.border_color}80;` : '';
+                        return `<span class="role-badge" style="background: ${customRole.bg_color}; color: ${customRole.text_color} !important; ${borderCss}">${customRole.rank_name}</span>`;
+                    }
+
+                    let rank = user.rank_name || getRoleTitleName(roleVal);
+                    let roleClass = rank === 'ตัวละคร' ? 'role-6' : `role-${roleVal}`;
                     return `<span class="role-badge ${roleClass}">${rank}</span>`;
                 }
             } catch (e) {}
@@ -920,16 +920,30 @@
                     document.getElementById('karmaBarContainer').style.display = 'none';
                 } else {
                     try {
-                        const res = await fetch(`${API_CONFIG.BASE_URL}/users`);
-                        const usersDB = await res.json();
+                        const [resUsers, roles] = await Promise.all([
+                            fetch(`${API_CONFIG.BASE_URL}/users`),
+                            ApiManager.fetchRolesCache()
+                        ]);
+                        const usersDB = await resUsers.json();
                         const currentUser = usersDB.find(u => u.username === savedUser);
 
                         if (currentUser) {
-                            let roleClass = currentUser.rank_name === 'ตัวละคร' ? 'role-6' : 'role-' + (currentUser.role || '5');
-                            let rankTitle = currentUser.rank_name || getRoleTitleName(currentUser.role);
-                            document.getElementById('displayUserBadge').innerHTML = `<span class="role-badge ${roleClass}">${rankTitle}</span>`;
+                            let roleVal = String(currentUser.role || '5');
+                            const customRole = roles.find(r => r.id === roleVal);
                             
-                            if (String(currentUser.role) !== '1' && currentUser.rank_name !== 'ตัวละคร') {
+                            let myBadgeHtml = '';
+                            if (customRole) {
+                                const borderCss = customRole.border_color ? `border: 1px solid ${customRole.border_color}; box-shadow: 0 0 6px ${customRole.border_color}80;` : '';
+                                myBadgeHtml = `<span class="role-badge" style="background: ${customRole.bg_color}; color: ${customRole.text_color} !important; ${borderCss}">${customRole.rank_name}</span>`;
+                            } else {
+                                let roleClass = currentUser.rank_name === 'ตัวละคร' ? 'role-6' : 'role-' + roleVal;
+                                let rankTitle = currentUser.rank_name || getRoleTitleName(roleVal);
+                                myBadgeHtml = `<span class="role-badge ${roleClass}">${rankTitle}</span>`;
+                            }
+
+                            document.getElementById('displayUserBadge').innerHTML = myBadgeHtml;
+                            
+                            if (String(currentUser.role) !== '1' && currentUser.rank_name !== 'ตัวละคร' && !customRole) {
                                 let karma = currentUser.karma || 0;
                                 let nextTarget = 11, minKarma = 0;
                                 
@@ -1096,7 +1110,7 @@
             localStorage.setItem('siy_login_timestamp', nowTimestamp.toString()); 
             closeRegisterModal(); 
             checkUserLoginStatus();
-            renderBookmarks(); // 🌟 รีเฟรชเรียกคัมภีร์ทันทีหลังล็อกอิน
+            renderBookmarks(); 
         }
 
         function handleLogout() {
@@ -1105,7 +1119,7 @@
             localStorage.removeItem('siy_usertype'); 
             localStorage.removeItem('siy_login_timestamp');
             checkUserLoginStatus(); 
-            renderBookmarks(); // 🌟 ซ่อนคัมภีร์ทันทีหลังออกจากระบบ
+            renderBookmarks(); 
             showCustomAlert('ท่านได้ออกจากระบบเรียบร้อยแล้ว');
         }
 

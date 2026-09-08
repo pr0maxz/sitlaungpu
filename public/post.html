@@ -8,7 +8,6 @@
     <meta name="twitter:image" content="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788335121/FB.jpg" />
     <link rel="icon" type="image/png" href="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788446707/favicon4.png">
     
-    <!-- 🚀 ทะลวง Render-blocking: โหลดฟอนต์แบบ Preconnect & Async (ประหยัดเวลา 1.2 วินาที) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;700&family=Sarabun:wght@400;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
@@ -104,7 +103,6 @@
         
         .post-title { color: var(--gold-light); font-size: 1.8rem; font-family: 'Prompt', sans-serif; margin-bottom: 20px; word-break: break-word; min-height: 35px; } 
         
-        /* 🚀 แก้ Layout Shift: จองพื้นที่ความสูงให้เนื้อหาล่วงหน้า */
         .post-body { line-height: 1.8; color: #e2d4c3; font-size: 1.05rem; margin-bottom: 30px; word-wrap: break-word; overflow-wrap: break-word; min-height: 250px; } 
         .post-body img, .comment-body img { max-width: 100% !important; height: auto !important; box-sizing: border-box; }
 
@@ -230,7 +228,6 @@
 <body>
 
     <div class="main-container">
-        <!-- 🚀 แก้ Improve Image Delivery ด้วย loading lazy & decoding -->
         <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="corner-decor corner-top-left" alt="" width="110" height="110" loading="lazy" decoding="async">
         <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="corner-decor corner-top-right" alt="" width="110" height="110" loading="lazy" decoding="async">
         <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="corner-decor corner-bottom-left" alt="" width="110" height="110" loading="lazy" decoding="async">
@@ -454,9 +451,9 @@
             }
         }
 
-        // 🚀 อาวุธลับ 1: สร้าง Singleton Cache เพื่อหยุดการดึงข้อมูลตาราง User ซ้ำซ้อน (ลด Long Task)
         let globalUsersCache = null;
         let fetchUsersPromise = null;
+        let globalRolesCache = null; // 🌟 Cache ยศพิเศษ
 
         const ApiManager = {
             fetchUsersOnce() {
@@ -472,6 +469,17 @@
                     })
                     .catch(() => ({}));
                 return fetchUsersPromise;
+            },
+            // 🌟 ดึงข้อมูลโรงตีเหล็ก
+            fetchRolesCache() {
+                if (globalRolesCache) return Promise.resolve(globalRolesCache);
+                return fetch(`${API_CONFIG.BASE_URL}/roles`)
+                    .then(res => res.ok ? res.json() : [])
+                    .then(roles => {
+                        globalRolesCache = roles;
+                        return roles;
+                    })
+                    .catch(() => []);
             },
             async getPostById(id) {
                 try {
@@ -771,14 +779,21 @@
             }
         }
 
-        function formatBadgeFromUsersMap(username, usersMap) {
+        // 🌟 อัปเกรดระบบเรนเดอร์ป้ายยศในหน้าอ่านกระทู้ (รองรับยศ Custom Colors)
+        function formatBadgeFromUsersMap(username, usersMap, rolesList = []) {
             if (!username) return '<span class="role-badge role-5">เด็กวัด</span>';
             if (username.toUpperCase() === 'ADMIN') return '<span class="role-badge role-1">ปรมัตถ์</span>';
             const user = usersMap[username];
             if (user) {
-                let role = String(user.role || '5');
-                let rank = user.rank_name || getRoleTitleName(role);
-                let roleClass = rank === 'ตัวละคร' ? 'role-6' : `role-${role}`;
+                let roleVal = String(user.role || '5');
+                const customRole = rolesList.find(r => r.id === roleVal);
+                if (customRole) {
+                    const borderCss = customRole.border_color ? `border: 1px solid ${customRole.border_color}; box-shadow: 0 0 6px ${customRole.border_color}80;` : '';
+                    return `<span class="role-badge" style="background: ${customRole.bg_color}; color: ${customRole.text_color} !important; ${borderCss}">${customRole.rank_name}</span>`;
+                }
+
+                let rank = user.rank_name || getRoleTitleName(roleVal);
+                let roleClass = rank === 'ตัวละคร' ? 'role-6' : `role-${roleVal}`;
                 return `<span class="role-badge ${roleClass}">${rank}</span>`;
             }
             return '<span class="role-badge role-5">เด็กวัด</span>';
@@ -801,9 +816,10 @@
             const container = document.getElementById('commentsList');
             
             try {
-                const [comments, usersMap] = await Promise.all([
+                const [comments, usersMap, rolesList] = await Promise.all([
                     ApiManager.getComments(postId),
-                    ApiManager.fetchUsersOnce()
+                    ApiManager.fetchUsersOnce(),
+                    ApiManager.fetchRolesCache()
                 ]);
 
                 const savedUser = localStorage.getItem('siy_username');
@@ -843,7 +859,7 @@
                 let outputHtml = '';
 
                 for (const c of mainComments) {
-                    const badge = formatBadgeFromUsersMap(c.author, usersMap);
+                    const badge = formatBadgeFromUsersMap(c.author, usersMap, rolesList);
                     let cleanMainContent = c.content.replace(/^\[REPLY_TO:[^\]]+\](?:\[AUTHOR:[^\]]+\])?/, '');
                     cleanMainContent = formatMentions(cleanMainContent);
 
@@ -864,7 +880,7 @@
                     if (childReplies.length > 0) {
                         repliesHtml += `<div class="replies-container">`; 
                         for (const r of childReplies) {
-                            const rBadge = formatBadgeFromUsersMap(r.author, usersMap);
+                            const rBadge = formatBadgeFromUsersMap(r.author, usersMap, rolesList);
                             let rAdminControls = isUserAdmin ? `<button type="button" class="btn-delete-comment" onclick="deleteCommentAction('${r.id}', '${postId}')">🗑️ ทำลาย</button>` : '';
                             let rReportBtn = (savedUser) ? `<button type="button" class="btn-report" onclick="openReportModal('comment', '${r.id}')">🚨 แจ้ง</button>` : '';
                             
@@ -1119,7 +1135,6 @@
             }
         }
 
-        // 🚀 อาวุธลับ 2: รื้อถอนคอขวด (Main-thread blocking) ให้โหลดลื่นปรี๊ด!
         document.addEventListener('DOMContentLoaded', () => {
             const savedUser = localStorage.getItem('siy_username');
             const userType = localStorage.getItem('siy_usertype'); 
@@ -1128,13 +1143,12 @@
                 showCustomAlert('เขตหวงห้าม! ท่านยังไม่ได้เลือกสถานะทางเข้า', 'webboard.html'); return;
             }
 
-            // สั่งดึงข้อมูลเบื้องหลังทันที โดยไม่ขัดขวางการวาดหน้าจอ (Non-blocking)
             const usersPromise = ApiManager.fetchUsersOnce();
+            const rolesPromise = ApiManager.fetchRolesCache(); // 🌟 โหลดโรงตีเหล็กแบบขนาน
             loadNotifications();
 
             document.getElementById('displayUsername').textContent = savedUser;
 
-            // วาดกล่องพิมพ์คอมเมนต์ล่วงหน้า
             const commentArea = document.getElementById('commentAreaContainer');
             if (userType === 'guest') {
                 document.getElementById('logoutBtnText').textContent = 'ลบตัวตน (สละร่าง)';
@@ -1169,8 +1183,7 @@
                 `;
             }
 
-            // วาดรูปยศของผู้ใช้ปัจจุบันเมื่อข้อมูลมาถึง (ไม่รอ)
-            usersPromise.then(usersMap => {
+            Promise.all([usersPromise, rolesPromise]).then(([usersMap, rolesList]) => {
                 let currentUserRole = '5'; let currentUserRank = 'เด็กวัด';
                 const foundUser = usersMap[savedUser];
                 if (foundUser) {
@@ -1178,12 +1191,20 @@
                     currentUserRank = foundUser.rank_name || getRoleTitleName(currentUserRole); 
                 }
                 let myBadgeHtml = '';
-                if (savedUser.toUpperCase() === 'ADMIN' || currentUserRole === '1') { myBadgeHtml = '<span class="role-badge role-1">ปรมัตถ์</span>'; } 
-                else if (userType === 'guest' || savedUser.includes('ผู้ไม่ประสงค์ออกนาม')) { myBadgeHtml = '<span class="role-badge role-guest" style="display: inline-block; margin-top: -2px;">วิญญาณเร่ร่อน</span>'; } 
-                else { 
+                
+                const customRole = rolesList.find(r => r.id === currentUserRole);
+                if (customRole) {
+                    const borderCss = customRole.border_color ? `border: 1px solid ${customRole.border_color}; box-shadow: 0 0 6px ${customRole.border_color}80;` : '';
+                    myBadgeHtml = `<span class="role-badge" style="background: ${customRole.bg_color}; color: ${customRole.text_color} !important; ${borderCss}">${customRole.rank_name}</span>`;
+                } else if (savedUser.toUpperCase() === 'ADMIN' || currentUserRole === '1') { 
+                    myBadgeHtml = '<span class="role-badge role-1">ปรมัตถ์</span>'; 
+                } else if (userType === 'guest' || savedUser.includes('ผู้ไม่ประสงค์ออกนาม')) { 
+                    myBadgeHtml = '<span class="role-badge role-guest" style="display: inline-block; margin-top: -2px;">วิญญาณเร่ร่อน</span>'; 
+                } else { 
                     let badgeClass = currentUserRank === 'ตัวละคร' ? 'role-6' : `role-${currentUserRole}`;
                     myBadgeHtml = `<span class="role-badge ${badgeClass}">${currentUserRank}</span>`; 
                 }
+                
                 document.getElementById('displayUserBadge').innerHTML = myBadgeHtml;
                 const commentBadge = document.getElementById('commentAreaAuthorBadge');
                 if (commentBadge) commentBadge.innerHTML = myBadgeHtml;
@@ -1192,7 +1213,6 @@
             const urlParams = new URLSearchParams(window.location.search);
             const postId = urlParams.get('id');
 
-            // 🚀 ดึงโพสต์และวาดหน้าจอทันที ไม่ต้องรอยศ หรือรอมั่นใจว่าบุ๊กมาร์กหรือไม่ (First Contentful Paint ทะลุหลอด)
             ApiManager.getPostById(postId).then(postData => {
                 if (!postData || !postData.title) {
                     showCustomAlert('อาถรรพ์บังตา... ไม่พบศิลาจารึกที่คุณค้นหา อาจถูกลบไปแล้ว', 'webboard.html'); return;
@@ -1219,16 +1239,13 @@
                 if (viewHistory.length > 5) viewHistory.pop();
                 localStorage.setItem('siy_view_history', JSON.stringify(viewHistory));
 
-                // รอยศมาถึงค่อยแปะ
-                usersPromise.then(usersMap => {
-                    document.getElementById('dyn-author-badge').innerHTML = formatBadgeFromUsersMap(postData.author, usersMap);
+                Promise.all([usersPromise, rolesPromise]).then(([usersMap, rolesList]) => {
+                    document.getElementById('dyn-author-badge').innerHTML = formatBadgeFromUsersMap(postData.author, usersMap, rolesList);
                 });
 
-                // เริ่มดึงคอมเมนต์
                 loadComments(postId);
             });
 
-            // เช็คสถานะ Bookmark เบื้องหลังแบบขนาน
             ApiManager.getBookmarks().then(userBookmarks => {
                 const isBookmarked = userBookmarks.some(b => String(b.post_id) === String(postId));
                 if (isBookmarked) {
