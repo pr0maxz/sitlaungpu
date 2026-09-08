@@ -84,6 +84,7 @@
             border: 1px dashed var(--gold-dark);
             transition: all 0.3s ease;
             font-family: 'Prompt', sans-serif;
+            text-decoration: none;
         }
         .user-mention:hover { background: rgba(212, 175, 55, 0.25); color: #fff; box-shadow: 0 0 10px rgba(212, 175, 55, 0.5); }
 
@@ -117,7 +118,7 @@
         .comment-section-title { color: var(--gold-main); font-size: 1.3rem; margin-bottom: 20px; border-left: 4px solid var(--gold-main); padding-left: 10px; }
         #commentsList { min-height: 120px; }
 
-        .comment-card { background: rgba(10, 5, 2, 0.6); border: 1px solid rgba(138, 99, 21, 0.2); border-radius: 8px; padding: 20px; margin-bottom: 15px; width: 100%; box-sizing: border-box; word-break: break-word; } 
+        .comment-card { background: rgba(10, 5, 2, 0.6); border: 1px solid rgba(138, 99, 21, 0.2); border-radius: 8px; padding: 20px; margin-bottom: 15px; width: 100%; box-sizing: border-box; word-break: break-word; transition: background-color 0.5s ease, box-shadow 0.5s ease; } 
         .comment-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 5px; } 
         .comment-author-group { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
         .comment-author { color: var(--gold-main); font-weight: bold; font-family: 'Prompt', sans-serif; }
@@ -132,9 +133,10 @@
         .btn-report:hover { background: rgba(226, 149, 120, 0.1); opacity: 1; border-color: #e29578; }
 
         .replies-container { margin-left: 30px; padding-left: 15px; border-left: 2px solid rgba(212, 175, 55, 0.2); margin-top: -5px; margin-bottom: 20px; }
-        .comment-card.is-reply { background: rgba(15, 8, 3, 0.8); border: 1px solid rgba(138, 99, 21, 0.15); border-radius: 6px; padding: 15px; margin-bottom: 10px; width: 100%; position: relative; }
+        .comment-card.is-reply { background: rgba(15, 8, 3, 0.8); border: 1px solid rgba(138, 99, 21, 0.15); border-radius: 6px; padding: 15px; margin-bottom: 10px; width: 100%; position: relative; transition: background-color 0.5s ease, box-shadow 0.5s ease; }
         .comment-card.is-reply::before { content: ''; position: absolute; top: 25px; left: -17px; width: 15px; height: 2px; background: rgba(212, 175, 55, 0.2); }
-        .reply-badge { display: inline-block; font-size: 0.75rem; color: var(--gold-main); background: rgba(212, 175, 55, 0.1); padding: 2px 10px; border-radius: 12px; margin-bottom: 10px; border: 1px solid rgba(212, 175, 55, 0.2); font-family: 'Prompt', sans-serif; font-weight: bold; }
+        .reply-badge { display: inline-block; font-size: 0.75rem; color: var(--gold-main); background: rgba(212, 175, 55, 0.1); padding: 2px 10px; border-radius: 12px; margin-bottom: 10px; border: 1px solid rgba(212, 175, 55, 0.2); font-family: 'Prompt', sans-serif; font-weight: bold; cursor: pointer; transition: all 0.2s; }
+        .reply-badge:hover { background: var(--gold-main); color: #150a03; box-shadow: 0 0 8px rgba(212, 175, 55, 0.5); }
 
         .reply-form-container { margin-top: 15px; padding: 15px; background: rgba(0,0,0,0.5); border-radius: 8px; border: 1px dashed rgba(212, 175, 55, 0.3); display: none; }
         .reply-form-container.active { display: block; }
@@ -387,16 +389,47 @@
 
         let currentPostAuthorGlobal = ''; 
 
+        // 🌟 กู้คืนความสามารถแปลง @แท็ก ให้กดเพื่อหาเจ้าของคอมเมนต์ได้
         function formatMentions(text) {
             if(!text) return '';
             const mentionRegex = /@([\u0E00-\u0E7Fa-zA-Z0-9_-]+)/g;
-            return text.replace(mentionRegex, '<span class="user-mention">@$1</span>');
+            return text.replace(mentionRegex, '<span class="user-mention" onclick="scrollToUserComment(\'$1\')" title="ค้นหาจารึกของผู้นี้">@$1</span>');
         }
 
+        // 🌟 อัปเกรด Regex ภาษาไทยให้ครอบคลุมการดึงชื่อไปส่งแจ้งเตือน 100%
         function extractMentions(text) {
             const mentionRegex = /@([\u0E00-\u0E7Fa-zA-Z0-9_-]+)/g;
             const matches = [...text.matchAll(mentionRegex)];
             return [...new Set(matches.map(m => m[1]))]; 
+        }
+
+        // 🌟 เลื่อนจอไปหาคอมเมนต์แรกของคนที่เรากด @ แท็กชื่อ
+        function scrollToUserComment(username) {
+            const comments = document.querySelectorAll(`.comment-card[data-author="${username}"]`);
+            if (comments.length > 0) {
+                const target = comments[0];
+                target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                target.style.transition = 'background-color 0.5s ease';
+                target.style.backgroundColor = 'rgba(212, 175, 55, 0.4)';
+                setTimeout(() => { target.style.backgroundColor = ''; }, 2000);
+            } else {
+                showCustomAlert(`ไม่พบร่องรอยของ @${username} ในจารึกหน้านี้`);
+            }
+        }
+
+        // 🌟 เลื่อนจอไปหาคอมเมนต์ต้นทาง (เมื่อกดปุ่มตอบกลับคุณ...)
+        function scrollToComment(commentId) {
+            const target = document.getElementById(`comment-${commentId}`);
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                target.style.transition = 'background-color 0.5s ease, box-shadow 0.5s ease';
+                target.style.backgroundColor = 'rgba(212, 175, 55, 0.4)';
+                target.style.boxShadow = '0 0 15px rgba(212, 175, 55, 0.8)';
+                setTimeout(() => { 
+                    target.style.backgroundColor = ''; 
+                    target.style.boxShadow = '';
+                }, 2000);
+            }
         }
 
         let telepathySocket;
@@ -455,6 +488,7 @@
         let fetchUsersPromise = null;
         let globalRolesCache = null;
 
+        // 🌟 กู้ชีพ ApiManager กลับมาแบบสมบูรณ์ 100% ป้องกันหน้าเว็บพัง
         const ApiManager = {
             fetchUsersOnce() {
                 if (globalUsersCache) return Promise.resolve(globalUsersCache);
@@ -641,9 +675,22 @@
             }
         }
 
-        async function handleNotiClick(notiId, postId) {
+        // 🌟 บังคับเปลี่ยนหน้าพร้อมส่งคำสั่งไปเลื่อนจอหาคอมเมนต์
+        async function handleNotiClick(notiId, postIdStr) {
             await ApiManager.readNotification(notiId);
-            window.location.href = `post.html?id=${postId}`;
+            
+            // เช็คว่าตอนนี้อยู่หน้าเดียวกับที่แจ้งเตือนจะพาไปไหม
+            const currentPostId = new URLSearchParams(window.location.search).get('id');
+            const targetPostId = postIdStr.split('#')[0];
+            
+            if (window.location.pathname.endsWith('post.html') && currentPostId === targetPostId) {
+                // อยู่หน้าเดิม แค่เปลี่ยน Hash แล้วรีเฟรชให้คอมเมนต์โหลดใหม่+เลื่อนจอ
+                window.location.href = `post.html?id=${postIdStr}`;
+                setTimeout(() => { window.location.reload(); }, 100);
+            } else {
+                // ไปหน้าใหม่เลย
+                window.location.href = `post.html?id=${postIdStr}`;
+            }
         }
 
         async function likePostAction() {
@@ -738,13 +785,16 @@
             if (pendingConfirmAction) { await pendingConfirmAction(); pendingConfirmAction = null; }
         });
 
-        function showCustomAlert(message, redirectUrl = null) {
+        // 🌟 แก้ไข Alert ให้รับการ Refresh ได้อย่างสมบูรณ์ ป้องกันบั๊กหน้าค้าง
+        function showCustomAlert(message, reloadOnClose = false) {
             document.getElementById('customAlertMessage').innerHTML = message;
             const modal = document.getElementById('customAlertModal');
             modal.classList.add('active');
             document.getElementById('customAlertBtn').onclick = function() {
                 modal.classList.remove('active');
-                if (redirectUrl) window.location.href = redirectUrl;
+                if (reloadOnClose === true || typeof reloadOnClose === 'string') {
+                    window.location.reload(); 
+                }
             };
         }
         function closeCustomAlert() { document.getElementById('customAlertModal').classList.remove('active'); }
@@ -899,9 +949,12 @@
                             const rIsLiked = likedComments.includes(String(r.id)) ? 'liked' : '';
                             let rLikeBtn = `<button type="button" class="btn-like ${rIsLiked}" id="btn-like-comment-${r.id}" onclick="likeCommentAction('${r.id}')">🙏 อนุโมทนา (<span id="comment-like-count-${r.id}">${r.likes || 0}</span>)</button>`;
 
+                            const parentMatch = r.content.match(/^\[REPLY_TO:([^\]]+)\]/);
+                            const parentIdToScroll = parentMatch ? parentMatch[1] : '';
+
                             repliesHtml += `
-                                <div class="comment-card is-reply">
-                                    <div class="reply-badge">↪ ตอบกลับคุณ: ${repliedTo}</div>
+                                <div class="comment-card is-reply" id="comment-${r.id}" data-author="${r.author}">
+                                    <div class="reply-badge" title="ย้อนไปดูข้อความต้นทาง" onclick="scrollToComment('${parentIdToScroll}')">↪ ตอบกลับคุณ: ${repliedTo}</div>
                                     <div class="comment-header">
                                         <div class="comment-author-group">
                                             <span class="comment-author">${r.author}</span>
@@ -934,7 +987,7 @@
                     ` : '';
 
                     outputHtml += `
-                        <div class="comment-card">
+                        <div class="comment-card" id="comment-${c.id}" data-author="${c.author}">
                             <div class="comment-header">
                                 <div class="comment-author-group">
                                     <span class="comment-author">${c.author}</span>
@@ -958,6 +1011,25 @@
                 }
 
                 container.innerHTML = outputHtml;
+
+                // 🌟 ระบบสแกนหาคอมเมนต์เป้าหมาย (Auto-Scroll) ทำงานหลังจัดเรียงคอมเมนต์เสร็จ
+                setTimeout(() => {
+                    if (window.location.hash && window.location.hash.startsWith('#comment-')) {
+                        const targetId = window.location.hash.substring(1);
+                        const targetEl = document.getElementById(targetId);
+                        if (targetEl) {
+                            targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            targetEl.style.transition = 'background-color 0.8s ease, box-shadow 0.8s ease';
+                            targetEl.style.backgroundColor = 'rgba(212, 175, 55, 0.4)';
+                            targetEl.style.boxShadow = '0 0 20px rgba(212, 175, 55, 0.8)';
+                            setTimeout(() => { 
+                                targetEl.style.backgroundColor = ''; 
+                                targetEl.style.boxShadow = '';
+                            }, 2500);
+                        }
+                    }
+                }, 300);
+
             } finally {
                 isCommentsRendering = false;
             }
@@ -967,7 +1039,7 @@
             showCustomConfirm('ท่านแน่ใจหรือไม่ว่าต้องการ <strong>ทำลาย</strong> ความคิดเห็นนี้ทิ้งไปชั่วนิรันดร์?', async () => {
                 const result = await ApiManager.deleteComment(commentId);
                 if(result.success !== false) {
-                    showCustomAlert('ทำลายร่องรอยวิญญาณเรียบร้อยแล้ว', window.location.href);
+                    showCustomAlert('ทำลายร่องรอยวิญญาณเรียบร้อยแล้ว', true); 
                 } else {
                     showCustomAlert('เกิดอาถรรพ์ขัดข้อง ลบไม่ได้!');
                 }
@@ -1029,6 +1101,7 @@
                     textarea.value = ''; 
                     
                     const mentionedUsers = extractMentions(content);
+                    // 🌟 แฝงรหัสคอมเมนต์ (#comment-id) เข้าไปในแจ้งเตือน
                     for (const mentionedUser of mentionedUsers) {
                         if (mentionedUser !== author) {
                             await ApiManager.sendNotification({
@@ -1036,7 +1109,7 @@
                                 recipient: mentionedUser,
                                 actor: author,
                                 action_type: 'mention',
-                                post_id: postId,
+                                post_id: `${postId}#comment-${commentData.id}`,
                                 timestamp: timeStr
                             });
                         }
@@ -1048,14 +1121,13 @@
                             recipient: currentPostAuthorGlobal,
                             actor: author,
                             action_type: 'comment',
-                            post_id: postId,
+                            post_id: `${postId}#comment-${commentData.id}`,
                             timestamp: timeStr
                         });
                     }
 
                     broadcastAction('NEW_COMMENT', postId, { postId: postId });
-                    // 🌟 แจ้งเตือนเสร็จให้รีเฟรชหน้าเว็บอัตโนมัติ
-                    showCustomAlert('บันทึกจารึกสำเร็จ!', window.location.href);
+                    showCustomAlert('บันทึกจารึกสำเร็จ!', true); 
                 } else {
                     showCustomAlert(result.error || 'เกิดอาถรรพ์ขัดข้อง ส่งข้อความไม่สำเร็จ');
                 }
@@ -1103,6 +1175,7 @@
                     textarea.value = '';
 
                     const mentionedUsers = extractMentions(content);
+                    // 🌟 แฝงรหัสคอมเมนต์ (#comment-id) เข้าไปในแจ้งเตือน
                     for (const mentionedUser of mentionedUsers) {
                         if (mentionedUser !== author) { 
                             await ApiManager.sendNotification({
@@ -1110,7 +1183,7 @@
                                 recipient: mentionedUser,
                                 actor: author,
                                 action_type: 'mention', 
-                                post_id: postId,
+                                post_id: `${postId}#comment-${commentData.id}`,
                                 timestamp: timeStr
                             });
                         }
@@ -1122,14 +1195,13 @@
                             recipient: parentAuthor,
                             actor: author,
                             action_type: 'reply',
-                            post_id: postId,
+                            post_id: `${postId}#comment-${commentData.id}`,
                             timestamp: timeStr
                         });
                     }
 
                     broadcastAction('NEW_COMMENT', postId, { postId: postId });
-                    // 🌟 แจ้งเตือนเสร็จให้รีเฟรชหน้าเว็บอัตโนมัติ
-                    showCustomAlert('ส่งคำตอบกลับสำเร็จ!', window.location.href);
+                    showCustomAlert('ส่งคำตอบกลับสำเร็จ!', true);
                 } else {
                     showCustomAlert(result.error || 'เกิดอาถรรพ์ขัดข้อง ส่งคำตอบกลับไม่สำเร็จ');
                 }
@@ -1140,6 +1212,24 @@
                 if(btn) { btn.textContent = 'ส่งคำตอบกลับ'; btn.disabled = false; }
             }
         }
+
+        // 🌟 รองรับกรณีที่ผู้ใช้อยู่หน้าเดียวกับคอมเมนต์ แล้วมีคนอัปเดต Hash จากหน้าอื่น
+        window.addEventListener('hashchange', () => {
+            if (window.location.hash && window.location.hash.startsWith('#comment-')) {
+                const targetId = window.location.hash.substring(1);
+                const targetEl = document.getElementById(targetId);
+                if (targetEl) {
+                    targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    targetEl.style.transition = 'background-color 0.8s ease, box-shadow 0.8s ease';
+                    targetEl.style.backgroundColor = 'rgba(212, 175, 55, 0.4)';
+                    targetEl.style.boxShadow = '0 0 20px rgba(212, 175, 55, 0.8)';
+                    setTimeout(() => { 
+                        targetEl.style.backgroundColor = ''; 
+                        targetEl.style.boxShadow = '';
+                    }, 2500);
+                }
+            }
+        });
 
         document.addEventListener('DOMContentLoaded', () => {
             const savedUser = localStorage.getItem('siy_username');

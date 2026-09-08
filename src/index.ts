@@ -510,8 +510,7 @@ app.delete('/api/posts/:id', async (c) => {
   await c.env.DB.prepare("DELETE FROM posts WHERE id = ?").bind(id).run()
   await c.env.DB.prepare("DELETE FROM comments WHERE post_id = ?").bind(id).run()
   await c.env.DB.prepare("DELETE FROM bookmarks WHERE post_id = ?").bind(id).run()
-  // 🌟 เพิ่มให้ลบการแจ้งเตือนที่เกี่ยวข้องกับกระทู้นี้ออกด้วย
-  await c.env.DB.prepare("DELETE FROM notifications WHERE post_id = ?").bind(id).run().catch(()=>{})
+  await c.env.DB.prepare("DELETE FROM notifications WHERE post_id LIKE ?").bind(`${id}%`).run().catch(()=>{})
   return c.json({ success: true })
 })
 
@@ -616,9 +615,12 @@ app.post('/api/comments/:commentId/like', async (c) => {
       const now = new Date()
       const timeStr = now.getDate() + ' ' + thaiMonths[now.getMonth()] + ' ' + (now.getFullYear() + 543) + ' | ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ' น.'
       
+      // 🌟 บันทึกแจ้งเตือนโดยฝังรหัสคอมเมนต์ (#comment-...) ไปด้วย
+      const targetPostId = `${comment.post_id || comment.postId}#comment-${commentId}`;
+      
       await c.env.DB.prepare(
         "INSERT INTO notifications (id, recipient, actor, action_type, post_id, is_read, timestamp) VALUES (?, ?, ?, 'like_comment', ?, 0, ?)"
-      ).bind(notiId, comment.author, actor, comment.post_id || comment.postId, timeStr).run().catch(() => {})
+      ).bind(notiId, comment.author, actor, targetPostId, timeStr).run().catch(() => {})
 
       await addKarma(c.env.DB, comment.author, 1);
     }
