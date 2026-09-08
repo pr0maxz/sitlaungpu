@@ -204,7 +204,6 @@
         .ghost-warning-box p { color: #d1bfae; font-size: clamp(0.85rem, 3vw, 0.95rem); line-height: 1.8; margin-bottom: 20px; }
         .ghost-line { display: block; margin-bottom: 6px; }
         .ghost-btn-group { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-        .ghost-btn-group > * { flex: 1 1 auto; min-width: 140px; text-align: center; display: flex; align-items: center; justify-content: center; }
 
         @media (max-width: 950px) { .post-layout { grid-template-columns: 1fr; } .replies-container { margin-left: 10px; border-left-width: 1px; } .comment-card.is-reply::before { width: 10px; left: -11px; } }
         @media (max-width: 768px) {
@@ -214,7 +213,6 @@
             nav a { font-size: 0.95rem !important; flex-shrink: 0; }
         }
         @media (max-width: 600px) { .main-container { padding: 45px 20px 40px 20px !important; width: 95%; margin-top: 30px; } }
-        @media (max-width: 480px) { .ghost-btn-group { flex-direction: column; } .ghost-btn-group > * { width: 100%; max-width: 100%; flex: 1 1 100%; } }
         
         .loading-text { font-family: 'Prompt', sans-serif; color: var(--gold-main); text-align: center; padding: 40px; }
         
@@ -776,14 +774,17 @@
             if (pendingConfirmAction) { await pendingConfirmAction(); pendingConfirmAction = null; }
         });
 
-        function showCustomAlert(message, reloadOnClose = false) {
+        // 🌟 แก้ไขบั๊ก Alert Loop อย่างสมบูรณ์ 100%
+        function showCustomAlert(message, action = false) {
             document.getElementById('customAlertMessage').innerHTML = message;
             const modal = document.getElementById('customAlertModal');
             modal.classList.add('active');
             document.getElementById('customAlertBtn').onclick = function() {
                 modal.classList.remove('active');
-                if (reloadOnClose === true || typeof reloadOnClose === 'string') {
+                if (action === true) {
                     window.location.reload(); 
+                } else if (typeof action === 'string') {
+                    window.location.href = action; // สั่งย้ายหน้าแบบถูกต้อง
                 }
             };
         }
@@ -1188,7 +1189,7 @@
                     }
 
                     broadcastAction('NEW_COMMENT', postId, { postId: postId });
-                    showCustomAlert('ส่งคำตอบกลับสำเร็จ!', true);
+                    showCustomAlert('ส่งคำตอบกลับสำเร็จ!', true); 
                 } else {
                     showCustomAlert(result.error || 'เกิดอาถรรพ์ขัดข้อง ส่งคำตอบกลับไม่สำเร็จ');
                 }
@@ -1233,7 +1234,10 @@
 
             const commentArea = document.getElementById('commentAreaContainer');
             if (userType === 'guest') {
-                document.getElementById('logoutBtnText').textContent = 'ออกจากระบบ'; // เปลี่ยนตรงนี้ให้เป็นออกจากระบบ
+                // 🌟 ซ่อนปุ่มออกจากระบบแถบด้านข้าง สำหรับวิญญาณเร่ร่อน
+                document.getElementById('logoutBtnText').style.display = 'none';
+                
+                // 🌟 ปรับขนาดปุ่มเร้นกายกลับลานเสวนา ให้แคบลงสวยงาม ไม่ยาวเต็มจอ
                 commentArea.innerHTML = `
                     <div class="ghost-warning-box">
                         <div style="font-size: 2.5rem; margin-bottom: 10px; filter: drop-shadow(0 0 8px rgba(168, 46, 46, 0.8));">👻</div>
@@ -1243,8 +1247,8 @@
                             <span class="ghost-line">ดวงจิตของท่านยังคงล่องลอยไร้ตัวตนในสถานะ <span class="role-badge role-guest" style="display: inline-block; margin-top: -2px;">วิญญาณเร่ร่อน</span></span>
                             <span class="ghost-line" style="margin-top: 5px;">ท่านสามารถรับรู้ได้เพียงอดีต แต่ไม่อาจสลักวาจาใดๆ ลงในหน้าจารึกนี้ได้</span>
                         </p>
-                        <div class="ghost-btn-group">
-                            <a href="webboard.html" class="btn-secondary-custom">เร้นกายกลับลานเสวนา</a>
+                        <div class="ghost-btn-group" style="display: flex; justify-content: center;">
+                            <a href="webboard.html" class="btn-secondary-custom" style="flex: none; padding: 10px 40px; width: auto;">เร้นกายกลับลานเสวนา</a>
                         </div>
                     </div>
                 `;
