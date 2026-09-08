@@ -172,6 +172,11 @@
         .form-select option { background: #1a120b; color: #d1bfae; padding: 6px; }
         textarea.form-control { resize: vertical; min-height: 80px; line-height: 1.4; }
 
+        /* 🌟 Color Picker Customization */
+        input[type="color"].form-control { padding: 2px 4px; height: 38px; cursor: pointer; }
+        input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+        input[type="color"]::-webkit-color-swatch { border: none; border-radius: 4px; }
+
         .filter-toolbar { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; background: rgba(10,5,2,0.6); padding: 10px; border-radius: 8px; border: 1px dashed rgba(212,175,55,0.2); }
         .search-input { flex: 2; min-width: 160px; padding: 6px 14px; border-radius: 20px; border: 1px solid var(--gold-dark); background: rgba(0,0,0,0.6); color: #fff; font-family: 'Sarabun', sans-serif; outline: none; transition: 0.3s; font-size: 0.85rem; }
         .search-input:focus { border-color: var(--gold-main); box-shadow: 0 0 6px rgba(212,175,55,0.2); }
@@ -198,10 +203,10 @@
             .nav-btn { padding: 8px 12px; font-size: 0.85rem; width: auto; flex-shrink: 0; justify-content: center; } 
         }
         @media (max-width: 600px) {
-            .admin-header { padding: 8px 12px; flex-direction: column; align-items: flex-start; gap: 8px; }
+            .admin-header { padding: 10px 15px; flex-direction: column; align-items: flex-start; gap: 8px; }
             .admin-header-actions { width: 100%; justify-content: space-between; gap: 6px; }
             .admin-title img { height: 24px; }
-            .panel-card { padding: 15px 12px; }
+            .panel-card { padding: 15px 12px; margin-bottom: 15px; }
             .filter-toolbar { flex-direction: column; }
             .search-input, .filter-select { width: 100%; min-width: 100%; }
             .data-table th, .data-table td { padding: 6px 8px; font-size: 0.75rem; }
@@ -230,7 +235,8 @@
             <button class="nav-btn active" onclick="switchTab('tab-dashboard')">📊 ภาพรวมศูนย์ข้อมูล</button>
             <button class="nav-btn" onclick="switchTab('tab-posts')">📜 จัดการกระทู้จารึก</button>
             <button class="nav-btn" onclick="switchTab('tab-users')">👥 จัดการรายชื่อศิษย์</button>
-            <button class="nav-btn" onclick="switchTab('tab-reports')" style="color: #ffb17a;">🚨 รายงานและเบาะแส</button>
+            <button class="nav-btn" onclick="switchTab('tab-reports')">🚨 รายงานและเบาะแส</button>
+            <button class="nav-btn" onclick="switchTab('tab-roles')">🛠️ จัดการยศ</button>
             <button class="nav-btn" onclick="switchTab('tab-cms-index')">🏠 ปรับแต่งหน้าแรก</button>
         </aside>
 
@@ -239,6 +245,7 @@
             <!-- 🌟 Tab Dashboard (Ultra Data Density Mode + Drag & Drop) -->
             <div id="tab-dashboard" class="tab-pane active">
                 
+                <!-- 8 Top Metrics -->
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-icon">📜</div>
@@ -278,7 +285,7 @@
                     <div class="stat-card" style="border-color: rgba(115, 201, 144, 0.4);">
                         <div class="stat-icon">🟢</div>
                         <h4 style="color: var(--success-color);">สถานะ API</h4>
-                        <div class="number" style="font-size: 1rem; margin-top: 5px; color: var(--success-color);">ONLINE</div>
+                        <div class="number" style="font-size: 1.1rem; margin-top: 6px; color: var(--success-color);">ONLINE</div>
                     </div>
                 </div>
 
@@ -405,6 +412,32 @@
                 </div>
             </div>
 
+            <!-- 🌟 Tab Roles (โรงตีเหล็ก) -->
+            <div id="tab-roles" class="tab-pane">
+                <div class="panel-card">
+                    <div class="panel-header">
+                        <h3>🛠️ จัดการยศและป้ายอาญาสิทธิ์</h3>
+                        <button class="btn btn-gold" onclick="openRoleModal()">+ สร้างยศใหม่</button>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 25%;">ตัวอย่างป้ายยศ</th>
+                                    <th style="width: 35%;">ชื่อยศ (Rank Name)</th>
+                                    <th style="width: 20%;">ระดับ (Level)</th>
+                                    <th style="width: 20%; min-width: 150px;">จัดการ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="roles-table-body">
+                                <tr><td colspan="4" style="text-align:center; padding: 15px;">กำลังอัญเชิญข้อมูล...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
             <!-- 🌟 Tab Posts -->
             <div id="tab-posts" class="tab-pane">
                 <div class="panel-card">
@@ -481,6 +514,7 @@
                             <option value="4">ปฐมภูมิ</option>
                             <option value="5">เด็กวัด</option>
                             <option value="character">ตัวละคร (ยศพิเศษ)</option>
+                            <option value="dynamic">✨ ยศพิเศษ (โรงตีเหล็ก)</option>
                         </select>
 
                         <select id="sortOrderField" class="filter-select" aria-label="เรียงลำดับสมาชิก" onchange="handleUserSearch()">
@@ -575,6 +609,51 @@
     </div>
 
     <!-- 🔮 Modals -->
+    
+    <!-- 🌟 Modal โรงตีเหล็ก (สร้างยศ) -->
+    <div class="modal-overlay" id="roleModal">
+        <div class="modal-box" style="max-width: 400px;">
+            <h3 id="roleModalTitle" style="margin-bottom: 12px; text-align: center; font-size: 1.1rem;">✨ สร้างยศพิเศษ</h3>
+            <form id="roleForm" onsubmit="submitRoleForm(event)">
+                <input type="hidden" id="edit-role-id">
+                
+                <div class="form-group">
+                    <label>ชื่อยศ (Rank Name)</label>
+                    <input type="text" id="edit-role-name" class="form-control" placeholder="เช่น ผู้สนับสนุน, เซียน" required>
+                </div>
+                <div class="form-group">
+                    <label>ระดับพลัง (Level 1-5)</label>
+                    <input type="number" id="edit-role-level" class="form-control" min="1" max="5" value="5" required title="1 คือสูงสุด (รองจากแอดมิน), 5 คือระดับเด็กวัด">
+                </div>
+                
+                <div style="display:flex; gap:10px; margin-bottom: 15px;">
+                    <div style="flex:1;">
+                        <label>สีพื้นหลัง</label>
+                        <input type="color" id="edit-role-bg" class="form-control" value="#4a3b22">
+                    </div>
+                    <div style="flex:1;">
+                        <label>สีตัวอักษร</label>
+                        <input type="color" id="edit-role-text" class="form-control" value="#e8cd9c">
+                    </div>
+                    <div style="flex:1;">
+                        <label>สีขอบ</label>
+                        <input type="color" id="edit-role-border" class="form-control" value="#8a6315">
+                    </div>
+                </div>
+                
+                <div style="text-align:center; padding:15px; background: rgba(0,0,0,0.4); border-radius:8px; border:1px dashed rgba(212,175,55,0.3); margin-bottom:20px;">
+                    <span id="role-preview" class="role-badge" style="background:#4a3b22; color:#e8cd9c !important; border:1px solid #8a6315;">ตัวอย่างป้ายยศ</span>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                    <button type="button" class="btn btn-edit" onclick="closeModal('roleModal')">ยกเลิก</button>
+                    <button type="submit" class="btn btn-gold" id="btnSaveRole">บันทึกข้อมูล</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal กระทู้ -->
     <div class="modal-overlay" id="postModal">
         <div class="modal-box">
             <h3 id="postModalTitle" style="margin-bottom: 12px; text-align: center; font-size: 1.05rem;">เพิ่มกระทู้ใหม่</h3>
@@ -599,6 +678,7 @@
         </div>
     </div>
 
+    <!-- Modal สมาชิก (🌟 อัปเดตให้รองรับยศใหม่) -->
     <div class="modal-overlay" id="userModal">
         <div class="modal-box" style="max-width: 360px;">
             <h3 id="userModalTitle" style="margin-bottom: 12px; text-align: center; font-size: 1.05rem;">เพิ่มสมาชิกใหม่</h3>
@@ -609,12 +689,17 @@
                 <div class="form-group">
                     <label>ระดับขั้นตบะ (Rank)</label>
                     <select id="edit-user-role" class="form-control form-select" required>
-                        <option value="5">เด็กวัด (ระดับ 5)</option>
-                        <option value="4">ปฐมภูมิ (ระดับ 4)</option>
-                        <option value="3">ทุติยภูมิ (ระดับ 3)</option>
-                        <option value="2">ตติยภูมิ (ระดับ 2)</option>
-                        <option value="character">ตัวละครพิเศษ (ออร่าสีเขียว)</option>
-                        <option value="1">ปรมัตถ์ (แอดมิน)</option>
+                        <optgroup label="ยศหลักของสำนัก">
+                            <option value="5">เด็กวัด (ระดับ 5)</option>
+                            <option value="4">ปฐมภูมิ (ระดับ 4)</option>
+                            <option value="3">ทุติยภูมิ (ระดับ 3)</option>
+                            <option value="2">ตติยภูมิ (ระดับ 2)</option>
+                            <option value="character">ตัวละครพิเศษ (ออร่าสีเขียว)</option>
+                            <option value="1">ปรมัตถ์ (แอดมิน)</option>
+                        </optgroup>
+                        <optgroup label="ยศพิเศษ (สร้างจากโรงตีเหล็ก)" id="dynamic-roles-optgroup">
+                            <!-- ยศที่แอดมินสร้างจะถูกแทรกที่นี่ผ่าน JS -->
+                        </optgroup>
                     </select>
                 </div>
                 <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 15px;">
@@ -625,6 +710,7 @@
         </div>
     </div>
 
+    <!-- แจ้งเตือนทั่วไป -->
     <div class="modal-overlay" id="customAlertModal" style="z-index: 9999;">
         <div class="modal-box" style="max-width: 280px; text-align: center; padding: 20px 15px;">
             <h3 style="font-size: 1rem; margin-bottom: 8px;">ประกาศแจ้งเตือน</h3>
@@ -633,6 +719,7 @@
         </div>
     </div>
 
+    <!-- ยืนยันการลบ -->
     <div class="modal-overlay" id="customConfirmModal" style="z-index: 9999;">
         <div class="modal-box" style="max-width: 300px; text-align: center; padding: 20px 15px;">
             <h3 style="font-size: 1rem; margin-bottom: 8px; color: var(--danger-color);">⚠️ ยืนยันการดำเนินการ</h3>
@@ -661,6 +748,8 @@
         let filteredUsersData = [];
         let currentUserPage = 1;
         const USERS_PER_PAGE = 15; 
+
+        let globalRolesData = []; // 🌟 เก็บข้อมูลยศที่สร้างเอง
 
         function checkIsPinned(val) {
             return val === true || val === 1 || val === '1' || val === 'true';
@@ -709,7 +798,9 @@
             return true;
         }
 
+        // 🌟 อัปเดต API ให้รองรับ /api/roles
         const AdminAPI = {
+            // ... (โค้ดเก่าคงไว้ทั้งหมด)
             async getPosts() { 
                 if (API_CONFIG.USE_REAL_API) { 
                     try { const res = await fetch(`${API_CONFIG.BASE_URL}/posts`); return await res.json(); } catch(e){ return []; } 
@@ -720,11 +811,8 @@
                     const token = localStorage.getItem('siy_token');
                     const headers = {'Content-Type': 'application/json'};
                     if (token) headers['Authorization'] = `Bearer ${token}`;
-
                     const res = await fetch(`${API_CONFIG.BASE_URL}/posts`, { 
-                        method: postData.id && postData.id.length < 15 ? 'PUT' : 'POST',
-                        headers: headers, 
-                        body: JSON.stringify(postData) 
+                        method: postData.id && postData.id.length < 15 ? 'PUT' : 'POST', headers: headers, body: JSON.stringify(postData) 
                     });
                     if (!res.ok) throw new Error(await res.text() || 'Failed to save post');
                     return await res.json();
@@ -746,7 +834,6 @@
                     const token = localStorage.getItem('siy_token');
                     const headers = {'Content-Type': 'application/json'};
                     if (token) headers['Authorization'] = `Bearer ${token}`;
-
                     const method = oldUsername ? 'PUT' : 'POST';
                     const res = await fetch(`${API_CONFIG.BASE_URL}/users`, { 
                         method: method, headers: headers, body: JSON.stringify({...userData, oldUsername}) 
@@ -786,6 +873,31 @@
                     if (token) headers['Authorization'] = `Bearer ${token}`;
                     await fetch(`${API_CONFIG.BASE_URL}/reports/${id}`, { method: 'DELETE', headers: headers }); 
                 }
+            },
+            // 🌟 เพิ่ม API โรงตีเหล็ก
+            async getRoles() {
+                if (API_CONFIG.USE_REAL_API) {
+                    try { const res = await fetch(`${API_CONFIG.BASE_URL}/roles`); return await res.json(); } catch(e){ return []; }
+                }
+                return [];
+            },
+            async saveRole(roleData, id = null) {
+                if (API_CONFIG.USE_REAL_API) {
+                    const token = localStorage.getItem('siy_token');
+                    const headers = {'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`};
+                    const url = id ? `${API_CONFIG.BASE_URL}/roles/${id}` : `${API_CONFIG.BASE_URL}/roles`;
+                    const method = id ? 'PUT' : 'POST';
+                    const res = await fetch(url, { method, headers, body: JSON.stringify(roleData) });
+                    if (!res.ok) throw new Error('เกิดข้อผิดพลาดในการสร้างยศ');
+                    return await res.json();
+                }
+            },
+            async deleteRole(id) {
+                if (API_CONFIG.USE_REAL_API) {
+                    const token = localStorage.getItem('siy_token');
+                    const headers = {'Authorization': `Bearer ${token}`};
+                    await fetch(`${API_CONFIG.BASE_URL}/roles/${id}`, { method: 'DELETE', headers });
+                }
             }
         };
 
@@ -815,14 +927,22 @@
             if (pendingConfirmAction) { await pendingConfirmAction(); pendingConfirmAction = null; }
         });
 
+        // 🌟 อัปเกรดระบบแสดงป้ายยศให้ดึงสีจากฐานข้อมูลได้
         function getRoleBadge(userObj) {
-            let roleValue = userObj.role;
+            let roleValue = String(userObj.role);
             let rankName = userObj.rank_name;
+
+            // ตรวจสอบว่าเป็นยศพิเศษที่สร้างจากโรงตีเหล็กหรือไม่
+            const customRole = globalRolesData.find(r => r.id === roleValue);
+            if (customRole) {
+                const borderCss = customRole.border_color ? `border: 1px solid ${customRole.border_color}; box-shadow: 0 0 6px ${customRole.border_color}80;` : '';
+                return `<span class="role-badge" style="background: ${customRole.bg_color}; color: ${customRole.text_color} !important; ${borderCss}">${customRole.rank_name}</span>`;
+            }
 
             if (rankName === 'ตัวละคร') {
                 return '<span class="role-badge role-6">ตัวละคร</span>';
             }
-            switch(String(roleValue)) {
+            switch(roleValue) {
                 case '1': return '<span class="role-badge role-1">ปรมัตถ์</span>';
                 case '2': return '<span class="role-badge role-2">ตติยภูมิ</span>';
                 case '3': return '<span class="role-badge role-3">ทุติยภูมิ</span>';
@@ -832,6 +952,11 @@
         }
 
         async function loadAdminData() {
+            // 🌟 โหลดยศก่อน เพื่อให้ตารางสมาชิกดึงสีไปแสดงได้ถูกต้อง
+            globalRolesData = await AdminAPI.getRoles();
+            renderRolesTable();
+            populateUserRoleDropdown();
+
             globalPostsData = await AdminAPI.getPosts();
             globalUsersData = await AdminAPI.getUsers();
             const reports = await AdminAPI.getReports();
@@ -842,7 +967,7 @@
             const totalKarma = globalUsersData.reduce((sum, u) => sum + (parseInt(u.karma) || 0), 0);
             const pinnedCount = globalPostsData.filter(p => checkIsPinned(p.pinned)).length;
 
-            const admins = globalUsersData.filter(u => u.role === '1').length;
+            const admins = globalUsersData.filter(u => String(u.role) === '1').length;
             const chars = globalUsersData.filter(u => u.rank_name === 'ตัวละคร').length;
             const normals = globalUsersData.length - admins - chars;
 
@@ -861,7 +986,7 @@
                 return Math.floor(Math.abs(new Date() - past) / (1000 * 60 * 60 * 24)) <= 7;
             }).length;
 
-            // --- แปะค่าลง Dashboard (Top Metrics) ---
+            // --- แปะค่าลง Dashboard ---
             document.getElementById('db-posts-count').textContent = globalPostsData.length;
             document.getElementById('db-users-count').textContent = globalUsersData.length;
             document.getElementById('db-reports-count').textContent = reports.length;
@@ -870,7 +995,6 @@
             document.getElementById('db-karma-count').textContent = totalKarma.toLocaleString();
             document.getElementById('db-pinned-count').textContent = pinnedCount;
 
-            // --- Averages & Demographics ---
             document.getElementById('avg-views').textContent = avgViews.toLocaleString() + ' วิว';
             document.getElementById('avg-likes').textContent = avgLikes + ' ครั้ง';
             document.getElementById('avg-karma').textContent = avgKarma.toLocaleString() + ' แต้ม';
@@ -1019,6 +1143,128 @@
             }
         }
 
+        // ==========================================
+        // 🛠️ ระบบจัดการโรงตีเหล็ก (Dynamic Roles)
+        // ==========================================
+        function renderRolesTable() {
+            const tbody = document.getElementById('roles-table-body');
+            if (globalRolesData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 15px; color: var(--text-muted);">ยังไม่มีการสร้างยศพิเศษ</td></tr>';
+                return;
+            }
+            tbody.innerHTML = '';
+            globalRolesData.forEach(role => {
+                const borderCss = role.border_color ? `border: 1px solid ${role.border_color};` : '';
+                const badge = `<span class="role-badge" style="background: ${role.bg_color}; color: ${role.text_color} !important; ${borderCss}">${role.rank_name}</span>`;
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${badge}</td>
+                        <td>${role.rank_name}</td>
+                        <td>ระดับ ${role.level || 5}</td>
+                        <td>
+                            <div style="display:flex; gap:4px; flex-wrap:nowrap;">
+                                <button class="btn btn-edit" onclick="editRole('${role.id}')">✏️ แก้ไข</button>
+                                <button class="btn btn-delete" onclick="deleteRole('${role.id}')">🗑️ ลบ</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function populateUserRoleDropdown() {
+            const optgroup = document.getElementById('dynamic-roles-optgroup');
+            if (!optgroup) return;
+            optgroup.innerHTML = '';
+            globalRolesData.forEach(role => {
+                optgroup.innerHTML += `<option value="${role.id}">${role.rank_name} (ระดับ ${role.level || 5})</option>`;
+            });
+        }
+
+        function openRoleModal(id = null) {
+            document.getElementById('roleForm').reset();
+            document.getElementById('edit-role-id').value = '';
+            if (id) {
+                const role = globalRolesData.find(r => r.id === id);
+                if (role) {
+                    document.getElementById('edit-role-id').value = role.id;
+                    document.getElementById('edit-role-name').value = role.rank_name;
+                    document.getElementById('edit-role-level').value = role.level || 5;
+                    document.getElementById('edit-role-bg').value = role.bg_color;
+                    document.getElementById('edit-role-text').value = role.text_color;
+                    document.getElementById('edit-role-border').value = role.border_color || '#000000';
+                }
+                document.getElementById('roleModalTitle').textContent = '✏️ แก้ไขยศพิเศษ';
+            } else {
+                document.getElementById('roleModalTitle').textContent = '✨ สร้างยศพิเศษใหม่';
+                // ค่าเริ่มต้นสีทอง
+                document.getElementById('edit-role-bg').value = '#4a3b22';
+                document.getElementById('edit-role-text').value = '#e8cd9c';
+                document.getElementById('edit-role-border').value = '#8a6315';
+            }
+            updateRolePreview(); // อัปเดตตัวอย่าง
+            document.getElementById('roleModal').classList.add('active');
+        }
+
+        function editRole(id) { openRoleModal(id); }
+
+        async function submitRoleForm(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnSaveRole');
+            btn.textContent = 'รอ...';
+            try {
+                const id = document.getElementById('edit-role-id').value;
+                const data = {
+                    rank_name: document.getElementById('edit-role-name').value.trim(),
+                    level: parseInt(document.getElementById('edit-role-level').value) || 5,
+                    bg_color: document.getElementById('edit-role-bg').value,
+                    text_color: document.getElementById('edit-role-text').value,
+                    border_color: document.getElementById('edit-role-border').value
+                };
+                await AdminAPI.saveRole(data, id || null);
+                closeModal('roleModal');
+                
+                // โหลดข้อมูลใหม่ทั้งหมดเพื่ออัปเดตป้ายยศที่ใช้สีนี้อยู่
+                await loadAdminData();
+                showCustomAlert('✅ บันทึกยศเรียบร้อยแล้ว');
+            } catch (err) {
+                showCustomAlert('❌ เกิดข้อผิดพลาด: ' + err.message);
+            }
+            btn.textContent = 'บันทึกข้อมูล';
+        }
+
+        function deleteRole(id) {
+            showCustomConfirm('แน่ใจหรือไม่ว่าต้องการลบยศนี้? (ผู้ใช้ที่ใช้ยศนี้อาจแสดงผลผิดพลาด)', async () => {
+                await AdminAPI.deleteRole(id);
+                await loadAdminData();
+                showCustomAlert('🗑️ ลบยศเรียบร้อยแล้ว');
+            });
+        }
+
+        // Script สำหรับ Live Preview Color Picker
+        function updateRolePreview() {
+            const preview = document.getElementById('role-preview');
+            const name = document.getElementById('edit-role-name').value || 'ตัวอย่างป้ายยศ';
+            const bg = document.getElementById('edit-role-bg').value;
+            const text = document.getElementById('edit-role-text').value;
+            const border = document.getElementById('edit-role-border').value;
+
+            preview.textContent = name;
+            preview.style.background = bg;
+            preview.style.color = text;
+            preview.style.border = `1px solid ${border}`;
+            preview.style.boxShadow = `0 0 6px ${border}80`; // ใส่เงาเรืองแสงตามสีขอบ
+        }
+
+        // ผูก Event Listener ให้ช่องใส่สีอัปเดตแบบ Real-time
+        document.getElementById('edit-role-name').addEventListener('input', updateRolePreview);
+        document.getElementById('edit-role-bg').addEventListener('input', updateRolePreview);
+        document.getElementById('edit-role-text').addEventListener('input', updateRolePreview);
+        document.getElementById('edit-role-border').addEventListener('input', updateRolePreview);
+
+        // ==========================================
+        // ฟังก์ชันระบบเดิม (Posts, Users, Reports)
+        // ==========================================
         function handlePostSearch() {
             const queryField = document.getElementById('searchPostField');
             const query = queryField ? queryField.value.toLowerCase().trim() : '';
@@ -1122,7 +1368,11 @@
             let data = globalUsersData.filter(u => {
                 const matchName = u.username.toLowerCase().includes(query);
                 let matchRole = true;
-                if (roleFilter === "character") {
+                
+                // 🌟 อัปเดตตัวกรองให้เช็คยศ Dynamic ได้
+                if (roleFilter === "dynamic") {
+                    matchRole = String(u.role).startsWith('dynamic_');
+                } else if (roleFilter === "character") {
                     matchRole = u.rank_name === 'ตัวละคร';
                 } else if (roleFilter !== "") {
                     matchRole = String(u.role) === roleFilter && u.rank_name !== 'ตัวละคร';
@@ -1326,7 +1576,11 @@
                     document.getElementById('edit-user-name').value = u.username; 
                     document.getElementById('edit-user-password').value = u.password; 
                     
-                    if (u.rank_name === 'ตัวละคร') {
+                    // 🌟 ตรวจสอบว่าเป็นยศ Dynamic ไหม
+                    const isDynamic = globalRolesData.some(r => r.id === String(u.role));
+                    if (isDynamic) {
+                        document.getElementById('edit-user-role').value = u.role;
+                    } else if (u.rank_name === 'ตัวละคร') {
                         document.getElementById('edit-user-role').value = 'character';
                     } else {
                         document.getElementById('edit-user-role').value = u.role || '5'; 
@@ -1346,7 +1600,12 @@
             let finalRole = roleSelectVal;
             let finalRankName = 'เด็กวัด';
 
-            if (roleSelectVal === 'character') {
+            // 🌟 แมทช์ค่า Role กับยศปกติ หรือ ยศจากโรงตีเหล็ก
+            const dynamicRole = globalRolesData.find(r => r.id === roleSelectVal);
+            if (dynamicRole) {
+                finalRole = dynamicRole.id;
+                finalRankName = dynamicRole.rank_name;
+            } else if (roleSelectVal === 'character') {
                 finalRole = '2'; 
                 finalRankName = 'ตัวละคร';
             } else if (roleSelectVal === '1') { finalRankName = 'ปรมัตถ์';
@@ -1378,55 +1637,13 @@
             });
         }
 
-        function deleteReport(id) {
-            showCustomConfirm('ต้องการล้างประวัติการแจ้งนี้ใช่หรือไม่?', async () => {
-                await AdminAPI.deleteReport(id);
-                loadAdminData(); 
-                showCustomAlert('✅ เคลียร์เรียบร้อย');
-            });
-        }
-
-        async function saveHeroCMS(e) {
-            e.preventDefault();
-            const subtitleVal = document.getElementById('cms-hero-subtitle').value.trim();
-            const descVal = document.getElementById('cms-hero-desc').value.trim();
-            const imgVal = document.getElementById('cms-hero-img').value.trim();
-            const btnTextVal = document.getElementById('cms-hero-btn-text').value.trim();
-            const btnUrlVal = document.getElementById('cms-hero-btn-url').value.trim();
-
-            const data = { 
-                heroSubtitle: subtitleVal, heroDesc: descVal, heroImg: imgVal, heroBtnText: btnTextVal, heroBtnUrl: btnUrlVal,
-                hero_subtitle: subtitleVal, hero_desc: descVal, hero_img: imgVal, hero_btn_text: btnTextVal, hero_btn_url: btnUrlVal
-            };
-            await AdminAPI.saveCMS(data); 
-            showCustomAlert('✅ บันทึกหน้าแรกเรียบร้อยแล้ว');
-        }
-        
-        function resetDefaultMockData() { 
-            showCustomConfirm('⚠️ ข้อมูลทั้งหมดจะถูกล้าง แน่ใจหรือไม่?', () => {
-                localStorage.removeItem('siy_posts'); 
-                localStorage.removeItem('siy_users'); 
-                localStorage.removeItem('siy_index_cms'); 
-                localStorage.removeItem('siy_admin_dashboard_layout');
-                loadAdminData(); 
-                showCustomAlert('🔄 รีเซ็ตเรียบร้อย'); 
-            });
-        }
-
-        function handleAdminLogout() {
-            localStorage.removeItem('siy_token');
-            localStorage.removeItem('siy_username');
-            localStorage.removeItem('siy_usertype');
-            sessionStorage.clear();
-            window.location.replace('admin_login.html');
-        }
-
-        // 🌟 ฟังก์ชันจัดการระบบลากวาง (Drag & Drop)
+        // ==========================================
+        // 🔄 ระบบต่างๆ และ Event Listeners
+        // ==========================================
         function initDashboardDragAndDrop() {
             const cols = document.querySelectorAll('.dashboard-col');
-            
-            // 1. โหลดเลย์เอาต์ที่เคยเซฟไว้ (ถ้ามี)
             const savedLayout = localStorage.getItem('siy_admin_dashboard_layout');
+            
             if (savedLayout) {
                 try {
                     const layout = JSON.parse(savedLayout);
@@ -1442,21 +1659,17 @@
                 } catch(e) {}
             }
 
-            // 2. เปิดระบบ SortableJS
             cols.forEach(col => {
                 new Sortable(col, {
                     group: 'dashboard-widgets', 
-                    animation: 200, // ความนุ่มนวลตอนสลับที่
-                    handle: '.drag-handle', // ลากได้เฉพาะตรงไอคอน
-                    ghostClass: 'sortable-ghost', // คลาสตอนกำลังลาก
+                    animation: 200, 
+                    handle: '.drag-handle',
+                    ghostClass: 'sortable-ghost',
                     dragClass: 'sortable-drag',
                     onEnd: function() {
-                        // 3. เซฟตำแหน่งใหม่ลง LocalStorage ทันทีที่ปล่อยเมาส์
                         const layout = [];
                         cols.forEach((c, index) => {
-                            const items = Array.from(c.querySelectorAll('.panel-card'))
-                                               .map(card => card.id)
-                                               .filter(id => id); // เก็บเฉพาะกล่องที่มี ID
+                            const items = Array.from(c.querySelectorAll('.panel-card')).map(card => card.id).filter(id => id);
                             layout.push({ colIndex: index, items: items });
                         });
                         localStorage.setItem('siy_admin_dashboard_layout', JSON.stringify(layout));
@@ -1467,7 +1680,7 @@
 
         document.addEventListener('DOMContentLoaded', async () => {
             if (await checkAdminAuth()) {
-                initDashboardDragAndDrop(); // เปิดใช้งานระบบลากวาง
+                initDashboardDragAndDrop(); 
                 loadAdminData();
             }
         });
