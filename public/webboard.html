@@ -7,9 +7,6 @@
     <link rel="icon" type="image/png" href="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788446707/favicon4.png">
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;700&family=Sarabun:wght@400;600&display=swap" rel="stylesheet">
     
-    <!-- 🛡️ เบิกพลังยันต์กันผีจาก Cloudflare -->
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-    
     <style>
         html { scroll-behavior: smooth; overflow-x: hidden; width: 100%; } * { box-sizing: border-box; }
         :root { --bg-deep: #070402; --bg-glow: #2a1805; --gold-light: #f5d77f; --gold-main: #d4af37; --gold-dark: #8a6315; --text-muted: #8a7761; --danger-color: #ff6b6b; }
@@ -401,10 +398,11 @@
                     <span class="toggle-password" onclick="togglePasswordVisibility()" id="togglePwdBtn">แสดง</span>
                 </div>
             </div>
-            
-            <div class="captcha-box-turnstile" id="captchaBoxContainer">
-                <p><strong>ด่านตรวจสอบวิญญาณ:</strong> ระบบกำลังสแกนตัวตน...</p>
-                <div class="cf-turnstile" data-sitekey="0x4AAAAAAErEz0INdc4BEbC7" data-theme="dark"></div>
+
+            <!-- 🌟 ระบบยืนยันตัวตนแบบพิมพ์ข้อความ -->
+            <div class="form-group" id="botCheckContainer">
+                <label style="color: var(--success-color);">ด่านตรวจสอบวิญญาณ</label>
+                <input type="text" id="botCheckInput" class="form-input" placeholder='พิมพ์คำว่า "สัตยาสาบาน" เพื่อยืนยัน' style="border-color: var(--success-color);">
             </div>
 
             <div class="modal-actions">
@@ -528,7 +526,6 @@
             }
         };
 
-        // 🌟 เพิ่มฟังก์ชันเข้าใช้งานแบบไม่ระบุตัวตนที่ขาดหายไป
         function enterAsAnonymous() {
             const randomNum = Math.floor(1000 + Math.random() * 9000);
             const anonName = 'วิญญาณเร่ร่อน_' + randomNum;
@@ -1024,18 +1021,18 @@
                 document.getElementById('modalTitle').textContent = 'เข้าสู่ลานเสวนา';
                 document.getElementById('modalSubTitle').textContent = 'กรอกนามแฝงและรหัสผ่านเพื่อสืบทอดตัวตน';
                 document.getElementById('modalWarning').style.display = 'none';
-                document.getElementById('captchaBoxContainer').style.display = 'none';
+                document.getElementById('botCheckContainer').style.display = 'none'; // ซ่อนตอนล็อกอิน
                 document.getElementById('modalSubmitBtn').textContent = 'ลงนาม';
             } else {
                 document.getElementById('modalTitle').textContent = 'ใบสัตยาบัน';
                 document.getElementById('modalSubTitle').textContent = 'ลงนามเพื่อเข้าร่วมลานเสวนา';
                 document.getElementById('modalWarning').style.display = 'block';
-                document.getElementById('captchaBoxContainer').style.display = 'block';
+                document.getElementById('botCheckContainer').style.display = 'block'; // แสดงตอนสมัคร
                 document.getElementById('modalSubmitBtn').textContent = 'ลงนาม';
             }
             document.getElementById('regUsername').value = '';
             document.getElementById('regPassword').value = '';
-            try { turnstile.reset(); } catch(e) {}
+            document.getElementById('botCheckInput').value = '';
             document.getElementById('registerModal').classList.add('active');
         }
 
@@ -1058,9 +1055,11 @@
             const nowTimestamp = Date.now();
 
             if (currentModalMode === 'register') {
-                const turnstileToken = document.querySelector('[name="cf-turnstile-response"]')?.value;
-                if (!turnstileToken) {
-                    showCustomAlert('กรุณารอระบบตรวจสอบวิญญาณสักครู่... หรือรีเฟรชหน้าเว็บใหม่');
+                
+                // 🌟 ระบบเช็คบอทหน้าบ้าน (พิมพ์คำปฏิญาณ)
+                const botCheckVal = document.getElementById('botCheckInput').value.trim();
+                if (botCheckVal !== 'สัตยาสาบาน') {
+                    showCustomAlert('โดนสกัดกั้น! ท่านพิมพ์คำปฏิญาณยืนยันตัวตนไม่ถูกต้อง');
                     return;
                 }
 
@@ -1074,20 +1073,18 @@
                             role: '5',             
                             rank_name: 'เด็กวัด',
                             last_login: nowTimestamp,
-                            turnstileToken: turnstileToken 
+                            bot_check: botCheckVal // 🌟 ส่งคำปฏิญาณไปเช็คที่เซิร์ฟเวอร์อีกชั้น
                         })
                     });
                     const result = await res.json();
                     
                     if (res.status === 403) {
                         showCustomAlert(result.message || 'ตรวจพบการรุกล้ำโดย Bot โปรดลองใหม่');
-                        try { turnstile.reset(); } catch(e) {}
                         return;
                     }
 
                     if (!res.ok || !result.success) {
                         showCustomAlert(result.message || 'นามแฝงนี้มีผู้ใช้งานแล้ว');
-                        try { turnstile.reset(); } catch(e) {}
                         return;
                     }
 

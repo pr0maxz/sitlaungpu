@@ -228,7 +228,6 @@ app.delete('/api/roles/:id', async (c) => {
 // ==========================================
 app.get('/api/bookmarks', async (c) => {
   const authUser = await getAuthenticatedUser(c)
-  // 🌟 ป้องกันการแสดง Error 401 ใน F12 โดยการส่งคืน 200 โล่งๆ ไปเลย
   if (!authUser) return c.json([], 200)
 
   try {
@@ -413,18 +412,11 @@ app.get('/api/users', async (c) => {
 
 app.post('/api/users', async (c) => {
   const body = await c.req.json()
-  const { username, password, role, rank_name, last_login, turnstileToken } = body
+  const { username, password, role, rank_name, last_login, bot_check } = body
   
-  const secretKey = c.env.TURNSTILE_SECRET || '1x0000000000000000000000000000000AA';
-  const ip = c.req.header('CF-Connecting-IP') || '';
-
-  if (!turnstileToken) {
-      return c.json({ success: false, message: 'กรุณายืนยันตัวตนผ่านด่านตรวจสอบวิญญาณ' }, 403);
-  }
-
-  const isValidHuman = await verifyTurnstile(turnstileToken, secretKey, ip);
-  if (!isValidHuman) {
-      return c.json({ success: false, message: 'โดนสกัดกั้น! ตรวจพบสัมผัสวิญญาณร้าย (Bot)' }, 403);
+  // 🌟 เช็คคำปฏิญาณ (Custom Text CAPTCHA) ว่าพิมพ์มาถูกไหม
+  if (bot_check !== 'สัตยาสาบาน') {
+      return c.json({ success: false, message: 'โดนสกัดกั้น! คำปฏิญาณยืนยันตัวตนไม่ถูกต้อง' }, 403);
   }
 
   const salt = crypto.randomUUID()
