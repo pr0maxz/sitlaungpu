@@ -18,39 +18,37 @@
             --text-muted: #8a7761; 
         }
 
-        /* 🚀 โหมดรีดพลัง: เปลี่ยนเป็น scroll และปิดแอนิเมชันพื้นหลังทั้งหมด */
         body { 
             margin: 0; padding: 0; width: 100%; min-height: 100vh; 
             background-color: var(--bg-deep); 
             background-image: radial-gradient(circle at 50% 50%, var(--bg-glow) 0%, var(--bg-deep) 90%); 
-            background-attachment: scroll; /* ลดอาการหน่วงเวลาไถจอ */
+            background-attachment: scroll; 
             color: #d1bfae; 
             font-family: 'Sarabun', sans-serif; overflow-x: hidden; 
+            /* 🛡️ ระบบป้องกันการคลุมดำและแตะค้างบนทุกอุปกรณ์ */
             user-select: none;
             -webkit-user-select: none;
             -moz-user-select: none;
             -ms-user-select: none;
+            -webkit-touch-callout: none;
         }
         
-        /* ❌ ลบละอองเวทมนตร์เคลื่อนไหว */
         body::before, body::after { display: none !important; }
 
         h1, h2, h3, h4 { font-family: 'Prompt', sans-serif; margin: 0; }
         
-        /* 🚀 โหมดรีดพลัง: ลบ backdrop-filter เปลี่ยนเป็นสีทึบเพื่อประหยัดแรมการ์ดจอ */
         .main-container { 
             position: relative; isolation: isolate; max-width: 1200px; width: 94%; 
             margin: clamp(20px, 4vw, 40px) auto; 
             padding: clamp(20px, 4vw, 40px) clamp(15px, 3vw, 30px) clamp(30px, 5vw, 60px) clamp(15px, 3vw, 30px); 
             padding-top: 45px !important; 
-            background-color: rgba(7, 4, 2, 0.98); /* ใช้สีทึบแทนกระจกฝ้า */
+            background-color: rgba(7, 4, 2, 0.98); 
             border: 1px solid var(--gold-dark); border-radius: 16px; 
             box-shadow: 0 5px 20px rgba(0,0,0,0.9);
         }
-        /* ❌ ปิดกรอบแสงวิ่งรอบกล่อง */
+        
         .main-container::before { display: none !important; }
         
-        /* ❌ ปิดแอนิเมชันมุมกระพริบ */
         .corner-decor { position: absolute; width: clamp(45px, 8vw, 110px); height: clamp(45px, 8vw, 110px); z-index: 20; pointer-events: none; opacity: 0.8; }
         .corner-top-left { top: 12px; left: 12px; transform: scaleX(-1); } 
         .corner-top-right { top: 12px; right: 12px; } 
@@ -98,7 +96,6 @@
         .btn-back { display: inline-flex; align-items: center; gap: 8px; color: var(--gold-light); text-decoration: none; margin-bottom: 15px; font-size: clamp(0.85rem, 2vw, 0.95rem); transition: 0.2s; }
         .btn-back:hover { text-shadow: 0 0 8px var(--gold-main); }
 
-        /* 🌟 ตัวปรับขนาดฟอนต์ */
         .category-block { background: rgba(12, 7, 4, 0.9); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 8px; margin-top: 35px; margin-bottom: 30px; padding: clamp(35px, 6vw, 55px) clamp(15px, 4vw, 45px) clamp(25px, 5vw, 45px) clamp(15px, 4vw, 45px); box-shadow: 0 5px 15px rgba(0,0,0,0.5); position: relative; }
         .section-title { text-align: center; background: linear-gradient(180deg, #3a2511 0%, #150a03 100%); color: var(--gold-light); padding: 8px clamp(20px, 4vw, 30px); border: 1px solid var(--gold-main); border-radius: 8px; display: inline-block; position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-size: clamp(1rem, 2.5vw, 1.15rem); font-weight: 700; white-space: nowrap; box-shadow: 0 8px 16px rgba(0,0,0,0.9); letter-spacing: 1px; margin: 0; z-index: 5; }
 
@@ -107,15 +104,12 @@
         .btn-tool { background: rgba(0,0,0,0.6); border: 1px solid var(--gold-dark); color: var(--gold-light); padding: 6px 14px; border-radius: 6px; font-family: 'Prompt', sans-serif; font-size: 0.85rem; cursor: pointer; transition: background 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.5); }
         .btn-tool:hover { background: var(--gold-dark); color: #fff; }
 
-        /* 🌟 Typography ยืดหยุ่นด้วย Clamp */
         .novel-title-text { color: var(--gold-light); font-size: clamp(1.4rem, 4vw, 2rem); font-family: 'Prompt', sans-serif; margin-bottom: 10px; text-align: center; text-shadow: 0 2px 10px rgba(212,175,55,0.2); line-height: 1.4; }
         .novel-chapter-sub { color: var(--text-muted); font-size: clamp(0.85rem, 2vw, 0.95rem); margin-bottom: clamp(25px, 5vw, 40px); text-align: center; }
         
-        /* 🌟 เนื้อหานิยายแบบ Responsive */
         .novel-body-text { 
             line-height: 1.9; color: #dfd0c0; font-size: 1.1rem; text-align: left; 
             word-break: normal; overflow-wrap: break-word; min-height: 400px; 
-            /* ❌ ปิดแอนิเมชัน transition ขยายฟอนต์เพื่อให้ทำงานเร็วขึ้นทันที */
         }
         
         .novel-body-text p { margin-bottom: clamp(18px, 3vw, 24px); text-indent: clamp(1.5em, 4vw, 2.5em); }
@@ -131,12 +125,10 @@
             display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background-color: rgba(0, 0, 0, 0.95); z-index: 99999; justify-content: center;
             align-items: center; cursor: pointer; padding: 10px;
-            /* ❌ ปิดแอนิเมชัน fadeIn */
         }
         .image-modal-overlay.active { display: flex; }
         .image-modal-content { max-width: 95vw; max-height: 95vh; border-radius: 6px; box-shadow: 0 0 30px rgba(212, 175, 55, 0.3); object-fit: contain; cursor: default; }
 
-        /* 🌟 กล่องกลอนจัดใหม่ให้ยืดหยุ่น */
         .poem-box {
             text-align: center; color: var(--gold-light); margin: clamp(30px, 6vw, 50px) auto; 
             font-style: italic; line-height: 2.2; font-size: 1.05em;
@@ -144,7 +136,6 @@
             border-radius: 12px; border: 1px dashed rgba(212, 175, 55, 0.3); max-width: 85%;
         }
 
-        /* 🌟 กลุ่มปุ่มด้านล่างแบบ Responsive */
         .bottom-action-group { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 60px; border-top: 1px dashed rgba(138, 99, 21, 0.3); padding-top: 40px; flex-wrap: wrap; width: 100%; }
         
         .btn-primary { 
@@ -167,7 +158,6 @@
             .btn-primary { width: 100%; max-width: 100%; }
         }
 
-        /* 🌟 แบนเนอร์จดจำจุดอ่านล่าสุด (Responsive) */
         #resume-scroll-banner {
             position: fixed; bottom: clamp(15px, 3vw, 20px); right: clamp(15px, 3vw, 20px); left: clamp(15px, 3vw, auto); 
             background: linear-gradient(135deg, #1a120b, #0a0603); border: 1px solid var(--gold-main, #d4af37);
@@ -175,7 +165,6 @@
             border-radius: 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.8);
             display: none; align-items: center; justify-content: space-between; gap: 12px; z-index: 9999;
             font-family: 'Prompt', sans-serif; font-size: clamp(0.8rem, 2vw, 0.9rem);
-            /* ❌ ปิดแอนิเมชัน slideUp ให้เด้งขึ้นมาเลย */
         }
         .resume-btn-group { display: flex; align-items: center; gap: 8px; }
         #resume-scroll-banner button {
@@ -230,7 +219,6 @@
 
                     <div class="novel-body-text" id="novelContent">
                         
-                        <!-- 🌟 รูปภาพจัดกลางและย่อขยายอัตโนมัติ -->
                         <img src="https://cdn.readawrite.com/publicassets/16068824/images/8217596525_P2_Ep_5-1.jpg" alt="ฉากเปลี่ยน" width="800" height="450">
 
                         <p>เสียงคลื่นน้ำซัดสาดกระทบฝั่งดังก้องแข่งกับเสียงหอบหายใจของทุกคนบนเรือ เรือหางยาวลำน้อยที่ผ่านพ้นมรสุมแห่งบาดาลค่อยๆ เทียบท่าอย่างทุลักทุเล ณ ลานหน้าองค์พระธาตุกลางน้ำองค์จำลองที่สร้างขึ้นบนฝั่งเมืองหนองคาย บรรยากาศยามค่ำคืนเงียบสงัดจนน่าขนลุก มีเพียงแสงไฟสลัวจากริมทางและแสงจันทร์ที่ส่องกระทบผิวน้ำสีหมึก</p>
@@ -436,14 +424,12 @@
                         
                         <div style="text-align: center; color: var(--gold-main); font-weight: bold; margin-top: 60px; letter-spacing: 2px;">♪ ภวังค์จิต ♪</div>
 
-                        <!-- 🌟 กรอบวิดีโอ YouTube แบบยืดหยุ่น -->
                         <div style="display: flex; justify-content: center; width: 100%; margin-top: 15px;">
                             <div style="width: 100%; max-width: 720px; aspect-ratio: 16 / 9; margin: 0 auto;">
                                 <iframe width="100%" height="100%" src="https://www.youtube.com/embed/YHIaY2JYmh0?si=1IeaX9bCnhyxIwD7" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen style="display: block; border-radius: 8px;"></iframe>
                             </div>
                         </div>
                         
-                        <!-- 🌟 ปุ่มด้านล่างแบบ Responsive เรียงตัวอัตโนมัติ -->
                         <div class="bottom-action-group">
                             <a href="index.html" class="btn-primary">กลับหน้าแรก</a>
                             <a href="webboard.html" class="btn-primary">เข้าสู่ลานเสวนา</a>
@@ -464,7 +450,7 @@
         <img class="image-modal-content" id="modalImage" alt="ขยายรูปภาพ">
     </div>
 
-    <!-- 🌟 แบนเนอร์จดจำจุดอ่านล่าสุด (Responsive) -->
+    <!-- แบนเนอร์จดจำจุดอ่านล่าสุด -->
     <div id="resume-scroll-banner">
         <span>📜 พบร่องรอยการอ่านค้างไว้...</span>
         <div class="resume-btn-group">
@@ -474,37 +460,22 @@
     </div>
 
     <script>
-        document.addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-        });
-
-        document.addEventListener('copy', function(e) {
-            e.preventDefault();
-        });
-
-        document.addEventListener('cut', function(e) {
-            e.preventDefault();
-        });
-
-        document.addEventListener('selectstart', function(e) {
-            e.preventDefault();
-        });
-
+        // 🛡️ ระบบป้องกันการคัดลอก (Anti-Copy)
+        document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+        document.addEventListener('copy', function(e) { e.preventDefault(); });
+        document.addEventListener('cut', function(e) { e.preventDefault(); });
+        document.addEventListener('selectstart', function(e) { e.preventDefault(); });
         document.addEventListener('keydown', function(e) {
-            if (e.key === 'F12') {
-                e.preventDefault();
-                return false;
-            }
+            if (e.key === 'F12' || e.keyCode === 123) { e.preventDefault(); return false; }
             if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) {
-                e.preventDefault();
-                return false;
+                e.preventDefault(); return false;
             }
             if (e.ctrlKey && (e.key === 'u' || e.key === 'U' || e.key === 'c' || e.key === 'C' || e.key === 's' || e.key === 'S')) {
-                e.preventDefault();
-                return false;
+                e.preventDefault(); return false;
             }
         });
 
+        // 🌟 ระบบจัดการขนาดตัวอักษร
         let currentFontSizeRem = 1.1;
 
         function adjustFontSize(delta) {
@@ -520,12 +491,10 @@
         }
 
         function scrollToTop() {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        // 🌟 ระบบขยายรูปภาพ (Image Modal)
         document.addEventListener('DOMContentLoaded', () => {
             const modal = document.getElementById('imageModal');
             const modalImg = document.getElementById('modalImage');
@@ -543,14 +512,19 @@
             document.getElementById('imageModal').classList.remove('active');
         }
 
+        // 🌟 ระบบจดจำจุดอ่าน (Smart Scroll Save)
         const STORAGE_KEY = 'siy_reading_pos_' + window.location.pathname;
-
         let scrollTimer = null;
+
         window.addEventListener('scroll', () => {
             if (scrollTimer) clearTimeout(scrollTimer);
             scrollTimer = setTimeout(() => {
-                if (window.scrollY > 100) {
+                // ถ้าเลื่อนอ่านลงไปเกิน 200px ให้จำค่าไว้
+                if (window.scrollY > 200) {
                     localStorage.setItem(STORAGE_KEY, window.scrollY);
+                } else {
+                    // ถ้าเลื่อนกลับขึ้นมาบนสุด ให้ล้างความจำทิ้ง จะได้ไม่เด้งขึ้นมากวนใจรอบหน้า
+                    localStorage.removeItem(STORAGE_KEY);
                 }
             }, 500);
         });

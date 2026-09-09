@@ -11,7 +11,6 @@
         * { box-sizing: border-box; }
         :root { --bg-deep: #070402; --bg-glow: #2a1805; --gold-light: #f5d77f; --gold-main: #d4af37; --gold-dark: #8a6315; --text-muted: #8a7761; }
         
-        /* 🚀 โหมดเบาพิเศษ: ปิดพื้นหลังยึดติดเพื่อลดการกระตุกเวลาเลื่อนจอ และปิดละอองเวทมนตร์ */
         body { 
             margin: 0; padding: 0; width: 100%; min-height: 100vh; 
             background-color: var(--bg-deep); 
@@ -24,7 +23,6 @@
 
         h1, h2, h3, h4 { font-family: 'Prompt', sans-serif; margin: 0; }
         
-        /* ❌ ลบ backdrop-filter เปลี่ยนเป็นสีทึบเพื่อประหยัดแรมการ์ดจอ */
         .main-container { 
             position: relative; isolation: isolate; max-width: 1200px; width: 92%; 
             margin: 40px auto; padding: 40px 30px; 
@@ -41,7 +39,6 @@
         .breadcrumb { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 20px; } .breadcrumb a { color: var(--gold-light); text-decoration: none; }
         .btn-back { display: inline-flex; align-items: center; gap: 8px; color: var(--gold-light); text-decoration: none; margin-bottom: 20px; font-size: 0.95rem; }
         
-        /* ❌ ลบ backdrop-filter เปลี่ยนเป็นสีทึบ */
         .form-card { background: rgba(12, 7, 4, 0.95); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 10px; padding: 30px; margin-bottom: 30px; width: 100%; box-sizing: border-box; min-height: 450px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
         .form-header { color: var(--gold-main); font-size: 1.5rem; margin-bottom: 25px; border-bottom: 1px solid rgba(138, 99, 21, 0.3); padding-bottom: 15px; }
         .form-group { margin-bottom: 20px; width: 100%; max-width: 100%; box-sizing: border-box; } .form-group label { display: block; color: var(--gold-light); margin-bottom: 8px; font-family: 'Prompt', sans-serif; }
@@ -88,6 +85,7 @@
         .form-actions { display: flex; gap: 15px; margin-top: 30px; width: 100%; } 
         .btn-submit { flex: 2; background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; border: none; padding: 15px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-weight: bold; font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); } 
         .btn-submit:hover { filter: brightness(1.1); }
+        .btn-submit:disabled { filter: grayscale(1); cursor: not-allowed; opacity: 0.7; }
         .btn-cancel { flex: 1; background: transparent; color: var(--text-muted); border: 1px solid var(--text-muted); padding: 15px; border-radius: 25px; cursor: pointer; text-align: center; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
         
         .widget { background: rgba(12, 7, 4, 0.9); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 8px; padding: 20px; margin-bottom: 25px; width: 100%; box-sizing: border-box; box-shadow: 0 5px 15px rgba(0,0,0,0.5); } 
@@ -97,7 +95,6 @@
         /* 🛡️ Guard Overlay ปกป้องก่อนเข้า */
         #guardOverlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #070402; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--gold-main); font-family: 'Prompt', sans-serif; }
         
-        /* ❌ ลบ backdrop-filter เปลี่ยนเป็นสีทึบใน Modal */
         .sect-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(7, 4, 2, 0.95); z-index: 9999; justify-content: center; align-items: center; } 
         .sect-modal-overlay.active { display: flex; }
         .sect-modal-content { position: relative; background: linear-gradient(135deg, #1a120b, #0a0603); border: 1px solid var(--gold-main); border-radius: 12px; width: 90%; max-width: 350px; padding: 30px 20px 40px 20px; text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.9); } 
@@ -111,6 +108,7 @@
         .role-3 { background: linear-gradient(135deg, #6c7a86, #262c30); color: #d6dfe5 !important; border: 1px solid #94a6b5; box-shadow: 0 0 6px rgba(148,166,181,0.4); } 
         .role-4 { background: linear-gradient(135deg, #8a4818, #422008); color: #e8a67c !important; border: 1px solid #b86226; box-shadow: 0 0 6px rgba(184,98,38,0.4); } 
         .role-5 { background: rgba(138, 99, 21, 0.1); color: #a69477 !important; border: 1px solid #8a6315; } 
+        .role-6 { background: linear-gradient(135deg, #27ae60, #145a32); color: #abebc6 !important; border: 1px solid #2ecc71; box-shadow: 0 0 10px rgba(46,204,113,0.8); font-weight: 700; } 
         .role-guest { background: rgba(168, 46, 46, 0.15); color: #ff6b6b !important; border: 1px dashed #a82e2e; } 
 
         @media (max-width: 950px) { .post-layout { grid-template-columns: 1fr; } .form-actions { flex-direction: column; } }
@@ -216,54 +214,62 @@
 
     <script>
         const API_CONFIG = { 
-            USE_REAL_API: true, 
             BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
         };
 
-        // 🌟 ฟังก์ชันดึงรายชื่อคนที่ถูก Mention
+        // 🌟 อัปเกรด Regex ดึงรายชื่อคนที่ถูก Mention (รองรับภาษาไทยครบทุกอักขระ)
         function extractMentions(text) {
-            const mentionRegex = /@([ก-๙a-zA-Z0-9_-]+)/g;
+            const mentionRegex = /@([\u0E00-\u0E7Fa-zA-Z0-9_-]+)/g;
             const matches = [...text.matchAll(mentionRegex)];
             return [...new Set(matches.map(m => m[1]))]; 
         }
 
+        // 🌟 อัปเกรดระบบป้ายยศ ให้ดึงจากโรงตีเหล็กได้ด้วย
         async function getRoleBadgeFromAPI(username) {
             if (!username) return '<span class="role-badge role-5">เด็กวัด</span>';
-            if (username.toUpperCase() === 'ADMIN') { return '<span class="role-badge role-1">ปรมัตถ์</span>'; }
+            if (username.toUpperCase() === 'ADMIN') return '<span class="role-badge role-1">ปรมัตถ์</span>';
             try {
-                const res = await fetch(`${API_CONFIG.BASE_URL}/users`);
-                const usersDB = await res.json();
+                const [resUsers, resRoles] = await Promise.all([
+                    fetch(`${API_CONFIG.BASE_URL}/users`),
+                    fetch(`${API_CONFIG.BASE_URL}/roles`)
+                ]);
+                const usersDB = await resUsers.json();
+                const rolesList = await resRoles.json();
+                
                 const user = usersDB.find(u => u.username === username);
                 if (user) {
-                    let role = String(user.role || '5');
+                    let roleVal = String(user.role || '5');
+                    const customRole = rolesList.find(r => r.id === roleVal);
+                    if (customRole) {
+                        const borderCss = customRole.border_color ? `border: 1px solid ${customRole.border_color}; box-shadow: 0 0 6px ${customRole.border_color}80;` : '';
+                        return `<span class="role-badge" style="background: ${customRole.bg_color}; color: ${customRole.text_color} !important; ${borderCss}">${customRole.rank_name}</span>`;
+                    }
                     let rank = user.rank_name || 'เด็กวัด';
-                    if (role === '1') { return '<span class="role-badge role-1">ปรมัตถ์</span>'; }
-                    return `<span class="role-badge role-${role}">${rank}</span>`;
+                    let roleClass = rank === 'ตัวละคร' ? 'role-6' : `role-${roleVal}`;
+                    return `<span class="role-badge ${roleClass}">${rank}</span>`;
                 }
             } catch (e) {}
             return '<span class="role-badge role-5">เด็กวัด</span>';
         }
 
+        // 🌟 Clean up โค้ดที่ไม่ได้ใช้ (ลบ USE_REAL_API ทิ้ง)
         const ApiManager = {
             async createPost(postData) {
-                if (API_CONFIG.USE_REAL_API) {
-                    try {
-                        const token = localStorage.getItem('siy_token');
-                        const headers = { 'Content-Type': 'application/json' };
-                        // 🌟 แนบ Authorization Bearer Token เพื่อยืนยันตัวตนจริง
-                        if (token) {
-                            headers['Authorization'] = `Bearer ${token}`;
-                        }
+                try {
+                    const token = localStorage.getItem('siy_token');
+                    const headers = { 'Content-Type': 'application/json' };
+                    if (token) {
+                        headers['Authorization'] = `Bearer ${token}`;
+                    }
 
-                        const response = await fetch(`${API_CONFIG.BASE_URL}/posts`, {
-                            method: 'POST',
-                            headers: headers,
-                            body: JSON.stringify(postData)
-                        });
-                        return await response.json();
-                    } catch (error) { return { success: false }; }
-                } else {
-                    return { success: true };
+                    const response = await fetch(`${API_CONFIG.BASE_URL}/posts`, {
+                        method: 'POST',
+                        headers: headers,
+                        body: JSON.stringify(postData)
+                    });
+                    return await response.json();
+                } catch (error) { 
+                    return { success: false, error: 'เกิดอาถรรพ์ขัดข้องในการเชื่อมต่อเซิร์ฟเวอร์' }; 
                 }
             },
             async sendNotification(data) {
@@ -385,7 +391,6 @@
             const result = await ApiManager.createPost(newPost);
 
             if (result && result.success !== false) {
-                // 🌟 ตรวจจับการ Mention ในกระทู้ใหม่และส่งแจ้งเตือน
                 const mentionedUsers = extractMentions(content + ' ' + title);
                 for (const mentionedUser of mentionedUsers) {
                     if (mentionedUser !== author) {

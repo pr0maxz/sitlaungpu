@@ -206,6 +206,7 @@
         .ghost-warning-box p { color: #d1bfae; font-size: clamp(0.85rem, 3vw, 0.95rem); line-height: 1.8; margin-bottom: 20px; }
         .ghost-line { display: block; margin-bottom: 6px; }
         .ghost-btn-group { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+        .ghost-btn-group > * { flex: 1 1 auto; min-width: 140px; text-align: center; display: flex; align-items: center; justify-content: center; }
 
         @media (max-width: 950px) { .post-layout { grid-template-columns: 1fr; } .replies-container { margin-left: 10px; border-left-width: 1px; } .comment-card.is-reply::before { width: 10px; left: -11px; } }
         @media (max-width: 768px) {
@@ -215,6 +216,7 @@
             nav a { font-size: 0.95rem !important; flex-shrink: 0; }
         }
         @media (max-width: 600px) { .main-container { padding: 45px 20px 40px 20px !important; width: 95%; margin-top: 30px; } }
+        @media (max-width: 480px) { .ghost-btn-group { flex-direction: column; } .ghost-btn-group > * { width: 100%; max-width: 100%; flex: 1 1 100%; } }
         
         .loading-text { font-family: 'Prompt', sans-serif; color: var(--gold-main); text-align: center; padding: 40px; }
         
@@ -324,7 +326,7 @@
                             </div>
                         </div>
                     </div>
-                    <button onclick="handleLogout()" class="btn-logout" id="logoutBtnText">ออกจากระบบ (ลบตัวตน)</button>
+                    <button onclick="handleLogout()" class="btn-logout" id="logoutBtnText">ออกจากระบบ</button>
                 </div>
             </div>
         </div>
@@ -389,6 +391,26 @@
 
         let currentPostAuthorGlobal = ''; 
 
+        // 🌟 ฟังก์ชันจัดการเวลาแบบ DRY (เรียกใช้ซ้ำได้ทั้งหน้า)
+        function getThaiTimeStr() {
+            const thaiMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+            const now = new Date();
+            return now.getDate() + ' ' + thaiMonths[now.getMonth()] + ' ' + (now.getFullYear() + 543) + ' | ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ' น.';
+        }
+
+        // 🌟 ฟังก์ชัน Auto-Scroll & Highlight แบบ DRY
+        function highlightElement(targetEl) {
+            if (!targetEl) return;
+            targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            targetEl.style.transition = 'background-color 0.8s ease, box-shadow 0.8s ease';
+            targetEl.style.backgroundColor = 'rgba(212, 175, 55, 0.4)';
+            targetEl.style.boxShadow = '0 0 20px rgba(212, 175, 55, 0.8)';
+            setTimeout(() => { 
+                targetEl.style.backgroundColor = ''; 
+                targetEl.style.boxShadow = '';
+            }, 2500);
+        }
+
         function formatMentions(text) {
             if(!text) return '';
             const mentionRegex = /@([\u0E00-\u0E7Fa-zA-Z0-9_-]+)/g;
@@ -404,28 +426,14 @@
         function scrollToUserComment(username) {
             const comments = document.querySelectorAll(`.comment-card[data-author="${username}"]`);
             if (comments.length > 0) {
-                const target = comments[0];
-                target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                target.style.transition = 'background-color 0.5s ease';
-                target.style.backgroundColor = 'rgba(212, 175, 55, 0.4)';
-                setTimeout(() => { target.style.backgroundColor = ''; }, 2000);
+                highlightElement(comments[0]);
             } else {
                 showCustomAlert(`ไม่พบร่องรอยของ @${username} ในจารึกหน้านี้`);
             }
         }
 
         function scrollToComment(commentId) {
-            const target = document.getElementById(`comment-${commentId}`);
-            if (target) {
-                target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                target.style.transition = 'background-color 0.5s ease, box-shadow 0.5s ease';
-                target.style.backgroundColor = 'rgba(212, 175, 55, 0.4)';
-                target.style.boxShadow = '0 0 15px rgba(212, 175, 55, 0.8)';
-                setTimeout(() => { 
-                    target.style.backgroundColor = ''; 
-                    target.style.boxShadow = '';
-                }, 2000);
-            }
+            highlightElement(document.getElementById(`comment-${commentId}`));
         }
 
         let telepathySocket;
@@ -776,7 +784,6 @@
             if (pendingConfirmAction) { await pendingConfirmAction(); pendingConfirmAction = null; }
         });
 
-        // 🌟 แก้ไขบั๊ก Alert Loop อย่างสมบูรณ์ 100%
         function showCustomAlert(message, action = false) {
             document.getElementById('customAlertMessage').innerHTML = message;
             const modal = document.getElementById('customAlertModal');
@@ -786,7 +793,7 @@
                 if (action === true) {
                     window.location.reload(); 
                 } else if (typeof action === 'string') {
-                    window.location.href = action; // สั่งย้ายหน้าแบบถูกต้อง
+                    window.location.href = action; 
                 }
             };
         }
@@ -806,9 +813,7 @@
             const reason = document.getElementById('reportReason').value;
             const reporter = localStorage.getItem('siy_username') || 'ไม่ระบุตัวตน';
             
-            const thaiMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
-            const now = new Date();
-            const timeStr = now.getDate() + ' ' + thaiMonths[now.getMonth()] + ' ' + (now.getFullYear() + 543) + ' | ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ' น.';
+            const timeStr = getThaiTimeStr();
 
             try {
                 await fetch(`${API_CONFIG.BASE_URL}/reports`, {
@@ -1008,17 +1013,7 @@
                 setTimeout(() => {
                     if (window.location.hash && window.location.hash.startsWith('#comment-')) {
                         const targetId = window.location.hash.substring(1);
-                        const targetEl = document.getElementById(targetId);
-                        if (targetEl) {
-                            targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                            targetEl.style.transition = 'background-color 0.8s ease, box-shadow 0.8s ease';
-                            targetEl.style.backgroundColor = 'rgba(212, 175, 55, 0.4)';
-                            targetEl.style.boxShadow = '0 0 20px rgba(212, 175, 55, 0.8)';
-                            setTimeout(() => { 
-                                targetEl.style.backgroundColor = ''; 
-                                targetEl.style.boxShadow = '';
-                            }, 2500);
-                        }
+                        highlightElement(document.getElementById(targetId));
                     }
                 }, 300);
 
@@ -1078,9 +1073,7 @@
             const postId = urlParams.get('id');
             const author = localStorage.getItem('siy_username');
             
-            const thaiMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
-            const now = new Date();
-            const timeStr = now.getDate() + ' ' + thaiMonths[now.getMonth()] + ' ' + (now.getFullYear() + 543) + ' | ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ' น.';
+            const timeStr = getThaiTimeStr();
 
             const commentData = {
                 id: Date.now().toString(), postId: postId, parent_id: "0", author: author,
@@ -1148,9 +1141,7 @@
 
             const author = localStorage.getItem('siy_username');
             
-            const thaiMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
-            const now = new Date();
-            const timeStr = now.getDate() + ' ' + thaiMonths[now.getMonth()] + ' ' + (now.getFullYear() + 543) + ' | ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ' น.';
+            const timeStr = getThaiTimeStr();
             
             const hiddenPrefix = `[REPLY_TO:${parentId}][AUTHOR:${parentAuthor}]`;
             const finalContent = hiddenPrefix + content.replace(/\n/g, '<br>');
@@ -1191,7 +1182,7 @@
                     }
 
                     broadcastAction('NEW_COMMENT', postId, { postId: postId });
-                    showCustomAlert('ส่งคำตอบกลับสำเร็จ!', true); 
+                    showCustomAlert('ส่งคำตอบกลับสำเร็จ!', true);
                 } else {
                     showCustomAlert(result.error || 'เกิดอาถรรพ์ขัดข้อง ส่งคำตอบกลับไม่สำเร็จ');
                 }
@@ -1206,17 +1197,7 @@
         window.addEventListener('hashchange', () => {
             if (window.location.hash && window.location.hash.startsWith('#comment-')) {
                 const targetId = window.location.hash.substring(1);
-                const targetEl = document.getElementById(targetId);
-                if (targetEl) {
-                    targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    targetEl.style.transition = 'background-color 0.8s ease, box-shadow 0.8s ease';
-                    targetEl.style.backgroundColor = 'rgba(212, 175, 55, 0.4)';
-                    targetEl.style.boxShadow = '0 0 20px rgba(212, 175, 55, 0.8)';
-                    setTimeout(() => { 
-                        targetEl.style.backgroundColor = ''; 
-                        targetEl.style.boxShadow = '';
-                    }, 2500);
-                }
+                highlightElement(document.getElementById(targetId));
             }
         });
 
@@ -1236,10 +1217,8 @@
 
             const commentArea = document.getElementById('commentAreaContainer');
             if (userType === 'guest') {
-                // 🌟 ซ่อนปุ่มออกจากระบบแถบด้านข้าง สำหรับวิญญาณเร่ร่อน
                 document.getElementById('logoutBtnText').style.display = 'none';
                 
-                // 🌟 ปรับขนาดปุ่มเร้นกายกลับลานเสวนา ให้แคบลงสวยงาม ไม่ยาวเต็มจอ
                 commentArea.innerHTML = `
                     <div class="ghost-warning-box">
                         <div style="font-size: 2.5rem; margin-bottom: 10px; filter: drop-shadow(0 0 8px rgba(168, 46, 46, 0.8));">👻</div>

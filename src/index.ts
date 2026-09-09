@@ -6,7 +6,6 @@ type Bindings = {
   DB: D1Database
   TELEPATHY_ROOM: DurableObjectNamespace
   JWT_SECRET?: string
-  TURNSTILE_SECRET?: string
 }
 
 const app = new Hono<{ Bindings: Bindings }>()
@@ -32,18 +31,6 @@ function sanitize(text: string) {
   return text.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
              .replace(/on\w+="[^"]*"/gi, '')
              .replace(/on\w+='[^']*'/gi, '')
-}
-
-async function verifyTurnstile(token: string, secret: string, ip: string) {
-  const formData = new FormData();
-  formData.append('secret', secret);
-  formData.append('response', token);
-  formData.append('remoteip', ip);
-
-  const url = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
-  const result = await fetch(url, { body: formData, method: 'POST' });
-  const outcome: any = await result.json();
-  return outcome.success;
 }
 
 async function generateToken(payload: { username: string; role: string; rank_name: string }, secret: string) {

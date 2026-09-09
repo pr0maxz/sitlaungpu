@@ -14,7 +14,6 @@
             --text-muted: #8a7761; --danger-color: #ff6b6b; 
         }
         
-        /* 🚀 โหมดเบาพิเศษ: ปิดพื้นหลังยึดติดเพื่อลดการกระตุกเวลาเลื่อนจอ และปิดละอองเวทมนตร์ */
         body { 
             background-color: var(--bg-deep); 
             background-image: radial-gradient(circle at 50% 50%, var(--bg-glow) 0%, var(--bg-deep) 90%); 
@@ -29,10 +28,9 @@
             position: relative;
         }
 
-        /* ❌ ลบแอนิเมชัน containerPulse และ backdrop-filter ออก */
         .login-box {
             position: relative;
-            background: rgba(10, 6, 3, 0.98); /* ใช้สีทึบแทนกระจกฝ้า */
+            background: rgba(10, 6, 3, 0.98);
             border: 1px solid var(--gold-main);
             border-radius: 12px;
             width: 90%;
@@ -100,7 +98,6 @@
         }
         .back-link:hover { color: var(--gold-light); }
 
-        /* ❌ ลบ backdrop-filter ออกจาก Modal Alert เช่นกัน */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(7, 4, 2, 0.95); z-index: 999; justify-content: center; align-items: center; } 
         .modal-overlay.active { display: flex; }
         .modal-box { background: linear-gradient(135deg, #1a120b, #0a0603); border: 1px solid var(--danger-color); border-radius: 12px; width: 90%; max-width: 350px; padding: 30px; position: relative; box-shadow: 0 15px 40px rgba(0,0,0,0.9); text-align: center; }
@@ -108,7 +105,7 @@
         .modal-box h3 { font-family: 'Prompt', sans-serif; margin-bottom: 15px; color: var(--danger-color); }
         .modal-box.success h3 { color: #73c990; }
         .modal-box p { color: #e2d4c3; font-size: 1rem; margin-bottom: 25px; line-height: 1.5; }
-        .btn-close-modal { background: transparent; border: 1px solid var(--text-muted); color: var(--text-muted); padding: 8px 25px; border-radius: 20px; font-family: 'Prompt', sans-serif; cursor: pointer; }
+        .btn-close-modal { background: transparent; border: 1px solid var(--text-muted); color: var(--text-muted); padding: 8px 25px; border-radius: 20px; font-family: 'Prompt', sans-serif; cursor: pointer; transition: 0.2s; }
         .btn-close-modal:hover { background: rgba(255,255,255,0.1); color: #fff; }
     </style>
 </head>
@@ -153,8 +150,8 @@
     </div>
 
     <script>
+        // กำหนด Endpoint ของเซิร์ฟเวอร์
         const API_CONFIG = { 
-            USE_REAL_API: true, 
             BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
         };
 
@@ -198,40 +195,32 @@
             btn.disabled = true;
 
             try {
-                let response;
-                if (API_CONFIG.USE_REAL_API) {
-                    response = await fetch(`${API_CONFIG.BASE_URL}/admin/login`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ username, password })
-                    });
-                } else {
-                    let usersDB = JSON.parse(localStorage.getItem('siy_users')) || [];
-                    const foundUser = usersDB.find(u => u.username === username);
-                    if (!foundUser || foundUser.password !== password || foundUser.role !== '1') {
-                        throw new Error('นามหรือรหัสผ่านอาคมไม่ถูกต้อง!');
-                    }
-                    response = { ok: true, json: async () => ({ success: true, username: foundUser.username, token: 'mock-admin-token' }) };
-                }
+                // ส่งคำขอไปที่ D1 Database บน Cloudflare Worker
+                const response = await fetch(`${API_CONFIG.BASE_URL}/admin/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
 
                 const result = await response.json();
 
                 if (!response.ok || !result.success) {
-                    showAlert('อาถรรพ์สะท้อนกลับ!', result.error || 'รหัสผ่านอาคมผิดเพี้ยน หรือท่านไม่ใช่ "ปรมัตถ์"!');
+                    showAlert('อาถรรพ์สะท้อนกลับ!', result.error || 'รหัสผ่านอาคมผิดเพี้ยน หรือท่านไม่ใช่ "ผู้คุมกฎ"!');
                     btn.textContent = 'ล่วงล้ำเขตแดน (Login)';
                     btn.disabled = false;
                     return;
                 }
 
-                showAlert('ยินดีต้อนรับ', 'มนตราบรรลุผล... ประตูเมืองลับแลเปิดออกแล้วท่านจ้าวปะรำพิธี', true);
+                showAlert('ยินดีต้อนรับ', 'มนตราบรรลุผล... ประตูเมืองลับแลเปิดออกแล้วท่านผู้คุมกฎ', true);
                 
-                // 🌟 จัดเก็บ Token และสถานะของแอดมินลงใน Storage
+                // จัดเก็บ Token และข้อมูลผู้ใช้
                 if (result.token) {
                     localStorage.setItem('siy_token', result.token);
                 }
                 localStorage.setItem('siy_username', result.username || username);
                 localStorage.setItem('siy_usertype', 'admin');
 
+                // พาย้ายเข้าเมืองลับแล (หน้าแอดมิน)
                 setTimeout(() => {
                     window.location.href = 'admin.html';
                 }, 1500);

@@ -22,6 +22,9 @@
             font-family: 'Sarabun', sans-serif; 
             overflow-x: hidden; 
         }
+
+        /* 🛡️ ป้องกันการเลื่อนหน้าจอเวลาเปิด Modal */
+        body.modal-open { overflow: hidden; }
         
         body::before, body::after { display: none !important; }
 
@@ -307,18 +310,15 @@
                     </div>
                 </div>
 
-                <!-- 🌟 กล่องคัมภีร์ส่วนตัว (Bookmarks) จาก D1 Database -->
                 <div class="widget" id="bookmarkWidget" style="display: none;">
                     <h4 class="section-title" style="background: linear-gradient(180deg, #4a3b1a 0%, #2a1805 100%); border-color: #f5d77f; color: #f5d77f;">จารึกส่วนตัว</h4>
                     <div id="bookmarkListContainer" style="display: flex; flex-direction: column; margin-top: 15px; max-height: 250px; overflow-y: auto;">
-                        <!-- รายการ Bookmark จะถูกดึงมาแสดงที่นี่ -->
                     </div>
                 </div>
 
                 <div class="widget" id="historyWidget" style="display: none;">
                     <h4 class="section-title">รอยเท้าจารึก</h4>
                     <div id="historyListContainer" style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
-                        <!-- ประวัติจะถูกนำมาแสดงที่นี่ -->
                     </div>
                 </div>
                 
@@ -401,7 +401,6 @@
                 </div>
             </div>
 
-            <!-- 🌟 ระบบยืนยันตัวตนแบบพิมพ์ข้อความ -->
             <div class="form-group" id="botCheckContainer">
                 <label style="color: var(--success-color);">ด่านตรวจสอบวิญญาณ</label>
                 <input type="text" id="botCheckInput" class="form-input" placeholder='พิมพ์คำว่า "สัตยาสาบาน" เพื่อยืนยัน' style="border-color: var(--success-color);">
@@ -431,13 +430,12 @@
         let currentModalMode = 'register';
 
         const API_CONFIG = { 
-            USE_REAL_API: true, 
             BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
         };
 
         function formatMentions(text) {
             if(!text) return '';
-            const mentionRegex = /@([ก-๙a-zA-Z0-9_-]+)/g;
+            const mentionRegex = /@([\u0E00-\u0E7Fa-zA-Z0-9_-]+)/g;
             return text.replace(mentionRegex, '<span class="user-mention">@$1</span>');
         }
 
@@ -473,14 +471,11 @@
 
         const ApiManager = {
             async fetchPosts() {
-                if (API_CONFIG.USE_REAL_API) {
-                    try {
-                        const response = await fetch(`${API_CONFIG.BASE_URL}/posts`);
-                        if (!response.ok) return [];
-                        return await response.json();
-                    } catch (error) { return []; }
-                }
-                return [];
+                try {
+                    const response = await fetch(`${API_CONFIG.BASE_URL}/posts`);
+                    if (!response.ok) return [];
+                    return await response.json();
+                } catch (error) { return []; }
             },
             async getNotifications(username) {
                 try {
@@ -589,9 +584,9 @@
             }
         }
 
-        async function handleNotiClick(notiId, postId) {
+        async function handleNotiClick(notiId, postIdStr) {
             await ApiManager.readNotification(notiId);
-            window.location.href = `post.html?id=${postId}`;
+            window.location.href = `post.html?id=${postIdStr}`;
         }
 
         window.onclick = function(event) {
@@ -681,6 +676,7 @@
             if (!hasAcceptedRules) {
                 const rulesModal = document.getElementById('webboardRulesModal');
                 rulesModal.classList.add('active');
+                document.body.classList.add('modal-open');
                 
                 const rulesBox = document.getElementById('rulesBodyContainer');
                 const checkboxWrapper = document.getElementById('rulesCheckboxWrapper');
@@ -748,6 +744,7 @@
 
             localStorage.setItem('siy_webboard_rules_accepted', 'true');
             document.getElementById('webboardRulesModal').classList.remove('active');
+            document.body.classList.remove('modal-open');
         }
 
         function cancelWebboardRules() {
@@ -922,12 +919,18 @@
             document.getElementById('customAlertMessage').innerHTML = message;
             const modal = document.getElementById('customAlertModal');
             modal.classList.add('active');
+            document.body.classList.add('modal-open');
             document.getElementById('customAlertBtn').onclick = function() {
                 modal.classList.remove('active');
+                document.body.classList.remove('modal-open');
                 if (redirectUrl) window.location.href = redirectUrl;
             };
         }
-        function closeCustomAlert() { document.getElementById('customAlertModal').classList.remove('active'); }
+
+        function closeCustomAlert() { 
+            document.getElementById('customAlertModal').classList.remove('active');
+            document.body.classList.remove('modal-open');
+        }
 
         async function checkUserLoginStatus() {
             const savedUser = localStorage.getItem('siy_username');
@@ -1023,22 +1026,26 @@
                 document.getElementById('modalTitle').textContent = 'เข้าสู่ลานเสวนา';
                 document.getElementById('modalSubTitle').textContent = 'กรอกนามแฝงและรหัสผ่านเพื่อสืบทอดตัวตน';
                 document.getElementById('modalWarning').style.display = 'none';
-                document.getElementById('botCheckContainer').style.display = 'none'; // ซ่อนตอนล็อกอิน
+                document.getElementById('botCheckContainer').style.display = 'none'; 
                 document.getElementById('modalSubmitBtn').textContent = 'ลงนาม';
             } else {
                 document.getElementById('modalTitle').textContent = 'ใบสัตยาบัน';
                 document.getElementById('modalSubTitle').textContent = 'ลงนามเพื่อเข้าร่วมลานเสวนา';
                 document.getElementById('modalWarning').style.display = 'block';
-                document.getElementById('botCheckContainer').style.display = 'block'; // แสดงตอนสมัคร
+                document.getElementById('botCheckContainer').style.display = 'block'; 
                 document.getElementById('modalSubmitBtn').textContent = 'ลงนาม';
             }
             document.getElementById('regUsername').value = '';
             document.getElementById('regPassword').value = '';
             document.getElementById('botCheckInput').value = '';
             document.getElementById('registerModal').classList.add('active');
+            document.body.classList.add('modal-open');
         }
 
-        function closeRegisterModal() { document.getElementById('registerModal').classList.remove('active'); }
+        function closeRegisterModal() { 
+            document.getElementById('registerModal').classList.remove('active'); 
+            document.body.classList.remove('modal-open');
+        }
 
         async function handleSubmitAction() {
             const usernameInput = document.getElementById('regUsername').value.trim();
@@ -1057,8 +1064,6 @@
             const nowTimestamp = Date.now();
 
             if (currentModalMode === 'register') {
-                
-                // 🌟 ระบบเช็คบอทหน้าบ้าน (พิมพ์คำปฏิญาณ)
                 const botCheckVal = document.getElementById('botCheckInput').value.trim();
                 if (botCheckVal !== 'สัตยาสาบาน') {
                     showCustomAlert('โดนสกัดกั้น! ท่านพิมพ์คำปฏิญาณยืนยันตัวตนไม่ถูกต้อง');
@@ -1075,7 +1080,7 @@
                             role: '5',             
                             rank_name: 'เด็กวัด',
                             last_login: nowTimestamp,
-                            bot_check: botCheckVal // 🌟 ส่งคำปฏิญาณไปเช็คที่เซิร์ฟเวอร์อีกชั้น
+                            bot_check: botCheckVal 
                         })
                     });
                     const result = await res.json();
