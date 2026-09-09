@@ -196,7 +196,7 @@
         .modal-corner { position: absolute; width: 60px; pointer-events: none; opacity: 0.8; } .mc-top-left { top: 12px; left: 12px; transform: scaleX(-1); } .mc-top-right { top: 12px; right: 12px; } .mc-bottom-left { bottom: 12px; left: 12px; transform: scaleX(-1) scaleY(-1); } .mc-bottom-right { bottom: 12px; right: 12px; transform: scaleY(-1); }
         .modal-header { text-align: center; margin-bottom: 20px; } .modal-header h3 { color: var(--gold-light); font-size: 1.5rem; margin-bottom: 5px; } .modal-header p { color: var(--gold-dark); font-size: 0.85rem; margin: 0; }
         
-        .btn-submit-modal { background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03 !important; border: 1px solid #ffeba9; padding: 12px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-weight: bold; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: filter 0.2s; width: 80%; margin: 0 auto; display: block; text-decoration: none; }
+        .btn-submit-modal { background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; border: 1px solid #ffeba9; padding: 12px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-weight: bold; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: filter 0.2s; width: 80%; margin: 0 auto; display: block; text-decoration: none; }
         .btn-submit-modal:hover { filter: brightness(1.15); }
 
         .form-select { width: 100%; background: rgba(0,0,0,0.6); border: 1px solid rgba(138, 99, 21, 0.5); color: #fff; padding: 12px 15px; border-radius: 6px; font-size: 1rem; margin-bottom: 20px; font-family: 'Sarabun', sans-serif; } .form-select option { background: #1a120b; }
@@ -349,9 +349,9 @@
                 <option value="ลบหลู่ / สร้างความแตกแยก">ลบหลู่ / สร้างความแตกแยก</option>
                 <option value="อื่นๆ (ผิดกฎสำนัก)">อื่นๆ (ผิดกฎสำนัก)</option>
             </select>
-            <div style="display: flex; gap: 10px; justify-content: center; margin-top: 10px;">
-                <button type="button" class="btn-submit-modal" style="background: transparent; border: 1px solid var(--text-muted); color: var(--text-muted); box-shadow: none;" onclick="closeReportModal()">ถอยกลับ</button>
-                <button type="button" class="btn-submit-modal" id="confirmReportBtn" style="background: rgba(226, 149, 120, 0.15); border: 1px solid rgba(226, 149, 120, 0.5); color: #e29578; box-shadow: none;" onclick="submitReport()">ส่งรายงาน</button>
+            <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
+                <button type="button" class="btn-submit-modal" style="flex: 1; margin: 0; background: transparent; border: 1px solid var(--text-muted); color: #d1bfae; box-shadow: none;" onclick="closeReportModal()">ถอยกลับ</button>
+                <button type="button" class="btn-submit-modal" id="confirmReportBtn" style="flex: 1; margin: 0; background: rgba(226, 149, 120, 0.15); border: 1px solid rgba(226, 149, 120, 0.5); color: #e29578; box-shadow: none;" onclick="submitReport()">ส่งรายงาน</button>
             </div>
         </div>
     </div>
@@ -369,6 +369,7 @@
         </div>
     </div>
 
+    <!-- ยืนยันการทำลาย -->
     <div class="sect-modal-overlay" id="customConfirmModal" style="z-index: 9999;">
         <div class="sect-modal-content" style="max-width: 380px; text-align: center; padding: 30px 20px 40px 20px;">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-left" alt="" width="60" height="60" loading="lazy">
@@ -378,8 +379,8 @@
             <div class="modal-header"><h3 style="font-size: 1.4rem; color: var(--danger-color);">ยืนยันการทำลาย</h3></div>
             <p id="customConfirmMessage" style="color: #e2d4c3; font-size: 1rem; margin-bottom: 25px; line-height: 1.5;">ท่านแน่ใจหรือไม่?</p>
             <div style="display: flex; gap: 10px; justify-content: center;">
-                <button type="button" class="btn-submit-modal" style="background: transparent; border: 1px solid var(--text-muted); color: var(--text-muted); box-shadow: none;" onclick="closeConfirmModal()">ถอยกลับ</button>
-                <button type="button" class="btn-submit-modal" id="customConfirmBtn" style="background: rgba(168, 46, 46, 0.15); border: 1px solid rgba(168, 46, 46, 0.5); color: #ff6b6b; box-shadow: none;">ยืนยันลบ</button>
+                <button type="button" class="btn-submit-modal" style="flex: 1; margin: 0; background: transparent; border: 1px solid var(--text-muted); color: #d1bfae; box-shadow: none;" onclick="closeConfirmModal()">ถอยกลับ</button>
+                <button type="button" class="btn-submit-modal" id="customConfirmBtn" style="flex: 1; margin: 0; background: rgba(168, 46, 46, 0.15); border: 1px solid rgba(168, 46, 46, 0.5); color: #ff6b6b; box-shadow: none;">ยืนยันลบ</button>
             </div>
         </div>
     </div>
@@ -409,33 +410,26 @@
             }, 2500);
         }
 
-        // 🌟 สร้าง Regex แบบเจาะจงรายชื่อ เพื่อป้องกันปัญหาแท็กติดข้อความยาวๆ
         function getDynamicMentionRegex(usersMap) {
-            let usernames = ['Admin', 'admin']; // สำรองชื่อผู้คุมกฎเผื่อกรณีพิเศษ
+            let usernames = ['Admin', 'admin']; 
             if (usersMap && Object.keys(usersMap).length > 0) {
                 usernames = usernames.concat(Object.keys(usersMap));
             }
             
-            // นำรายชื่อมาเรียงจากตัวอักษรยาวสุดไปสั้นสุด เพื่อให้จับชื่อที่ยาวก่อน
-            // (เช่น จับคำว่า "ศิษย์หลวงปู่" ก่อนคำว่า "ศิษย์")
             const uniqueUsers = [...new Set(usernames)];
             uniqueUsers.sort((a, b) => b.length - a.length);
             
-            // แปลงอักขระพิเศษในชื่อให้ปลอดภัยสำหรับ Regex ป้องกันบั๊ก
             const escaped = uniqueUsers.map(u => u.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
             
-            // สร้าง Regex แบบระบุกลุ่มคำ (Exact Match) เพื่อแยกชื่อออกจากข้อความอื่น
             return new RegExp(`@(${escaped.join('|')})`, 'g');
         }
 
-        // 🌟 อัปเกรดฟังก์ชันรูปแบบแท็ก ให้ฉลาดพอที่จะรู้จักแต่ชื่อคนที่มีอยู่จริง
         function formatMentions(text, usersMap) {
             if(!text) return '';
             const regex = getDynamicMentionRegex(usersMap);
             return text.replace(regex, '<span class="user-mention" onclick="scrollToUserComment(\'$1\')" title="ค้นหาจารึกของผู้นี้">@$1</span>');
         }
 
-        // 🌟 อัปเกรดฟังก์ชันดึงรายชื่อที่ถูกแท็กให้แม่นยำขึ้น ตอนบันทึกลงฐานข้อมูล
         function extractMentions(text, usersMap) {
             if(!text) return [];
             const regex = getDynamicMentionRegex(usersMap);
@@ -936,8 +930,6 @@
                 for (const c of mainComments) {
                     const badge = formatBadgeFromUsersMap(c.author, usersMap, rolesList);
                     let cleanMainContent = c.content.replace(/^\[REPLY_TO:[^\]]+\](?:\[AUTHOR:[^\]]+\])?/, '');
-                    
-                    // 🌟 ส่ง usersMap เข้าไปให้ฟังก์ชัน formatMentions ทำงานได้สมบูรณ์
                     cleanMainContent = formatMentions(cleanMainContent, usersMap);
 
                     let adminControls = isUserAdmin ? `<button type="button" class="btn-delete-comment" onclick="deleteCommentAction('${c.id}', '${postId}')">🗑️ ทำลาย</button>` : '';
@@ -965,7 +957,6 @@
                             let repliedTo = authorMatch ? authorMatch[1] : c.author;
                             let cleanReplyContent = r.content.replace(/^\[REPLY_TO:[^\]]+\](?:\[AUTHOR:[^\]]+\])?/, '');
                             
-                            // 🌟 ส่ง usersMap เข้าไปให้ฟังก์ชัน formatMentions 
                             cleanReplyContent = formatMentions(cleanReplyContent, usersMap);
                             
                             const rIsLiked = likedComments.includes(String(r.id)) ? 'liked' : '';
@@ -1109,7 +1100,6 @@
                 if(result && result.success !== false) {
                     textarea.value = ''; 
                     
-                    // 🌟 ส่ง usersMap ให้ระบบหาแท็ก
                     const usersMap = await ApiManager.fetchUsersOnce();
                     const mentionedUsers = extractMentions(content, usersMap);
                     
@@ -1183,7 +1173,6 @@
                 if(result && result.success !== false) {
                     textarea.value = '';
 
-                    // 🌟 ส่ง usersMap ให้ระบบหาแท็ก
                     const usersMap = await ApiManager.fetchUsersOnce();
                     const mentionedUsers = extractMentions(content, usersMap);
                     
@@ -1309,13 +1298,11 @@
             const urlParams = new URLSearchParams(window.location.search);
             const postId = urlParams.get('id');
 
-            // 🌟 ทำให้การโหลดข้อมูลโพสต์รับรู้ usersMap ได้
             ApiManager.getPostById(postId).then(async postData => {
                 if (!postData || !postData.title) {
                     showCustomAlert('อาถรรพ์บังตา... ไม่พบศิลาจารึกที่คุณค้นหา อาจถูกลบไปแล้ว', 'webboard.html'); return;
                 }
 
-                // ดึง usersMap ก่อนเพื่อไปใช้กับ formatMentions
                 const usersMap = await ApiManager.fetchUsersOnce();
 
                 currentPostAuthorGlobal = postData.author;
@@ -1323,7 +1310,6 @@
                 document.getElementById('dyn-category').textContent = (postData.category === "1" ? "นิยายสัตยาสาบาน" : "คุยกับศิษย์หลวงปู่");
                 document.getElementById('dyn-title').textContent = postData.title;
                 
-                // 🌟 ส่ง usersMap ให้ฟังก์ชันแท็กทำงาน
                 document.getElementById('dyn-content').innerHTML = formatMentions(postData.content, usersMap);
                 
                 document.getElementById('dyn-author').textContent = postData.author;
