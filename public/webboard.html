@@ -391,7 +391,8 @@
             </div>
             <div class="form-group">
                 <label id="usernameLabel">นามแฝง (Username)</label>
-                <input type="text" id="regUsername" class="form-input" placeholder="ภาษาไทยเท่านั้น" oninput="this.value = this.value.replace(/[a-zA-Z]/g, '')">
+                <!-- 🌟 สกัดกั้นอักขระพิเศษ ตัวเลข และการเว้นวรรค (พิมพ์ได้แค่ภาษาไทยเท่านั้น) -->
+                <input type="text" id="regUsername" class="form-input" placeholder="ภาษาไทยเท่านั้น (ห้ามเว้นวรรค)" oninput="this.value = this.value.replace(/[^\u0E00-\u0E7F]/g, '')">
             </div>
             <div class="form-group">
                 <label>รหัสผ่านลับ (Password)</label>
@@ -1056,8 +1057,9 @@
                 return; 
             }
 
-            if (/[a-zA-Z]/.test(usernameInput)) {
-                showCustomAlert('นามแฝง (Username) ห้ามมีอักษรภาษาอังกฤษเด็ดขาด!');
+            // 🌟 2-Layer Validation: แจ้งเตือนหากผู้ใช้พยายามพิมพ์ตัวเลข สัญลักษณ์ หรือเว้นวรรค
+            if (/[^\u0E00-\u0E7F]/.test(usernameInput)) {
+                showCustomAlert('นามแฝง (Username) อนุญาตเฉพาะ "อักขระภาษาไทย" และห้ามเว้นวรรคเด็ดขาด!');
                 return;
             }
 
