@@ -391,14 +391,12 @@
 
         let currentPostAuthorGlobal = ''; 
 
-        // 🌟 ฟังก์ชันจัดการเวลาแบบ DRY (เรียกใช้ซ้ำได้ทั้งหน้า)
         function getThaiTimeStr() {
             const thaiMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
             const now = new Date();
             return now.getDate() + ' ' + thaiMonths[now.getMonth()] + ' ' + (now.getFullYear() + 543) + ' | ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ' น.';
         }
 
-        // 🌟 ฟังก์ชัน Auto-Scroll & Highlight แบบ DRY
         function highlightElement(targetEl) {
             if (!targetEl) return;
             targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -411,15 +409,37 @@
             }, 2500);
         }
 
-        function formatMentions(text) {
-            if(!text) return '';
-            const mentionRegex = /@([\u0E00-\u0E7Fa-zA-Z0-9_-]+)/g;
-            return text.replace(mentionRegex, '<span class="user-mention" onclick="scrollToUserComment(\'$1\')" title="ค้นหาจารึกของผู้นี้">@$1</span>');
+        // 🌟 สร้าง Regex แบบเจาะจงรายชื่อ เพื่อป้องกันปัญหาแท็กติดข้อความยาวๆ
+        function getDynamicMentionRegex(usersMap) {
+            let usernames = ['Admin', 'admin']; // สำรองชื่อผู้คุมกฎเผื่อกรณีพิเศษ
+            if (usersMap && Object.keys(usersMap).length > 0) {
+                usernames = usernames.concat(Object.keys(usersMap));
+            }
+            
+            // นำรายชื่อมาเรียงจากตัวอักษรยาวสุดไปสั้นสุด เพื่อให้จับชื่อที่ยาวก่อน
+            // (เช่น จับคำว่า "ศิษย์หลวงปู่" ก่อนคำว่า "ศิษย์")
+            const uniqueUsers = [...new Set(usernames)];
+            uniqueUsers.sort((a, b) => b.length - a.length);
+            
+            // แปลงอักขระพิเศษในชื่อให้ปลอดภัยสำหรับ Regex ป้องกันบั๊ก
+            const escaped = uniqueUsers.map(u => u.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+            
+            // สร้าง Regex แบบระบุกลุ่มคำ (Exact Match) เพื่อแยกชื่อออกจากข้อความอื่น
+            return new RegExp(`@(${escaped.join('|')})`, 'g');
         }
 
-        function extractMentions(text) {
-            const mentionRegex = /@([\u0E00-\u0E7Fa-zA-Z0-9_-]+)/g;
-            const matches = [...text.matchAll(mentionRegex)];
+        // 🌟 อัปเกรดฟังก์ชันรูปแบบแท็ก ให้ฉลาดพอที่จะรู้จักแต่ชื่อคนที่มีอยู่จริง
+        function formatMentions(text, usersMap) {
+            if(!text) return '';
+            const regex = getDynamicMentionRegex(usersMap);
+            return text.replace(regex, '<span class="user-mention" onclick="scrollToUserComment(\'$1\')" title="ค้นหาจารึกของผู้นี้">@$1</span>');
+        }
+
+        // 🌟 อัปเกรดฟังก์ชันดึงรายชื่อที่ถูกแท็กให้แม่นยำขึ้น ตอนบันทึกลงฐานข้อมูล
+        function extractMentions(text, usersMap) {
+            if(!text) return [];
+            const regex = getDynamicMentionRegex(usersMap);
+            const matches = [...text.matchAll(regex)];
             return [...new Set(matches.map(m => m[1]))]; 
         }
 
@@ -916,7 +936,9 @@
                 for (const c of mainComments) {
                     const badge = formatBadgeFromUsersMap(c.author, usersMap, rolesList);
                     let cleanMainContent = c.content.replace(/^\[REPLY_TO:[^\]]+\](?:\[AUTHOR:[^\]]+\])?/, '');
-                    cleanMainContent = formatMentions(cleanMainContent);
+                    
+                    // 🌟 ส่ง usersMap เข้าไปให้ฟังก์ชัน formatMentions ทำงานได้สมบูรณ์
+                    cleanMainContent = formatMentions(cleanMainContent, usersMap);
 
                     let adminControls = isUserAdmin ? `<button type="button" class="btn-delete-comment" onclick="deleteCommentAction('${c.id}', '${postId}')">🗑️ ทำลาย</button>` : '';
                     let replyBtn = (userType !== 'guest') ? `<button type="button" class="btn-reply-comment" onclick="toggleReplyBox('${c.id}')">💬 ตอบกลับ</button>` : '';
@@ -942,7 +964,9 @@
                             let authorMatch = r.content.match(/\[AUTHOR:([^\]]+)\]/);
                             let repliedTo = authorMatch ? authorMatch[1] : c.author;
                             let cleanReplyContent = r.content.replace(/^\[REPLY_TO:[^\]]+\](?:\[AUTHOR:[^\]]+\])?/, '');
-                            cleanReplyContent = formatMentions(cleanReplyContent);
+                            
+                            // 🌟 ส่ง usersMap เข้าไปให้ฟังก์ชัน formatMentions 
+                            cleanReplyContent = formatMentions(cleanReplyContent, usersMap);
                             
                             const rIsLiked = likedComments.includes(String(r.id)) ? 'liked' : '';
                             let rLikeBtn = `<button type="button" class="btn-like ${rIsLiked}" id="btn-like-comment-${r.id}" onclick="likeCommentAction('${r.id}')">🙏 อนุโมทนา (<span id="comment-like-count-${r.id}">${r.likes || 0}</span>)</button>`;
@@ -1085,7 +1109,10 @@
                 if(result && result.success !== false) {
                     textarea.value = ''; 
                     
-                    const mentionedUsers = extractMentions(content);
+                    // 🌟 ส่ง usersMap ให้ระบบหาแท็ก
+                    const usersMap = await ApiManager.fetchUsersOnce();
+                    const mentionedUsers = extractMentions(content, usersMap);
+                    
                     for (const mentionedUser of mentionedUsers) {
                         if (mentionedUser !== author) {
                             await ApiManager.sendNotification({
@@ -1156,7 +1183,10 @@
                 if(result && result.success !== false) {
                     textarea.value = '';
 
-                    const mentionedUsers = extractMentions(content);
+                    // 🌟 ส่ง usersMap ให้ระบบหาแท็ก
+                    const usersMap = await ApiManager.fetchUsersOnce();
+                    const mentionedUsers = extractMentions(content, usersMap);
+                    
                     for (const mentionedUser of mentionedUsers) {
                         if (mentionedUser !== author) { 
                             await ApiManager.sendNotification({
@@ -1279,16 +1309,23 @@
             const urlParams = new URLSearchParams(window.location.search);
             const postId = urlParams.get('id');
 
-            ApiManager.getPostById(postId).then(postData => {
+            // 🌟 ทำให้การโหลดข้อมูลโพสต์รับรู้ usersMap ได้
+            ApiManager.getPostById(postId).then(async postData => {
                 if (!postData || !postData.title) {
                     showCustomAlert('อาถรรพ์บังตา... ไม่พบศิลาจารึกที่คุณค้นหา อาจถูกลบไปแล้ว', 'webboard.html'); return;
                 }
+
+                // ดึง usersMap ก่อนเพื่อไปใช้กับ formatMentions
+                const usersMap = await ApiManager.fetchUsersOnce();
 
                 currentPostAuthorGlobal = postData.author;
                 document.getElementById('pageTitle').textContent = postData.title + ' - ศิษย์หลวงปู่';
                 document.getElementById('dyn-category').textContent = (postData.category === "1" ? "นิยายสัตยาสาบาน" : "คุยกับศิษย์หลวงปู่");
                 document.getElementById('dyn-title').textContent = postData.title;
-                document.getElementById('dyn-content').innerHTML = formatMentions(postData.content);
+                
+                // 🌟 ส่ง usersMap ให้ฟังก์ชันแท็กทำงาน
+                document.getElementById('dyn-content').innerHTML = formatMentions(postData.content, usersMap);
+                
                 document.getElementById('dyn-author').textContent = postData.author;
                 document.getElementById('dyn-time').textContent = 'โพสต์เมื่อ: ' + postData.timestamp;
                 document.getElementById('dyn-views').textContent = postData.views || 0;
