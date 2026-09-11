@@ -12,27 +12,28 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;700&family=Sarabun:wght@400;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-    <noscript><link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;700&family=Sarabun:wght@400;600&display=swap" rel="stylesheet"></noscript>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet"></noscript>
     
     <style>
         html, body { scroll-behavior: smooth; overflow-x: hidden; width: 100%; max-width: 100vw; margin: 0; padding: 0; } 
         * { box-sizing: border-box; }
         :root { --bg-deep: #070402; --bg-glow: #2a1805; --gold-light: #f5d77f; --gold-main: #d4af37; --gold-dark: #8a6315; --text-muted: #8a7761; --danger-color: #ff6b6b; }
         
+        /* 🌟 เปลี่ยนฟอนต์หลักทั้งหน้าเป็น Prompt ทั้งหมด */
         body { 
             margin: 0; padding: 0; width: 100%; min-height: 100vh; 
             background-color: var(--bg-deep); 
             background-image: radial-gradient(circle at 50% 50%, var(--bg-glow) 0%, var(--bg-deep) 90%); 
             background-attachment: scroll; 
             color: #d1bfae; 
-            font-family: 'Sarabun', sans-serif; 
+            font-family: 'Prompt', sans-serif !important; 
             overflow-x: hidden; 
         }
 
         body::before, body::after { display: none !important; }
 
-        h1, h2, h3, h4 { font-family: 'Prompt', sans-serif; margin: 0; }
+        h1, h2, h3, h4, input, select, textarea, button { font-family: 'Prompt', sans-serif !important; }
         
         .main-container { 
             position: relative; isolation: isolate; max-width: 1200px; width: 92%; 
@@ -144,7 +145,7 @@
         .reply-form-container.active { display: block; }
 
         .comment-form-box { background: rgba(12, 7, 4, 0.8); border: 1px solid var(--gold-dark); border-radius: 10px; padding: 25px; margin-top: 30px; width: 100%; box-sizing: border-box; } 
-        .form-textarea { width: 100%; max-width: 100%; height: 100px; background: rgba(0,0,0,0.6); border: 1px solid rgba(138, 99, 21, 0.5); color: #fff; padding: 12px 15px; border-radius: 6px; font-size: 1rem; margin-bottom: 10px; resize: vertical; box-sizing: border-box; }
+        .form-textarea { width: 100%; max-width: 100%; height: 100px; background: rgba(0,0,0,0.6); border: 1px solid rgba(138, 99, 21, 0.5); color: #fff; padding: 12px 15px; border-radius: 6px; font-size: 1rem; margin-bottom: 10px; resize: vertical; box-sizing: border-box; font-family: 'Prompt', sans-serif !important; }
         .form-textarea:focus { outline: none; border-color: var(--gold-main); box-shadow: 0 0 8px rgba(212,175,55,0.2); }
         
         .btn-submit-comment { background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; border: none; padding: 10px 20px; border-radius: 20px; font-family: 'Prompt', sans-serif; font-weight: bold; cursor: pointer; transition: filter 0.2s; font-size: 0.9rem; }
@@ -196,7 +197,7 @@
         .modal-corner { position: absolute; width: 60px; pointer-events: none; opacity: 0.8; } .mc-top-left { top: 12px; left: 12px; transform: scaleX(-1); } .mc-top-right { top: 12px; right: 12px; } .mc-bottom-left { bottom: 12px; left: 12px; transform: scaleX(-1) scaleY(-1); } .mc-bottom-right { bottom: 12px; right: 12px; transform: scaleY(-1); }
         .modal-header { text-align: center; margin-bottom: 20px; } .modal-header h3 { color: var(--gold-light); font-size: 1.5rem; margin-bottom: 5px; } .modal-header p { color: var(--gold-dark); font-size: 0.85rem; margin: 0; }
         
-        .form-select { width: 100%; background: rgba(0,0,0,0.6); border: 1px solid rgba(138, 99, 21, 0.5); color: #fff; padding: 12px 15px; border-radius: 6px; font-size: 1rem; margin-bottom: 20px; font-family: 'Sarabun', sans-serif; } .form-select option { background: #1a120b; }
+        .form-select { width: 100%; background: rgba(0,0,0,0.6); border: 1px solid rgba(138, 99, 21, 0.5); color: #fff; padding: 12px 15px; border-radius: 6px; font-size: 1rem; margin-bottom: 20px; font-family: 'Prompt', sans-serif !important; } .form-select option { background: #1a120b; }
 
         .ghost-warning-box { background: linear-gradient(180deg, rgba(20, 9, 5, 0.8) 0%, rgba(7, 4, 2, 0.9) 100%); border: 1px solid rgba(168, 46, 46, 0.4); border-radius: 10px; padding: clamp(20px, 4vw, 30px) clamp(15px, 3vw, 20px); margin-top: 30px; text-align: center; box-shadow: inset 0 0 20px rgba(168, 46, 46, 0.05), 0 5px 15px rgba(0,0,0,0.5); }
         .ghost-warning-box h4 { color: #ff6b6b; font-size: clamp(1.1rem, 4vw, 1.25rem); margin-bottom: 12px; }
@@ -602,7 +603,6 @@
                     return await res.json();
                 } catch (e) { return []; }
             },
-            // 🌟 1. ดึงกุญแจยืนยันตัวตนแนบไปกับ API ทุกครั้งที่อ่านแจ้งเตือน
             async readNotification(id) {
                 try { 
                     const token = localStorage.getItem('siy_token');
@@ -612,7 +612,7 @@
                     await fetch(`${API_CONFIG.BASE_URL}/notifications/${id}/read`, { 
                         method: 'PUT',
                         headers: headers,
-                        body: JSON.stringify({}) // ให้ Backend รู้ว่ารับเป็น JSON แน่นอน
+                        body: JSON.stringify({})
                     }); 
                 } catch(e) { console.error("Read Noti Error:", e); }
             },
@@ -699,9 +699,7 @@
             }
         }
 
-        // 🌟 2. อัปเดต UI ให้จุดแดงหายวับทันทีก่อนเปลี่ยนหน้าเว็บ
         async function handleNotiClick(notiId, postIdStr) {
-            // ลบจุดแดงที่ UI ทันที
             const badgeCount = document.getElementById('notiBadgeCount');
             if (badgeCount) {
                 let count = parseInt(badgeCount.textContent) || 0;
@@ -715,10 +713,8 @@
             const notiItem = document.querySelector(`.noti-item[data-id="${notiId}"]`);
             if (notiItem) notiItem.classList.remove('unread');
 
-            // หน่วงเวลาให้เบราว์เซอร์ส่งคำสั่งอัปเดตสถานะสำเร็จก่อนเปลี่ยนหน้า
             await ApiManager.readNotification(notiId);
             
-            // เปลี่ยนหน้าเว็บ
             const currentPostId = new URLSearchParams(window.location.search).get('id');
             const targetPostId = postIdStr.split('#')[0];
             
@@ -1160,9 +1156,6 @@
                 if(result && result.success !== false) {
                     textarea.value = ''; 
 
-                    // 🗑️ เราลบโค้ด ApiManager.sendNotification แบบเก่าทิ้งไปแล้ว
-                    // เพราะตอนนี้ Backend จะจัดการสร้างแจ้งเตือนให้อัตโนมัติ
-
                     broadcastAction('NEW_COMMENT', postId, { postId: postId });
                     showCustomAlert('บันทึกจารึกสำเร็จ!', true); 
                 } else {
@@ -1208,8 +1201,6 @@
                 const result = await ApiManager.saveComment(commentData);
                 if(result && result.success !== false) {
                     textarea.value = '';
-
-                    // 🗑️ ลบโค้ดส่งแจ้งเตือนแบบเก่าทิ้งเช่นกัน
 
                     broadcastAction('NEW_COMMENT', postId, { postId: postId });
                     showCustomAlert('ส่งคำตอบกลับสำเร็จ!', true);

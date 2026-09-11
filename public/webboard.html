@@ -7,26 +7,27 @@
     <meta name="keywords" content="สัตยาสาบาน, นิยายสัตยาสาบาน, ศิษย์หลวงปู่, ลานเสวนา">
     <title>ลานเสวนา - ศิษย์หลวงปู่</title>
     <link rel="icon" type="image/png" href="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788446707/favicon4.png">
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;700&family=Sarabun:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         html { scroll-behavior: smooth; overflow-x: hidden; width: 100%; } * { box-sizing: border-box; }
         :root { --bg-deep: #070402; --bg-glow: #2a1805; --gold-light: #f5d77f; --gold-main: #d4af37; --gold-dark: #8a6315; --text-muted: #8a7761; --danger-color: #ff6b6b; }
         
+        /* 🌟 เปลี่ยนฟอนต์หลักทั้งหน้าเป็น Prompt ทั้งหมด */
         body { 
             margin: 0; padding: 0; width: 100%; min-height: 100vh; 
             background-color: var(--bg-deep); 
             background-image: radial-gradient(circle at 50% 50%, var(--bg-glow) 0%, var(--bg-deep) 90%); 
             background-attachment: scroll; 
             color: #d1bfae; 
-            font-family: 'Sarabun', sans-serif; 
+            font-family: 'Prompt', sans-serif !important; 
             overflow-x: hidden; 
         }
 
         body.modal-open { overflow: hidden; }
         body::before, body::after { display: none !important; }
 
-        h1, h2, h3, h4 { font-family: 'Prompt', sans-serif; margin: 0; }
+        h1, h2, h3, h4, input, select, textarea, button { font-family: 'Prompt', sans-serif !important; }
         
         .main-container { 
             position: relative; isolation: isolate; max-width: 1200px; width: 92%; 
@@ -105,7 +106,7 @@
         .karma-container { margin-top: 12px; background: rgba(0,0,0,0.6); padding: 10px; border-radius: 8px; border: 1px solid rgba(138, 99, 21, 0.2); text-align: center; width: 100%; box-sizing: border-box; }
         .karma-bar-bg { width: 100%; height: 6px; background: #1a120b; border-radius: 4px; overflow: hidden; margin-bottom: 6px; position: relative; box-shadow: inset 0 1px 3px rgba(0,0,0,0.8); }
         .karma-bar-fill { height: 100%; background: linear-gradient(90deg, var(--gold-dark), var(--gold-light)); border-radius: 4px; transition: width 0.3s; }
-        .karma-text { font-size: 0.75rem; color: #d1bfae; font-family: 'Sarabun', sans-serif; letter-spacing: 0.3px; } .karma-text strong { color: var(--gold-light); font-weight: bold; }
+        .karma-text { font-size: 0.75rem; color: #d1bfae; font-family: 'Prompt', sans-serif; letter-spacing: 0.3px; } .karma-text strong { color: var(--gold-light); font-weight: bold; }
 
         .wb-tag { font-size: 0.75rem; padding: 2px 6px; border-radius: 4px; border: 1px solid; margin-right: 6px; display: inline-block; vertical-align: middle; margin-top: -2px; }
         .wb-tag-pin { border-color: #d4af37; color: #150a03; background: var(--gold-main); font-weight: bold; }
@@ -122,7 +123,7 @@
         .btn-logout { display: block; width: 100%; background: transparent; color: #ff6b6b; border: 1px solid rgba(168, 46, 46, 0.5); padding: 10px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-size: 0.95rem; cursor: pointer; transition: background 0.2s; box-sizing: border-box; } .btn-logout:hover { background: rgba(168, 46, 46, 0.1); }
         
         .search-wrapper { display: flex; gap: 8px; margin-bottom: 20px; width: 100%; box-sizing: border-box; } 
-        .search-input { flex: 1; min-width: 0; background: rgba(0,0,0,0.5); border: 1px solid var(--gold-dark); color: var(--gold-light); padding: 10px 15px; border-radius: 25px; font-family: 'Sarabun', sans-serif; width: 100%; box-sizing: border-box; } .search-input:focus { outline: none; border-color: var(--gold-main); } 
+        .search-input { flex: 1; min-width: 0; background: rgba(0,0,0,0.5); border: 1px solid var(--gold-dark); color: var(--gold-light); padding: 10px 15px; border-radius: 25px; font-family: 'Prompt', sans-serif; width: 100%; box-sizing: border-box; } .search-input:focus { outline: none; border-color: var(--gold-main); } 
         .search-btn { flex-shrink: 0; background: transparent; border: 1px solid var(--gold-dark); color: var(--gold-main); padding: 0 15px; border-radius: 25px; cursor: pointer; transition: background 0.2s; font-family: 'Prompt', sans-serif; white-space: nowrap; } .search-btn:hover { background: var(--gold-dark); color: #fff; }
         
         .btn-primary { display: block; width: 100%; text-align: center; background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; font-family: 'Prompt', sans-serif; font-weight: bold; padding: 12px; border-radius: 25px; font-size: 1.1rem; box-shadow: 0 5px 15px rgba(0,0,0,0.6); border: 1px solid #ffeba9; cursor: pointer; transition: filter 0.2s; text-decoration: none; box-sizing: border-box; white-space: normal; } .btn-primary:hover { filter: brightness(1.15); }
@@ -134,7 +135,7 @@
         .btn-remove-bookmark:hover { opacity: 1; }
         
         .site-footer { text-align: center; margin-top: 50px; padding-top: 20px; border-top: 1px dashed rgba(138, 99, 21, 0.3); width: 100%; box-sizing: border-box; }
-        .site-footer p { color: var(--text-muted); font-family: 'Sarabun', sans-serif; font-size: 0.85rem; letter-spacing: 0.5px; margin: 0; }
+        .site-footer p { color: var(--text-muted); font-family: 'Prompt', sans-serif; font-size: 0.85rem; letter-spacing: 0.5px; margin: 0; }
 
         .pagination { display: flex; justify-content: center; align-items: center; gap: 6px; margin-top: 25px; padding-bottom: 25px; flex-wrap: wrap; width: 100%; }
         .page-btn { background: rgba(0,0,0,0.5); border: 1px solid rgba(138, 99, 21, 0.5); color: var(--gold-light); padding: 6px 14px; border-radius: 6px; cursor: pointer; transition: background 0.2s; font-family: 'Prompt', sans-serif; font-size: 0.9rem; min-width: 35px; text-align: center; }
@@ -172,7 +173,7 @@
         .modal-corner { position: absolute; width: 60px; pointer-events: none; opacity: 0.8; } .mc-top-left { top: 12px; left: 12px; transform: scaleX(-1); } .mc-top-right { top: 12px; right: 12px; } .mc-bottom-left { bottom: 12px; left: 12px; transform: scaleX(-1) scaleY(-1); } .mc-bottom-right { bottom: 12px; right: 12px; transform: scaleY(-1); }
         .modal-header { text-align: center; margin-bottom: 20px; } .modal-header h3 { color: var(--gold-light); font-size: 1.5rem; margin-bottom: 5px; } .modal-header p { color: var(--gold-dark); font-size: 0.85rem; margin: 0; }
         
-        .form-group { margin-bottom: 20px; width: 100%; box-sizing: border-box; } .form-group label { display: block; color: var(--gold-main); font-size: 0.95rem; margin-bottom: 8px; } .form-input { width: 100%; background: rgba(0,0,0,0.6); border: 1px solid rgba(138, 99, 21, 0.5); color: #fff; padding: 12px 15px; border-radius: 6px; font-family: 'Sarabun', sans-serif; font-size: 1rem; box-sizing: border-box; } .form-input:focus { outline: none; border-color: var(--gold-light); }
+        .form-group { margin-bottom: 20px; width: 100%; box-sizing: border-box; } .form-group label { display: block; color: var(--gold-main); font-size: 0.95rem; margin-bottom: 8px; } .form-input { width: 100%; background: rgba(0,0,0,0.6); border: 1px solid rgba(138, 99, 21, 0.5); color: #fff; padding: 12px 15px; border-radius: 6px; font-family: 'Prompt', sans-serif; font-size: 1rem; box-sizing: border-box; } .form-input:focus { outline: none; border-color: var(--gold-light); }
         .password-wrapper { position: relative; display: flex; align-items: center; width: 100%; } .password-wrapper .form-input { padding-right: 60px; } .toggle-password { position: absolute; right: 15px; cursor: pointer; font-size: 0.9rem; color: var(--gold-main); opacity: 0.8; } .toggle-password:hover { opacity: 1; }
         .privacy-warning { background: rgba(168, 46, 46, 0.1); border-left: 3px solid #a82e2e; padding: 12px 15px; font-size: 0.8rem; color: #d1bfae; line-height: 1.5; margin-bottom: 25px; border-radius: 0 4px 4px 0; } .privacy-warning strong { color: #ff6b6b; }
         
@@ -224,8 +225,6 @@
 </head>
 <body>
 
-    <header class="admin-header" style="display:none;"></header> <!-- ป้องกันบั๊ก css -->
-    
     <div class="main-container">
         <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="corner-decor corner-top-left" alt="" width="110" height="110">
         <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="corner-decor corner-top-right" alt="" width="110" height="110">
@@ -490,7 +489,6 @@
                     return await res.json();
                 } catch (e) { return []; }
             },
-            // 🛡️ [อัปเดตใหม่] แนบ Token เสมอ เพื่อให้ผ่านระบบ Backend Auth ตอนกดอ่านแจ้งเตือน
             async readNotification(id) {
                 try { 
                     const token = localStorage.getItem('siy_token');
@@ -503,7 +501,6 @@
                     }); 
                 } catch(e) {}
             },
-            // 🛡️ [อัปเดตใหม่] แนบ Token เสมอ เพื่อให้ผ่านระบบ Backend Auth ตอนสร้างแจ้งเตือนใหม่ (เช่น ตอนคอมเมนต์)
             async sendNotification(data) {
                 try {
                     const token = localStorage.getItem('siy_token');

@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ประตูสู่เมืองลับแล - เฉพาะผู้คุมกฎ</title>
     <link rel="icon" type="image/png" href="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788446707/favicon4.png">
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;700&family=Sarabun:wght@400;600&display=swap" rel="stylesheet">
+    <!-- โหลดเฉพาะฟอนต์ Prompt -->
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         :root { 
@@ -19,7 +20,8 @@
             background-image: radial-gradient(circle at 50% 50%, var(--bg-glow) 0%, var(--bg-deep) 90%); 
             background-attachment: scroll; 
             color: #d1bfae; 
-            font-family: 'Sarabun', sans-serif; 
+            /* เปลี่ยนฟอนต์หลักทั้งหน้าเป็น Prompt */
+            font-family: 'Prompt', sans-serif !important; 
             min-height: 100vh; 
             display: flex; 
             justify-content: center; 
@@ -61,7 +63,8 @@
             color: #fff; 
             padding: 14px 15px; 
             border-radius: 8px; 
-            font-family: 'Sarabun', sans-serif; 
+            /* บังคับให้ช่องกรอกใช้ฟอนต์ Prompt ด้วย */
+            font-family: 'Prompt', sans-serif !important; 
             font-size: 1.05rem; 
             transition: all 0.3s;
         } 
@@ -104,7 +107,7 @@
         .modal-box.success { border-color: #73c990; }
         .modal-box h3 { font-family: 'Prompt', sans-serif; margin-bottom: 15px; color: var(--danger-color); }
         .modal-box.success h3 { color: #73c990; }
-        .modal-box p { color: #e2d4c3; font-size: 1rem; margin-bottom: 25px; line-height: 1.5; }
+        .modal-box p { color: #e2d4c3; font-size: 1rem; margin-bottom: 25px; line-height: 1.5; font-family: 'Prompt', sans-serif !important; }
         .btn-close-modal { background: transparent; border: 1px solid var(--text-muted); color: var(--text-muted); padding: 8px 25px; border-radius: 20px; font-family: 'Prompt', sans-serif; cursor: pointer; transition: 0.2s; }
         .btn-close-modal:hover { background: rgba(255,255,255,0.1); color: #fff; }
     </style>

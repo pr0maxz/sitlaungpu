@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>เมืองลับแล - ศิษย์หลวงปู่</title>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;700&family=Sarabun:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <style>
         html, body { scroll-behavior: smooth; overflow-x: hidden; width: 100%; max-width: 100vw; margin: 0; padding: 0; }
@@ -19,15 +19,16 @@
             --border-color: rgba(212, 175, 55, 0.25);
         }
         
+        /* 🌟 เปลี่ยนฟอนต์หลักทั้งเว็บให้เป็น 'Prompt' ทั้งหมดตามต้องการ */
         body { 
             background-color: var(--bg-deep); 
             background-image: radial-gradient(circle at 50% 0%, var(--bg-glow) 0%, var(--bg-deep) 70%); 
             background-attachment: fixed; color: var(--text-light); 
-            font-family: 'Sarabun', sans-serif; min-height: 100vh; display: flex; flex-direction: column; 
+            font-family: 'Prompt', sans-serif !important; min-height: 100vh; display: flex; flex-direction: column; 
             font-size: 0.85rem; 
         }
         
-        h1, h2, h3, h4 { font-family: 'Prompt', sans-serif; color: var(--gold-light); margin: 0; }
+        h1, h2, h3, h4, input, select, textarea, button, table { font-family: 'Prompt', sans-serif !important; }
         a { text-decoration: none; color: inherit; }
         
         .admin-header { 
@@ -38,7 +39,7 @@
         }
         .admin-title { display: flex; align-items: center; gap: 10px; min-width: 0; } 
         .admin-title img { height: 28px; width: auto; flex-shrink: 0; filter: drop-shadow(0 2px 5px rgba(212,175,55,0.3)); }
-        .admin-title h3 { font-size: clamp(0.9rem, 1.5vw, 1.1rem); letter-spacing: 0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .admin-title h3 { font-size: clamp(0.9rem, 1.5vw, 1.1rem); letter-spacing: 0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--gold-light); }
         
         .admin-header-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
         
@@ -52,7 +53,7 @@
         
         .nav-btn { 
             background: transparent; border: 1px solid transparent; color: var(--text-muted); 
-            padding: 8px 12px; border-radius: 6px; font-family: 'Prompt', sans-serif; font-size: 0.85rem; 
+            padding: 8px 12px; border-radius: 6px; font-size: 0.85rem; 
             text-align: left; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px; 
             width: 100%; white-space: nowrap; 
         }
@@ -67,13 +68,12 @@
         .panel-card { 
             background: var(--card-bg); border: 1px solid var(--border-color); 
             border-radius: 10px; padding: 20px; margin-bottom: 24px; 
-            box-shadow: 0 5px 15px rgba(0,0,0,0.7); width: 100%; position: relative; overflow: hidden;
-            background-color: var(--card-bg); 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.7); width: 100%; position: relative; overflow: hidden; 
         }
         .panel-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, var(--gold-dark), var(--gold-main), var(--gold-light)); opacity: 0.7; }
         
         .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px dashed rgba(138, 99, 21, 0.4); padding-bottom: 10px; flex-wrap: wrap; gap: 10px; width: 100%; }
-        .panel-header h3 { font-size: clamp(1rem, 1.5vw, 1.15rem); letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; margin: 0; }
+        .panel-header h3 { font-size: clamp(1rem, 1.5vw, 1.15rem); letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; margin: 0; color: var(--gold-light); }
         
         .drag-handle { cursor: grab; font-size: 1.2rem; color: var(--text-muted); padding: 0 5px; opacity: 0.5; transition: 0.2s; user-select: none; }
         .drag-handle:hover { opacity: 1; color: var(--gold-light); transform: scale(1.1); }
@@ -91,20 +91,20 @@
         }
         .stat-icon { font-size: 1.3rem; margin-bottom: 6px; opacity: 0.9; filter: drop-shadow(0 0 5px rgba(212,175,55,0.3)); }
         .stat-card h4 { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px; font-weight: 500; } 
-        .stat-card .number { font-size: 1.5rem; color: var(--gold-light); font-weight: bold; font-family: 'Prompt', sans-serif; line-height: 1; }
+        .stat-card .number { font-size: 1.5rem; color: var(--gold-light); font-weight: bold; line-height: 1; }
 
         .dashboard-grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; align-items: start; margin-bottom: 16px; min-height: 200px; }
         .dashboard-col { display: flex; flex-direction: column; gap: 24px; min-height: 100px; border-radius: 8px; padding: 5px; margin: -5px; } 
         
         .progress-section { width: 100%; margin-bottom: 10px; }
-        .progress-label { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--gold-light); margin-bottom: 6px; font-family: 'Prompt', sans-serif; }
+        .progress-label { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--gold-light); margin-bottom: 6px; }
         .progress-track { width: 100%; height: 5px; background: rgba(0,0,0,0.5); border-radius: 3px; overflow: hidden; border: 1px solid rgba(138, 99, 21, 0.3); }
         .progress-fill { height: 100%; border-radius: 3px; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); }
         
         .list-item { padding: 8px 10px; border-bottom: 1px solid rgba(138, 99, 21, 0.15); transition: background 0.2s; border-radius: 4px; display: flex; flex-direction: column; gap: 4px; text-decoration: none; color: inherit; }
         .list-item:hover { background: rgba(212, 175, 55, 0.05); }
         .list-item:last-child { border-bottom: none; }
-        .list-title { font-family: 'Prompt', sans-serif; color: var(--gold-light); font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; text-decoration: none; }
+        .list-title { color: var(--gold-light); font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; text-decoration: none; }
         .list-title:hover { color: #fff; text-decoration: underline; }
         .list-meta { font-size: 0.7rem; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center; }
         
@@ -112,7 +112,7 @@
         .user-item:hover { background: rgba(212, 175, 55, 0.05); }
         .user-item:last-child { border-bottom: none; }
         .user-info { display: flex; align-items: center; gap: 8px; }
-        .karma-score { font-family: 'Prompt', sans-serif; font-weight: bold; color: var(--gold-main); font-size: 0.9rem; text-shadow: 0 0 8px rgba(212,175,55,0.4); }
+        .karma-score { font-weight: bold; color: var(--gold-main); font-size: 0.9rem; text-shadow: 0 0 8px rgba(212,175,55,0.4); }
 
         .health-row { display: flex; justify-content: space-between; font-size: 0.75rem; border-bottom: 1px dashed rgba(138,99,21,0.2); padding: 8px 0; }
         .health-row:last-child { border: none; }
@@ -122,12 +122,12 @@
         .data-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.8rem; text-align: left; min-width: 800px; table-layout: fixed; }
         .data-table th, .data-table td { padding: 8px 12px; border-bottom: 1px solid rgba(138, 99, 21, 0.1); vertical-align: middle; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .data-table td.wrap-text { white-space: normal; }
-        .data-table th { background: rgba(31, 17, 7, 0.95); color: var(--gold-main); font-family: 'Prompt', sans-serif; font-weight: 600; font-size: 0.8rem; letter-spacing: 0.5px; position: sticky; top: 0; z-index: 10; }
+        .data-table th { background: rgba(31, 17, 7, 0.95); color: var(--gold-main); font-weight: 600; font-size: 0.8rem; letter-spacing: 0.5px; position: sticky; top: 0; z-index: 10; }
         .data-table tbody tr { transition: background 0.2s; }
         .data-table tbody tr:hover { background: rgba(212, 175, 55, 0.06); }
         .data-table tbody tr:last-child td { border-bottom: none; }
         
-        .btn { padding: 5px 12px; border-radius: 12px; font-family: 'Prompt', sans-serif; font-size: 0.75rem; font-weight: 500; cursor: pointer; border: none; transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 4px; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.4); }
+        .btn { padding: 5px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 500; cursor: pointer; border: none; transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 4px; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.4); }
         .btn:active { transform: scale(0.95); }
         .btn-gold { background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; font-weight: 700; border: 1px solid #ffeba9; } 
         .btn-gold:hover { filter: brightness(1.15); box-shadow: 0 3px 8px rgba(212,175,55,0.4); }
@@ -141,7 +141,7 @@
         .btn-reorder { background: transparent; color: var(--text-muted); border: 1px dashed rgba(212, 175, 55, 0.3); width: 22px; height: 22px; padding: 0; font-size: 0.65rem; border-radius: 4px; box-shadow: none; display: inline-flex; justify-content: center; align-items: center; }
         .btn-reorder:hover { background: rgba(212, 175, 55, 0.2); color: var(--gold-light); border-style: solid; border-color: var(--gold-main); }
         
-        .role-badge, .role-tag { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; font-family: 'Prompt', sans-serif; font-weight: 600; letter-spacing: 0.5px; vertical-align: middle; box-shadow: 0 2px 4px rgba(0,0,0,0.6); }
+        .role-badge, .role-tag { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.5px; vertical-align: middle; box-shadow: 0 2px 4px rgba(0,0,0,0.6); }
         .role-1 { background: linear-gradient(135deg, #f5d77f, #d4af37, #8a6315); color: #1a0f02 !important; border: 1px solid #ffeea8; box-shadow: 0 0 10px rgba(212,175,55,0.6), inset 0 0 4px rgba(255,255,255,0.6); } 
         .role-2 { background: linear-gradient(135deg, #4a1c60, #240b36); color: #e5b3ff !important; border: 1px solid #9b59b6; } 
         .role-3 { background: linear-gradient(135deg, #6c7a86, #262c30); color: #d6dfe5 !important; border: 1px solid #94a6b5; } 
@@ -149,12 +149,12 @@
         .role-5 { background: linear-gradient(135deg, #4a3b22, #241c0e); color: #e8cd9c !important; border: 1px solid #8a6315; box-shadow: inset 0 0 8px rgba(255,255,255,0.05); } 
         .role-6 { background: linear-gradient(135deg, #27ae60, #145a32); color: #abebc6 !important; border: 1px solid #2ecc71; box-shadow: 0 0 6px rgba(46,204,113,0.5); } 
         
-        .admin-badge { background: rgba(115, 201, 144, 0.15); border: 1px solid var(--success-dark); color: var(--success-color); padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; font-family: 'Prompt', sans-serif; white-space: nowrap; font-weight: bold; }
+        .admin-badge { background: rgba(115, 201, 144, 0.15); border: 1px solid var(--success-dark); color: var(--success-color); padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; white-space: nowrap; font-weight: bold; }
 
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; width: 100%; }
         .form-group { margin-bottom: 15px; width: 100%; } 
-        .form-group label { display: block; color: var(--gold-light); font-size: 0.8rem; margin-bottom: 6px; font-family: 'Prompt', sans-serif; font-weight: 500; }
-        .form-control { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid rgba(138, 99, 21, 0.4); color: #fff; padding: 10px 14px; border-radius: 8px; font-family: 'Sarabun', sans-serif; font-size: 0.95rem; transition: all 0.3s; }
+        .form-group label { display: block; color: var(--gold-light); font-size: 0.8rem; margin-bottom: 6px; font-weight: 500; }
+        .form-control { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid rgba(138, 99, 21, 0.4); color: #fff; padding: 10px 14px; border-radius: 8px; font-size: 0.95rem; transition: all 0.3s; }
         .form-control:focus { outline: none; border-color: var(--gold-main); background: rgba(0,0,0,0.8); box-shadow: 0 0 6px rgba(212,175,55,0.2); }
         .form-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23d4af37' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 30px; }
         .form-select option { background: #1a120b; color: #d1bfae; padding: 6px; }
@@ -165,12 +165,12 @@
         input[type="color"]::-webkit-color-swatch { border: none; border-radius: 4px; }
 
         .filter-toolbar { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; background: rgba(10,5,2,0.6); padding: 10px; border-radius: 8px; border: 1px dashed rgba(212,175,55,0.2); align-items: center; }
-        .search-input { flex: 2; min-width: 160px; padding: 6px 14px; border-radius: 20px; border: 1px solid var(--gold-dark); background: rgba(0,0,0,0.6); color: #fff; font-family: 'Sarabun', sans-serif; outline: none; transition: 0.3s; font-size: 0.85rem; }
+        .search-input { flex: 2; min-width: 160px; padding: 6px 14px; border-radius: 20px; border: 1px solid var(--gold-dark); background: rgba(0,0,0,0.6); color: #fff; outline: none; transition: 0.3s; font-size: 0.85rem; }
         .search-input:focus { border-color: var(--gold-main); box-shadow: 0 0 6px rgba(212,175,55,0.2); }
-        .filter-select { flex: 1; min-width: 140px; padding: 6px 12px; border-radius: 20px; border: 1px solid var(--gold-dark); background: rgba(0,0,0,0.6); color: var(--gold-light); font-family: 'Sarabun', sans-serif; outline: none; font-size: 0.85rem; }
+        .filter-select { flex: 1; min-width: 140px; padding: 6px 12px; border-radius: 20px; border: 1px solid var(--gold-dark); background: rgba(0,0,0,0.6); color: var(--gold-light); outline: none; font-size: 0.85rem; }
 
         .pagination { display: flex; justify-content: center; align-items: center; gap: 4px; margin-top: 10px; flex-wrap: wrap; }
-        .page-btn { padding: 4px 8px; background: rgba(0,0,0,0.6); border: 1px solid rgba(138, 99, 21, 0.4); border-radius: 4px; color: var(--gold-light); cursor: pointer; transition: 0.3s; font-family: 'Prompt', sans-serif; font-size: 0.75rem; }
+        .page-btn { padding: 4px 8px; background: rgba(0,0,0,0.6); border: 1px solid rgba(138, 99, 21, 0.4); border-radius: 4px; color: var(--gold-light); cursor: pointer; transition: 0.3s; font-size: 0.75rem; }
         .page-btn:hover:not(:disabled) { background: rgba(212,175,55,0.15); border-color: var(--gold-main); color: #fff; }
         .page-btn.active { background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; font-weight: bold; border-color: #ffeba9; }
         .page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -208,7 +208,7 @@
         </div>
         <div class="admin-header-actions">
             <span class="admin-badge" id="stat-api-mode">🛡️ API Mode</span>
-            <span id="currentAdminName" style="color: var(--gold-light); font-weight: bold; font-family: 'Prompt', sans-serif; font-size: 0.8rem;"></span>
+            <span id="currentAdminName" style="color: var(--gold-light); font-weight: bold; font-size: 0.8rem;"></span>
             <a href="index.html" class="btn btn-edit">เว็บหลัก ↗</a>
             <button onclick="handleAdminLogout()" class="btn btn-delete">ออกจากระบบ</button>
         </div>
@@ -507,7 +507,7 @@
 
                     <!-- 🌟 ส่วนที่เพิ่มเข้ามา: ตัวเลือกซ่อนยศ (ม่านบังตา) -->
                     <div style="display: flex; gap: 15px; margin-bottom: 15px; padding: 0 5px; align-items: center; flex-wrap: wrap;">
-                        <span style="color: var(--text-muted); font-size: 0.85rem; font-family: 'Prompt', sans-serif;">ดึงม่านบังตา (ซ่อน):</span>
+                        <span style="color: var(--text-muted); font-size: 0.85rem;">ดึงม่านบังตา (ซ่อน):</span>
                         <label style="color: var(--gold-light); font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 5px;">
                             <input type="checkbox" id="hideRoleChar" onchange="handleUserSearch()" style="accent-color: var(--gold-main);"> ตัวละครพิเศษ
                         </label>
@@ -838,7 +838,6 @@
                 if (token) headers['Authorization'] = `Bearer ${token}`;
                 const method = oldUsername ? 'PUT' : 'POST';
                 
-                // 🌟 เพิ่มคำปฏิญาณกันบอทให้ผ่านด่าน Backend ตอนสร้าง User ใหม่
                 if (!oldUsername) {
                     userData.bot_check = 'สัตยาสาบาน';
                 }
@@ -847,7 +846,6 @@
                     method: method, headers: headers, body: JSON.stringify({...userData, oldUsername}) 
                 });
                 
-                // 🌟 รับข้อความ Error จริงๆ จาก Backend มาแสดงผล
                 if (!res.ok) {
                     const errData = await res.json().catch(() => ({}));
                     throw new Error(errData.message || errData.error || 'เกิดข้อผิดพลาดในการเชื่อมต่อ');
@@ -1075,7 +1073,7 @@
                 recentUsersContainer.innerHTML = recentUsersList.map(u => `
                     <div class="user-item">
                         <div class="user-info">
-                            <div style="color: #fff; font-family: 'Prompt', sans-serif; font-size: 0.8rem;">${safeHTML(u.username)}</div>
+                            <div style="color: #fff; font-size: 0.8rem;">${safeHTML(u.username)}</div>
                             <div>${getRoleBadge(u)}</div>
                         </div>
                         <div style="font-size:0.65rem; color:var(--success-color);">${timeSinceLastLogin(u.last_login || u.login_timestamp)}</div>
@@ -1104,7 +1102,7 @@
                     <div class="user-item">
                         <div class="user-info">
                             <div style="display:flex; flex-direction:column; gap:1px;">
-                                <div style="color: #fff; font-family: 'Prompt', sans-serif; font-size: 0.8rem;">${safeHTML(u.username)}</div>
+                                <div style="color: #fff; font-size: 0.8rem;">${safeHTML(u.username)}</div>
                                 <div>${getRoleBadge(u)}</div>
                             </div>
                         </div>
@@ -1168,7 +1166,6 @@
                 const borderCss = role.border_color ? `border: 1px solid ${role.border_color};` : '';
                 const badge = `<span class="role-badge" style="background: ${role.bg_color}; color: ${role.text_color} !important; ${borderCss}">${safeHTML(role.rank_name)}</span>`;
                 
-                // 🛡️ เปลี่ยนไปใช้ data-action
                 tbody.innerHTML += `
                     <tr>
                         <td>${badge}</td>
@@ -1328,7 +1325,6 @@
 
             postsToShow.forEach(p => {
                 const isPinned = checkIsPinned(p.pinned);
-                // 🛡️ เปลี่ยนเป็น data-action
                 const pinBtnHtml = `<button class="btn ${isPinned ? 'btn-edit' : 'btn-pin'}" data-action="toggle-pin" data-id="${safeHTML(p.id)}">${isPinned ? '📍 ถอด' : '📌 ปัก'}</button>`;
                 
                 const rowHtml = `<tr>
@@ -1371,14 +1367,6 @@
             const roleFilter = document.getElementById('filterRoleField').value;
             const sortOrder = document.getElementById('sortOrderField').value;
 
-            // 🌟 ดึงค่า Checkbox สำหรับซ่อนยศ
-            const hideRoleChar = document.getElementById('hideRoleChar') ? document.getElementById('hideRoleChar').checked : false;
-            const hideRoleNormal = document.getElementById('hideRoleNormal') ? document.getElementById('hideRoleNormal').checked : false;
-            const hideRolePathom = document.getElementById('hideRolePathom') ? document.getElementById('hideRolePathom').checked : false;
-            const hideRoleThuti = document.getElementById('hideRoleThuti') ? document.getElementById('hideRoleThuti').checked : false;
-            const hideRoleTati = document.getElementById('hideRoleTati') ? document.getElementById('hideRoleTati').checked : false;
-            const hideRoleDynamic = document.getElementById('hideRoleDynamic') ? document.getElementById('hideRoleDynamic').checked : false;
-
             let data = globalUsersData.filter(u => {
                 const matchName = u.username.toLowerCase().includes(query);
                 let matchRole = true;
@@ -1390,15 +1378,6 @@
                 } else if (roleFilter !== "") {
                     matchRole = String(u.role) === roleFilter && u.rank_name !== 'ตัวละคร';
                 }
-
-                // 🌟 ตรวจสอบว่าตรงกับเงื่อนไขการซ่อนหรือไม่ ถ้าใช่ให้เตะทิ้ง (return false)
-                if (hideRoleChar && u.rank_name === 'ตัวละคร') return false;
-                if (hideRoleNormal && (String(u.role) === '5' || u.rank_name === 'เด็กวัด') && u.rank_name !== 'ตัวละคร') return false;
-                if (hideRolePathom && (String(u.role) === '4' || u.rank_name === 'ปฐมภูมิ')) return false;
-                if (hideRoleThuti && (String(u.role) === '3' || u.rank_name === 'ทุติยภูมิ')) return false;
-                if (hideRoleTati && (String(u.role) === '2' || u.rank_name === 'ตติยภูมิ') && u.rank_name !== 'ตัวละคร') return false;
-                if (hideRoleDynamic && String(u.role).startsWith('dynamic_')) return false;
-
                 return matchName && matchRole;
             });
 
@@ -1452,7 +1431,6 @@
                 const displayLastLogin = timeSinceLastLogin(u.last_login || u.login_timestamp);
                 const userKarma = u.karma || 0;
                 
-                // 🛡️ เปลี่ยนเป็น data-action
                 let reorderBtns = `<div style="display:flex; gap:2px; justify-content:center; flex-wrap:nowrap;">`;
                 if (absoluteIndex > 0) reorderBtns += `<button class="btn-reorder" data-action="move-user" data-index="${absoluteIndex}" data-dir="-1" title="ขึ้น">▲</button>`;
                 if (absoluteIndex < filteredUsersData.length - 1) reorderBtns += `<button class="btn-reorder" data-action="move-user" data-index="${absoluteIndex}" data-dir="1" title="ลง">▼</button>`;
@@ -1510,7 +1488,6 @@
                     inspectBtn = `<button class="btn btn-edit" onclick="showCustomAlert('ให้เข้าไปค้นหากระทู้ที่มีรหัสดังกล่าว')">🔍 ตรวจสอบ</button>`;
                 }
 
-                // 🛡️ เปลี่ยนเป็น data-action
                 tbody.innerHTML += `
                     <tr>
                         <td><strong style="color: #fff;">${safeHTML(r.reporter)}</strong></td>
@@ -1529,7 +1506,6 @@
             });
         }
 
-        // 🛡️ ศูนย์รวม Event Delegation จับคลิกปุ่มทั้งหมดทดแทน inline onclick
         document.addEventListener('click', function(e) {
             const btn = e.target.closest('[data-action]');
             if (!btn) return;
