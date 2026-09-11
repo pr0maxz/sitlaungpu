@@ -752,6 +752,7 @@
         };
 
         let globalPostsData = [];
+        let globalCommentsData = []; // 🌟 เก็บข้อมูลคอมเมนต์เพื่อใช้ค้นหา post_id
         let filteredPostsCat1 = [];
         let filteredPostsCat2 = [];
         let currentPostPage1 = 1;
@@ -906,6 +907,10 @@
                 const token = localStorage.getItem('siy_token');
                 const headers = {'Authorization': `Bearer ${token}`};
                 await fetch(`${API_CONFIG.BASE_URL}/roles/${id}`, { method: 'DELETE', headers });
+            },
+            // 🌟 เพิ่ม API ดึงข้อมูลคอมเมนต์
+            async getComments() {
+                try { const res = await fetch(`${API_CONFIG.BASE_URL}/comments`); return await res.json(); } catch(e){ return []; }
             }
         };
 
@@ -985,6 +990,7 @@
             populateUserRoleDropdown();
 
             globalPostsData = await AdminAPI.getPosts();
+            globalCommentsData = await AdminAPI.getComments(); // 🌟 อัญเชิญข้อมูลคอมเมนต์
             globalUsersData = await AdminAPI.getUsers();
             const reports = await AdminAPI.getReports();
 
@@ -1504,6 +1510,7 @@
             container.innerHTML = html;
         }
 
+        // 🌟 โหลดตารางเบาะแส โดยค้นหา post_id สำหรับคอมเมนต์
         function loadReportsTable(reports) {
             const tbody = document.getElementById('reports-table-body');
             tbody.innerHTML = '';
@@ -1515,10 +1522,19 @@
             reports.forEach(r => {
                 const targetText = r.target_type === 'post' ? 'กระทู้หลัก' : 'ความเห็น';
                 let inspectBtn = '';
+                
                 if (r.target_type === 'post') {
                     inspectBtn = `<a href="post.html?id=${r.target_id}" target="_blank" class="btn btn-gold"><span class="material-symbols-outlined" style="font-size: 14px;">search</span> ตรวจสอบ</a>`;
                 } else {
-                    inspectBtn = `<button class="btn btn-edit" onclick="showCustomAlert('ให้เข้าไปค้นหากระทู้ที่มีรหัสดังกล่าว')"><span class="material-symbols-outlined" style="font-size: 14px;">search</span> ตรวจสอบ</button>`;
+                    // 🌟 ค้นหาว่าคอมเมนต์นี้อยู่ในกระทู้ใด
+                    const comment = globalCommentsData.find(c => String(c.id) === String(r.target_id));
+                    const postId = comment ? comment.post_id : (r.post_id || '');
+                    
+                    if (postId) {
+                        inspectBtn = `<a href="post.html?id=${postId}#comment-${r.target_id}" target="_blank" class="btn btn-gold"><span class="material-symbols-outlined" style="font-size: 14px;">search</span> ตรวจสอบ</a>`;
+                    } else {
+                        inspectBtn = `<button class="btn btn-edit" onclick="showCustomAlert('ไม่พบข้อมูลกระทู้ต้นทาง (คอมเมนต์หรือกระทู้อาจถูกลบไปแล้ว)')"><span class="material-symbols-outlined" style="font-size: 14px;">search</span> ตรวจสอบ</button>`;
+                    }
                 }
 
                 tbody.innerHTML += `
