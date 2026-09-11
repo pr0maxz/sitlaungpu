@@ -93,16 +93,15 @@
         .widget-title { color: var(--gold-main); font-size: 1.2rem; margin-bottom: 15px; border-bottom: 1px solid rgba(138, 99, 21, 0.3); padding-bottom: 10px; }
         .rules-list { list-style: none; padding: 0; margin: 0; color: #d1bfae; font-size: 0.95rem; line-height: 1.6; } .rules-list li { margin-bottom: 12px; padding-left: 20px; position: relative; } .rules-list li::before { content: '❖'; color: #a82e2e; position: absolute; left: 0; }
         
-        /* 🛡️ Guard Overlay ปกป้องก่อนเข้า */
         #guardOverlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #070402; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--gold-main); font-family: 'Prompt', sans-serif; }
         
         .sect-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(7, 4, 2, 0.95); z-index: 9999; justify-content: center; align-items: center; } 
         .sect-modal-overlay.active { display: flex; }
-        .sect-modal-content { position: relative; background: linear-gradient(135deg, #1a120b, #0a0603); border: 1px solid var(--gold-main); border-radius: 12px; width: 90%; max-width: 350px; padding: 30px 20px 40px 20px; text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.9); } 
+        .sect-modal-content { position: relative; background: linear-gradient(135deg, #1a120b, #0a0603); border: 1px solid var(--gold-main); border-radius: 12px; width: 90%; max-width: 380px; padding: 30px 20px 40px 20px; text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.9); } 
         .modal-corner { position: absolute; width: 60px; height: 60px; pointer-events: none; opacity: 0.8; } .mc-top-left { top: 12px; left: 12px; transform: scaleX(-1); } .mc-top-right { top: 12px; right: 12px; } .mc-bottom-left { bottom: 12px; left: 12px; transform: scaleX(-1) scaleY(-1); } .mc-bottom-right { bottom: 12px; right: 12px; transform: scaleY(-1); }
         .modal-header { text-align: center; margin-bottom: 15px; } .modal-header h3 { color: var(--gold-light); font-size: 1.4rem; margin-bottom: 5px; text-shadow: 0 2px 5px rgba(0,0,0,0.8); }
         
-        .role-badge, .role-tag { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 0.75rem; font-family: 'Prompt', sans-serif; font-weight: 600; letter-spacing: 0.5px; vertical-align: middle; margin-left: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.6); }
+        .role-badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 0.75rem; font-family: 'Prompt', sans-serif; font-weight: 600; letter-spacing: 0.5px; vertical-align: middle; margin-left: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.6); }
         .role-1 { background: linear-gradient(135deg, #f5d77f, #d4af37, #8a6315); color: #1a0f02 !important; border: 1px solid #ffeea8; box-shadow: 0 0 12px rgba(212,175,55,0.8), inset 0 0 6px rgba(255,255,255,0.6); font-weight: 700; } 
         .role-2 { background: linear-gradient(135deg, #4a1c60, #240b36); color: #e5b3ff !important; border: 1px solid #9b59b6; box-shadow: 0 0 6px rgba(155,89,182,0.4); } 
         .role-3 { background: linear-gradient(135deg, #6c7a86, #262c30); color: #d6dfe5 !important; border: 1px solid #94a6b5; box-shadow: 0 0 6px rgba(148,166,181,0.4); } 
@@ -158,16 +157,11 @@
 
                     <div class="form-group">
                         <label>เนื้อหา (Content)</label>
-                        
-                        <button type="button" class="btn-attach-img" data-action="insert-image">
-                            🖼️ แนบรูปภาพ
-                        </button>
-                        
+                        <button type="button" class="btn-attach-img" data-action="insert-image">🖼️ แนบรูปภาพ</button>
                         <textarea id="postContent" class="form-textarea" placeholder="จงเขียนเล่าเรื่องราวหรือสิ่งที่ท่านต้องการสนทนา (สามารถพิมพ์ @ตามด้วยชื่อ เพื่อเรียกขานสมาชิกลานเสวนา)..."></textarea>
                     </div>
 
                     <div class="form-actions">
-                        <!-- 🛡️ เลิกใช้ inline onclick เปลี่ยนเป็น data-action -->
                         <a href="webboard.html" class="btn-cancel">ยกเลิก</a>
                         <button type="button" class="btn-submit" data-action="submit-post" id="submitPostBtn">ประกาศให้ประจักษ์</button>
                     </div>
@@ -201,15 +195,14 @@
     <!-- Custom Alert Modal -->
     <div class="sect-modal-overlay" id="customAlertModal">
         <div class="sect-modal-content">
-            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-left" alt="" width="60" height="60">
-            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-right" alt="" width="60" height="60">
-            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-bottom-left" alt="" width="60" height="60">
-            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-bottom-right" alt="" width="60" height="60">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-left" alt="">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-right" alt="">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-bottom-left" alt="">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-bottom-right" alt="">
             <div class="modal-header">
                 <h3>ประกาศสำนัก</h3>
             </div>
-            <p id="customAlertMessage" style="color: #e2d4c3; font-size: 1.05rem; margin-bottom: 25px; line-height: 1.5; text-align: center;">ข้อความแจ้งเตือน</p>
-            <!-- 🛡️ เลิกใช้ inline onclick เปลี่ยนเป็น data-action และใช้ Inline CSS -->
+            <p id="customAlertMessage" style="color: #e2d4c3; font-size: 0.95rem; margin-bottom: 25px; line-height: 1.6; text-align: center;">ข้อความแจ้งเตือน</p>
             <button type="button" data-action="close-alert" id="customAlertBtn" style="width: 100%; background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; border: 1px solid #ffeba9; padding: 12px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-weight: bold; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: 0.2s; appearance: none; -webkit-appearance: none; outline: none;" onmouseover="this.style.filter='brightness(1.15)'" onmouseout="this.style.filter='none'">รับทราบ</button>
         </div>
     </div>
@@ -219,7 +212,6 @@
             BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
         };
 
-        // 🛡️ XSS Protection 
         function safeHTML(str) {
             if (!str) return '';
             return String(str).replace(/[&<>'"]/g, tag => ({
@@ -227,14 +219,12 @@
             }[tag] || tag));
         }
 
-        // 🌟 อัปเกรด Regex ดึงรายชื่อคนที่ถูก Mention (รองรับภาษาไทยครบทุกอักขระ)
         function extractMentions(text) {
             const mentionRegex = /@([\u0E00-\u0E7Fa-zA-Z0-9_-]+)/g;
             const matches = [...text.matchAll(mentionRegex)];
             return [...new Set(matches.map(m => m[1]))]; 
         }
 
-        // 🌟 อัปเกรดระบบป้ายยศ ให้ดึงจากโรงตีเหล็กได้ด้วย
         async function getRoleBadgeFromAPI(username) {
             if (!username) return '<span class="role-badge role-5">เด็กวัด</span>';
             if (username.toUpperCase() === 'ADMIN') return '<span class="role-badge role-1">ปรมัตถ์</span>';
@@ -265,7 +255,6 @@
         const ApiManager = {
             async createPost(postData) {
                 try {
-                    // 🛡️ แนบ Token เสมอ เพื่อให้ผ่านระบบ Backend Auth
                     const token = localStorage.getItem('siy_token');
                     const headers = { 'Content-Type': 'application/json' };
                     if (token) {
@@ -284,7 +273,6 @@
             },
             async sendNotification(data) {
                 try {
-                    // 🛡️ แนบ Token เสมอ
                     const token = localStorage.getItem('siy_token');
                     const headers = { 'Content-Type': 'application/json' };
                     if (token) {
@@ -314,15 +302,19 @@
             };
         }
 
+        // 🌟 ดักจับเซสชันผี! ถ้าเคยล็อกอินแต่ไม่มี Token จะบังคับให้ออกระบบทันที
         document.addEventListener('DOMContentLoaded', async () => {
             const savedUser = localStorage.getItem('siy_username');
             const userType = localStorage.getItem('siy_usertype'); 
+            const token = localStorage.getItem('siy_token'); 
             
             setTimeout(async () => {
                 document.getElementById('guardOverlay').style.display = 'none';
 
                 if (!savedUser || userType === 'guest') {
                     showCustomAlert('เขตหวงห้าม! วิญญาณเร่ร่อนไม่อาจสร้างศิลาจารึกใหม่ได้ ต้องฝากตัวเป็นศิษย์ก่อน', 'webboard.html');
+                } else if (!token) {
+                    showCustomAlert('⚠️ <b>ระบบแจ้งเตือนความปลอดภัย</b><br><br>เซสชันของคุณเป็นเวอร์ชันเก่า (ยังไม่มีกุญแจ Token)<br>กรุณากลับไปที่ลานเสวนา กด <b>"ออกจากระบบ"</b><br>แล้ว <b>"เข้าสู่ระบบใหม่"</b> เพื่ออัปเดตกุญแจครับ!', 'webboard.html');
                 } else {
                     document.getElementById('authorName').textContent = safeHTML(savedUser);
                     document.getElementById('authorRoleBadge').innerHTML = await getRoleBadgeFromAPI(savedUser);
@@ -331,7 +323,6 @@
             }, 800);
         });
 
-        // 🛡️ ระบบ Event Delegation ดักจับคลิก แทนการใช้ inline onclick
         document.addEventListener('click', function(e) {
             const btn = e.target.closest('[data-action]');
             if (!btn) return;
