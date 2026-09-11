@@ -224,6 +224,8 @@
 </head>
 <body>
 
+    <header class="admin-header" style="display:none;"></header> <!-- ป้องกันบั๊ก css -->
+    
     <div class="main-container">
         <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="corner-decor corner-top-left" alt="" width="110" height="110">
         <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="corner-decor corner-top-right" alt="" width="110" height="110">
@@ -389,7 +391,6 @@
             </div>
             <div class="form-group">
                 <label id="usernameLabel">นามแฝง (Username)</label>
-                <!-- 🌟 สกัดกั้นอักขระพิเศษ ตัวเลข และการเว้นวรรค (พิมพ์ได้แค่ภาษาไทยเท่านั้น) -->
                 <input type="text" id="regUsername" class="form-input" placeholder="ภาษาไทยเท่านั้น (ห้ามเว้นวรรค)" oninput="this.value = this.value.replace(/[^\u0E00-\u0E7F]/g, '')">
             </div>
             <div class="form-group">
@@ -432,7 +433,6 @@
             BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
         };
 
-        // 🛡️ ป้องกัน XSS
         function safeHTML(str) {
             if (!str) return '';
             return String(str).replace(/[&<>'"]/g, tag => ({
@@ -440,7 +440,6 @@
             }[tag] || tag));
         }
 
-        // 🛡️ เปลี่ยนไปใช้ data-action ป้องกัน Attribute XSS
         function formatMentions(text) {
             if(!text) return '';
             const mentionRegex = /@([\u0E00-\u0E7Fa-zA-Z0-9_-]+)/g;
@@ -491,8 +490,32 @@
                     return await res.json();
                 } catch (e) { return []; }
             },
+            // 🛡️ [อัปเดตใหม่] แนบ Token เสมอ เพื่อให้ผ่านระบบ Backend Auth ตอนกดอ่านแจ้งเตือน
             async readNotification(id) {
-                try { await fetch(`${API_CONFIG.BASE_URL}/notifications/${id}/read`, { method: 'PUT' }); } catch(e) {}
+                try { 
+                    const token = localStorage.getItem('siy_token');
+                    const headers = {};
+                    if (token) headers['Authorization'] = `Bearer ${token}`;
+                    
+                    await fetch(`${API_CONFIG.BASE_URL}/notifications/${id}/read`, { 
+                        method: 'PUT',
+                        headers: headers
+                    }); 
+                } catch(e) {}
+            },
+            // 🛡️ [อัปเดตใหม่] แนบ Token เสมอ เพื่อให้ผ่านระบบ Backend Auth ตอนสร้างแจ้งเตือนใหม่ (เช่น ตอนคอมเมนต์)
+            async sendNotification(data) {
+                try {
+                    const token = localStorage.getItem('siy_token');
+                    const headers = { 'Content-Type': 'application/json' };
+                    if (token) headers['Authorization'] = `Bearer ${token}`;
+                    
+                    await fetch(`${API_CONFIG.BASE_URL}/notifications`, {
+                        method: 'POST',
+                        headers: headers,
+                        body: JSON.stringify(data)
+                    });
+                } catch (e) {}
             },
             async getBookmarks() {
                 try {
@@ -576,7 +599,6 @@
 
                 const isUnreadClass = String(n.is_read) === '0' ? 'unread' : '';
                 
-                // 🛡️ เปลี่ยนเป็น data-action ป้องกัน XSS
                 notiListContent.innerHTML += `
                     <div class="noti-item ${isUnreadClass}" data-action="noti-click" data-id="${n.id}" data-post-id="${n.post_id}">
                         <div><strong style="color: var(--gold-light);">${safeHTML(n.actor)}</strong> ${actionText}</div>
@@ -627,7 +649,6 @@
                 const safeTitle = safeHTML(item.title);
                 const displayTitle = formatMentions(safeTitle);
                 
-                // 🛡️ เปลียนเป็น data-action
                 container.innerHTML += `
                     <a data-action="go-post" data-url="post.html?id=${item.id}" style="cursor: pointer; display: block; width: 100%; box-sizing: border-box; overflow: hidden; padding: 12px 15px; background: rgba(0,0,0,0.4); border: 1px dashed rgba(138, 99, 21, 0.3); border-radius: 6px; text-decoration: none; color: var(--gold-light); font-size: 0.9rem; transition: background 0.2s;" onmouseover="this.style.borderColor='var(--gold-main)'; this.style.background='rgba(212,175,55,0.05)'" onmouseout="this.style.borderColor='rgba(138, 99, 21, 0.3)'; this.style.background='rgba(0,0,0,0.4)'">
                         <div style="white-space: normal; word-break: break-word; line-height: 1.4; font-family: 'Prompt', sans-serif; width: 100%;">${displayTitle}</div>
@@ -660,7 +681,6 @@
                 const safeTitle = safeHTML(item.title);
                 const displayTitle = formatMentions(safeTitle);
                 
-                // 🛡️ เปลี่ยนเป็น data-action
                 container.innerHTML += `
                     <div class="bookmark-item" id="bm-item-${item.post_id}">
                         <a data-action="go-post" data-url="post.html?id=${item.post_id}" class="bookmark-link" style="cursor: pointer;" title="${safeTitle}">${displayTitle}</a>
@@ -748,7 +768,6 @@
             }
         });
 
-        // 🛡️ ระบบ Event Delegation สำหรับหน้า Webboard ดักจับการคลิกทดแทน inline onclick
         document.addEventListener('click', function(e) {
             const btn = e.target.closest('[data-action]');
             if (!btn) return;
@@ -904,7 +923,6 @@
                 const safeTitle = safeHTML(post.title);
                 const displayTitle = formatMentions(safeTitle);
 
-                // 🛡️ เปลี่ยนเป็น data-action
                 const postHTML = `
                     <div class="thread-item">
                         <div class="thread-content">
