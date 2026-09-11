@@ -127,9 +127,15 @@
         
         .widget { background: rgba(12, 7, 4, 0.85); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 8px; padding: 45px 20px 20px 20px; margin-top: 45px; margin-bottom: 40px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); position: relative; width: 100%; max-width: 100%; box-sizing: border-box; }
         .user-status-box { text-align: center; width: 100%; } 
-        .user-logged-in-profile { display: flex; flex-direction: column; align-items: center; margin-bottom: 15px; background: rgba(212, 175, 55, 0.05); padding: 15px; border-radius: 8px; border: 1px dashed var(--gold-dark); width: 100%; box-sizing: border-box; } 
-        .user-info-text { text-align: center; width: 100%; } 
-        .user-info-text h4 { color: var(--gold-light); font-size: 1.1rem; margin-bottom: 5px; word-wrap: break-word; } 
+        
+        /* ---------------------------------------------------- */
+        /* แก้ไขส่วน Profile แอดมินให้ชื่อและยศจัดกลางซ้อนกัน */
+        /* ---------------------------------------------------- */
+        .user-logged-in-profile { display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 15px; background: rgba(212, 175, 55, 0.05); padding: 25px 20px; border-radius: 8px; border: 1px dashed var(--gold-dark); width: 100%; box-sizing: border-box; min-height: 130px; } 
+        .user-info-text { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; width: 100%; } 
+        .user-info-text h4 { color: var(--gold-light); font-size: 1.25rem; margin: 0 0 10px 0; word-wrap: break-word; font-weight: 600; line-height: 1; } 
+        #displayUserBadge { display: flex; justify-content: center; align-items: center; width: 100%; }
+        #displayUserBadge .role-badge { margin-left: 0 !important; font-size: 0.85rem; padding: 4px 14px; }
         
         .btn-logout { display: block; width: 100%; background: transparent; color: #ff6b6b; border: 1px solid rgba(168, 46, 46, 0.5); padding: 10px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-size: 0.95rem; cursor: pointer; transition: background 0.2s; box-sizing: border-box; } .btn-logout:hover { background: rgba(168, 46, 46, 0.1); }
         
