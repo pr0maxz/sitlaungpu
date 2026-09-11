@@ -83,10 +83,11 @@
         .btn-attach-img:hover { filter: brightness(1.15); transform: translateY(-1px); }
 
         .form-actions { display: flex; gap: 15px; margin-top: 30px; width: 100%; } 
-        .btn-submit { flex: 2; background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; border: none; padding: 15px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-weight: bold; font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); } 
+        .btn-submit { flex: 2; background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; border: none; padding: 15px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-weight: bold; font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: 0.3s; } 
         .btn-submit:hover { filter: brightness(1.1); }
         .btn-submit:disabled { filter: grayscale(1); cursor: not-allowed; opacity: 0.7; }
-        .btn-cancel { flex: 1; background: transparent; color: var(--text-muted); border: 1px solid var(--text-muted); padding: 15px; border-radius: 25px; cursor: pointer; text-align: center; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
+        .btn-cancel { flex: 1; background: transparent; color: var(--text-muted); border: 1px solid var(--text-muted); padding: 15px; border-radius: 25px; cursor: pointer; text-align: center; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; transition: 0.3s; }
+        .btn-cancel:hover { background: rgba(255,255,255,0.1); color: #fff; }
         
         .widget { background: rgba(12, 7, 4, 0.9); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 8px; padding: 20px; margin-bottom: 25px; width: 100%; box-sizing: border-box; box-shadow: 0 5px 15px rgba(0,0,0,0.5); } 
         .widget-title { color: var(--gold-main); font-size: 1.2rem; margin-bottom: 15px; border-bottom: 1px solid rgba(138, 99, 21, 0.3); padding-bottom: 10px; }
@@ -100,7 +101,6 @@
         .sect-modal-content { position: relative; background: linear-gradient(135deg, #1a120b, #0a0603); border: 1px solid var(--gold-main); border-radius: 12px; width: 90%; max-width: 350px; padding: 30px 20px 40px 20px; text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.9); } 
         .modal-corner { position: absolute; width: 60px; height: 60px; pointer-events: none; opacity: 0.8; } .mc-top-left { top: 12px; left: 12px; transform: scaleX(-1); } .mc-top-right { top: 12px; right: 12px; } .mc-bottom-left { bottom: 12px; left: 12px; transform: scaleX(-1) scaleY(-1); } .mc-bottom-right { bottom: 12px; right: 12px; transform: scaleY(-1); }
         .modal-header { text-align: center; margin-bottom: 15px; } .modal-header h3 { color: var(--gold-light); font-size: 1.4rem; margin-bottom: 5px; text-shadow: 0 2px 5px rgba(0,0,0,0.8); }
-        .btn-submit-modal { background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; border: none; padding: 12px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-weight: bold; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: all 0.3s; width: 80%; margin: 0 auto; display: block; } .btn-submit-modal:hover { filter: brightness(1.2); }
         
         .role-badge, .role-tag { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 0.75rem; font-family: 'Prompt', sans-serif; font-weight: 600; letter-spacing: 0.5px; vertical-align: middle; margin-left: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.6); }
         .role-1 { background: linear-gradient(135deg, #f5d77f, #d4af37, #8a6315); color: #1a0f02 !important; border: 1px solid #ffeea8; box-shadow: 0 0 12px rgba(212,175,55,0.8), inset 0 0 6px rgba(255,255,255,0.6); font-weight: 700; } 
@@ -159,7 +159,7 @@
                     <div class="form-group">
                         <label>เนื้อหา (Content)</label>
                         
-                        <button type="button" class="btn-attach-img" onclick="insertImageTag()">
+                        <button type="button" class="btn-attach-img" data-action="insert-image">
                             🖼️ แนบรูปภาพ
                         </button>
                         
@@ -167,8 +167,9 @@
                     </div>
 
                     <div class="form-actions">
-                        <button type="button" class="btn-cancel" onclick="window.location.href='webboard.html'">ยกเลิก</button>
-                        <button type="button" class="btn-submit" onclick="handleCreatePost()" id="submitPostBtn">ประกาศให้ประจักษ์</button>
+                        <!-- 🛡️ เลิกใช้ inline onclick เปลี่ยนเป็น data-action -->
+                        <a href="webboard.html" class="btn-cancel">ยกเลิก</a>
+                        <button type="button" class="btn-submit" data-action="submit-post" id="submitPostBtn">ประกาศให้ประจักษ์</button>
                     </div>
                 </div>
             </div>
@@ -208,7 +209,8 @@
                 <h3>ประกาศสำนัก</h3>
             </div>
             <p id="customAlertMessage" style="color: #e2d4c3; font-size: 1.05rem; margin-bottom: 25px; line-height: 1.5; text-align: center;">ข้อความแจ้งเตือน</p>
-            <button type="button" class="btn-submit-modal" id="customAlertBtn" onclick="closeCustomAlert()">รับทราบ</button>
+            <!-- 🛡️ เลิกใช้ inline onclick เปลี่ยนเป็น data-action และใช้ Inline CSS -->
+            <button type="button" data-action="close-alert" id="customAlertBtn" style="width: 100%; background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; border: 1px solid #ffeba9; padding: 12px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-weight: bold; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: 0.2s; appearance: none; -webkit-appearance: none; outline: none;" onmouseover="this.style.filter='brightness(1.15)'" onmouseout="this.style.filter='none'">รับทราบ</button>
         </div>
     </div>
 
@@ -216,6 +218,14 @@
         const API_CONFIG = { 
             BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
         };
+
+        // 🛡️ XSS Protection 
+        function safeHTML(str) {
+            if (!str) return '';
+            return String(str).replace(/[&<>'"]/g, tag => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+            }[tag] || tag));
+        }
 
         // 🌟 อัปเกรด Regex ดึงรายชื่อคนที่ถูก Mention (รองรับภาษาไทยครบทุกอักขระ)
         function extractMentions(text) {
@@ -242,20 +252,20 @@
                     const customRole = rolesList.find(r => r.id === roleVal);
                     if (customRole) {
                         const borderCss = customRole.border_color ? `border: 1px solid ${customRole.border_color}; box-shadow: 0 0 6px ${customRole.border_color}80;` : '';
-                        return `<span class="role-badge" style="background: ${customRole.bg_color}; color: ${customRole.text_color} !important; ${borderCss}">${customRole.rank_name}</span>`;
+                        return `<span class="role-badge" style="background: ${customRole.bg_color}; color: ${customRole.text_color} !important; ${borderCss}">${safeHTML(customRole.rank_name)}</span>`;
                     }
                     let rank = user.rank_name || 'เด็กวัด';
                     let roleClass = rank === 'ตัวละคร' ? 'role-6' : `role-${roleVal}`;
-                    return `<span class="role-badge ${roleClass}">${rank}</span>`;
+                    return `<span class="role-badge ${roleClass}">${safeHTML(rank)}</span>`;
                 }
             } catch (e) {}
             return '<span class="role-badge role-5">เด็กวัด</span>';
         }
 
-        // 🌟 Clean up โค้ดที่ไม่ได้ใช้ (ลบ USE_REAL_API ทิ้ง)
         const ApiManager = {
             async createPost(postData) {
                 try {
+                    // 🛡️ แนบ Token เสมอ เพื่อให้ผ่านระบบ Backend Auth
                     const token = localStorage.getItem('siy_token');
                     const headers = { 'Content-Type': 'application/json' };
                     if (token) {
@@ -274,9 +284,16 @@
             },
             async sendNotification(data) {
                 try {
+                    // 🛡️ แนบ Token เสมอ
+                    const token = localStorage.getItem('siy_token');
+                    const headers = { 'Content-Type': 'application/json' };
+                    if (token) {
+                        headers['Authorization'] = `Bearer ${token}`;
+                    }
+                    
                     await fetch(`${API_CONFIG.BASE_URL}/notifications`, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: headers,
                         body: JSON.stringify(data)
                     });
                 } catch (e) {}
@@ -307,11 +324,27 @@
                 if (!savedUser || userType === 'guest') {
                     showCustomAlert('เขตหวงห้าม! วิญญาณเร่ร่อนไม่อาจสร้างศิลาจารึกใหม่ได้ ต้องฝากตัวเป็นศิษย์ก่อน', 'webboard.html');
                 } else {
-                    document.getElementById('authorName').textContent = savedUser;
+                    document.getElementById('authorName').textContent = safeHTML(savedUser);
                     document.getElementById('authorRoleBadge').innerHTML = await getRoleBadgeFromAPI(savedUser);
                     document.getElementById('mainContent').style.display = 'block';
                 }
             }, 800);
+        });
+
+        // 🛡️ ระบบ Event Delegation ดักจับคลิก แทนการใช้ inline onclick
+        document.addEventListener('click', function(e) {
+            const btn = e.target.closest('[data-action]');
+            if (!btn) return;
+            
+            const action = btn.getAttribute('data-action');
+            
+            if (action === 'insert-image') {
+                insertImageTag();
+            } else if (action === 'submit-post') {
+                handleCreatePost();
+            } else if (action === 'close-alert') {
+                closeCustomAlert();
+            }
         });
 
         function insertImageTag() {
