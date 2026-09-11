@@ -13,6 +13,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <!-- นำเข้า Google Material Symbols & Material Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
     <noscript><link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet"></noscript>
     
     <style>
@@ -20,6 +22,16 @@
         * { box-sizing: border-box; }
         :root { --bg-deep: #070402; --bg-glow: #2a1805; --gold-light: #f5d77f; --gold-main: #d4af37; --gold-dark: #8a6315; --text-muted: #8a7761; --danger-color: #ff6b6b; }
         
+        /* สไตล์สำหรับ Material Icons ให้แสดงผลสวยงามและจัดวางตรงบรรทัด */
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+            font-size: 1.15em;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
         /* 🌟 เปลี่ยนฟอนต์หลักทั้งหน้าเป็น Prompt ทั้งหมด */
         body { 
             margin: 0; padding: 0; width: 100%; min-height: 100vh; 
@@ -249,7 +261,7 @@
 
         <div class="post-layout">
             <div class="post-main-content">
-                <a href="webboard.html" class="btn-back">← กลับสู่ลานเสวนา</a>
+                <a href="webboard.html" class="btn-back"><span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle;">arrow_back</span> กลับสู่ลานเสวนา</a>
 
                 <div class="breadcrumb">
                     <a href="webboard.html">ลานเสวนา</a> > <span id="dyn-category">กำลังอัญเชิญ...</span>
@@ -266,7 +278,7 @@
                                 <div class="post-time" id="dyn-time">โพสต์เมื่อ: -</div>
                             </div>
                         </div>
-                        <button type="button" class="btn-report" data-action="report-post" id="btnReportPost" style="display: none;">🚨 แจ้งผู้คุมกฎ</button>
+                        <button type="button" class="btn-report" data-action="report-post" id="btnReportPost" style="display: none;"><span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">report</span> แจ้งผู้คุมกฎ</button>
                     </div>
 
                     <h1 class="post-title" id="dyn-title">กำลังอัญเชิญข้อความ...</h1>
@@ -277,12 +289,12 @@
 
                     <div style="border-top: 1px dashed rgba(138, 99, 21, 0.3); padding-top: 20px; display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
                         <button class="btn-like" id="btnLikeMainPost" data-action="like-post">
-                            🙏 อนุโมทนา (<span id="dyn-likes">0</span>)
+                            <span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">volunteer_activism</span> อนุโมทนา (<span id="dyn-likes">0</span>)
                         </button>
                         <button class="btn-save-bookmark" id="btnSaveBookmarkPost" data-action="toggle-bookmark" title="บันทึกเข้าคัมภีร์ส่วนตัว">
-                            🔖 บันทึกจารึก
+                            <span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">bookmark</span> บันทึกจารึก
                         </button>
-                        <span style="color: var(--text-muted); font-size: 0.85rem; margin-left: auto;">👀 <span id="dyn-views">0</span> วิว</span>
+                        <span style="color: var(--text-muted); font-size: 0.85rem; margin-left: auto;"><span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">visibility</span> <span id="dyn-views">0</span> วิว</span>
                     </div>
                 </div>
 
@@ -337,7 +349,7 @@
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-right" alt="" width="60" height="60" loading="lazy">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-bottom-left" alt="" width="60" height="60" loading="lazy">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-bottom-right" alt="" width="60" height="60" loading="lazy">
-            <div class="modal-header"><h3 style="font-size: 1.4rem; color: #e29578;">🚨 แจ้งเบาะแสผู้คุมกฎ</h3></div>
+            <div class="modal-header"><h3 style="font-size: 1.4rem; color: #e29578;"><span class="material-symbols-outlined" style="font-size: 20px; vertical-align: middle; color: #e29578;">report_problem</span> แจ้งเบาะแสผู้คุมกฎ</h3></div>
             <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">เหตุใดท่านจึงต้องการแจ้งรายงานสลักนี้?</p>
             <input type="hidden" id="reportTargetType">
             <input type="hidden" id="reportTargetId">
@@ -743,11 +755,11 @@
                 localStorage.setItem('siy_liked_posts', JSON.stringify(likedPosts));
                 document.getElementById('dyn-likes').textContent = result.likes;
                 btn.classList.add('liked');
-                btn.innerHTML = `🙏 อนุโมทนา (<span id="dyn-likes">${result.likes}</span>)`;
+                btn.innerHTML = `<span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">volunteer_activism</span> อนุโมทนา (<span id="dyn-likes">${result.likes}</span>)`;
                 broadcastAction('LIKE_UPDATE', postId, { newLikes: result.likes, isComment: false });
             } else {
                 btn.innerHTML = originalText;
-                showCustomAlert('⚠️ อาถรรพ์สะท้อนกลับ! เชื่อมต่อหลังบ้านไม่สำเร็จ');
+                showCustomAlert('<span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">warning</span> อาถรรพ์สะท้อนกลับ! เชื่อมต่อหลังบ้านไม่สำเร็จ');
             }
         }
 
@@ -767,12 +779,12 @@
                 document.getElementById(`comment-like-count-${commentId}`).textContent = result.likes;
                 if(btn) {
                     btn.classList.add('liked');
-                    btn.innerHTML = `🙏 อนุโมทนา (<span id="comment-like-count-${commentId}">${result.likes}</span>)`;
+                    btn.innerHTML = `<span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">volunteer_activism</span> อนุโมทนา (<span id="comment-like-count-${commentId}">${result.likes}</span>)`;
                 }
                 broadcastAction('LIKE_UPDATE', commentId, { newLikes: result.likes, isComment: true });
             } else {
                 if(btn) btn.innerHTML = originalText;
-                showCustomAlert('⚠️ อาถรรพ์สะท้อนกลับ! เชื่อมต่อหลังบ้านไม่สำเร็จ');
+                showCustomAlert('<span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">warning</span> อาถรรพ์สะท้อนกลับ! เชื่อมต่อหลังบ้านไม่สำเร็จ');
             }
         }
 
@@ -783,7 +795,7 @@
 
             const token = localStorage.getItem('siy_token');
             if (!token) {
-                showCustomAlert('⚠️ ท่านยังไม่ได้เข้าสู่ระบบ ไม่สามารถบันทึกคัมภีร์ได้'); return;
+                showCustomAlert('<span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">warning</span> ท่านยังไม่ได้เข้าสู่ระบบ ไม่สามารถบันทึกคัมภีร์ได้'); return;
             }
 
             const btn = document.getElementById('btnSaveBookmarkPost');
@@ -792,16 +804,16 @@
             if (isSaved) {
                 await ApiManager.removeBookmark(postId);
                 btn.classList.remove('saved');
-                btn.innerHTML = '🔖 บันทึกจารึก';
+                btn.innerHTML = '<span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">bookmark</span> บันทึกจารึก';
                 showCustomAlert('นำออกจากคัมภีร์ส่วนตัวเรียบร้อยแล้ว');
             } else {
                 const res = await ApiManager.saveBookmark(postId);
                 if (res && res.success) {
                     btn.classList.add('saved');
-                    btn.innerHTML = '✨ บันทึกแล้ว';
+                    btn.innerHTML = '<span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">auto_awesome</span> บันทึกแล้ว';
                     showCustomAlert('เก็บบันทึกลงคัมภีร์ส่วนตัวเรียบร้อยแล้ว ท่านสามารถอ่านต่อได้ที่แถบด้านข้างของลานเสวนา');
                 } else {
-                    showCustomAlert('⚠️ ' + (res.error || 'ไม่สามารถบันทึกคัมภีร์ได้'));
+                    showCustomAlert('<span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">warning</span> ' + (res.error || 'ไม่สามารถบันทึกคัมภีร์ได้'));
                 }
             }
         }
@@ -954,12 +966,12 @@
                     cleanMainContent = safeContentRender(cleanMainContent);
                     cleanMainContent = formatMentions(cleanMainContent, usersMap);
 
-                    let adminControls = isUserAdmin ? `<button type="button" class="btn-delete-comment" data-action="delete-comment" data-id="${c.id}" data-post-id="${postId}">🗑️ ทำลาย</button>` : '';
-                    let replyBtn = (userType !== 'guest') ? `<button type="button" class="btn-reply-comment" data-action="toggle-reply" data-id="${c.id}">💬 ตอบกลับ</button>` : '';
-                    let reportBtn = (savedUser) ? `<button type="button" class="btn-report" data-action="report-comment" data-id="${c.id}">🚨 แจ้ง</button>` : '';
+                    let adminControls = isUserAdmin ? `<button type="button" class="btn-delete-comment" data-action="delete-comment" data-id="${c.id}" data-post-id="${postId}"><span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">delete</span> ทำลาย</button>` : '';
+                    let replyBtn = (userType !== 'guest') ? `<button type="button" class="btn-reply-comment" data-action="toggle-reply" data-id="${c.id}"><span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">chat</span> ตอบกลับ</button>` : '';
+                    let reportBtn = (savedUser) ? `<button type="button" class="btn-report" data-action="report-comment" data-id="${c.id}"><span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">report</span> แจ้ง</button>` : '';
                     
                     const isLiked = likedComments.includes(String(c.id)) ? 'liked' : '';
-                    let likeBtn = `<button type="button" class="btn-like ${isLiked}" id="btn-like-comment-${c.id}" data-action="like-comment" data-id="${c.id}">🙏 อนุโมทนา (<span id="comment-like-count-${c.id}">${c.likes || 0}</span>)</button>`;
+                    let likeBtn = `<button type="button" class="btn-like ${isLiked}" id="btn-like-comment-${c.id}" data-action="like-comment" data-id="${c.id}"><span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">volunteer_activism</span> อนุโมทนา (<span id="comment-like-count-${c.id}">${c.likes || 0}</span>)</button>`;
 
                     const childReplies = replyComments.filter(r => {
                         const match = r.content.match(/^\[REPLY_TO:([^\]]+)\]/);
@@ -972,8 +984,8 @@
                         repliesHtml += `<div class="replies-container">`; 
                         for (const r of childReplies) {
                             const rBadge = formatBadgeFromUsersMap(r.author, usersMap, rolesList);
-                            let rAdminControls = isUserAdmin ? `<button type="button" class="btn-delete-comment" data-action="delete-comment" data-id="${r.id}" data-post-id="${postId}">🗑️ ทำลาย</button>` : '';
-                            let rReportBtn = (savedUser) ? `<button type="button" class="btn-report" data-action="report-comment" data-id="${r.id}">🚨 แจ้ง</button>` : '';
+                            let rAdminControls = isUserAdmin ? `<button type="button" class="btn-delete-comment" data-action="delete-comment" data-id="${r.id}" data-post-id="${postId}"><span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">delete</span> ทำลาย</button>` : '';
+                            let rReportBtn = (savedUser) ? `<button type="button" class="btn-report" data-action="report-comment" data-id="${r.id}"><span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">report</span> แจ้ง</button>` : '';
                             
                             let authorMatch = r.content.match(/\[AUTHOR:([^\]]+)\]/);
                             let repliedTo = authorMatch ? authorMatch[1] : c.author;
@@ -983,14 +995,14 @@
                             cleanReplyContent = formatMentions(cleanReplyContent, usersMap);
                             
                             const rIsLiked = likedComments.includes(String(r.id)) ? 'liked' : '';
-                            let rLikeBtn = `<button type="button" class="btn-like ${rIsLiked}" id="btn-like-comment-${r.id}" data-action="like-comment" data-id="${r.id}">🙏 อนุโมทนา (<span id="comment-like-count-${r.id}">${r.likes || 0}</span>)</button>`;
+                            let rLikeBtn = `<button type="button" class="btn-like ${rIsLiked}" id="btn-like-comment-${r.id}" data-action="like-comment" data-id="${r.id}"><span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">volunteer_activism</span> อนุโมทนา (<span id="comment-like-count-${r.id}">${r.likes || 0}</span>)</button>`;
 
                             const parentMatch = r.content.match(/^\[REPLY_TO:([^\]]+)\]/);
                             const parentIdToScroll = parentMatch ? parentMatch[1] : '';
 
                             repliesHtml += `
                                 <div class="comment-card is-reply" id="comment-${r.id}" data-author="${safeHTML(r.author)}">
-                                    <div class="reply-badge" title="ย้อนไปดูข้อความต้นทาง" data-action="scroll-to-comment" data-parent-id="${parentIdToScroll}">↪ ตอบกลับคุณ: ${safeHTML(repliedTo)}</div>
+                                    <div class="reply-badge" title="ย้อนไปดูข้อความต้นทาง" data-action="scroll-to-comment" data-parent-id="${parentIdToScroll}"><span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">reply</span> ตอบกลับคุณ: ${safeHTML(repliedTo)}</div>
                                     <div class="comment-header">
                                         <div class="comment-author-group">
                                             <span class="comment-author">${safeHTML(r.author)}</span>
@@ -1105,23 +1117,23 @@
         }
 
         function validateComment(content) {
-            if (content.includes('[REPLY_TO:')) return { valid: false, error: '⚠️ ไม่อนุญาตให้พิมพ์แท็กระบบ' };
+            if (content.includes('[REPLY_TO:')) return { valid: false, error: '<span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">warning</span> ไม่อนุญาตให้พิมพ์แท็กระบบ' };
             const htmlTags = content.match(/<\/?[a-z][a-z0-9]*\b[^>]*>/gi);
             if (htmlTags) {
                 for (let tag of htmlTags) {
                     const lowerTag = tag.toLowerCase();
-                    if (!lowerTag.startsWith('<img') && lowerTag !== '<br>' && lowerTag !== '<br/>') return { valid: false, error: '⚠️ ไม่อนุญาตให้ใช้แท็ก HTML' };
+                    if (!lowerTag.startsWith('<img') && lowerTag !== '<br>' && lowerTag !== '<br/>') return { valid: false, error: '<span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">warning</span> ไม่อนุญาตให้ใช้แท็ก HTML' };
                 }
             }
             if (htmlTags) {
                 for (let tag of htmlTags) {
-                    if (tag.toLowerCase().startsWith('<img') && !tag.toLowerCase().includes('src=')) return { valid: false, error: '⚠️ โครงสร้างรูปภาพไม่ถูกต้อง' };
+                    if (tag.toLowerCase().startsWith('<img') && !tag.toLowerCase().includes('src=')) return { valid: false, error: '<span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">warning</span> โครงสร้างรูปภาพไม่ถูกต้อง' };
                 }
             }
             let textWithoutImgs = content.replace(/<img\s+[^>]*src="[^"]*"[^>]*>/gi, '');
             textWithoutImgs = textWithoutImgs.replace(/<img\s+[^>]*src=[^\s>]+[^>]*>/gi, '');
             const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+)/i;
-            if (urlRegex.test(textWithoutImgs)) return { valid: false, error: '⚠️ ไม่อนุญาตให้วางลิงก์ (URL)' };
+            if (urlRegex.test(textWithoutImgs)) return { valid: false, error: '<span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">warning</span> ไม่อนุญาตให้วางลิงก์ (URL)' };
             return { valid: true };
         }
 
@@ -1242,7 +1254,7 @@
                 
                 commentArea.innerHTML = `
                     <div class="ghost-warning-box">
-                        <div style="font-size: 2.5rem; margin-bottom: 10px; filter: drop-shadow(0 0 8px rgba(168, 46, 46, 0.8));">👻</div>
+                        <div style="font-size: 2.5rem; margin-bottom: 10px; filter: drop-shadow(0 0 8px rgba(168, 46, 46, 0.8));"><span class="material-symbols-outlined" style="font-size: 2.5rem; color: #ff6b6b;">skull</span></div>
                         <h4>เขตอนธการ (วิญญาณมิอาจก้าวล่วง)</h4>
                         <p>
                             <span class="ghost-line">นามปัจจุบันของท่านคือ <strong style="color: var(--gold-light);">${safeHTML(savedUser)}</strong></span>
@@ -1344,7 +1356,7 @@
                     const bmBtn = document.getElementById('btnSaveBookmarkPost');
                     if (bmBtn) {
                         bmBtn.classList.add('saved');
-                        bmBtn.innerHTML = '✨ บันทึกแล้ว';
+                        bmBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">auto_awesome</span> บันทึกแล้ว';
                     }
                 }
             });

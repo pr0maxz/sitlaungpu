@@ -8,11 +8,23 @@
     <title>ลานเสวนา - ศิษย์หลวงปู่</title>
     <link rel="icon" type="image/png" href="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788446707/favicon4.png">
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- นำเข้า Google Material Symbols & Material Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
     
     <style>
         html { scroll-behavior: smooth; overflow-x: hidden; width: 100%; } * { box-sizing: border-box; }
         :root { --bg-deep: #070402; --bg-glow: #2a1805; --gold-light: #f5d77f; --gold-main: #d4af37; --gold-dark: #8a6315; --text-muted: #8a7761; --danger-color: #ff6b6b; }
         
+        /* สไตล์สำหรับ Material Icons ให้แสดงผลสวยงามและจัดวางตรงบรรทัด */
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+            font-size: 1.15em;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
         body { 
             margin: 0; padding: 0; width: 100%; min-height: 100vh; 
             background-color: var(--bg-deep); 
@@ -690,7 +702,7 @@
                 container.innerHTML += `
                     <div class="bookmark-item" id="bm-item-${item.post_id}">
                         <a data-action="go-post" data-url="post.html?id=${item.post_id}" class="bookmark-link" style="cursor: pointer;" title="${safeTitle}">${displayTitle}</a>
-                        <button class="btn-remove-bookmark" data-action="remove-bookmark" data-id="${item.post_id}" title="ลบออกจากคัมภีร์">✖</button>
+                        <button class="btn-remove-bookmark" data-action="remove-bookmark" data-id="${item.post_id}" title="ลบออกจากคัมภีร์"><span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">close</span></button>
                     </div>
                 `;
             });
@@ -954,7 +966,7 @@
             container.innerHTML = '';
 
             for (let post of postsToShow) {
-                const pinTag = checkIsPinned(post.pinned) ? '<span class="wb-tag wb-tag-pin">📌 ปักหมุด</span> ' : '';
+                const pinTag = checkIsPinned(post.pinned) ? '<span class="wb-tag wb-tag-pin"><span class="material-symbols-outlined" style="font-size: 12px; vertical-align: middle;">push_pin</span> ปักหมุด</span> ' : '';
                 const authorBadge = await getRoleBadgeFromAPI(post.author);
                 
                 const safeAuthor = safeHTML(post.author);
@@ -968,8 +980,8 @@
                             <div class="thread-details">โดย <span>${safeAuthor}</span> ${authorBadge} | อัปเดตล่าสุด: ${post.lastUpdatedText || '-'}</div>
                         </div>
                         <div class="thread-stats">
-                            <div class="stat-box">👤 ${safeAuthor}</div>
-                            <div class="stat-box">💬 ${post.replies || 0} ตอบ</div>
+                            <div class="stat-box"><span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">person</span> ${safeAuthor}</div>
+                            <div class="stat-box"><span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">chat</span> ${post.replies || 0} ตอบ</div>
                         </div>
                     </div>
                 `;

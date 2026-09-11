@@ -7,6 +7,8 @@
     <link rel="icon" type="image/png" href="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788446707/favicon4.png">
     <!-- โหลดเฉพาะฟอนต์ Prompt -->
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- นำเข้า Google Material Symbols & Material Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         :root { 
@@ -28,6 +30,16 @@
             align-items: center; 
             overflow: hidden; 
             position: relative;
+        }
+
+        /* สไตล์สำหรับ Material Icons ให้แสดงผลสวยงามและจัดวางตรงบรรทัด */
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+            font-size: 1.15em;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
 
         .login-box {
@@ -70,7 +82,7 @@
         } 
         .form-input:focus { outline: none; border-color: var(--gold-light); box-shadow: 0 0 15px rgba(212,175,55,0.3); }
 
-        .toggle-password { position: absolute; right: 15px; top: 42px; cursor: pointer; font-size: 0.9rem; color: var(--gold-main); opacity: 0.8; } 
+        .toggle-password { position: absolute; right: 15px; top: 40px; cursor: pointer; font-size: 0.9rem; color: var(--gold-main); opacity: 0.8; display: flex; align-items: center; gap: 4px; } 
         .toggle-password:hover { opacity: 1; text-shadow: 0 0 5px var(--gold-main); }
 
         .btn-submit { 
@@ -135,11 +147,11 @@
             <div class="form-group">
                 <label>รหัสผ่านอาคม (Password)</label>
                 <input type="password" id="adminPass" class="form-input" placeholder="ร่ายมนตราเพื่อเปิดทาง..." required>
-                <span class="toggle-password" onclick="togglePassword()">เพ่งมอง</span>
+                <span class="toggle-password" onclick="togglePassword()"><span class="material-symbols-outlined" style="font-size: 16px;">visibility</span> เพ่งมอง</span>
             </div>
 
             <button type="submit" class="btn-submit" id="loginBtn">ล่วงล้ำเขตแดน (Login)</button>
-            <a href="index.html" class="back-link">← ถอยกลับสู่โลกเบื้องหน้า</a>
+            <a href="index.html" class="back-link"><span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle;">arrow_back</span> ถอยกลับสู่โลกเบื้องหน้า</a>
         </form>
     </div>
 
@@ -153,7 +165,7 @@
     </div>
 
     <script>
-        // กำหนด Endpoint ของเซิร์ฟเวอร์
+        // กำหนด Endpoint ของเซิร์ฟเวอร์[cite: 2]
         const API_CONFIG = { 
             BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
         };
@@ -163,10 +175,10 @@
             const toggleIcon = document.querySelector('.toggle-password');
             if (pwdInput.type === 'password') { 
                 pwdInput.type = 'text'; 
-                toggleIcon.textContent = 'หลับตา'; 
+                toggleIcon.innerHTML = '<span class="material-symbols-outlined" style="font-size: 16px;">visibility_off</span> หลับตา'; 
             } else { 
                 pwdInput.type = 'password'; 
-                toggleIcon.textContent = 'เพ่งมอง'; 
+                toggleIcon.innerHTML = '<span class="material-symbols-outlined" style="font-size: 16px;">visibility</span> เพ่งมอง'; 
             }
         }
 
@@ -198,7 +210,7 @@
             btn.disabled = true;
 
             try {
-                // ส่งคำขอไปที่ D1 Database บน Cloudflare Worker
+                // ส่งคำขอไปที่ D1 Database บน Cloudflare Worker[cite: 2]
                 const response = await fetch(`${API_CONFIG.BASE_URL}/admin/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -216,14 +228,14 @@
 
                 showAlert('ยินดีต้อนรับ', 'มนตราบรรลุผล... ประตูเมืองลับแลเปิดออกแล้วท่านผู้คุมกฎ', true);
                 
-                // จัดเก็บ Token และข้อมูลผู้ใช้
+                // จัดเก็บ Token และข้อมูลผู้ใช้[cite: 2]
                 if (result.token) {
                     localStorage.setItem('siy_token', result.token);
                 }
                 localStorage.setItem('siy_username', result.username || username);
                 localStorage.setItem('siy_usertype', 'admin');
 
-                // พาย้ายเข้าเมืองลับแล (หน้าแอดมิน)
+                // พาย้ายเข้าเมืองลับแล (หน้าแอดมิน)[cite: 2]
                 setTimeout(() => {
                     window.location.href = 'admin.html';
                 }, 1500);
