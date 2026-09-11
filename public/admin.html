@@ -164,7 +164,7 @@
         input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
         input[type="color"]::-webkit-color-swatch { border: none; border-radius: 4px; }
 
-        .filter-toolbar { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; background: rgba(10,5,2,0.6); padding: 10px; border-radius: 8px; border: 1px dashed rgba(212,175,55,0.2); }
+        .filter-toolbar { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; background: rgba(10,5,2,0.6); padding: 10px; border-radius: 8px; border: 1px dashed rgba(212,175,55,0.2); align-items: center; }
         .search-input { flex: 2; min-width: 160px; padding: 6px 14px; border-radius: 20px; border: 1px solid var(--gold-dark); background: rgba(0,0,0,0.6); color: #fff; font-family: 'Sarabun', sans-serif; outline: none; transition: 0.3s; font-size: 0.85rem; }
         .search-input:focus { border-color: var(--gold-main); box-shadow: 0 0 6px rgba(212,175,55,0.2); }
         .filter-select { flex: 1; min-width: 140px; padding: 6px 12px; border-radius: 20px; border: 1px solid var(--gold-dark); background: rgba(0,0,0,0.6); color: var(--gold-light); font-family: 'Sarabun', sans-serif; outline: none; font-size: 0.85rem; }
@@ -191,7 +191,7 @@
             .admin-header-actions { width: 100%; justify-content: space-between; gap: 6px; }
             .admin-title img { height: 24px; }
             .panel-card { padding: 15px 12px; margin-bottom: 15px; }
-            .filter-toolbar { flex-direction: column; }
+            .filter-toolbar { flex-direction: column; align-items: flex-start; }
             .search-input, .filter-select { width: 100%; min-width: 100%; }
             .data-table th, .data-table td { padding: 6px 8px; font-size: 0.75rem; }
             .btn { padding: 4px 10px; font-size: 0.7rem; }
@@ -505,6 +505,17 @@
                         </select>
                     </div>
 
+                    <!-- 🌟 ส่วนที่เพิ่มเข้ามา: ตัวเลือกซ่อนยศ (ม่านบังตา) -->
+                    <div style="display: flex; gap: 15px; margin-bottom: 15px; padding: 0 5px; align-items: center; flex-wrap: wrap;">
+                        <span style="color: var(--text-muted); font-size: 0.85rem; font-family: 'Prompt', sans-serif;">ดึงม่านบังตา (ซ่อน):</span>
+                        <label style="color: var(--gold-light); font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                            <input type="checkbox" id="hideRoleChar" onchange="handleUserSearch()" style="accent-color: var(--gold-main);"> ตัวละครพิเศษ
+                        </label>
+                        <label style="color: var(--gold-light); font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                            <input type="checkbox" id="hideRoleNormal" onchange="handleUserSearch()" style="accent-color: var(--gold-main);"> เด็กวัด
+                        </label>
+                    </div>
+
                     <div class="table-responsive">
                         <table class="data-table">
                             <thead>
@@ -815,7 +826,7 @@
                 if (token) headers['Authorization'] = `Bearer ${token}`;
                 const method = oldUsername ? 'PUT' : 'POST';
                 
-                // 🌟 เพิ่มคำปฏิญาณกันบอท
+                // 🌟 เพิ่มคำปฏิญาณกันบอทให้ผ่านด่าน Backend ตอนสร้าง User ใหม่
                 if (!oldUsername) {
                     userData.bot_check = 'สัตยาสาบาน';
                 }
@@ -824,6 +835,7 @@
                     method: method, headers: headers, body: JSON.stringify({...userData, oldUsername}) 
                 });
                 
+                // 🌟 รับข้อความ Error จริงๆ จาก Backend มาแสดงผล
                 if (!res.ok) {
                     const errData = await res.json().catch(() => ({}));
                     throw new Error(errData.message || errData.error || 'เกิดข้อผิดพลาดในการเชื่อมต่อ');
@@ -1347,6 +1359,10 @@
             const roleFilter = document.getElementById('filterRoleField').value;
             const sortOrder = document.getElementById('sortOrderField').value;
 
+            // 🌟 เพิ่มการดึงค่า Checkbox สำหรับซ่อนยศ
+            const hideRoleChar = document.getElementById('hideRoleChar') ? document.getElementById('hideRoleChar').checked : false;
+            const hideRoleNormal = document.getElementById('hideRoleNormal') ? document.getElementById('hideRoleNormal').checked : false;
+
             let data = globalUsersData.filter(u => {
                 const matchName = u.username.toLowerCase().includes(query);
                 let matchRole = true;
@@ -1358,6 +1374,11 @@
                 } else if (roleFilter !== "") {
                     matchRole = String(u.role) === roleFilter && u.rank_name !== 'ตัวละคร';
                 }
+
+                // 🌟 ตรวจสอบว่าตรงกับเงื่อนไขการซ่อนหรือไม่ ถ้าใช่ให้เตะทิ้ง (return false)
+                if (hideRoleChar && u.rank_name === 'ตัวละคร') return false;
+                if (hideRoleNormal && (String(u.role) === '5' || u.rank_name === 'เด็กวัด') && u.rank_name !== 'ตัวละคร') return false;
+
                 return matchName && matchRole;
             });
 
