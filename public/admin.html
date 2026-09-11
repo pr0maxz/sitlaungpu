@@ -19,7 +19,6 @@
             --border-color: rgba(212, 175, 55, 0.25);
         }
         
-        /* 🌟 เปลี่ยนฟอนต์หลักทั้งเว็บให้เป็น 'Prompt' ทั้งหมดตามต้องการ */
         body { 
             background-color: var(--bg-deep); 
             background-image: radial-gradient(circle at 50% 0%, var(--bg-glow) 0%, var(--bg-deep) 70%); 
@@ -505,7 +504,7 @@
                         </select>
                     </div>
 
-                    <!-- 🌟 ส่วนที่เพิ่มเข้ามา: ตัวเลือกซ่อนยศ (ม่านบังตา) -->
+                    <!-- 🌟 ส่วนตัวเลือกซ่อนยศ (ม่านบังตา) -->
                     <div style="display: flex; gap: 15px; margin-bottom: 15px; padding: 0 5px; align-items: center; flex-wrap: wrap;">
                         <span style="color: var(--text-muted); font-size: 0.85rem;">ดึงม่านบังตา (ซ่อน):</span>
                         <label style="color: var(--gold-light); font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 5px;">
@@ -1362,22 +1361,48 @@
             container.innerHTML = html;
         }
 
+        // 🛡️ แก้ไขระบบกรองค้นหาและม่านบังตา (ซ่อนยศ) ให้ทำงานถูกต้อง 100%
         function handleUserSearch() {
             const query = document.getElementById('searchUserField').value.toLowerCase().trim();
             const roleFilter = document.getElementById('filterRoleField').value;
             const sortOrder = document.getElementById('sortOrderField').value;
+
+            // ตรวจสอบค่า Checkbox แต่ละตัว
+            const hideRoleChar = document.getElementById('hideRoleChar') ? document.getElementById('hideRoleChar').checked : false;
+            const hideRoleNormal = document.getElementById('hideRoleNormal') ? document.getElementById('hideRoleNormal').checked : false;
+            const hideRolePathom = document.getElementById('hideRolePathom') ? document.getElementById('hideRolePathom').checked : false;
+            const hideRoleThuti = document.getElementById('hideRoleThuti') ? document.getElementById('hideRoleThuti').checked : false;
+            const hideRoleTati = document.getElementById('hideRoleTati') ? document.getElementById('hideRoleTati').checked : false;
+            const hideRoleDynamic = document.getElementById('hideRoleDynamic') ? document.getElementById('hideRoleDynamic').checked : false;
 
             let data = globalUsersData.filter(u => {
                 const matchName = u.username.toLowerCase().includes(query);
                 let matchRole = true;
                 
                 if (roleFilter === "dynamic") {
-                    matchRole = String(u.role).startsWith('dynamic_');
+                    matchRole = String(u.role).startsWith('dynamic_') || globalRolesData.some(r => r.id === String(u.role));
                 } else if (roleFilter === "character") {
                     matchRole = u.rank_name === 'ตัวละคร';
                 } else if (roleFilter !== "") {
                     matchRole = String(u.role) === roleFilter && u.rank_name !== 'ตัวละคร';
                 }
+
+                // จำแนกประเภทของสมาชิกอย่างแม่นยำ
+                const isChar = (u.rank_name === 'ตัวละคร');
+                const isDynamic = String(u.role).startsWith('dynamic_') || globalRolesData.some(r => r.id === String(u.role));
+                const isNormal = !isChar && !isDynamic && (String(u.role) === '5' || u.rank_name === 'เด็กวัด');
+                const isPathom = !isChar && !isDynamic && (String(u.role) === '4' || u.rank_name === 'ปฐมภูมิ');
+                const isThuti = !isChar && !isDynamic && (String(u.role) === '3' || u.rank_name === 'ทุติยภูมิ');
+                const isTati = !isChar && !isDynamic && (String(u.role) === '2' || u.rank_name === 'ตติยภูมิ');
+
+                // ดึงม่านบังตา: หากติ๊กซ่อนยศใด ให้ตัดรายชื่อนั้นออกทันที
+                if (hideRoleChar && isChar) return false;
+                if (hideRoleNormal && isNormal) return false;
+                if (hideRolePathom && isPathom) return false;
+                if (hideRoleThuti && isThuti) return false;
+                if (hideRoleTati && isTati) return false;
+                if (hideRoleDynamic && isDynamic) return false;
+
                 return matchName && matchRole;
             });
 
