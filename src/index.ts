@@ -11,11 +11,12 @@ type Bindings = {
 const app = new Hono<{ Bindings: Bindings }>()
 
 app.use('/api/*', cors({
-  origin: '*', // ⚠️ แนะนำ: เมื่อโดเมนเว็บนิ่งแล้ว ให้เปลี่ยน '*' เป็น 'https://ชื่อเว็บคุณ.com' เพื่อป้องกันคนอื่นดึง API ไปใช้
+  origin: '*', // ⚠️ ข้อเสนอแนะ: เมื่อระบบนิ่ง ให้เปลี่ยนเป็นโดเมนเว็บคุณ เช่น 'https://sitluangpu.pages.dev' 
   allowHeaders: ['Content-Type', 'Authorization'],
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
 }))
 
+// ⚠️ JWT SECRET: หากไม่ได้ตั้งค่าผ่าน wrangler secret put JWT_SECRET ระบบจะใช้ค่านี้ชั่วคราว
 const DEFAULT_JWT_SECRET = 'sitluangpu_telepathy_secret_token_2026'
 
 async function hashPassword(password: string, salt: string) {
@@ -26,7 +27,6 @@ async function hashPassword(password: string, salt: string) {
   return hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
 }
 
-// ล้างสคริปต์เบื้องต้นฝั่งเซิร์ฟเวอร์ (ฝั่งหน้าบ้านจะมีการเข้ารหัส safeHTML ซ้อนอีกชั้น)
 function sanitize(text: string) {
   if (!text) return text;
   return text.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
@@ -79,23 +79,76 @@ async function addKarma(db: D1Database, username: string, amount: number) {
   } catch (e) { console.error("Error adding karma:", e) }
 }
 
+// 🛡️ IN-MEMORY RATE LIMITER (ป้องกัน Brute-force Login โดยไม่พึ่ง D1/KV)
+const loginAttempts = new Map<string, { count: number, lockUntil: number }>();
+
+function checkLoginRateLimit(ip: string): { allowed: boolean, waitTimeStr?: string } {
+  const now = Date.now();
+  const attempt = loginAttempts.get(ip);
+  
+  if (attempt) {
+    if (attempt.lockUntil > now) {
+      const waitMins = Math.ceil((attempt.lockUntil - now) / 60000);
+      return { allowed: false, waitTimeStr: `${waitMins} นาที` };
+    }
+    if (attempt.lockUntil > 0 && attempt.lockUntil <= now) {
+      loginAttempts.delete(ip); // หมดเวลาบล็อกแล้ว ให้ล้างประวัติ
+    }
+  }
+  return { allowed: true };
+}
+
+function recordFailedLogin(ip: string) {
+  if (ip === 'unknown') return;
+  const now = Date.now();
+  const attempt = loginAttempts.get(ip) || { count: 0, lockUntil: 0 };
+  
+  attempt.count += 1;
+  // หากล็อกอินผิดครบ 5 ครั้ง จะโดนบล็อก 15 นาที
+  if (attempt.count >= 5) {
+    attempt.lockUntil = now + (15 * 60 * 1000);
+  }
+  
+  loginAttempts.set(ip, attempt);
+}
+
+function resetLoginAttempts(ip: string) {
+  loginAttempts.delete(ip);
+}
+
+
 // === AUTH & USERS ROUTES ===
 
 app.post('/api/login', async (c) => {
+  // 🛡️ เช็ค Rate Limit ก่อนแตะ Database
+  const ip = c.req.header('cf-connecting-ip') || 'unknown';
+  const rateLimit = checkLoginRateLimit(ip);
+  
+  if (!rateLimit.allowed) {
+    return c.json({ success: false, error: `ระงับชั่วคราวจากการเข้าระบบผิดพลาดเกินขีดจำกัด โปรดรออีก ${rateLimit.waitTimeStr}` }, 429);
+  }
+
   try {
     const { username, password } = await c.req.json()
     const user: any = await c.env.DB.prepare("SELECT * FROM users WHERE username = ?").bind(username).first()
-    if (!user) return c.json({ success: false, error: 'ไม่พบนามแฝงนี้ในระบบ' }, 400)
+    
+    if (!user) {
+      recordFailedLogin(ip);
+      return c.json({ success: false, error: 'ไม่พบนามแฝงนี้ในระบบ' }, 400);
+    }
 
     let isValid = false
     if (user.password_hash && user.salt) {
       const computedHash = await hashPassword(password, user.salt)
       if (user.password_hash === computedHash) isValid = true
     }
-    if (!isValid && user.password === password) isValid = true
-    if (!isValid && user.password_hash === password) isValid = true
+    
+    if (!isValid) {
+      recordFailedLogin(ip);
+      return c.json({ success: false, error: 'รหัสผ่านลับไม่ถูกต้อง' }, 400);
+    }
 
-    if (!isValid) return c.json({ success: false, error: 'รหัสผ่านลับไม่ถูกต้อง' }, 400)
+    resetLoginAttempts(ip); // ล็อกอินสำเร็จ ล้างประวัติการทำผิด
 
     const now = Date.now()
     try { await c.env.DB.prepare("UPDATE users SET last_login = ? WHERE username = ?").bind(now, user.username).run() } catch(e) {}
@@ -111,20 +164,40 @@ app.post('/api/login', async (c) => {
 })
 
 app.post('/api/admin/login', async (c) => {
+  // 🛡️ เช็ค Rate Limit แอดมินป้องกันการยิงสุ่มรหัส
+  const ip = c.req.header('cf-connecting-ip') || 'unknown';
+  const rateLimit = checkLoginRateLimit(ip);
+  
+  if (!rateLimit.allowed) {
+    return c.json({ success: false, error: `ระบบป้องกันทำงาน! อาณาเขตถูกปิดกั้น โปรดรออีก ${rateLimit.waitTimeStr}` }, 429);
+  }
+
   try {
     const { username, password } = await c.req.json();
     const user: any = await c.env.DB.prepare("SELECT * FROM users WHERE username = ?").bind(username).first();
-    if (!user) return c.json({ success: false, error: 'ไม่พบนามของท่านในจารึกเมืองนี้' }, 400);
-    if (String(user.role) !== '1') return c.json({ success: false, error: 'ตบะบารมีไม่ถึงขั้น ทวารนี้เฉพาะปรมัตถ์เท่านั้น' }, 403);
+    
+    if (!user) {
+      recordFailedLogin(ip);
+      return c.json({ success: false, error: 'ไม่พบนามของท่านในจารึกเมืองนี้' }, 400);
+    }
+
+    if (String(user.role) !== '1') {
+      recordFailedLogin(ip);
+      return c.json({ success: false, error: 'ตบะบารมีไม่ถึงขั้น ทวารนี้เฉพาะปรมัตถ์เท่านั้น' }, 403);
+    }
 
     let isValid = false;
     if (user.password_hash && user.salt) {
       const computedHash = await hashPassword(password, user.salt);
       if (user.password_hash === computedHash) isValid = true;
     }
-    if (!isValid && user.password === password) isValid = true;
 
-    if (!isValid) return c.json({ success: false, error: 'รหัสผ่านอาคมผิดเพี้ยน!' }, 400);
+    if (!isValid) {
+      recordFailedLogin(ip);
+      return c.json({ success: false, error: 'รหัสผ่านอาคมผิดเพี้ยน!' }, 400);
+    }
+
+    resetLoginAttempts(ip); // ล็อกอินแอดมินสำเร็จ ล้างประวัติ
 
     try { await c.env.DB.prepare("UPDATE users SET last_login = ? WHERE username = ?").bind(Date.now(), user.username).run(); } catch(e) {}
 
@@ -160,6 +233,11 @@ app.post('/api/users', async (c) => {
   
   if (bot_check !== 'สัตยาสาบาน') return c.json({ success: false, message: 'โดนสกัดกั้น! คำปฏิญาณยืนยันตัวตนไม่ถูกต้อง' }, 403);
 
+  // 🛡️ SECURITY FIX: ตรวจสอบอักขระภาษาไทยและห้ามเว้นวรรคจากฝั่ง Backend
+  if (!/^[\u0E00-\u0E7F]+$/.test(username)) {
+      return c.json({ success: false, message: 'นามแฝงอนุญาตเฉพาะ "อักขระภาษาไทย" และห้ามเว้นวรรคเด็ดขาด!' }, 400);
+  }
+
   const salt = crypto.randomUUID()
   const hashed = await hashPassword(password, salt)
   try {
@@ -176,7 +254,6 @@ app.post('/api/users', async (c) => {
 })
 
 app.put('/api/users', async (c) => {
-  // 🛡️ SECURITY FIX: บังคับแอดมินเท่านั้นที่จะแก้ไข User คนอื่นได้
   const authUser = await getAuthenticatedUser(c)
   if (!authUser || String(authUser.role) !== '1') return c.json({ success: false, error: 'Forbidden' }, 403)
 
@@ -184,6 +261,10 @@ app.put('/api/users', async (c) => {
   const targetName = oldUsername || username
   const currentKarma = karma || 0
   
+  if (!/^[\u0E00-\u0E7F]+$/.test(username)) {
+      return c.json({ success: false, message: 'นามแฝงอนุญาตเฉพาะ "อักขระภาษาไทย" และห้ามเว้นวรรคเด็ดขาด!' }, 400);
+  }
+
   try {
     if (password) {
       const salt = crypto.randomUUID()
@@ -201,7 +282,6 @@ app.put('/api/users', async (c) => {
 })
 
 app.delete('/api/users/:username', async (c) => {
-  // 🛡️ SECURITY FIX: บังคับแอดมินเท่านั้นที่จะลบ User ได้
   const authUser = await getAuthenticatedUser(c)
   if (!authUser || String(authUser.role) !== '1') return c.json({ success: false, error: 'Forbidden' }, 403)
 
@@ -218,12 +298,11 @@ app.get('/api/posts', async (c) => {
 })
 
 app.post('/api/posts', async (c) => {
-  const body = await c.req.json()
   const authUser = await getAuthenticatedUser(c)
-  const author = authUser ? authUser.username : body.author
+  if (!authUser) return c.json({ success: false, error: 'Unauthorized: ท่านยังไม่ได้ลงนามเข้าสู่ระบบ' }, 401)
+  const author = authUser.username;
 
-  if (!author) return c.json({ success: false, error: 'ไม่พบตัวตนผู้สลักจารึก' }, 401)
-
+  const body = await c.req.json()
   const now = Date.now();
   const user: any = await c.env.DB.prepare("SELECT last_post_time, role FROM users WHERE username = ?").bind(author).first();
   if (user && String(user.role) !== '1') {
@@ -252,16 +331,20 @@ app.put('/api/posts', async (c) => {
   if (!authUser) return c.json({ success: false, error: 'Unauthorized' }, 401)
 
   const body = await c.req.json()
-  // 🛡️ SECURITY FIX: ป้องกันคนอื่นมาแก้กระทู้ที่ไม่ได้เขียนเอง (ยกเว้นแอดมิน)
-  if (String(authUser.role) !== '1' && authUser.username !== body.author) return c.json({ success: false, error: 'Forbidden' }, 403)
+  const post: any = await c.env.DB.prepare("SELECT author FROM posts WHERE id = ?").bind(body.id).first()
+  if (!post) return c.json({ success: false, error: 'ไม่พบศิลาจารึกที่ต้องการแก้ไข' }, 404)
+
+  if (String(authUser.role) !== '1' && authUser.username !== post.author) {
+      return c.json({ success: false, error: 'Forbidden: ท่านไม่มีสิทธิ์แก้ไขจารึกของผู้อื่น' }, 403)
+  }
 
   const safeContent = sanitize(body.content || '')
   const isPinned = (body.pinned === true || body.pinned === 1 || body.pinned === '1') ? 1 : 0;
 
   try {
     await c.env.DB.prepare(
-      "UPDATE posts SET category = ?, title = ?, content = ?, author = ?, pinned = ? WHERE id = ?"
-    ).bind(body.category, body.title, safeContent, body.author, isPinned, body.id).run()
+      "UPDATE posts SET category = ?, title = ?, content = ?, pinned = ? WHERE id = ?"
+    ).bind(body.category, body.title, safeContent, isPinned, body.id).run()
     return c.json({ success: true })
   } catch (e: any) { return c.json({ success: false, error: e.message }, 500) }
 })
@@ -280,7 +363,6 @@ app.delete('/api/posts/:id', async (c) => {
   const id = c.req.param('id')
   const post: any = await c.env.DB.prepare("SELECT author FROM posts WHERE id = ?").bind(id).first()
   
-  // 🛡️ SECURITY FIX: ตรวจสอบสิทธิ์ก่อนลบ
   if (post && String(authUser.role) !== '1' && authUser.username !== post.author) {
     return c.json({ success: false, error: 'Forbidden' }, 403)
   }
@@ -294,9 +376,9 @@ app.delete('/api/posts/:id', async (c) => {
 
 app.post('/api/posts/:postId/like', async (c) => {
   const postId = c.req.param('postId')
-  const body = await c.req.json().catch(() => ({}))
   const authUser = await getAuthenticatedUser(c)
-  const actor = authUser ? authUser.username : (body.actor || 'วิญญาณเร่ร่อน')
+  if (!authUser) return c.json({ success: false, error: 'Unauthorized: เฉพาะผู้มีตัวตนเท่านั้นที่อนุโมทนาได้' }, 401)
+  const actor = authUser.username;
 
   try {
     await c.env.DB.prepare("UPDATE posts SET likes = COALESCE(likes, 0) + 1 WHERE id = ?").bind(postId).run()
@@ -326,12 +408,11 @@ app.get('/api/posts/:postId/comments', async (c) => {
 })
 
 app.post('/api/comments', async (c) => {
-  const body = await c.req.json()
   const authUser = await getAuthenticatedUser(c)
-  const author = authUser ? authUser.username : body.author
+  if (!authUser) return c.json({ success: false, error: 'Unauthorized: ท่านยังไม่ได้ลงนามเข้าสู่ระบบ' }, 401)
+  const author = authUser.username;
 
-  if (!author) return c.json({ success: false, error: 'ไม่พบตัวตนผู้สลักความเห็น' }, 401)
-
+  const body = await c.req.json()
   const now = Date.now();
   const user: any = await c.env.DB.prepare("SELECT last_comment_time, role FROM users WHERE username = ?").bind(author).first();
   if (user && String(user.role) !== '1') {
@@ -360,7 +441,6 @@ app.delete('/api/comments/:id', async (c) => {
   const id = c.req.param('id')
   const comment: any = await c.env.DB.prepare("SELECT post_id, author FROM comments WHERE id = ?").bind(id).first()
   
-  // 🛡️ SECURITY FIX: ตรวจสอบสิทธิ์ก่อนลบ
   if (comment && String(authUser.role) !== '1' && authUser.username !== comment.author) {
     return c.json({ success: false, error: 'Forbidden' }, 403)
   }
@@ -370,6 +450,28 @@ app.delete('/api/comments/:id', async (c) => {
   }
   await c.env.DB.prepare("DELETE FROM comments WHERE id = ?").bind(id).run()
   return c.json({ success: true })
+})
+
+app.post('/api/comments/:commentId/like', async (c) => {
+  const commentId = c.req.param('commentId')
+  const authUser = await getAuthenticatedUser(c)
+  if (!authUser) return c.json({ success: false, error: 'Unauthorized: เฉพาะผู้มีตัวตนเท่านั้นที่อนุโมทนาได้' }, 401)
+  const actor = authUser.username;
+
+  try {
+    await c.env.DB.prepare("UPDATE comments SET likes = COALESCE(likes, 0) + 1 WHERE id = ?").bind(commentId).run()
+    const comment: any = await c.env.DB.prepare("SELECT * FROM comments WHERE id = ?").bind(commentId).first()
+    
+    if (comment && comment.author && comment.author !== actor) {
+      const notiId = Date.now().toString()
+      const timeStr = new Date().toISOString()
+      await c.env.DB.prepare(
+        "INSERT INTO notifications (id, recipient, actor, action_type, post_id, is_read, timestamp) VALUES (?, ?, ?, 'like_comment', ?, 0, ?)"
+      ).bind(notiId, comment.author, actor, `${comment.post_id}#comment-${commentId}`, timeStr).run().catch(() => {})
+      await addKarma(c.env.DB, comment.author, 1);
+    }
+    return c.json({ success: true, likes: comment?.likes || 0 })
+  } catch (e: any) { return c.json({ success: false, error: e.message }, 500) }
 })
 
 // === OTHERS (ROLES, REPORTS, BOOKMARKS, CMS) ===
@@ -405,7 +507,6 @@ app.delete('/api/roles/:id', async (c) => {
 })
 
 app.get('/api/reports', async (c) => {
-  // 🛡️ SECURITY FIX: ซ่อนรายงานจากผู้ใช้ทั่วไป
   const authUser = await getAuthenticatedUser(c)
   if (!authUser || String(authUser.role) !== '1') return c.json([], 403)
 
@@ -498,6 +599,10 @@ app.get('/api/notifications/:username', async (c) => {
 })
 
 app.post('/api/notifications', async (c) => {
+  // 🛡️ SECURITY FIX: ตรวจสอบ Auth ก่อนการยิงแจ้งเตือนเสมอ
+  const authUser = await getAuthenticatedUser(c)
+  if (!authUser) return c.json({ success: false, error: 'Unauthorized' }, 401)
+
   const body = await c.req.json()
   const { id, recipient, actor, action_type, post_id, timestamp } = body
   if (recipient === actor) { return c.json({ success: true, ignored: true }) }
@@ -510,6 +615,9 @@ app.post('/api/notifications', async (c) => {
 })
 
 app.put('/api/notifications/:id/read', async (c) => {
+  const authUser = await getAuthenticatedUser(c)
+  if (!authUser) return c.json({ success: false, error: 'Unauthorized' }, 401)
+
   const id = c.req.param('id')
   try {
       await c.env.DB.prepare("UPDATE notifications SET is_read = 1 WHERE id = ?").bind(id).run()

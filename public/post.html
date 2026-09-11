@@ -265,7 +265,7 @@
                                 <div class="post-time" id="dyn-time">โพสต์เมื่อ: -</div>
                             </div>
                         </div>
-                        <button type="button" class="btn-report" onclick="openReportModal('post', new URLSearchParams(window.location.search).get('id'))" id="btnReportPost" style="display: none;">🚨 แจ้งผู้คุมกฎ</button>
+                        <button type="button" class="btn-report" data-action="report-post" id="btnReportPost" style="display: none;">🚨 แจ้งผู้คุมกฎ</button>
                     </div>
 
                     <h1 class="post-title" id="dyn-title">กำลังอัญเชิญข้อความ...</h1>
@@ -275,10 +275,10 @@
                     </div>
 
                     <div style="border-top: 1px dashed rgba(138, 99, 21, 0.3); padding-top: 20px; display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
-                        <button class="btn-like" id="btnLikeMainPost" onclick="likePostAction()">
+                        <button class="btn-like" id="btnLikeMainPost" data-action="like-post">
                             🙏 อนุโมทนา (<span id="dyn-likes">0</span>)
                         </button>
-                        <button class="btn-save-bookmark" id="btnSaveBookmarkPost" onclick="toggleBookmarkAction()" title="บันทึกเข้าคัมภีร์ส่วนตัว">
+                        <button class="btn-save-bookmark" id="btnSaveBookmarkPost" data-action="toggle-bookmark" title="บันทึกเข้าคัมภีร์ส่วนตัว">
                             🔖 บันทึกจารึก
                         </button>
                         <span style="color: var(--text-muted); font-size: 0.85rem; margin-left: auto;">👀 <span id="dyn-views">0</span> วิว</span>
@@ -323,7 +323,7 @@
                             </div>
                         </div>
                     </div>
-                    <button onclick="handleLogout()" class="btn-logout" id="logoutBtnText">ออกจากระบบ</button>
+                    <button data-action="logout" class="btn-logout" id="logoutBtnText">ออกจากระบบ</button>
                 </div>
             </div>
         </div>
@@ -347,10 +347,7 @@
                 <option value="อื่นๆ (ผิดกฎสำนัก)">อื่นๆ (ผิดกฎสำนัก)</option>
             </select>
             <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
-                <!-- 🌟 ฝัง Inline Styles แบบอมตะให้ปุ่ม ถอยกลับ -->
                 <button type="button" style="flex: 1; padding: 12px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-weight: bold; font-size: 1rem; cursor: pointer; transition: 0.2s; background: transparent; border: 1px solid var(--text-muted); color: #d1bfae; appearance: none; -webkit-appearance: none; outline: none;" onclick="closeReportModal()" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">ถอยกลับ</button>
-                
-                <!-- 🌟 ฝัง Inline Styles แบบอมตะให้ปุ่ม ส่งรายงาน -->
                 <button type="button" id="confirmReportBtn" style="flex: 1; padding: 12px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-weight: bold; font-size: 1rem; cursor: pointer; transition: 0.2s; background: rgba(226, 149, 120, 0.15); border: 1px solid rgba(226, 149, 120, 0.5); color: #e29578; appearance: none; -webkit-appearance: none; outline: none;" onclick="submitReport()" onmouseover="this.style.background='rgba(226, 149, 120, 0.25)'" onmouseout="this.style.background='rgba(226, 149, 120, 0.15)'">ส่งรายงาน</button>
             </div>
         </div>
@@ -365,8 +362,6 @@
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-bottom-right" alt="" width="60" height="60" loading="lazy">
             <div class="modal-header" style="margin-bottom: 15px;"><h3 style="font-size: 1.4rem;">ประกาศสำนัก</h3></div>
             <p id="customAlertMessage" style="color: #e2d4c3; font-size: 1.05rem; margin-bottom: 25px; text-align:center;">ข้อความแจ้งเตือน</p>
-            
-            <!-- 🌟 ฝัง Inline Styles แบบอมตะให้ปุ่ม รับทราบ สีทอง -->
             <button type="button" style="width: 100%; background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; border: 1px solid #ffeba9; padding: 12px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-weight: bold; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: 0.2s; appearance: none; -webkit-appearance: none; outline: none; text-decoration: none;" onclick="closeCustomAlert()" id="customAlertBtn" onmouseover="this.style.filter='brightness(1.15)'" onmouseout="this.style.filter='none'">รับทราบ</button>
         </div>
     </div>
@@ -381,10 +376,7 @@
             <div class="modal-header"><h3 style="font-size: 1.4rem; color: var(--danger-color);">ยืนยันการทำลาย</h3></div>
             <p id="customConfirmMessage" style="color: #e2d4c3; font-size: 1rem; margin-bottom: 25px; line-height: 1.5;">ท่านแน่ใจหรือไม่?</p>
             <div style="display: flex; gap: 10px; justify-content: center;">
-                <!-- 🌟 ฝัง Inline Styles แบบอมตะให้ปุ่ม ถอยกลับ -->
                 <button type="button" style="flex: 1; padding: 12px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-weight: bold; font-size: 1rem; cursor: pointer; transition: 0.2s; background: transparent; border: 1px solid var(--text-muted); color: #d1bfae; appearance: none; -webkit-appearance: none; outline: none;" onclick="closeConfirmModal()" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">ถอยกลับ</button>
-                
-                <!-- 🌟 ฝัง Inline Styles แบบอมตะให้ปุ่ม ยืนยันลบ -->
                 <button type="button" id="customConfirmBtn" style="flex: 1; padding: 12px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-weight: bold; font-size: 1rem; cursor: pointer; transition: 0.2s; background: rgba(168, 46, 46, 0.15); border: 1px solid rgba(168, 46, 46, 0.5); color: #ff6b6b; appearance: none; -webkit-appearance: none; outline: none;" onmouseover="this.style.background='rgba(168, 46, 46, 0.25)'" onmouseout="this.style.background='rgba(168, 46, 46, 0.15)'">ยืนยันลบ</button>
             </div>
         </div>
@@ -405,7 +397,7 @@
             }[tag] || tag));
         }
 
-        // 🛡️ สำหรับเนื้อหากระทู้/คอมเมนต์: Escape ทั้งหมดก่อน แล้วค่อยอนุญาตเฉพาะ <br> และ <img src="...">
+        // 🛡️ สำหรับเนื้อหากระทู้/คอมเมนต์
         function safeContentRender(content) {
             if (!content) return '';
             let safeText = safeHTML(content);
@@ -432,7 +424,6 @@
             }, 2500);
         }
 
-        // 🌟 Smart Mention: สร้างกฎให้จับเฉพาะ "รายชื่อที่มีอยู่จริงในฐานข้อมูล"
         function getDynamicMentionRegex(usersMap) {
             let usernames = ['Admin', 'admin']; 
             if (usersMap && Object.keys(usersMap).length > 0) {
@@ -441,16 +432,15 @@
             
             const uniqueUsers = [...new Set(usernames)];
             uniqueUsers.sort((a, b) => b.length - a.length);
-            
             const escaped = uniqueUsers.map(u => u.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
-            
             return new RegExp(`@(${escaped.join('|')})`, 'g');
         }
 
+        // 🛡️ เปลี่ยนไปใช้ data-action เพื่อเลิกใช้ inline onclick ที่เสี่ยง XSS
         function formatMentions(text, usersMap) {
             if(!text) return '';
             const regex = getDynamicMentionRegex(usersMap);
-            return text.replace(regex, '<span class="user-mention" onclick="scrollToUserComment(\'$1\')" title="ค้นหาจารึกของผู้นี้">@$1</span>');
+            return text.replace(regex, '<span class="user-mention" data-action="scroll-to-user" data-username="$1" title="ค้นหาจารึกของผู้นี้">@$1</span>');
         }
 
         function extractMentions(text, usersMap) {
@@ -699,8 +689,9 @@
                 if (n.action_type === 'mention') actionText = 'ได้เอ่ยนามเรียกขานท่าน';
 
                 const isUnreadClass = String(n.is_read) === '0' ? 'unread' : '';
+                // 🛡️ เปลี่ยนเป็น data-action ป้องกัน XSS
                 notiListContent.innerHTML += `
-                    <div class="noti-item ${isUnreadClass}" onclick="handleNotiClick('${n.id}', '${n.post_id}')">
+                    <div class="noti-item ${isUnreadClass}" data-action="noti-click" data-id="${n.id}" data-post-id="${n.post_id}">
                         <div><strong style="color: var(--gold-light);">${safeHTML(n.actor)}</strong> ${actionText}</div>
                         <div class="noti-time">${n.timestamp}</div>
                     </div>
@@ -717,7 +708,6 @@
 
         async function handleNotiClick(notiId, postIdStr) {
             await ApiManager.readNotification(notiId);
-            
             const currentPostId = new URLSearchParams(window.location.search).get('id');
             const targetPostId = postIdStr.split('#')[0];
             
@@ -954,16 +944,17 @@
                     const badge = formatBadgeFromUsersMap(c.author, usersMap, rolesList);
                     let cleanMainContent = c.content.replace(/^\[REPLY_TO:[^\]]+\](?:\[AUTHOR:[^\]]+\])?/, '');
                     
-                    // 🛡️ ป้องกัน XSS ก่อนทำการ Mention
+                    // 🛡️ ป้องกัน XSS
                     cleanMainContent = safeContentRender(cleanMainContent);
                     cleanMainContent = formatMentions(cleanMainContent, usersMap);
 
-                    let adminControls = isUserAdmin ? `<button type="button" class="btn-delete-comment" onclick="deleteCommentAction('${c.id}', '${postId}')">🗑️ ทำลาย</button>` : '';
-                    let replyBtn = (userType !== 'guest') ? `<button type="button" class="btn-reply-comment" onclick="toggleReplyBox('${c.id}')">💬 ตอบกลับ</button>` : '';
-                    let reportBtn = (savedUser) ? `<button type="button" class="btn-report" onclick="openReportModal('comment', '${c.id}')">🚨 แจ้ง</button>` : '';
+                    // 🛡️ Event Delegation: เลิกใช้ inline onclick เปลี่ยนเป็น data-action
+                    let adminControls = isUserAdmin ? `<button type="button" class="btn-delete-comment" data-action="delete-comment" data-id="${c.id}" data-post-id="${postId}">🗑️ ทำลาย</button>` : '';
+                    let replyBtn = (userType !== 'guest') ? `<button type="button" class="btn-reply-comment" data-action="toggle-reply" data-id="${c.id}">💬 ตอบกลับ</button>` : '';
+                    let reportBtn = (savedUser) ? `<button type="button" class="btn-report" data-action="report-comment" data-id="${c.id}">🚨 แจ้ง</button>` : '';
                     
                     const isLiked = likedComments.includes(String(c.id)) ? 'liked' : '';
-                    let likeBtn = `<button type="button" class="btn-like ${isLiked}" id="btn-like-comment-${c.id}" onclick="likeCommentAction('${c.id}')">🙏 อนุโมทนา (<span id="comment-like-count-${c.id}">${c.likes || 0}</span>)</button>`;
+                    let likeBtn = `<button type="button" class="btn-like ${isLiked}" id="btn-like-comment-${c.id}" data-action="like-comment" data-id="${c.id}">🙏 อนุโมทนา (<span id="comment-like-count-${c.id}">${c.likes || 0}</span>)</button>`;
 
                     const childReplies = replyComments.filter(r => {
                         const match = r.content.match(/^\[REPLY_TO:([^\]]+)\]/);
@@ -976,26 +967,25 @@
                         repliesHtml += `<div class="replies-container">`; 
                         for (const r of childReplies) {
                             const rBadge = formatBadgeFromUsersMap(r.author, usersMap, rolesList);
-                            let rAdminControls = isUserAdmin ? `<button type="button" class="btn-delete-comment" onclick="deleteCommentAction('${r.id}', '${postId}')">🗑️ ทำลาย</button>` : '';
-                            let rReportBtn = (savedUser) ? `<button type="button" class="btn-report" onclick="openReportModal('comment', '${r.id}')">🚨 แจ้ง</button>` : '';
+                            let rAdminControls = isUserAdmin ? `<button type="button" class="btn-delete-comment" data-action="delete-comment" data-id="${r.id}" data-post-id="${postId}">🗑️ ทำลาย</button>` : '';
+                            let rReportBtn = (savedUser) ? `<button type="button" class="btn-report" data-action="report-comment" data-id="${r.id}">🚨 แจ้ง</button>` : '';
                             
                             let authorMatch = r.content.match(/\[AUTHOR:([^\]]+)\]/);
                             let repliedTo = authorMatch ? authorMatch[1] : c.author;
                             let cleanReplyContent = r.content.replace(/^\[REPLY_TO:[^\]]+\](?:\[AUTHOR:[^\]]+\])?/, '');
                             
-                            // 🛡️ ป้องกัน XSS ก่อนทำการ Mention
                             cleanReplyContent = safeContentRender(cleanReplyContent);
                             cleanReplyContent = formatMentions(cleanReplyContent, usersMap);
                             
                             const rIsLiked = likedComments.includes(String(r.id)) ? 'liked' : '';
-                            let rLikeBtn = `<button type="button" class="btn-like ${rIsLiked}" id="btn-like-comment-${r.id}" onclick="likeCommentAction('${r.id}')">🙏 อนุโมทนา (<span id="comment-like-count-${r.id}">${r.likes || 0}</span>)</button>`;
+                            let rLikeBtn = `<button type="button" class="btn-like ${rIsLiked}" id="btn-like-comment-${r.id}" data-action="like-comment" data-id="${r.id}">🙏 อนุโมทนา (<span id="comment-like-count-${r.id}">${r.likes || 0}</span>)</button>`;
 
                             const parentMatch = r.content.match(/^\[REPLY_TO:([^\]]+)\]/);
                             const parentIdToScroll = parentMatch ? parentMatch[1] : '';
 
                             repliesHtml += `
                                 <div class="comment-card is-reply" id="comment-${r.id}" data-author="${safeHTML(r.author)}">
-                                    <div class="reply-badge" title="ย้อนไปดูข้อความต้นทาง" onclick="scrollToComment('${parentIdToScroll}')">↪ ตอบกลับคุณ: ${safeHTML(repliedTo)}</div>
+                                    <div class="reply-badge" title="ย้อนไปดูข้อความต้นทาง" data-action="scroll-to-comment" data-parent-id="${parentIdToScroll}">↪ ตอบกลับคุณ: ${safeHTML(repliedTo)}</div>
                                     <div class="comment-header">
                                         <div class="comment-author-group">
                                             <span class="comment-author">${safeHTML(r.author)}</span>
@@ -1021,8 +1011,8 @@
                         <div id="reply-box-${c.id}" class="reply-form-container">
                             <textarea id="replyInput-${c.id}" class="form-textarea" placeholder="พิมพ์ข้อความตอบกลับคุณ ${safeHTML(c.author)}..."></textarea>
                             <div style="display: flex; gap: 8px;">
-                                <button type="button" class="btn-submit-comment" onclick="submitReply('${c.id}', '${safeHTML(c.author)}', '${postId}')" style="padding: 6px 15px; font-size: 0.85rem;">ส่งคำตอบกลับ</button>
-                                <button type="button" class="btn-delete-comment" onclick="toggleReplyBox('${c.id}')" style="background: transparent; color: #a69477; border-color: #a69477;">ยกเลิก</button>
+                                <button type="button" class="btn-submit-comment" data-action="submit-reply" data-id="${c.id}" data-author="${safeHTML(c.author)}" data-post-id="${postId}" style="padding: 6px 15px; font-size: 0.85rem;">ส่งคำตอบกลับ</button>
+                                <button type="button" class="btn-delete-comment" data-action="toggle-reply" data-id="${c.id}" style="background: transparent; color: #a69477; border-color: #a69477;">ยกเลิก</button>
                             </div>
                         </div>
                     ` : '';
@@ -1064,6 +1054,40 @@
                 isCommentsRendering = false;
             }
         }
+
+        // 🛡️ ระบบ Event Delegation ดักจับการคลิกทั้งหน้าเพื่อเรียกใช้งานฟังก์ชัน (ทดแทน inline onclick ทั้งหมด)
+        document.addEventListener('click', function(e) {
+            const btn = e.target.closest('[data-action]');
+            if (!btn) return;
+            
+            const action = btn.getAttribute('data-action');
+            
+            if (action === 'scroll-to-user') {
+                scrollToUserComment(btn.getAttribute('data-username'));
+            } else if (action === 'scroll-to-comment') {
+                scrollToComment(btn.getAttribute('data-parent-id'));
+            } else if (action === 'like-comment') {
+                likeCommentAction(btn.getAttribute('data-id'));
+            } else if (action === 'like-post') {
+                likePostAction();
+            } else if (action === 'toggle-bookmark') {
+                toggleBookmarkAction();
+            } else if (action === 'toggle-reply') {
+                toggleReplyBox(btn.getAttribute('data-id'));
+            } else if (action === 'report-comment') {
+                openReportModal('comment', btn.getAttribute('data-id'));
+            } else if (action === 'report-post') {
+                openReportModal('post', new URLSearchParams(window.location.search).get('id'));
+            } else if (action === 'delete-comment') {
+                deleteCommentAction(btn.getAttribute('data-id'), btn.getAttribute('data-post-id'));
+            } else if (action === 'submit-reply') {
+                submitReply(btn.getAttribute('data-id'), btn.getAttribute('data-author'), btn.getAttribute('data-post-id'));
+            } else if (action === 'noti-click') {
+                handleNotiClick(btn.getAttribute('data-id'), btn.getAttribute('data-post-id'));
+            } else if (action === 'logout') {
+                handleLogout();
+            }
+        });
 
         function deleteCommentAction(commentId, postId) {
             showCustomConfirm('ท่านแน่ใจหรือไม่ว่าต้องการ <strong>ทำลาย</strong> ความคิดเห็นนี้ทิ้งไปชั่วนิรันดร์?', async () => {
@@ -1336,9 +1360,8 @@
                 currentPostAuthorGlobal = postData.author;
                 document.getElementById('pageTitle').textContent = postData.title + ' - ศิษย์หลวงปู่';
                 document.getElementById('dyn-category').textContent = (postData.category === "1" ? "นิยายสัตยาสาบาน" : "คุยกับศิษย์หลวงปู่");
-                document.getElementById('dyn-title').textContent = postData.title;
+                document.getElementById('dyn-title').textContent = safeHTML(postData.title);
                 
-                // 🛡️ ทำการครอบเกราะป้องกัน XSS ก่อน แล้วค่อยปล่อยให้ formatMentions ห่อแท็กสีเหลืองให้
                 const safeBody = safeContentRender(postData.content);
                 document.getElementById('dyn-content').innerHTML = formatMentions(safeBody, usersMap);
                 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SitLuangPu - ศิษย์หลวงปู่</title>
+    <title>เมืองลับแล - ลานเสวนาและนิยายสัตยาสาบาน</title>
     <meta name="description" content="ลานเสวนาศิษย์หลวงปู่ แหล่งรวมพูดคุย อ่านนิยายสัตยาสาบาน">
     <meta name="keywords" content="สัตยาสาบาน, นิยายสัตยาสาบาน, ศิษย์หลวงปู่, ลานเสวนา">
     
@@ -213,6 +213,14 @@
             BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
         };
 
+        // 🛡️ XSS Protection function
+        function safeHTML(str) {
+            if (!str) return '';
+            return String(str).replace(/[&<>'"]/g, tag => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+            }[tag] || tag));
+        }
+
         function formatMentions(text) {
             if(!text) return '';
             const mentionRegex = /@([\u0E00-\u0E7Fa-zA-Z0-9_-]+)/g;
@@ -284,7 +292,10 @@
                             tagHtml = '<span class="wb-tag wb-tag-hot">HOT</span>';
                         }
                         
-                        const displayTitle = formatMentions(post.title);
+                        // 🛡️ ป้องกัน XSS
+                        const safeTitle = safeHTML(post.title);
+                        const displayTitle = formatMentions(safeTitle);
+                        const safeAuthor = safeHTML(post.author);
 
                         container.innerHTML += `
                             <a href="post.html?id=${post.id}" class="wb-row">
@@ -293,7 +304,7 @@
                                     <span class="wb-title">${displayTitle}</span>
                                 </div>
                                 <div class="wb-meta">
-                                    <span>👤 ${post.author}</span>
+                                    <span>👤 ${safeAuthor}</span>
                                     <span>💬 ${post.replies || 0} ตอบ</span>
                                     <span style="color: #6b5a45;">${post.timestamp ? post.timestamp.split('|')[0].trim() : ''}</span>
                                 </div>
@@ -343,7 +354,10 @@
                             rankBadge = `<span class="wb-tag" style="background: rgba(212,175,55,0.1); color: var(--gold-light); border: 1px solid var(--gold-dark);">#${rank}</span>`;
                         }
 
-                        const displayTitle = formatMentions(post.title);
+                        // 🛡️ ป้องกัน XSS
+                        const safeTitle = safeHTML(post.title);
+                        const displayTitle = formatMentions(safeTitle);
+                        const safeAuthor = safeHTML(post.author || 'ไม่ระบุตัวตน');
 
                         container.innerHTML += `
                             <a href="post.html?id=${post.id}" class="wb-row">
@@ -352,7 +366,7 @@
                                     <span class="wb-title">${displayTitle}</span>
                                 </div>
                                 <div class="wb-meta">
-                                    <span>👤 ${post.author || 'ไม่ระบุตัวตน'}</span>
+                                    <span>👤 ${safeAuthor}</span>
                                     <span>👀 ${post.views || 0} วิว</span>
                                     <span>💬 ${post.replies || 0} ตอบ</span>
                                 </div>

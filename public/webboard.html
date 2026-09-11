@@ -23,9 +23,7 @@
             overflow-x: hidden; 
         }
 
-        /* 🛡️ ป้องกันการเลื่อนหน้าจอเวลาเปิด Modal */
         body.modal-open { overflow: hidden; }
-        
         body::before, body::after { display: none !important; }
 
         h1, h2, h3, h4 { font-family: 'Prompt', sans-serif; margin: 0; }
@@ -85,7 +83,7 @@
         .category-block { background: rgba(12, 7, 4, 0.9); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 8px; margin-top: 45px; margin-bottom: 40px; padding-top: 35px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); position: relative; width: 100%; box-sizing: border-box; }
         .category-posts-container { min-height: 250px; }
 
-        .thread-item { padding: 15px 20px; border-bottom: 1px solid rgba(138, 99, 21, 0.2); display: flex; align-items: center; gap: 15px; transition: background 0.2s; width: 100%; box-sizing: border-box; } .thread-item:last-child { border-bottom: none; } .thread-item:hover { background: rgba(212, 175, 55, 0.08); } .thread-content { flex: 1; min-width: 0; } 
+        .thread-item { padding: 15px 20px; border-bottom: 1px solid rgba(138, 99, 21, 0.2); display: flex; align-items: center; gap: 15px; transition: background 0.2s; width: 100%; box-sizing: border-box; cursor: pointer; } .thread-item:last-child { border-bottom: none; } .thread-item:hover { background: rgba(212, 175, 55, 0.08); } .thread-content { flex: 1; min-width: 0; } 
         
         .thread-title { 
             color: var(--gold-light); font-family: 'Prompt', sans-serif; font-size: 1.05rem; font-weight: 500; 
@@ -129,9 +127,9 @@
         
         .btn-primary { display: block; width: 100%; text-align: center; background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; font-family: 'Prompt', sans-serif; font-weight: bold; padding: 12px; border-radius: 25px; font-size: 1.1rem; box-shadow: 0 5px 15px rgba(0,0,0,0.6); border: 1px solid #ffeba9; cursor: pointer; transition: filter 0.2s; text-decoration: none; box-sizing: border-box; white-space: normal; } .btn-primary:hover { filter: brightness(1.15); }
 
-        .bookmark-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: rgba(0,0,0,0.4); border: 1px dashed rgba(212, 175, 55, 0.3); border-radius: 6px; margin-bottom: 8px; transition: background 0.2s; }
+        .bookmark-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: rgba(0,0,0,0.4); border: 1px dashed rgba(212, 175, 55, 0.3); border-radius: 6px; margin-bottom: 8px; transition: background 0.2s; cursor: pointer; }
         .bookmark-item:hover { background: rgba(212, 175, 55, 0.1); border-color: var(--gold-main); }
-        .bookmark-link { flex: 1; color: var(--gold-light); text-decoration: none; font-size: 0.9rem; font-family: 'Prompt', sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-right: 10px; }
+        .bookmark-link { flex: 1; color: var(--gold-light); text-decoration: none; font-size: 0.9rem; font-family: 'Prompt', sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-right: 10px; pointer-events: none; }
         .btn-remove-bookmark { background: transparent; border: none; color: var(--danger-color); cursor: pointer; font-size: 1rem; opacity: 0.6; transition: opacity 0.2s; padding: 0 5px; }
         .btn-remove-bookmark:hover { opacity: 1; }
         
@@ -306,7 +304,7 @@
                         <button class="search-btn" id="searchBtnSubmit">ค้นหา</button>
                     </div>
                     <div>
-                        <button onclick="checkAccessAndGo('create_post.html')" class="btn-primary">ตั้งกระทู้ใหม่</button>
+                        <button data-action="go-post" data-url="create_post.html" class="btn-primary">ตั้งกระทู้ใหม่</button>
                     </div>
                 </div>
 
@@ -434,10 +432,19 @@
             BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
         };
 
+        // 🛡️ ป้องกัน XSS
+        function safeHTML(str) {
+            if (!str) return '';
+            return String(str).replace(/[&<>'"]/g, tag => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+            }[tag] || tag));
+        }
+
+        // 🛡️ เปลี่ยนไปใช้ data-action ป้องกัน Attribute XSS
         function formatMentions(text) {
             if(!text) return '';
             const mentionRegex = /@([\u0E00-\u0E7Fa-zA-Z0-9_-]+)/g;
-            return text.replace(mentionRegex, '<span class="user-mention">@$1</span>');
+            return text.replace(mentionRegex, '<span class="user-mention" data-action="scroll-to-user" data-username="$1" title="ค้นหาจารึกของผู้นี้">@$1</span>');
         }
 
         let telepathySocket;
@@ -569,9 +576,10 @@
 
                 const isUnreadClass = String(n.is_read) === '0' ? 'unread' : '';
                 
+                // 🛡️ เปลี่ยนเป็น data-action ป้องกัน XSS
                 notiListContent.innerHTML += `
-                    <div class="noti-item ${isUnreadClass}" onclick="handleNotiClick('${n.id}', '${n.post_id}')">
-                        <div><strong style="color: var(--gold-light);">${n.actor}</strong> ${actionText}</div>
+                    <div class="noti-item ${isUnreadClass}" data-action="noti-click" data-id="${n.id}" data-post-id="${n.post_id}">
+                        <div><strong style="color: var(--gold-light);">${safeHTML(n.actor)}</strong> ${actionText}</div>
                         <div class="noti-time">${n.timestamp}</div>
                     </div>
                 `;
@@ -616,9 +624,12 @@
             container.innerHTML = '';
             
             history.forEach(item => {
-                const displayTitle = formatMentions(item.title);
+                const safeTitle = safeHTML(item.title);
+                const displayTitle = formatMentions(safeTitle);
+                
+                // 🛡️ เปลียนเป็น data-action
                 container.innerHTML += `
-                    <a href="post.html?id=${item.id}" style="display: block; width: 100%; box-sizing: border-box; overflow: hidden; padding: 12px 15px; background: rgba(0,0,0,0.4); border: 1px dashed rgba(138, 99, 21, 0.3); border-radius: 6px; text-decoration: none; color: var(--gold-light); font-size: 0.9rem; transition: background 0.2s;" onmouseover="this.style.borderColor='var(--gold-main)'; this.style.background='rgba(212,175,55,0.05)'" onmouseout="this.style.borderColor='rgba(138, 99, 21, 0.3)'; this.style.background='rgba(0,0,0,0.4)'">
+                    <a data-action="go-post" data-url="post.html?id=${item.id}" style="cursor: pointer; display: block; width: 100%; box-sizing: border-box; overflow: hidden; padding: 12px 15px; background: rgba(0,0,0,0.4); border: 1px dashed rgba(138, 99, 21, 0.3); border-radius: 6px; text-decoration: none; color: var(--gold-light); font-size: 0.9rem; transition: background 0.2s;" onmouseover="this.style.borderColor='var(--gold-main)'; this.style.background='rgba(212,175,55,0.05)'" onmouseout="this.style.borderColor='rgba(138, 99, 21, 0.3)'; this.style.background='rgba(0,0,0,0.4)'">
                         <div style="white-space: normal; word-break: break-word; line-height: 1.4; font-family: 'Prompt', sans-serif; width: 100%;">${displayTitle}</div>
                     </a>
                 `;
@@ -646,11 +657,14 @@
             container.innerHTML = '';
             
             bookmarks.forEach(item => {
-                const displayTitle = formatMentions(item.title);
+                const safeTitle = safeHTML(item.title);
+                const displayTitle = formatMentions(safeTitle);
+                
+                // 🛡️ เปลี่ยนเป็น data-action
                 container.innerHTML += `
                     <div class="bookmark-item" id="bm-item-${item.post_id}">
-                        <a href="post.html?id=${item.post_id}" class="bookmark-link" title="${item.title}">${displayTitle}</a>
-                        <button class="btn-remove-bookmark" onclick="handleRemoveBookmark('${item.post_id}')" title="ลบออกจากคัมภีร์">✖</button>
+                        <a data-action="go-post" data-url="post.html?id=${item.post_id}" class="bookmark-link" style="cursor: pointer;" title="${safeTitle}">${displayTitle}</a>
+                        <button class="btn-remove-bookmark" data-action="remove-bookmark" data-id="${item.post_id}" title="ลบออกจากคัมภีร์">✖</button>
                     </div>
                 `;
             });
@@ -734,6 +748,22 @@
             }
         });
 
+        // 🛡️ ระบบ Event Delegation สำหรับหน้า Webboard ดักจับการคลิกทดแทน inline onclick
+        document.addEventListener('click', function(e) {
+            const btn = e.target.closest('[data-action]');
+            if (!btn) return;
+            
+            const action = btn.getAttribute('data-action');
+            
+            if (action === 'noti-click') {
+                handleNotiClick(btn.getAttribute('data-id'), btn.getAttribute('data-post-id'));
+            } else if (action === 'go-post') {
+                checkAccessAndGo(btn.getAttribute('data-url'));
+            } else if (action === 'remove-bookmark') {
+                handleRemoveBookmark(btn.getAttribute('data-id'));
+            }
+        });
+
         function acceptWebboardRules() {
             const acceptBtn = document.getElementById('acceptRulesBtn');
             const checkbox = document.getElementById('acceptWebboardRulesCheckbox');
@@ -783,12 +813,12 @@
                     const customRole = roles.find(r => r.id === roleVal);
                     if (customRole) {
                         const borderCss = customRole.border_color ? `border: 1px solid ${customRole.border_color}; box-shadow: 0 0 6px ${customRole.border_color}80;` : '';
-                        return `<span class="role-badge" style="background: ${customRole.bg_color}; color: ${customRole.text_color} !important; ${borderCss}">${customRole.rank_name}</span>`;
+                        return `<span class="role-badge" style="background: ${customRole.bg_color}; color: ${customRole.text_color} !important; ${borderCss}">${safeHTML(customRole.rank_name)}</span>`;
                     }
 
                     let rank = user.rank_name || getRoleTitleName(roleVal);
                     let roleClass = rank === 'ตัวละคร' ? 'role-6' : `role-${roleVal}`;
-                    return `<span class="role-badge ${roleClass}">${rank}</span>`;
+                    return `<span class="role-badge ${roleClass}">${safeHTML(rank)}</span>`;
                 }
             } catch (e) {}
             return '<span class="role-badge role-5">เด็กวัด</span>';
@@ -868,16 +898,21 @@
             for (let post of postsToShow) {
                 const pinTag = checkIsPinned(post.pinned) ? '<span class="wb-tag wb-tag-pin">📌 ปักหมุด</span> ' : '';
                 const authorBadge = await getRoleBadgeFromAPI(post.author);
-                const displayTitle = formatMentions(post.title);
+                
+                // 🛡️ ป้องกัน XSS
+                const safeAuthor = safeHTML(post.author);
+                const safeTitle = safeHTML(post.title);
+                const displayTitle = formatMentions(safeTitle);
 
+                // 🛡️ เปลี่ยนเป็น data-action
                 const postHTML = `
                     <div class="thread-item">
                         <div class="thread-content">
-                            <a onclick="checkAccessAndGo('post.html?id=${post.id}')" class="thread-title">${pinTag}${displayTitle}</a>
-                            <div class="thread-details">โดย <span>${post.author}</span> ${authorBadge} | อัปเดตล่าสุด: ${post.timestamp ? post.timestamp.split('|')[0].trim() : '-'}</div>
+                            <a data-action="go-post" data-url="post.html?id=${post.id}" class="thread-title">${pinTag}${displayTitle}</a>
+                            <div class="thread-details">โดย <span>${safeAuthor}</span> ${authorBadge} | อัปเดตล่าสุด: ${post.timestamp ? post.timestamp.split('|')[0].trim() : '-'}</div>
                         </div>
                         <div class="thread-stats">
-                            <div class="stat-box">👤 ${post.author}</div>
+                            <div class="stat-box">👤 ${safeAuthor}</div>
                             <div class="stat-box">💬 ${post.replies || 0} ตอบ</div>
                         </div>
                     </div>
@@ -940,7 +975,7 @@
             const loggedInView = document.getElementById('loggedInView');
             
             if (savedUser) {
-                document.getElementById('displayUsername').textContent = savedUser;
+                document.getElementById('displayUsername').textContent = safeHTML(savedUser);
 
                 if (userType === 'guest' || savedUser.includes('ผู้ไม่ประสงค์ออกนาม')) {
                     document.getElementById('displayUserBadge').innerHTML = `<span class="role-badge role-guest">วิญญาณเร่ร่อน</span>`;
@@ -961,11 +996,11 @@
                             let myBadgeHtml = '';
                             if (customRole) {
                                 const borderCss = customRole.border_color ? `border: 1px solid ${customRole.border_color}; box-shadow: 0 0 6px ${customRole.border_color}80;` : '';
-                                myBadgeHtml = `<span class="role-badge" style="background: ${customRole.bg_color}; color: ${customRole.text_color} !important; ${borderCss}">${customRole.rank_name}</span>`;
+                                myBadgeHtml = `<span class="role-badge" style="background: ${customRole.bg_color}; color: ${customRole.text_color} !important; ${borderCss}">${safeHTML(customRole.rank_name)}</span>`;
                             } else {
                                 let roleClass = currentUser.rank_name === 'ตัวละคร' ? 'role-6' : 'role-' + roleVal;
                                 let rankTitle = currentUser.rank_name || getRoleTitleName(roleVal);
-                                myBadgeHtml = `<span class="role-badge ${roleClass}">${rankTitle}</span>`;
+                                myBadgeHtml = `<span class="role-badge ${roleClass}">${safeHTML(rankTitle)}</span>`;
                             }
 
                             document.getElementById('displayUserBadge').innerHTML = myBadgeHtml;
@@ -985,7 +1020,7 @@
                                 document.getElementById('karmaBarContainer').innerHTML = `
                                     <div class="karma-container">
                                         <div class="karma-bar-bg"><div class="karma-bar-fill" style="width: ${progressPercent}%;"></div></div>
-                                        <div class="karma-text"><strong>${karma}</strong> แต้มบุญ | ${nextMsg}</div>
+                                        <div class="karma-text"><strong>${karma}</strong> แต้มบุญ | ${safeHTML(nextMsg)}</div>
                                     </div>
                                 `;
                                 document.getElementById('karmaBarContainer').style.display = 'block';
@@ -1057,7 +1092,6 @@
                 return; 
             }
 
-            // 🌟 2-Layer Validation: แจ้งเตือนหากผู้ใช้พยายามพิมพ์ตัวเลข สัญลักษณ์ หรือเว้นวรรค
             if (/[^\u0E00-\u0E7F]/.test(usernameInput)) {
                 showCustomAlert('นามแฝง (Username) อนุญาตเฉพาะ "อักขระภาษาไทย" และห้ามเว้นวรรคเด็ดขาด!');
                 return;
