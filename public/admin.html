@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>เมืองลับแล - ศิษย์หลวงปู่</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- นำเข้า Google Material Symbols & Material Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <style>
         html, body { scroll-behavior: smooth; overflow-x: hidden; width: 100%; max-width: 100vw; margin: 0; padding: 0; }
@@ -29,6 +31,16 @@
         
         h1, h2, h3, h4, input, select, textarea, button, table { font-family: 'Prompt', sans-serif !important; }
         a { text-decoration: none; color: inherit; }
+        
+        /* สไตล์สำหรับ Material Icons ให้แสดงผลสวยงามและจัดวางตรงบรรทัด */
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+            font-size: 1.15em;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
         
         .admin-header { 
             background: linear-gradient(180deg, #150a03 0%, #070402 100%); 
@@ -206,21 +218,21 @@
             <h3>ระบบเมืองลับแล (Admin NOC)</h3>
         </div>
         <div class="admin-header-actions">
-            <span class="admin-badge" id="stat-api-mode">🛡️ API Mode</span>
+            <span class="admin-badge"><span class="material-symbols-outlined" style="font-size: 14px;">shield</span> API Mode</span>
             <span id="currentAdminName" style="color: var(--gold-light); font-weight: bold; font-size: 0.8rem;"></span>
-            <a href="index.html" class="btn btn-edit">เว็บหลัก ↗</a>
-            <button onclick="handleAdminLogout()" class="btn btn-delete">ออกจากระบบ</button>
+            <a href="index.html" class="btn btn-edit"><span class="material-symbols-outlined" style="font-size: 14px;">open_in_new</span> เว็บหลัก</a>
+            <button onclick="handleAdminLogout()" class="btn btn-delete"><span class="material-symbols-outlined" style="font-size: 14px;">logout</span> ออกจากระบบ</button>
         </div>
     </header>
 
     <div class="admin-layout">
         <aside class="admin-sidebar">
-            <button class="nav-btn active" onclick="switchTab('tab-dashboard')">📊 ภาพรวมศูนย์ข้อมูล</button>
-            <button class="nav-btn" onclick="switchTab('tab-posts')">📜 จัดการกระทู้จารึก</button>
-            <button class="nav-btn" onclick="switchTab('tab-users')">👥 จัดการรายชื่อศิษย์</button>
-            <button class="nav-btn" onclick="switchTab('tab-reports')">🚨 รายงานและเบาะแส</button>
-            <button class="nav-btn" onclick="switchTab('tab-roles')">🛠️ จัดการยศ</button>
-            <button class="nav-btn" onclick="switchTab('tab-cms-index')">🏠 ปรับแต่งหน้าแรก</button>
+            <button class="nav-btn active" onclick="switchTab('tab-dashboard')"><span class="material-symbols-outlined">dashboard</span> ภาพรวมศูนย์ข้อมูล</button>
+            <button class="nav-btn" onclick="switchTab('tab-posts')"><span class="material-symbols-outlined">article</span> จัดการกระทู้จารึก</button>
+            <button class="nav-btn" onclick="switchTab('tab-users')"><span class="material-symbols-outlined">group</span> จัดการรายชื่อศิษย์</button>
+            <button class="nav-btn" onclick="switchTab('tab-reports')"><span class="material-symbols-outlined">warning</span> รายงานและเบาะแส</button>
+            <button class="nav-btn" onclick="switchTab('tab-roles')"><span class="material-symbols-outlined">badge</span> จัดการยศ</button>
+            <button class="nav-btn" onclick="switchTab('tab-cms-index')"><span class="material-symbols-outlined">home</span> ปรับแต่งหน้าแรก</button>
         </aside>
 
         <main class="admin-content">
@@ -230,42 +242,42 @@
                 
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <div class="stat-icon">📜</div>
+                        <div class="stat-icon"><span class="material-symbols-outlined">description</span></div>
                         <h4>กระทู้ทั้งหมด</h4>
                         <div class="number" id="db-posts-count">0</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon">👥</div>
+                        <div class="stat-icon"><span class="material-symbols-outlined">group</span></div>
                         <h4>ศิษย์ในสำนัก</h4>
                         <div class="number" id="db-users-count">0</div>
                     </div>
                     <div class="stat-card" style="border-color: rgba(255, 107, 107, 0.4);">
-                        <div class="stat-icon">🚨</div>
+                        <div class="stat-icon"><span class="material-symbols-outlined" style="color: var(--danger-color);">report</span></div>
                         <h4 style="color: var(--danger-color);">เบาะแสรอตรวจสอบ</h4>
                         <div class="number" id="db-reports-count" style="color: var(--danger-color);">0</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon">👀</div>
+                        <div class="stat-icon"><span class="material-symbols-outlined">visibility</span></div>
                         <h4>ยอดเข้าชมรวม (Views)</h4>
                         <div class="number" id="db-views-count">0</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon">🙏</div>
+                        <div class="stat-icon"><span class="material-symbols-outlined">volunteer_activism</span></div>
                         <h4>อนุโมทนารวม (Likes)</h4>
                         <div class="number" id="db-likes-count">0</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon">✨</div>
+                        <div class="stat-icon"><span class="material-symbols-outlined">auto_awesome</span></div>
                         <h4>แต้มบุญในระบบ (Karma)</h4>
                         <div class="number" id="db-karma-count">0</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon">📌</div>
+                        <div class="stat-icon"><span class="material-symbols-outlined">push_pin</span></div>
                         <h4>กระทู้ปักหมุด</h4>
                         <div class="number" id="db-pinned-count">0</div>
                     </div>
                     <div class="stat-card" style="border-color: rgba(115, 201, 144, 0.4);">
-                        <div class="stat-icon">🟢</div>
+                        <div class="stat-icon"><span class="material-symbols-outlined" style="color: var(--success-color);">fiber_manual_record</span></div>
                         <h4 style="color: var(--success-color);">สถานะ API</h4>
                         <div class="number" style="font-size: 1.1rem; margin-top: 6px; color: var(--success-color);">ONLINE</div>
                     </div>
@@ -275,7 +287,7 @@
                     
                     <div class="dashboard-col" id="dashboard-col-1">
                         <div class="panel-card" id="widget-sys-health">
-                            <div class="panel-header"><h3>⚙️ สถานะระบบ</h3><span class="drag-handle" title="คลิกค้างเพื่อย้ายกล่อง">✥</span></div>
+                            <div class="panel-header"><h3><span class="material-symbols-outlined">settings</span> สถานะระบบ</h3><span class="drag-handle" title="คลิกค้างเพื่อย้ายกล่อง">✥</span></div>
                             <div class="health-row"><span>D1 Storage Used</span><span class="health-value" id="sys-db-size" style="color: var(--success-color);">กำลังสแกน...</span></div>
                             <div class="progress-section" style="margin-bottom:12px;">
                                 <div class="progress-track" style="height: 6px;"><div class="progress-fill" id="sys-db-bar" style="width: 0%; background: var(--success-color); transition: width 1s;"></div></div>
@@ -286,7 +298,7 @@
                         </div>
 
                         <div class="panel-card" id="widget-averages">
-                            <div class="panel-header"><h3>📊 สถิติค่าเฉลี่ย</h3><span class="drag-handle" title="คลิกค้างเพื่อย้ายกล่อง">✥</span></div>
+                            <div class="panel-header"><h3><span class="material-symbols-outlined">analytics</span> สถิติค่าเฉลี่ย</h3><span class="drag-handle" title="คลิกค้างเพื่อย้ายกล่อง">✥</span></div>
                             <div class="health-row"><span>ค่าเฉลี่ยยอดวิว / กระทู้</span><span class="health-value" id="avg-views" style="color: var(--gold-main);">0</span></div>
                             <div class="health-row"><span>ค่าเฉลี่ยอนุโมทนา / กระทู้</span><span class="health-value" id="avg-likes" style="color: var(--gold-main);">0</span></div>
                             <div class="health-row"><span>ค่าเฉลี่ยแต้มบุญ / ศิษย์</span><span class="health-value" id="avg-karma" style="color: var(--gold-main);">0</span></div>
@@ -294,7 +306,7 @@
                         </div>
 
                         <div class="panel-card" id="widget-demographics">
-                            <div class="panel-header"><h3>👥 โครงสร้างศิษย์ในสำนัก</h3><span class="drag-handle" title="คลิกค้างเพื่อย้ายกล่อง">✥</span></div>
+                            <div class="panel-header"><h3><span class="material-symbols-outlined">pie_chart</span> โครงสร้างศิษย์ในสำนัก</h3><span class="drag-handle" title="คลิกค้างเพื่อย้ายกล่อง">✥</span></div>
                             <div class="progress-section">
                                 <div class="progress-label"><span>ผู้คุมกฎ (Admin/Mod)</span> <span id="stat-role-admin">0 คน</span></div>
                                 <div class="progress-track"><div class="progress-fill" id="bar-role-admin" style="width: 0%; background: var(--gold-main);"></div></div>
@@ -310,7 +322,7 @@
                         </div>
                         
                         <div class="panel-card" id="widget-report-reasons">
-                            <div class="panel-header"><h3 style="color: #ffb17a;">🚨 วิเคราะห์สาเหตุแจ้งเบาะแส</h3><span class="drag-handle" title="คลิกค้างเพื่อย้ายกล่อง">✥</span></div>
+                            <div class="panel-header"><h3 style="color: #ffb17a;"><span class="material-symbols-outlined">psychology_alt</span> วิเคราะห์สาเหตุแจ้งเบาะแส</h3><span class="drag-handle" title="คลิกค้างเพื่อย้ายกล่อง">✥</span></div>
                             <div id="report-reasons-container">
                                 <div style="text-align: center; color: var(--text-muted); padding: 10px;">กำลังอัญเชิญข้อมูล...</div>
                             </div>
@@ -319,7 +331,7 @@
 
                     <div class="dashboard-col" id="dashboard-col-2">
                         <div class="panel-card" id="widget-categories">
-                            <div class="panel-header"><h3>📂 สัดส่วนหมวดหมู่กระทู้</h3><span class="drag-handle" title="คลิกค้างเพื่อย้ายกล่อง">✥</span></div>
+                            <div class="panel-header"><h3><span class="material-symbols-outlined">folder</span> สัดส่วนหมวดหมู่กระทู้</h3><span class="drag-handle" title="คลิกค้างเพื่อย้ายกล่อง">✥</span></div>
                             <div class="progress-section">
                                 <div class="progress-label"><span>นิยาย "สัตยาสาบาน"</span> <span id="stat-cat1-count">0</span></div>
                                 <div class="progress-track"><div class="progress-fill" id="stat-cat1-bar" style="width: 0%; background: var(--gold-main);"></div></div>
@@ -331,26 +343,26 @@
                         </div>
 
                         <div class="panel-card" id="widget-quick-actions" style="display:flex; gap:6px; flex-wrap:wrap; justify-content:center;">
-                            <button class="btn btn-gold" onclick="openPostModal()">+ สลักกระทู้</button>
-                            <button class="btn btn-gold" onclick="openUserModal()">+ รับศิษย์</button>
+                            <button class="btn btn-gold" onclick="openPostModal()"><span class="material-symbols-outlined" style="font-size: 16px;">add</span> สลักกระทู้</button>
+                            <button class="btn btn-gold" onclick="openUserModal()"><span class="material-symbols-outlined" style="font-size: 16px;">person_add</span> รับศิษย์</button>
                         </div>
 
                         <div class="panel-card" id="widget-latest-posts">
-                            <div class="panel-header"><h3>📝 ความเคลื่อนไหวล่าสุด</h3><span class="drag-handle" title="คลิกค้างเพื่อย้ายกล่อง">✥</span></div>
+                            <div class="panel-header"><h3><span class="material-symbols-outlined">history</span> ความเคลื่อนไหวล่าสุด</h3><span class="drag-handle" title="คลิกค้างเพื่อย้ายกล่อง">✥</span></div>
                             <div id="latest-posts-container" style="display: flex; flex-direction: column;">
                                 <div style="text-align: center; color: var(--text-muted); padding: 10px;">กำลังอัญเชิญข้อมูล...</div>
                             </div>
                         </div>
 
                         <div class="panel-card" id="widget-pinned-posts" style="border-color: rgba(115, 201, 144, 0.4);">
-                            <div class="panel-header"><h3>📌 จารึกที่ถูกปักหมุดไว้</h3><span class="drag-handle" title="คลิกค้างเพื่อย้ายกล่อง">✥</span></div>
+                            <div class="panel-header"><h3><span class="material-symbols-outlined">push_pin</span> จารึกที่ถูกปักหมุดไว้</h3><span class="drag-handle" title="คลิกค้างเพื่อย้ายกล่อง">✥</span></div>
                             <div id="pinned-posts-container" style="display: flex; flex-direction: column;">
                                 <div style="text-align: center; color: var(--text-muted); padding: 10px;">กำลังอัญเชิญข้อมูล...</div>
                             </div>
                         </div>
                         
                         <div class="panel-card" id="widget-recent-users">
-                            <div class="panel-header"><h3 style="color: var(--success-color);">🟢 ศิษย์ที่ปรากฏตัวล่าสุด</h3><span class="drag-handle" title="คลิกค้างเพื่อย้ายกล่อง">✥</span></div>
+                            <div class="panel-header"><h3 style="color: var(--success-color);"><span class="material-symbols-outlined">online_prediction</span> ศิษย์ที่ปรากฏตัวล่าสุด</h3><span class="drag-handle" title="คลิกค้างเพื่อย้ายกล่อง">✥</span></div>
                             <div id="recent-users-container" style="display: flex; flex-direction: column;">
                                 <div style="text-align: center; color: var(--text-muted); padding: 10px;">กำลังอัญเชิญข้อมูล...</div>
                             </div>
@@ -359,28 +371,28 @@
 
                     <div class="dashboard-col" id="dashboard-col-3">
                         <div class="panel-card" id="widget-urgent-reports" style="border-color: rgba(255, 107, 107, 0.4);">
-                            <div class="panel-header"><h3 style="color: var(--danger-color);">🚨 เบาะแสด่วน (ล่าสุด)</h3><span class="drag-handle" title="คลิกค้างเพื่อย้ายกล่อง">✥</span></div>
+                            <div class="panel-header"><h3 style="color: var(--danger-color);"><span class="material-symbols-outlined">notification_important</span> เบาะแสด่วน (ล่าสุด)</h3><span class="drag-handle" title="คลิกค้างเพื่อย้ายกล่อง">✥</span></div>
                             <div id="urgent-reports-container" style="display: flex; flex-direction: column;">
                                 <div style="text-align: center; color: var(--text-muted); padding: 10px;">ไม่มีเบาะแสค้างตรวจสอบ</div>
                             </div>
                         </div>
 
                         <div class="panel-card" id="widget-top-users">
-                            <div class="panel-header"><h3>🏆 ทำเนียบแต้มบุญสูงสุด</h3><span class="drag-handle" title="คลิกค้างเพื่อย้ายกล่อง">✥</span></div>
+                            <div class="panel-header"><h3><span class="material-symbols-outlined">military_tech</span> ทำเนียบแต้มบุญสูงสุด</h3><span class="drag-handle" title="คลิกค้างเพื่อย้ายกล่อง">✥</span></div>
                             <div id="top-users-container" style="display: flex; flex-direction: column;">
                                 <div style="text-align: center; color: var(--text-muted); padding: 10px;">กำลังอัญเชิญข้อมูล...</div>
                             </div>
                         </div>
 
                         <div class="panel-card" id="widget-popular-posts">
-                            <div class="panel-header"><h3 style="color: #ffb17a;">🔥 คัมภีร์ยอดฮิต (Top Views)</h3><span class="drag-handle" title="คลิกค้างเพื่อย้ายกล่อง">✥</span></div>
+                            <div class="panel-header"><h3 style="color: #ffb17a;"><span class="material-symbols-outlined">trending_up</span> คัมภีร์ยอดฮิต (Top Views)</h3><span class="drag-handle" title="คลิกค้างเพื่อย้ายกล่อง">✥</span></div>
                             <div id="popular-posts-container" style="display: flex; flex-direction: column;">
                                 <div style="text-align: center; color: var(--text-muted); padding: 10px;">กำลังอัญเชิญข้อมูล...</div>
                             </div>
                         </div>
 
                         <div class="panel-card" id="widget-top-liked">
-                            <div class="panel-header"><h3 style="color: var(--gold-main);">🙏 ได้รับอนุโมทนาสูงสุด</h3><span class="drag-handle" title="คลิกค้างเพื่อย้ายกล่อง">✥</span></div>
+                            <div class="panel-header"><h3 style="color: var(--gold-main);"><span class="material-symbols-outlined">recommend</span> ได้รับอนุโมทนาสูงสุด</h3><span class="drag-handle" title="คลิกค้างเพื่อย้ายกล่อง">✥</span></div>
                             <div id="top-liked-posts-container" style="display: flex; flex-direction: column;">
                                 <div style="text-align: center; color: var(--text-muted); padding: 10px;">กำลังอัญเชิญข้อมูล...</div>
                             </div>
@@ -394,8 +406,8 @@
             <div id="tab-roles" class="tab-pane">
                 <div class="panel-card">
                     <div class="panel-header">
-                        <h3>🛠️ จัดการยศและป้ายอาญาสิทธิ์</h3>
-                        <button class="btn btn-gold" onclick="openRoleModal()">+ สร้างยศใหม่</button>
+                        <h3><span class="material-symbols-outlined">handyman</span> จัดการยศและป้ายอาญาสิทธิ์</h3>
+                        <button class="btn btn-gold" onclick="openRoleModal()"><span class="material-symbols-outlined" style="font-size: 16px;">add_moderator</span> สร้างยศใหม่</button>
                     </div>
 
                     <div class="table-responsive">
@@ -420,8 +432,8 @@
             <div id="tab-posts" class="tab-pane">
                 <div class="panel-card">
                     <div class="panel-header">
-                        <h3>📜 รายการกระทู้จารึก</h3>
-                        <button class="btn btn-gold" onclick="openPostModal()">+ สลักกระทู้</button>
+                        <h3><span class="material-symbols-outlined">menu_book</span> รายการกระทู้จารึก</h3>
+                        <button class="btn btn-gold" onclick="openPostModal()"><span class="material-symbols-outlined" style="font-size: 16px;">add</span> สลักกระทู้</button>
                     </div>
 
                     <div class="filter-toolbar">
@@ -477,8 +489,8 @@
             <div id="tab-users" class="tab-pane">
                 <div class="panel-card">
                     <div class="panel-header">
-                        <h3>👥 บัญชีรายชื่อสมาชิก</h3>
-                        <button class="btn btn-gold" onclick="openUserModal()">+ เพิ่มศิษย์</button>
+                        <h3><span class="material-symbols-outlined">badge</span> บัญชีรายชื่อสมาชิก</h3>
+                        <button class="btn btn-gold" onclick="openUserModal()"><span class="material-symbols-outlined" style="font-size: 16px;">person_add</span> เพิ่มศิษย์</button>
                     </div>
                     
                     <div class="filter-toolbar">
@@ -551,7 +563,7 @@
             <div id="tab-reports" class="tab-pane">
                 <div class="panel-card">
                     <div class="panel-header">
-                        <h3 style="color: #ffb17a; display: flex; align-items: center; gap: 8px;">🚨 แจ้งเบาะแสจากศิษย์ในสำนัก</h3>
+                        <h3 style="color: #ffb17a; display: flex; align-items: center; gap: 8px;"><span class="material-symbols-outlined">report_problem</span> แจ้งเบาะแสจากศิษย์ในสำนัก</h3>
                     </div>
                     
                     <div class="table-responsive">
@@ -575,7 +587,7 @@
             <!-- 🌟 Tab CMS Index -->
             <div id="tab-cms-index" class="tab-pane">
                 <div class="panel-card" style="max-width: 600px;">
-                    <div class="panel-header"><h3>🏠 ปรับแต่งหน้าแรก (Hero Section)</h3></div>
+                    <div class="panel-header"><h3><span class="material-symbols-outlined">web</span> ปรับแต่งหน้าแรก (Hero Section)</h3></div>
                     <form id="hero-cms-form" onsubmit="saveHeroCMS(event)">
                         <div class="form-group">
                             <label>สโลแกนหลัก (Hero Subtitle)</label>
@@ -600,7 +612,7 @@
                             </div>
                         </div>
                         <hr style="border: 0; border-top: 1px dashed rgba(138, 99, 21, 0.4); margin: 15px 0;">
-                        <button type="submit" class="btn btn-gold" style="width: 100%; padding: 8px; font-size: 0.85rem;">💾 บันทึกการเปลี่ยนแปลง</button>
+                        <button type="submit" class="btn btn-gold" style="width: 100%; padding: 8px; font-size: 0.85rem;"><span class="material-symbols-outlined" style="font-size: 16px;">save</span> บันทึกการเปลี่ยนแปลง</button>
                     </form>
                 </div>
             </div>
@@ -725,7 +737,7 @@
 
     <div class="modal-overlay" id="customConfirmModal" style="z-index: 9999;">
         <div class="modal-box" style="max-width: 300px; text-align: center; padding: 20px 15px;">
-            <h3 style="font-size: 1rem; margin-bottom: 8px; color: var(--danger-color);">⚠️ ยืนยันการดำเนินการ</h3>
+            <h3 style="font-size: 1rem; margin-bottom: 8px; color: var(--danger-color);"><span class="material-symbols-outlined" style="font-size: 18px; vertical-align: middle;">warning</span> ยืนยันการดำเนินการ</h3>
             <p id="customConfirmMessage" style="color: #e2d4c3; font-size: 0.8rem; margin-bottom: 15px; line-height: 1.4;"></p>
             <div style="display: flex; gap: 8px; justify-content: center;">
                 <button type="button" class="btn btn-edit" onclick="closeModal('customConfirmModal')" style="width: 50%; padding: 6px;">ถอยกลับ</button>
@@ -1172,8 +1184,8 @@
                         <td>ระดับ ${role.level || 5}</td>
                         <td>
                             <div style="display:flex; gap:4px; flex-wrap:nowrap;">
-                                <button class="btn btn-edit" data-action="edit-role" data-id="${safeHTML(role.id)}">✏️ แก้ไข</button>
-                                <button class="btn btn-delete" data-action="delete-role" data-id="${safeHTML(role.id)}">🗑️ ลบ</button>
+                                <button class="btn btn-edit" data-action="edit-role" data-id="${safeHTML(role.id)}"><span class="material-symbols-outlined" style="font-size: 14px;">edit</span> แก้ไข</button>
+                                <button class="btn btn-delete" data-action="delete-role" data-id="${safeHTML(role.id)}"><span class="material-symbols-outlined" style="font-size: 14px;">delete</span> ลบ</button>
                             </div>
                         </td>
                     </tr>
@@ -1324,18 +1336,18 @@
 
             postsToShow.forEach(p => {
                 const isPinned = checkIsPinned(p.pinned);
-                const pinBtnHtml = `<button class="btn ${isPinned ? 'btn-edit' : 'btn-pin'}" data-action="toggle-pin" data-id="${safeHTML(p.id)}">${isPinned ? '📍 ถอด' : '📌 ปัก'}</button>`;
+                const pinBtnHtml = `<button class="btn ${isPinned ? 'btn-edit' : 'btn-pin'}" data-action="toggle-pin" data-id="${safeHTML(p.id)}"><span class="material-symbols-outlined" style="font-size: 14px;">${isPinned ? 'location_off' : 'push_pin'}</span> ${isPinned ? 'ถอด' : 'ปัก'}</button>`;
                 
                 const rowHtml = `<tr>
                     <td style="color: var(--text-muted); font-family: monospace;">${String(p.id).substring(0, 8)}...</td>
                     <td class="wrap-text" style="line-height: 1.3;"><strong style="color: var(--gold-light); font-size: 0.8rem; cursor:pointer;" data-action="open-post" data-id="${safeHTML(p.id)}">${safeHTML(p.title)}</strong></td>
-                    <td>${isPinned ? '<span class="admin-badge" style="border-color:var(--gold-main); color:var(--gold-main);">📌 ปักหมุด</span>' : '<span style="color:var(--text-muted); font-size:0.75rem;">ทั่วไป</span>'}</td>
+                    <td>${isPinned ? '<span class="admin-badge" style="border-color:var(--gold-main); color:var(--gold-main);"><span class="material-symbols-outlined" style="font-size: 12px; vertical-align: middle;">push_pin</span> ปักหมุด</span>' : '<span style="color:var(--text-muted); font-size:0.75rem;">ทั่วไป</span>'}</td>
                     <td>${safeHTML(p.author)}</td>
                     <td>
                         <div style="display:flex; gap:4px; flex-wrap:nowrap;">
                             ${pinBtnHtml} 
-                            <button class="btn btn-edit" data-action="edit-post" data-id="${safeHTML(p.id)}">✏️ แก้ไข</button> 
-                            <button class="btn btn-delete" data-action="delete-post" data-id="${safeHTML(p.id)}">🗑️ ลบ</button>
+                            <button class="btn btn-edit" data-action="edit-post" data-id="${safeHTML(p.id)}"><span class="material-symbols-outlined" style="font-size: 14px;">edit</span> แก้ไข</button> 
+                            <button class="btn btn-delete" data-action="delete-post" data-id="${safeHTML(p.id)}"><span class="material-symbols-outlined" style="font-size: 14px;">delete</span> ลบ</button>
                         </div>
                     </td>
                 </tr>`;
@@ -1471,8 +1483,8 @@
                         <td>${reorderBtns}</td>
                         <td>
                             <div style="display:flex; gap:4px; flex-wrap:nowrap;">
-                                <button class="btn btn-edit" data-action="edit-user" data-username="${safeHTML(u.username)}">✏️ แก้ไข</button> 
-                                <button class="btn btn-delete" data-action="delete-user" data-username="${safeHTML(u.username)}">🗑️ ลบ</button>
+                                <button class="btn btn-edit" data-action="edit-user" data-username="${safeHTML(u.username)}"><span class="material-symbols-outlined" style="font-size: 14px;">edit</span> แก้ไข</button> 
+                                <button class="btn btn-delete" data-action="delete-user" data-username="${safeHTML(u.username)}"><span class="material-symbols-outlined" style="font-size: 14px;">delete</span> ลบ</button>
                             </div>
                         </td>
                     </tr>
@@ -1508,9 +1520,9 @@
                 const targetText = r.target_type === 'post' ? 'กระทู้หลัก' : 'ความเห็น';
                 let inspectBtn = '';
                 if (r.target_type === 'post') {
-                    inspectBtn = `<a href="post.html?id=${r.target_id}" target="_blank" class="btn btn-gold">🔍 ตรวจสอบ</a>`;
+                    inspectBtn = `<a href="post.html?id=${r.target_id}" target="_blank" class="btn btn-gold"><span class="material-symbols-outlined" style="font-size: 14px;">search</span> ตรวจสอบ</a>`;
                 } else {
-                    inspectBtn = `<button class="btn btn-edit" onclick="showCustomAlert('ให้เข้าไปค้นหากระทู้ที่มีรหัสดังกล่าว')">🔍 ตรวจสอบ</button>`;
+                    inspectBtn = `<button class="btn btn-edit" onclick="showCustomAlert('ให้เข้าไปค้นหากระทู้ที่มีรหัสดังกล่าว')"><span class="material-symbols-outlined" style="font-size: 14px;">search</span> ตรวจสอบ</button>`;
                 }
 
                 tbody.innerHTML += `
@@ -1523,7 +1535,7 @@
                         <td>
                             <div style="display:flex; gap:4px; flex-wrap:nowrap;">
                                 ${inspectBtn}
-                                <button class="btn btn-delete" data-action="delete-report" data-id="${safeHTML(r.id)}">🧹 ปัดตก</button>
+                                <button class="btn btn-delete" data-action="delete-report" data-id="${safeHTML(r.id)}"><span class="material-symbols-outlined" style="font-size: 14px;">done_all</span> ปัดตก</button>
                             </div>
                         </td>
                     </tr>
