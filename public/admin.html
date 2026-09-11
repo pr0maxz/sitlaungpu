@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>เมืองลับแล - ศิษย์หลวงปู่</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;700&family=Sarabun:wght@400;600&display=swap" rel="stylesheet">
-    <!-- 🌟 นำเข้า Sortable.js สำหรับระบบ Drag & Drop -->
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <style>
         html, body { scroll-behavior: smooth; overflow-x: hidden; width: 100%; max-width: 100vw; margin: 0; padding: 0; }
@@ -31,7 +30,6 @@
         h1, h2, h3, h4 { font-family: 'Prompt', sans-serif; color: var(--gold-light); margin: 0; }
         a { text-decoration: none; color: inherit; }
         
-        /* 💎 Header */
         .admin-header { 
             background: linear-gradient(180deg, #150a03 0%, #070402 100%); 
             border-bottom: 1px solid var(--border-color); padding: 12px 25px; 
@@ -44,7 +42,6 @@
         
         .admin-header-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
         
-        /* 💎 Layout & Sidebar */
         .admin-layout { display: grid; grid-template-columns: 200px 1fr; flex: 1; width: 100%; max-width: 1400px; margin: 0 auto; padding: 24px 20px; gap: 24px; }
         
         .admin-sidebar { 
@@ -62,13 +59,11 @@
         .nav-btn:hover { background: rgba(212, 175, 55, 0.08); color: var(--gold-light); }
         .nav-btn.active { background: linear-gradient(90deg, rgba(212,175,55,0.15) 0%, transparent 100%); border-left: 3px solid var(--gold-main); color: var(--gold-light); font-weight: bold; padding-left: 12px; }
         
-        /* 💎 Main Content */
         .admin-content { min-width: 0; width: 100%; }
         .tab-pane { display: none; width: 100%; animation: fadeIn 0.2s ease-out; } .tab-pane.active { display: block; }
         
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* 💎 Cards & Panels */
         .panel-card { 
             background: var(--card-bg); border: 1px solid var(--border-color); 
             border-radius: 10px; padding: 20px; margin-bottom: 24px; 
@@ -87,7 +82,6 @@
         .sortable-ghost { opacity: 0.4; border: 2px dashed var(--gold-main); background: rgba(212, 175, 55, 0.05); transform: scale(0.98); }
         .sortable-drag { cursor: grabbing !important; box-shadow: 0 15px 30px rgba(0,0,0,0.9); }
 
-        /* 💎 Dashboard Elements */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-bottom: 24px; width: 100%; }
         .stat-card { 
             background: linear-gradient(135deg, rgba(31, 17, 7, 0.9), rgba(10, 5, 2, 0.95)); 
@@ -124,7 +118,6 @@
         .health-row:last-child { border: none; }
         .health-value { font-family: monospace; color: var(--gold-light); font-weight: bold; }
 
-        /* 💎 Tables */
         .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 8px; border: 1px solid rgba(138, 99, 21, 0.2); margin-bottom: 10px; background: rgba(0,0,0,0.3); }
         .data-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.8rem; text-align: left; min-width: 800px; table-layout: fixed; }
         .data-table th, .data-table td { padding: 8px 12px; border-bottom: 1px solid rgba(138, 99, 21, 0.1); vertical-align: middle; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -134,7 +127,6 @@
         .data-table tbody tr:hover { background: rgba(212, 175, 55, 0.06); }
         .data-table tbody tr:last-child td { border-bottom: none; }
         
-        /* 💎 Buttons */
         .btn { padding: 5px 12px; border-radius: 12px; font-family: 'Prompt', sans-serif; font-size: 0.75rem; font-weight: 500; cursor: pointer; border: none; transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 4px; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.4); }
         .btn:active { transform: scale(0.95); }
         .btn-gold { background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; font-weight: 700; border: 1px solid #ffeba9; } 
@@ -149,7 +141,6 @@
         .btn-reorder { background: transparent; color: var(--text-muted); border: 1px dashed rgba(212, 175, 55, 0.3); width: 22px; height: 22px; padding: 0; font-size: 0.65rem; border-radius: 4px; box-shadow: none; display: inline-flex; justify-content: center; align-items: center; }
         .btn-reorder:hover { background: rgba(212, 175, 55, 0.2); color: var(--gold-light); border-style: solid; border-color: var(--gold-main); }
         
-        /* 💎 Badges */
         .role-badge, .role-tag { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; font-family: 'Prompt', sans-serif; font-weight: 600; letter-spacing: 0.5px; vertical-align: middle; box-shadow: 0 2px 4px rgba(0,0,0,0.6); }
         .role-1 { background: linear-gradient(135deg, #f5d77f, #d4af37, #8a6315); color: #1a0f02 !important; border: 1px solid #ffeea8; box-shadow: 0 0 10px rgba(212,175,55,0.6), inset 0 0 4px rgba(255,255,255,0.6); } 
         .role-2 { background: linear-gradient(135deg, #4a1c60, #240b36); color: #e5b3ff !important; border: 1px solid #9b59b6; } 
@@ -160,7 +151,6 @@
         
         .admin-badge { background: rgba(115, 201, 144, 0.15); border: 1px solid var(--success-dark); color: var(--success-color); padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; font-family: 'Prompt', sans-serif; white-space: nowrap; font-weight: bold; }
 
-        /* 💎 Forms & Filters */
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; width: 100%; }
         .form-group { margin-bottom: 15px; width: 100%; } 
         .form-group label { display: block; color: var(--gold-light); font-size: 0.8rem; margin-bottom: 6px; font-family: 'Prompt', sans-serif; font-weight: 500; }
@@ -179,19 +169,16 @@
         .search-input:focus { border-color: var(--gold-main); box-shadow: 0 0 6px rgba(212,175,55,0.2); }
         .filter-select { flex: 1; min-width: 140px; padding: 6px 12px; border-radius: 20px; border: 1px solid var(--gold-dark); background: rgba(0,0,0,0.6); color: var(--gold-light); font-family: 'Sarabun', sans-serif; outline: none; font-size: 0.85rem; }
 
-        /* 💎 Pagination */
         .pagination { display: flex; justify-content: center; align-items: center; gap: 4px; margin-top: 10px; flex-wrap: wrap; }
         .page-btn { padding: 4px 8px; background: rgba(0,0,0,0.6); border: 1px solid rgba(138, 99, 21, 0.4); border-radius: 4px; color: var(--gold-light); cursor: pointer; transition: 0.3s; font-family: 'Prompt', sans-serif; font-size: 0.75rem; }
         .page-btn:hover:not(:disabled) { background: rgba(212,175,55,0.15); border-color: var(--gold-main); color: #fff; }
         .page-btn.active { background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; font-weight: bold; border-color: #ffeba9; }
         .page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         
-        /* 💎 Modals */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(7, 4, 2, 0.95); z-index: 1000; justify-content: center; align-items: center; padding: 15px; backdrop-filter: blur(4px); } .modal-overlay.active { display: flex; animation: fadeIn 0.2s; }
         .modal-box { background: linear-gradient(135deg, #1f1107, #0a0603); border: 1px solid var(--gold-main); border-radius: 12px; width: 100%; max-width: 450px; padding: 30px 25px; position: relative; box-shadow: 0 15px 40px rgba(0,0,0,0.9), inset 0 0 15px rgba(212,175,55,0.1); max-height: 90vh; overflow-y: auto; }
         .modal-box::-webkit-scrollbar { width: 5px; } .modal-box::-webkit-scrollbar-thumb { background: var(--gold-dark); border-radius: 3px; }
         
-        /* 📱 Responsive Design */
         @media (max-width: 992px) { 
             .admin-layout { grid-template-columns: 1fr; padding: 15px; gap: 15px; } 
             .dashboard-grid-3 { grid-template-columns: 1fr; }
@@ -287,7 +274,6 @@
 
                 <div class="dashboard-grid-3">
                     
-                    <!-- 🌟 Column 1 -->
                     <div class="dashboard-col" id="dashboard-col-1">
                         <div class="panel-card" id="widget-sys-health">
                             <div class="panel-header"><h3>⚙️ สถานะระบบ</h3><span class="drag-handle" title="คลิกค้างเพื่อย้ายกล่อง">✥</span></div>
@@ -332,7 +318,6 @@
                         </div>
                     </div>
 
-                    <!-- 🌟 Column 2 -->
                     <div class="dashboard-col" id="dashboard-col-2">
                         <div class="panel-card" id="widget-categories">
                             <div class="panel-header"><h3>📂 สัดส่วนหมวดหมู่กระทู้</h3><span class="drag-handle" title="คลิกค้างเพื่อย้ายกล่อง">✥</span></div>
@@ -346,7 +331,6 @@
                             </div>
                         </div>
 
-                        <!-- 🌟 แก้ไขเอาปุ่ม reset ที่ไม่ได้ใช้ออก -->
                         <div class="panel-card" id="widget-quick-actions" style="display:flex; gap:6px; flex-wrap:wrap; justify-content:center;">
                             <button class="btn btn-gold" onclick="openPostModal()">+ สลักกระทู้</button>
                             <button class="btn btn-gold" onclick="openUserModal()">+ รับศิษย์</button>
@@ -374,7 +358,6 @@
                         </div>
                     </div>
 
-                    <!-- 🌟 Column 3 -->
                     <div class="dashboard-col" id="dashboard-col-3">
                         <div class="panel-card" id="widget-urgent-reports" style="border-color: rgba(255, 107, 107, 0.4);">
                             <div class="panel-header"><h3 style="color: var(--danger-color);">🚨 เบาะแสด่วน (ล่าสุด)</h3><span class="drag-handle" title="คลิกค้างเพื่อย้ายกล่อง">✥</span></div>
@@ -525,18 +508,18 @@
                     <div class="table-responsive">
                         <table class="data-table">
                             <thead>
+                                <!-- 🌟 นำคอลัมน์รหัสผ่านออก เพื่อความปลอดภัยขั้นสูงสุด -->
                                 <tr>
                                     <th style="width: 7%;">ลำดับ</th>
-                                    <th style="width: 18%;">นามแฝง (Username)</th>
-                                    <th style="width: 14%;">รหัสผ่านลับ</th>
-                                    <th style="width: 12%;">ระดับขั้น</th>
-                                    <th style="width: 9%;">แต้มบุญ</th>
-                                    <th style="width: 13%;">ใช้งานล่าสุด</th>
+                                    <th style="width: 22%;">นามแฝง (Username)</th>
+                                    <th style="width: 15%;">ระดับขั้น</th>
+                                    <th style="width: 10%;">แต้มบุญ</th>
+                                    <th style="width: 15%;">ใช้งานล่าสุด</th>
                                     <th style="width: 7%; text-align: center;">จัดเรียง</th>
-                                    <th style="width: 20%; min-width: 150px;">จัดการ</th>
+                                    <th style="width: 24%; min-width: 150px;">จัดการ</th>
                                 </tr>
                             </thead>
-                            <tbody id="users-table-body"><tr><td colspan="8" style="text-align:center; padding: 15px;">กำลังอัญเชิญข้อมูล...</td></tr></tbody>
+                            <tbody id="users-table-body"><tr><td colspan="7" style="text-align:center; padding: 15px;">กำลังอัญเชิญข้อมูล...</td></tr></tbody>
                         </table>
                     </div>
                     <div id="userPagination" class="pagination"></div>
@@ -606,7 +589,6 @@
 
     <!-- 🔮 Modals -->
     
-    <!-- 🌟 Modal โรงตีเหล็ก (สร้างยศ) -->
     <div class="modal-overlay" id="roleModal">
         <div class="modal-box" style="max-width: 400px;">
             <h3 id="roleModalTitle" style="margin-bottom: 12px; text-align: center; font-size: 1.1rem;">✨ สร้างยศพิเศษ</h3>
@@ -649,7 +631,6 @@
         </div>
     </div>
 
-    <!-- Modal กระทู้ -->
     <div class="modal-overlay" id="postModal">
         <div class="modal-box">
             <h3 id="postModalTitle" style="margin-bottom: 12px; text-align: center; font-size: 1.05rem;">เพิ่มกระทู้ใหม่</h3>
@@ -674,14 +655,22 @@
         </div>
     </div>
 
-    <!-- Modal สมาชิก -->
+    <!-- Modal สมาชิก (แก้ไขแล้ว ซ่อนรหัสผ่านเป็น type="password") -->
     <div class="modal-overlay" id="userModal">
         <div class="modal-box" style="max-width: 360px;">
             <h3 id="userModalTitle" style="margin-bottom: 12px; text-align: center; font-size: 1.05rem;">เพิ่มสมาชิกใหม่</h3>
             <form id="userForm" onsubmit="submitUserForm(event)">
                 <input type="hidden" id="edit-user-old-username">
                 <div class="form-group"><label>นามแฝง (Username)</label><input type="text" id="edit-user-name" class="form-control" required></div>
-                <div class="form-group"><label>รหัสผ่านลับ (Password)</label><input type="text" id="edit-user-password" class="form-control" required></div>
+                
+                <div class="form-group">
+                    <label>รหัสผ่านลับ (Password)</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="edit-user-password" class="form-control" placeholder="ปล่อยว่างหากไม่ต้องการเปลี่ยน">
+                        <span class="toggle-password" onclick="toggleEditPassword()" id="toggleEditPwdBtn">แสดง</span>
+                    </div>
+                </div>
+
                 <div class="form-group">
                     <label>ระดับขั้นตบะ (Rank)</label>
                     <select id="edit-user-role" class="form-control form-select" required>
@@ -694,7 +683,6 @@
                             <option value="1">ปรมัตถ์ (แอดมิน)</option>
                         </optgroup>
                         <optgroup label="ยศพิเศษ (สร้างจากโรงตีเหล็ก)" id="dynamic-roles-optgroup">
-                            <!-- ยศที่แอดมินสร้างจะถูกแทรกที่นี่ผ่าน JS -->
                         </optgroup>
                     </select>
                 </div>
@@ -706,7 +694,6 @@
         </div>
     </div>
 
-    <!-- แจ้งเตือนทั่วไป -->
     <div class="modal-overlay" id="customAlertModal" style="z-index: 9999;">
         <div class="modal-box" style="max-width: 280px; text-align: center; padding: 20px 15px;">
             <h3 style="font-size: 1rem; margin-bottom: 8px;">ประกาศแจ้งเตือน</h3>
@@ -715,7 +702,6 @@
         </div>
     </div>
 
-    <!-- ยืนยันการลบ -->
     <div class="modal-overlay" id="customConfirmModal" style="z-index: 9999;">
         <div class="modal-box" style="max-width: 300px; text-align: center; padding: 20px 15px;">
             <h3 style="font-size: 1rem; margin-bottom: 8px; color: var(--danger-color);">⚠️ ยืนยันการดำเนินการ</h3>
@@ -729,7 +715,6 @@
 
     <script>
         const API_CONFIG = { 
-            USE_REAL_API: true, 
             BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
         };
 
@@ -746,6 +731,14 @@
         const USERS_PER_PAGE = 15; 
 
         let globalRolesData = [];
+
+        // 🛡️ ป้องกัน XSS: หลีกเลี่ยงแท็กสคริปต์ในข้อความก่อนแสดงผล
+        function safeHTML(str) {
+            if (str === null || str === undefined) return '';
+            return String(str).replace(/[&<>'"]/g, tag => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+            }[tag] || tag));
+        }
 
         function checkIsPinned(val) {
             return val === true || val === 1 || val === '1' || val === 'true';
@@ -786,112 +779,91 @@
                     return false;
                 }
                 const nameDisplay = document.getElementById('currentAdminName');
-                if (nameDisplay) nameDisplay.textContent = `👤 ${currentUser.username}`;
+                if (nameDisplay) nameDisplay.textContent = `👤 ${safeHTML(currentUser.username)}`;
             } catch (e) {
                 const nameDisplay = document.getElementById('currentAdminName');
-                if (nameDisplay) nameDisplay.textContent = `👤 ${savedUsername}`;
+                if (nameDisplay) nameDisplay.textContent = `👤 ${safeHTML(savedUsername)}`;
             }
             return true;
         }
 
         const AdminAPI = {
             async getPosts() { 
-                if (API_CONFIG.USE_REAL_API) { 
-                    try { const res = await fetch(`${API_CONFIG.BASE_URL}/posts`); return await res.json(); } catch(e){ return []; } 
-                } else { return JSON.parse(localStorage.getItem('siy_posts')) || []; } 
+                try { const res = await fetch(`${API_CONFIG.BASE_URL}/posts`); return await res.json(); } catch(e){ return []; } 
             },
             async savePost(postData) { 
-                if (API_CONFIG.USE_REAL_API) { 
-                    const token = localStorage.getItem('siy_token');
-                    const headers = {'Content-Type': 'application/json'};
-                    if (token) headers['Authorization'] = `Bearer ${token}`;
-                    const res = await fetch(`${API_CONFIG.BASE_URL}/posts`, { 
-                        method: postData.id && postData.id.length < 15 ? 'PUT' : 'POST', headers: headers, body: JSON.stringify(postData) 
-                    });
-                    if (!res.ok) throw new Error(await res.text() || 'Failed to save post');
-                    return await res.json();
-                } else { return { success: true }; } 
+                const token = localStorage.getItem('siy_token');
+                const headers = {'Content-Type': 'application/json'};
+                if (token) headers['Authorization'] = `Bearer ${token}`;
+                const res = await fetch(`${API_CONFIG.BASE_URL}/posts`, { 
+                    method: postData.id && postData.id.length < 15 ? 'PUT' : 'POST', headers: headers, body: JSON.stringify(postData) 
+                });
+                if (!res.ok) throw new Error(await res.text() || 'Failed to save post');
+                return await res.json();
             },
             async deletePost(id) { 
-                if (API_CONFIG.USE_REAL_API) { 
-                    const token = localStorage.getItem('siy_token');
-                    const headers = {};
-                    if (token) headers['Authorization'] = `Bearer ${token}`;
-                    await fetch(`${API_CONFIG.BASE_URL}/posts/${id}`, { method: 'DELETE', headers: headers }); 
-                } 
+                const token = localStorage.getItem('siy_token');
+                const headers = {};
+                if (token) headers['Authorization'] = `Bearer ${token}`;
+                await fetch(`${API_CONFIG.BASE_URL}/posts/${id}`, { method: 'DELETE', headers: headers }); 
             },
             async getUsers() { 
-                if (API_CONFIG.USE_REAL_API) { try { const res = await fetch(`${API_CONFIG.BASE_URL}/users`); return await res.json(); } catch(e){ return []; } } 
+                try { const res = await fetch(`${API_CONFIG.BASE_URL}/users`); return await res.json(); } catch(e){ return []; } 
             },
             async saveUser(userData, oldUsername) { 
-                if (API_CONFIG.USE_REAL_API) { 
-                    const token = localStorage.getItem('siy_token');
-                    const headers = {'Content-Type': 'application/json'};
-                    if (token) headers['Authorization'] = `Bearer ${token}`;
-                    const method = oldUsername ? 'PUT' : 'POST';
-                    const res = await fetch(`${API_CONFIG.BASE_URL}/users`, { 
-                        method: method, headers: headers, body: JSON.stringify({...userData, oldUsername}) 
-                    });
-                    if (!res.ok) throw new Error('DUPLICATE');
-                }
+                const token = localStorage.getItem('siy_token');
+                const headers = {'Content-Type': 'application/json'};
+                if (token) headers['Authorization'] = `Bearer ${token}`;
+                const method = oldUsername ? 'PUT' : 'POST';
+                const res = await fetch(`${API_CONFIG.BASE_URL}/users`, { 
+                    method: method, headers: headers, body: JSON.stringify({...userData, oldUsername}) 
+                });
+                if (!res.ok) throw new Error('DUPLICATE');
             },
             async deleteUser(username) { 
-                if (API_CONFIG.USE_REAL_API) { 
-                    const token = localStorage.getItem('siy_token');
-                    const headers = {};
-                    if (token) headers['Authorization'] = `Bearer ${token}`;
-                    await fetch(`${API_CONFIG.BASE_URL}/users/${username}`, { method: 'DELETE', headers: headers }); 
-                }
+                const token = localStorage.getItem('siy_token');
+                const headers = {};
+                if (token) headers['Authorization'] = `Bearer ${token}`;
+                await fetch(`${API_CONFIG.BASE_URL}/users/${username}`, { method: 'DELETE', headers: headers }); 
             },
             async getCMS() { 
-                if (API_CONFIG.USE_REAL_API) { try { const res = await fetch(`${API_CONFIG.BASE_URL}/cms`); return await res.json(); } catch(e){ return {}; } } 
+                try { const res = await fetch(`${API_CONFIG.BASE_URL}/cms`); return await res.json(); } catch(e){ return {}; } 
             },
             async saveCMS(cmsData) { 
-                if (API_CONFIG.USE_REAL_API) { 
-                    const token = localStorage.getItem('siy_token');
-                    const headers = {'Content-Type': 'application/json'};
-                    if (token) headers['Authorization'] = `Bearer ${token}`;
-                    await fetch(`${API_CONFIG.BASE_URL}/cms`, { method: 'POST', headers: headers, body: JSON.stringify(cmsData) }); 
-                } 
+                const token = localStorage.getItem('siy_token');
+                const headers = {'Content-Type': 'application/json'};
+                if (token) headers['Authorization'] = `Bearer ${token}`;
+                await fetch(`${API_CONFIG.BASE_URL}/cms`, { method: 'POST', headers: headers, body: JSON.stringify(cmsData) }); 
             },
             async getReports() {
-                if (API_CONFIG.USE_REAL_API) {
-                    try { const res = await fetch(`${API_CONFIG.BASE_URL}/reports`); return await res.json(); } catch(e){ return []; }
-                }
-                return [];
+                const token = localStorage.getItem('siy_token');
+                try { 
+                    const res = await fetch(`${API_CONFIG.BASE_URL}/reports`, { headers: {'Authorization': `Bearer ${token}`} }); 
+                    return await res.json(); 
+                } catch(e){ return []; }
             },
-            // 🌟 เพิ่มฟังก์ชันลบแจ้งเบาะแสที่หายไป
             async deleteReport(id) {
-                if (API_CONFIG.USE_REAL_API) { 
-                    const token = localStorage.getItem('siy_token');
-                    const headers = {};
-                    if (token) headers['Authorization'] = `Bearer ${token}`;
-                    await fetch(`${API_CONFIG.BASE_URL}/reports/${id}`, { method: 'DELETE', headers: headers }); 
-                }
+                const token = localStorage.getItem('siy_token');
+                const headers = {};
+                if (token) headers['Authorization'] = `Bearer ${token}`;
+                await fetch(`${API_CONFIG.BASE_URL}/reports/${id}`, { method: 'DELETE', headers: headers }); 
             },
             async getRoles() {
-                if (API_CONFIG.USE_REAL_API) {
-                    try { const res = await fetch(`${API_CONFIG.BASE_URL}/roles`); return await res.json(); } catch(e){ return []; }
-                }
-                return [];
+                try { const res = await fetch(`${API_CONFIG.BASE_URL}/roles`); return await res.json(); } catch(e){ return []; }
             },
             async saveRole(roleData, id = null) {
-                if (API_CONFIG.USE_REAL_API) {
-                    const token = localStorage.getItem('siy_token');
-                    const headers = {'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`};
-                    const url = id ? `${API_CONFIG.BASE_URL}/roles/${id}` : `${API_CONFIG.BASE_URL}/roles`;
-                    const method = id ? 'PUT' : 'POST';
-                    const res = await fetch(url, { method, headers, body: JSON.stringify(roleData) });
-                    if (!res.ok) throw new Error('เกิดข้อผิดพลาดในการสร้างยศ');
-                    return await res.json();
-                }
+                const token = localStorage.getItem('siy_token');
+                const headers = {'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`};
+                const url = id ? `${API_CONFIG.BASE_URL}/roles/${id}` : `${API_CONFIG.BASE_URL}/roles`;
+                const method = id ? 'PUT' : 'POST';
+                const res = await fetch(url, { method, headers, body: JSON.stringify(roleData) });
+                if (!res.ok) throw new Error('เกิดข้อผิดพลาดในการสร้างยศ');
+                return await res.json();
             },
             async deleteRole(id) {
-                if (API_CONFIG.USE_REAL_API) {
-                    const token = localStorage.getItem('siy_token');
-                    const headers = {'Authorization': `Bearer ${token}`};
-                    await fetch(`${API_CONFIG.BASE_URL}/roles/${id}`, { method: 'DELETE', headers });
-                }
+                const token = localStorage.getItem('siy_token');
+                const headers = {'Authorization': `Bearer ${token}`};
+                await fetch(`${API_CONFIG.BASE_URL}/roles/${id}`, { method: 'DELETE', headers });
             }
         };
 
@@ -928,7 +900,7 @@
             const customRole = globalRolesData.find(r => r.id === roleValue);
             if (customRole) {
                 const borderCss = customRole.border_color ? `border: 1px solid ${customRole.border_color}; box-shadow: 0 0 6px ${customRole.border_color}80;` : '';
-                return `<span class="role-badge" style="background: ${customRole.bg_color}; color: ${customRole.text_color} !important; ${borderCss}">${customRole.rank_name}</span>`;
+                return `<span class="role-badge" style="background: ${customRole.bg_color}; color: ${customRole.text_color} !important; ${borderCss}">${safeHTML(customRole.rank_name)}</span>`;
             }
 
             if (rankName === 'ตัวละคร') {
@@ -939,7 +911,7 @@
                 case '2': return '<span class="role-badge role-2">ตติยภูมิ</span>';
                 case '3': return '<span class="role-badge role-3">ทุติยภูมิ</span>';
                 case '4': return '<span class="role-badge role-4">ปฐมภูมิ</span>';
-                default: return `<span class="role-badge role-5">${rankName || 'เด็กวัด'}</span>`; 
+                default: return `<span class="role-badge role-5">${safeHTML(rankName || 'เด็กวัด')}</span>`; 
             }
         }
 
@@ -1031,7 +1003,7 @@
                 let rrHtml = '';
                 for (const [reason, count] of Object.entries(reportReasonsObj)) {
                     const pct = (count / reports.length) * 100;
-                    rrHtml += `<div class="progress-section"><div class="progress-label"><span style="color:var(--text-light);">${reason}</span> <span style="color:var(--danger-color);">${count} รายการ</span></div>
+                    rrHtml += `<div class="progress-section"><div class="progress-label"><span style="color:var(--text-light);">${safeHTML(reason)}</span> <span style="color:var(--danger-color);">${count} รายการ</span></div>
                                <div class="progress-track"><div class="progress-fill" style="width:${pct}%; background:var(--danger-color);"></div></div></div>`;
                 }
                 rrContainer.innerHTML = rrHtml;
@@ -1044,9 +1016,9 @@
             if (latestPosts.length > 0) {
                 latestPostsContainer.innerHTML = latestPosts.map(p => `
                     <a href="post.html?id=${p.id}" target="_blank" class="list-item">
-                        <div class="list-title">${p.title}</div>
+                        <div class="list-title">${safeHTML(p.title)}</div>
                         <div class="list-meta">
-                            <span>ผู้เขียน: <span style="color:var(--gold-light);">${p.author}</span></span>
+                            <span>ผู้เขียน: <span style="color:var(--gold-light);">${safeHTML(p.author)}</span></span>
                             <span>${p.timestamp.split('|')[0] || p.timestamp}</span>
                         </div>
                     </a>
@@ -1058,8 +1030,8 @@
             if (pinnedList.length > 0) {
                 pinnedContainer.innerHTML = pinnedList.map(p => `
                     <a href="post.html?id=${p.id}" target="_blank" class="list-item" style="border-left: 2px solid var(--success-color); padding-left: 6px;">
-                        <div class="list-title" style="color:var(--success-color);">${p.title}</div>
-                        <div class="list-meta"><span>${p.author}</span><span>ID: ${p.id.substring(0, 6)}</span></div>
+                        <div class="list-title" style="color:var(--success-color);">${safeHTML(p.title)}</div>
+                        <div class="list-meta"><span>${safeHTML(p.author)}</span><span>ID: ${p.id.substring(0, 6)}</span></div>
                     </a>
                 `).join('');
             } else { pinnedContainer.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 10px;">ไม่มีจารึกที่ถูกปักหมุด</div>'; }
@@ -1070,7 +1042,7 @@
                 recentUsersContainer.innerHTML = recentUsersList.map(u => `
                     <div class="user-item">
                         <div class="user-info">
-                            <div style="color: #fff; font-family: 'Prompt', sans-serif; font-size: 0.8rem;">${u.username}</div>
+                            <div style="color: #fff; font-family: 'Prompt', sans-serif; font-size: 0.8rem;">${safeHTML(u.username)}</div>
                             <div>${getRoleBadge(u)}</div>
                         </div>
                         <div style="font-size:0.65rem; color:var(--success-color);">${timeSinceLastLogin(u.last_login || u.login_timestamp)}</div>
@@ -1083,9 +1055,9 @@
             if (urgentReports.length > 0) {
                 urgentReportsContainer.innerHTML = urgentReports.map(r => `
                     <div class="list-item" style="border-left: 2px solid var(--danger-color); padding-left: 6px;">
-                        <div class="list-title" style="color:var(--danger-color);">${r.reason}</div>
+                        <div class="list-title" style="color:var(--danger-color);">${safeHTML(r.reason)}</div>
                         <div class="list-meta">
-                            <span>ผู้แจ้ง: ${r.reporter}</span>
+                            <span>ผู้แจ้ง: ${safeHTML(r.reporter)}</span>
                             <span style="font-family:monospace; color:var(--text-light);">ID: ${r.target_id.substring(0, 6)}...</span>
                         </div>
                     </div>
@@ -1099,7 +1071,7 @@
                     <div class="user-item">
                         <div class="user-info">
                             <div style="display:flex; flex-direction:column; gap:1px;">
-                                <div style="color: #fff; font-family: 'Prompt', sans-serif; font-size: 0.8rem;">${u.username}</div>
+                                <div style="color: #fff; font-family: 'Prompt', sans-serif; font-size: 0.8rem;">${safeHTML(u.username)}</div>
                                 <div>${getRoleBadge(u)}</div>
                             </div>
                         </div>
@@ -1113,9 +1085,9 @@
             if (popularPosts.length > 0 && popularPosts[0].views > 0) {
                 popularPostsContainer.innerHTML = popularPosts.map(p => `
                     <a href="post.html?id=${p.id}" target="_blank" class="list-item">
-                        <div class="list-title">${p.title}</div>
+                        <div class="list-title">${safeHTML(p.title)}</div>
                         <div class="list-meta">
-                            <span>ผู้เขียน: ${p.author}</span>
+                            <span>ผู้เขียน: ${safeHTML(p.author)}</span>
                             <span>👀 <strong style="color:#ffb17a;">${p.views || 0}</strong> วิว</span>
                         </div>
                     </a>
@@ -1127,7 +1099,7 @@
             if (topLikedPosts.length > 0 && topLikedPosts[0].likes > 0) {
                 topLikedContainer.innerHTML = topLikedPosts.map(p => `
                     <a href="post.html?id=${p.id}" target="_blank" class="list-item">
-                        <div class="list-title">${p.title}</div>
+                        <div class="list-title">${safeHTML(p.title)}</div>
                         <div class="list-meta">
                             <span>หมวด: ${p.category === '1' ? 'สัตยาสาบาน' : 'คุยกับศิษย์'}</span>
                             <span>🙏 <strong style="color:var(--gold-main);">${p.likes || 0}</strong> ครั้ง</span>
@@ -1161,11 +1133,11 @@
             tbody.innerHTML = '';
             globalRolesData.forEach(role => {
                 const borderCss = role.border_color ? `border: 1px solid ${role.border_color};` : '';
-                const badge = `<span class="role-badge" style="background: ${role.bg_color}; color: ${role.text_color} !important; ${borderCss}">${role.rank_name}</span>`;
+                const badge = `<span class="role-badge" style="background: ${role.bg_color}; color: ${role.text_color} !important; ${borderCss}">${safeHTML(role.rank_name)}</span>`;
                 tbody.innerHTML += `
                     <tr>
                         <td>${badge}</td>
-                        <td>${role.rank_name}</td>
+                        <td>${safeHTML(role.rank_name)}</td>
                         <td>ระดับ ${role.level || 5}</td>
                         <td>
                             <div style="display:flex; gap:4px; flex-wrap:nowrap;">
@@ -1183,7 +1155,7 @@
             if (!optgroup) return;
             optgroup.innerHTML = '';
             globalRolesData.forEach(role => {
-                optgroup.innerHTML += `<option value="${role.id}">${role.rank_name} (ระดับ ${role.level || 5})</option>`;
+                optgroup.innerHTML += `<option value="${role.id}">${safeHTML(role.rank_name)} (ระดับ ${role.level || 5})</option>`;
             });
         }
 
@@ -1325,9 +1297,9 @@
                 
                 const rowHtml = `<tr>
                     <td style="color: var(--text-muted); font-family: monospace;">${String(p.id).substring(0, 8)}...</td>
-                    <td class="wrap-text" style="line-height: 1.3;"><strong style="color: var(--gold-light); font-size: 0.8rem;">${p.title}</strong></td>
+                    <td class="wrap-text" style="line-height: 1.3;"><strong style="color: var(--gold-light); font-size: 0.8rem;">${safeHTML(p.title)}</strong></td>
                     <td>${isPinned ? '<span class="admin-badge" style="border-color:var(--gold-main); color:var(--gold-main);">📌 ปักหมุด</span>' : '<span style="color:var(--text-muted); font-size:0.75rem;">ทั่วไป</span>'}</td>
-                    <td>${p.author}</td>
+                    <td>${safeHTML(p.author)}</td>
                     <td>
                         <div style="display:flex; gap:4px; flex-wrap:nowrap;">
                             ${pinBtnHtml} 
@@ -1406,7 +1378,7 @@
             const tbody = document.getElementById('users-table-body');
             tbody.innerHTML = '';
             if (filteredUsersData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 10px; color: var(--text-muted);">ไม่พบข้อมูล</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 10px; color: var(--text-muted);">ไม่พบข้อมูล</td></tr>';
                 document.getElementById('userPagination').innerHTML = '';
                 return;
             }
@@ -1435,8 +1407,7 @@
                 tbody.innerHTML += `
                     <tr>
                         <td style="color: var(--text-muted);">${globalIndex}</td>
-                        <td><strong style="color: #fff; font-size: 0.8rem;">${u.username}</strong></td>
-                        <td><code style="background: rgba(0,0,0,0.5); padding: 2px 4px; border-radius: 4px; border: 1px solid rgba(138,99,21,0.3); color: var(--gold-light); font-size:0.7rem;">${u.password || '-'}</code></td>
+                        <td><strong style="color: #fff; font-size: 0.8rem;">${safeHTML(u.username)}</strong></td>
                         <td>${displayRole}</td>
                         <td><strong style="color:var(--gold-light); font-size: 0.9rem;">${userKarma}</strong> <span style="font-size: 0.65rem; color: var(--text-muted);">แต้ม</span></td>
                         <td>${displayLastLogin}</td>
@@ -1487,8 +1458,8 @@
 
                 tbody.innerHTML += `
                     <tr>
-                        <td><strong style="color: #fff;">${r.reporter}</strong></td>
-                        <td class="wrap-text" style="color: #ffb17a; font-weight: 500;">${r.reason}</td>
+                        <td><strong style="color: #fff;">${safeHTML(r.reporter)}</strong></td>
+                        <td class="wrap-text" style="color: #ffb17a; font-weight: 500;">${safeHTML(r.reason)}</td>
                         <td><span class="role-badge role-4">${targetText}</span></td>
                         <td><code style="color: var(--gold-light); font-family: monospace;">${r.target_id.substring(0, 10)}...</code></td>
                         <td><span class="post-time" style="font-size:0.7rem; color: var(--text-muted);">${r.timestamp}</span></td>
@@ -1500,15 +1471,6 @@
                         </td>
                     </tr>
                 `;
-            });
-        }
-
-        // 🌟 เพิ่มฟังก์ชันลบเบาะแสที่ตกหล่นไป
-        function deleteReport(id) {
-            showCustomConfirm('แน่ใจหรือไม่ว่าต้องการปัดตกเบาะแสนี้?', async () => {
-                await AdminAPI.deleteReport(id);
-                loadAdminData();
-                showCustomAlert('🧹 ปัดตกเบาะแสเรียบร้อยแล้ว');
             });
         }
 
@@ -1580,7 +1542,7 @@
                 if (u) { 
                     document.getElementById('edit-user-old-username').value = u.username; 
                     document.getElementById('edit-user-name').value = u.username; 
-                    document.getElementById('edit-user-password').value = u.password; 
+                    document.getElementById('edit-user-password').value = ''; // ปล่อยว่างเพื่อไม่ให้โชว์รหัสผ่าน
                     
                     const isDynamic = globalRolesData.some(r => r.id === String(u.role));
                     if (isDynamic) {
@@ -1596,6 +1558,18 @@
             document.getElementById('userModal').classList.add('active');
         }
         function editUser(username) { openUserModal(username); }
+
+        function toggleEditPassword() {
+            const pwdInput = document.getElementById('edit-user-password');
+            const toggleBtn = document.getElementById('toggleEditPwdBtn');
+            if (pwdInput.type === 'password') {
+                pwdInput.type = 'text';
+                toggleBtn.textContent = 'ซ่อน';
+            } else {
+                pwdInput.type = 'password';
+                toggleBtn.textContent = 'แสดง';
+            }
+        }
 
         async function submitUserForm(e) {
             e.preventDefault(); document.getElementById('btnSaveUser').textContent = 'รอ...';
@@ -1629,7 +1603,7 @@
                 closeModal('userModal'); 
                 loadAdminData(); 
                 showCustomAlert('✅ บันทึกสำเร็จ'); 
-            } catch (err) { showCustomAlert('❌ ชื่อนี้ซ้ำ'); }
+            } catch (err) { showCustomAlert('❌ ชื่อนี้ซ้ำ หรือเชื่อมต่อล้มเหลว'); }
             document.getElementById('btnSaveUser').textContent = 'บันทึก';
         }
 
@@ -1641,7 +1615,6 @@
             });
         }
 
-        // 🌟 เพิ่มฟังก์ชันบันทึกการตั้งค่าหน้าแรกที่หายไป
         async function saveHeroCMS(e) {
             e.preventDefault();
             const btn = e.target.querySelector('button[type="submit"]');
