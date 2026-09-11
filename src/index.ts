@@ -242,8 +242,10 @@ app.post('/api/users', async (c) => {
     const secret = c.env.JWT_SECRET || DEFAULT_JWT_SECRET
     const token = await generateToken({ username, role: role || '5', rank_name: rank_name || 'เด็กวัด' }, secret)
     return c.json({ success: true, token, username })
-  } catch (e) {
-    return c.json({ success: false, message: 'นามแฝงนี้มีผู้ใช้งานแล้ว' }, 400)
+  } catch (e: any) {
+    console.error("Register Error: ", e);
+    // 🌟 ส่งข้อความ Error จากฐานข้อมูลออกไปโชว์ที่หน้าจอเลย
+    return c.json({ success: false, message: `ฐานข้อมูลแจ้งว่า: ${e.message}` }, 400)
   }
 })
 
