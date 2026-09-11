@@ -514,6 +514,18 @@
                         <label style="color: var(--gold-light); font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 5px;">
                             <input type="checkbox" id="hideRoleNormal" onchange="handleUserSearch()" style="accent-color: var(--gold-main);"> เด็กวัด
                         </label>
+                        <label style="color: var(--gold-light); font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                            <input type="checkbox" id="hideRolePathom" onchange="handleUserSearch()" style="accent-color: var(--gold-main);"> ปฐมภูมิ
+                        </label>
+                        <label style="color: var(--gold-light); font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                            <input type="checkbox" id="hideRoleThuti" onchange="handleUserSearch()" style="accent-color: var(--gold-main);"> ทุติยภูมิ
+                        </label>
+                        <label style="color: var(--gold-light); font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                            <input type="checkbox" id="hideRoleTati" onchange="handleUserSearch()" style="accent-color: var(--gold-main);"> ตติยภูมิ
+                        </label>
+                        <label style="color: var(--gold-light); font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                            <input type="checkbox" id="hideRoleDynamic" onchange="handleUserSearch()" style="accent-color: var(--gold-main);"> ยศพิเศษ
+                        </label>
                     </div>
 
                     <div class="table-responsive">
@@ -1359,9 +1371,13 @@
             const roleFilter = document.getElementById('filterRoleField').value;
             const sortOrder = document.getElementById('sortOrderField').value;
 
-            // 🌟 เพิ่มการดึงค่า Checkbox สำหรับซ่อนยศ
+            // 🌟 ดึงค่า Checkbox สำหรับซ่อนยศ
             const hideRoleChar = document.getElementById('hideRoleChar') ? document.getElementById('hideRoleChar').checked : false;
             const hideRoleNormal = document.getElementById('hideRoleNormal') ? document.getElementById('hideRoleNormal').checked : false;
+            const hideRolePathom = document.getElementById('hideRolePathom') ? document.getElementById('hideRolePathom').checked : false;
+            const hideRoleThuti = document.getElementById('hideRoleThuti') ? document.getElementById('hideRoleThuti').checked : false;
+            const hideRoleTati = document.getElementById('hideRoleTati') ? document.getElementById('hideRoleTati').checked : false;
+            const hideRoleDynamic = document.getElementById('hideRoleDynamic') ? document.getElementById('hideRoleDynamic').checked : false;
 
             let data = globalUsersData.filter(u => {
                 const matchName = u.username.toLowerCase().includes(query);
@@ -1378,6 +1394,10 @@
                 // 🌟 ตรวจสอบว่าตรงกับเงื่อนไขการซ่อนหรือไม่ ถ้าใช่ให้เตะทิ้ง (return false)
                 if (hideRoleChar && u.rank_name === 'ตัวละคร') return false;
                 if (hideRoleNormal && (String(u.role) === '5' || u.rank_name === 'เด็กวัด') && u.rank_name !== 'ตัวละคร') return false;
+                if (hideRolePathom && (String(u.role) === '4' || u.rank_name === 'ปฐมภูมิ')) return false;
+                if (hideRoleThuti && (String(u.role) === '3' || u.rank_name === 'ทุติยภูมิ')) return false;
+                if (hideRoleTati && (String(u.role) === '2' || u.rank_name === 'ตติยภูมิ') && u.rank_name !== 'ตัวละคร') return false;
+                if (hideRoleDynamic && String(u.role).startsWith('dynamic_')) return false;
 
                 return matchName && matchRole;
             });
