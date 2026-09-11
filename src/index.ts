@@ -232,6 +232,13 @@ app.post('/api/users', async (c) => {
       return c.json({ success: false, message: 'นามแฝงอนุญาตเฉพาะ "อักขระภาษาไทย" และห้ามเว้นวรรคเด็ดขาด!' }, 400);
   }
 
+  // 🛡️ SECURITY FIX: ตรวจสอบคำสงวน ห้ามใช้ชื่อที่คล้ายแอดมินหรือคำเฉพาะของระบบ
+  const reservedWords = ['แอดมิน', 'แอทมิน', 'ผู้ดูแล', 'ทีมงาน', 'เจ้าหน้าที่', 'ระบบ', 'ผู้คุมกฎ', 'ปรมัตถ์', 'สตาฟ', 'เว็บมาสเตอร์', 'ศิษย์หลวงปู่', 'เจ้าสำนัก', 'ผู้บริหาร','สต๊าฟ', 'ซัพพอร์ต', 'ส่วนกลาง', 'จีเอ็ม'];
+  
+  if (reservedWords.some(word => username.includes(word))) {
+      return c.json({ success: false, message: 'นามแฝงนี้มีคำสงวนของสำนักประทับอยู่ ไม่อนุญาตให้ใช้งาน!' }, 400);
+  }
+
   const salt = crypto.randomUUID()
   const hashed = await hashPassword(password, salt)
   try {
@@ -259,6 +266,13 @@ app.put('/api/users', async (c) => {
   
   if (!/^[\u0E00-\u0E7F]+$/.test(username)) {
       return c.json({ success: false, message: 'นามแฝงอนุญาตเฉพาะ "อักขระภาษาไทย" และห้ามเว้นวรรคเด็ดขาด!' }, 400);
+  }
+
+  // 🛡️ SECURITY FIX: ตรวจสอบคำสงวน ห้ามใช้ชื่อที่คล้ายแอดมินหรือคำเฉพาะของระบบ
+  const reservedWords = ['แอดมิน', 'แอทมิน', 'ผู้ดูแล', 'ทีมงาน', 'เจ้าหน้าที่', 'ระบบ', 'ผู้คุมกฎ', 'ปรมัตถ์', 'สตาฟ', 'เว็บมาสเตอร์', 'ศิษย์หลวงปู่'];
+  
+  if (reservedWords.some(word => username.includes(word))) {
+      return c.json({ success: false, message: 'นามแฝงนี้มีคำสงวนของสำนักประทับอยู่ ไม่อนุญาตให้ใช้งาน!' }, 400);
   }
 
   try {
@@ -651,7 +665,7 @@ app.post('/api/cms', async (c) => {
   
   const body = await c.req.json()
   await c.env.DB.prepare(
-    "INSERT INTO cms (id, heroSubtitle, heroDesc, heroImg, heroBtnText, heroBtnUrl) VALUES (1, ?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET heroSubtitle = ?, heroDesc = ?, heroImg = ?, heroBtnText = ?, heroBtnUrl = ?"
+    "INSERT INTO cms (id, heroSubtitle, heroDesc, heroImg, heroBtnText, heroBtnUrl) VALUES (1, ?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET heroSubtitle = ?, heroDesc = ?, heroImg = ?, heroBtnText = ?, heroBtnUrl = ?, heroSubtitle = ?, heroDesc = ?, heroImg = ?, heroBtnText = ?, heroBtnUrl = ?"
   ).bind(body.heroSubtitle || '', body.heroDesc || '', body.heroImg || '', body.heroBtnText || '', body.heroBtnUrl || '', body.heroSubtitle || '', body.heroDesc || '', body.heroImg || '', body.heroBtnText || '', body.heroBtnUrl || '').run()
   return c.json({ success: true })
 })
