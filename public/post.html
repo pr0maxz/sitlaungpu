@@ -436,18 +436,10 @@
             return new RegExp(`@(${escaped.join('|')})`, 'g');
         }
 
-        // 🛡️ เปลี่ยนไปใช้ data-action เพื่อเลิกใช้ inline onclick ที่เสี่ยง XSS
         function formatMentions(text, usersMap) {
             if(!text) return '';
             const regex = getDynamicMentionRegex(usersMap);
             return text.replace(regex, '<span class="user-mention" data-action="scroll-to-user" data-username="$1" title="ค้นหาจารึกของผู้นี้">@$1</span>');
-        }
-
-        function extractMentions(text, usersMap) {
-            if(!text) return [];
-            const regex = getDynamicMentionRegex(usersMap);
-            const matches = [...text.matchAll(regex)];
-            return [...new Set(matches.map(m => m[1]))]; 
         }
 
         function scrollToUserComment(username) {
@@ -610,17 +602,19 @@
                     return await res.json();
                 } catch (e) { return []; }
             },
+            // 🌟 1. ดึงกุญแจยืนยันตัวตนแนบไปกับ API ทุกครั้งที่อ่านแจ้งเตือน
             async readNotification(id) {
-                try { await fetch(`${API_CONFIG.BASE_URL}/notifications/${id}/read`, { method: 'PUT' }); } catch(e) {}
-            },
-            async sendNotification(data) {
-                try {
-                    await fetch(`${API_CONFIG.BASE_URL}/notifications`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(data)
-                    });
-                } catch (e) {}
+                try { 
+                    const token = localStorage.getItem('siy_token');
+                    const headers = { 'Content-Type': 'application/json' };
+                    if (token) headers['Authorization'] = `Bearer ${token}`;
+                    
+                    await fetch(`${API_CONFIG.BASE_URL}/notifications/${id}/read`, { 
+                        method: 'PUT',
+                        headers: headers,
+                        body: JSON.stringify({}) // ให้ Backend รู้ว่ารับเป็น JSON แน่นอน
+                    }); 
+                } catch(e) { console.error("Read Noti Error:", e); }
             },
             async getBookmarks() {
                 try {
@@ -689,7 +683,6 @@
                 if (n.action_type === 'mention') actionText = 'ได้เอ่ยนามเรียกขานท่าน';
 
                 const isUnreadClass = String(n.is_read) === '0' ? 'unread' : '';
-                // 🛡️ เปลี่ยนเป็น data-action ป้องกัน XSS
                 notiListContent.innerHTML += `
                     <div class="noti-item ${isUnreadClass}" data-action="noti-click" data-id="${n.id}" data-post-id="${n.post_id}">
                         <div><strong style="color: var(--gold-light);">${safeHTML(n.actor)}</strong> ${actionText}</div>
@@ -706,8 +699,26 @@
             }
         }
 
+        // 🌟 2. อัปเดต UI ให้จุดแดงหายวับทันทีก่อนเปลี่ยนหน้าเว็บ
         async function handleNotiClick(notiId, postIdStr) {
+            // ลบจุดแดงที่ UI ทันที
+            const badgeCount = document.getElementById('notiBadgeCount');
+            if (badgeCount) {
+                let count = parseInt(badgeCount.textContent) || 0;
+                if (count > 0) {
+                    count--;
+                    badgeCount.textContent = count;
+                    if (count === 0) badgeCount.style.display = 'none';
+                }
+            }
+            
+            const notiItem = document.querySelector(`.noti-item[data-id="${notiId}"]`);
+            if (notiItem) notiItem.classList.remove('unread');
+
+            // หน่วงเวลาให้เบราว์เซอร์ส่งคำสั่งอัปเดตสถานะสำเร็จก่อนเปลี่ยนหน้า
             await ApiManager.readNotification(notiId);
+            
+            // เปลี่ยนหน้าเว็บ
             const currentPostId = new URLSearchParams(window.location.search).get('id');
             const targetPostId = postIdStr.split('#')[0];
             
@@ -944,11 +955,9 @@
                     const badge = formatBadgeFromUsersMap(c.author, usersMap, rolesList);
                     let cleanMainContent = c.content.replace(/^\[REPLY_TO:[^\]]+\](?:\[AUTHOR:[^\]]+\])?/, '');
                     
-                    // 🛡️ ป้องกัน XSS
                     cleanMainContent = safeContentRender(cleanMainContent);
                     cleanMainContent = formatMentions(cleanMainContent, usersMap);
 
-                    // 🛡️ Event Delegation: เลิกใช้ inline onclick เปลี่ยนเป็น data-action
                     let adminControls = isUserAdmin ? `<button type="button" class="btn-delete-comment" data-action="delete-comment" data-id="${c.id}" data-post-id="${postId}">🗑️ ทำลาย</button>` : '';
                     let replyBtn = (userType !== 'guest') ? `<button type="button" class="btn-reply-comment" data-action="toggle-reply" data-id="${c.id}">💬 ตอบกลับ</button>` : '';
                     let reportBtn = (savedUser) ? `<button type="button" class="btn-report" data-action="report-comment" data-id="${c.id}">🚨 แจ้ง</button>` : '';
@@ -1055,7 +1064,6 @@
             }
         }
 
-        // 🛡️ ระบบ Event Delegation ดักจับการคลิกทั้งหน้าเพื่อเรียกใช้งานฟังก์ชัน (ทดแทน inline onclick ทั้งหมด)
         document.addEventListener('click', function(e) {
             const btn = e.target.closest('[data-action]');
             if (!btn) return;
@@ -1151,33 +1159,9 @@
                 const result = await ApiManager.saveComment(commentData);
                 if(result && result.success !== false) {
                     textarea.value = ''; 
-                    
-                    const usersMap = await ApiManager.fetchUsersOnce();
-                    const mentionedUsers = extractMentions(content, usersMap);
-                    
-                    for (const mentionedUser of mentionedUsers) {
-                        if (mentionedUser !== author) {
-                            await ApiManager.sendNotification({
-                                id: Date.now().toString() + Math.floor(Math.random() * 1000),
-                                recipient: mentionedUser,
-                                actor: author,
-                                action_type: 'mention',
-                                post_id: `${postId}#comment-${commentData.id}`,
-                                timestamp: timeStr
-                            });
-                        }
-                    }
-                    
-                    if (currentPostAuthorGlobal && currentPostAuthorGlobal !== author && !mentionedUsers.includes(currentPostAuthorGlobal)) {
-                        await ApiManager.sendNotification({
-                            id: Date.now().toString(),
-                            recipient: currentPostAuthorGlobal,
-                            actor: author,
-                            action_type: 'comment',
-                            post_id: `${postId}#comment-${commentData.id}`,
-                            timestamp: timeStr
-                        });
-                    }
+
+                    // 🗑️ เราลบโค้ด ApiManager.sendNotification แบบเก่าทิ้งไปแล้ว
+                    // เพราะตอนนี้ Backend จะจัดการสร้างแจ้งเตือนให้อัตโนมัติ
 
                     broadcastAction('NEW_COMMENT', postId, { postId: postId });
                     showCustomAlert('บันทึกจารึกสำเร็จ!', true); 
@@ -1225,32 +1209,7 @@
                 if(result && result.success !== false) {
                     textarea.value = '';
 
-                    const usersMap = await ApiManager.fetchUsersOnce();
-                    const mentionedUsers = extractMentions(content, usersMap);
-                    
-                    for (const mentionedUser of mentionedUsers) {
-                        if (mentionedUser !== author) { 
-                            await ApiManager.sendNotification({
-                                id: Date.now().toString() + Math.floor(Math.random() * 1000), 
-                                recipient: mentionedUser,
-                                actor: author,
-                                action_type: 'mention', 
-                                post_id: `${postId}#comment-${commentData.id}`,
-                                timestamp: timeStr
-                            });
-                        }
-                    }
-
-                    if (parentAuthor && parentAuthor !== author && !mentionedUsers.includes(parentAuthor)) {
-                        await ApiManager.sendNotification({
-                            id: Date.now().toString(),
-                            recipient: parentAuthor,
-                            actor: author,
-                            action_type: 'reply',
-                            post_id: `${postId}#comment-${commentData.id}`,
-                            timestamp: timeStr
-                        });
-                    }
+                    // 🗑️ ลบโค้ดส่งแจ้งเตือนแบบเก่าทิ้งเช่นกัน
 
                     broadcastAction('NEW_COMMENT', postId, { postId: postId });
                     showCustomAlert('ส่งคำตอบกลับสำเร็จ!', true);

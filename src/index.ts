@@ -11,12 +11,11 @@ type Bindings = {
 const app = new Hono<{ Bindings: Bindings }>()
 
 app.use('/api/*', cors({
-  origin: '*', // ⚠️ ข้อเสนอแนะ: เมื่อระบบนิ่ง ให้เปลี่ยนเป็นโดเมนเว็บคุณ เช่น 'https://sitluangpu.pages.dev' 
+  origin: '*', // ⚠️ ข้อเสนอแนะ: เมื่อระบบนิ่ง ให้เปลี่ยนเป็นโดเมนเว็บคุณ
   allowHeaders: ['Content-Type', 'Authorization'],
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
 }))
 
-// ⚠️ JWT SECRET: หากไม่ได้ตั้งค่าผ่าน wrangler secret put JWT_SECRET ระบบจะใช้ค่านี้ชั่วคราว
 const DEFAULT_JWT_SECRET = 'sitluangpu_telepathy_secret_token_2026'
 
 async function hashPassword(password: string, salt: string) {
@@ -41,23 +40,29 @@ async function generateToken(payload: { username: string; role: string; rank_nam
   }, secret, 'HS256')
 }
 
-// 🛡️ [อัปเกรดใหม่] ระบบสแกนกุญแจแบบเจาะลึก พร้อมรายงานสาเหตุ Error
+// 🛡️ ระบบสแกนกุญแจ
 async function getAuthenticatedUser(c: any): Promise<{ user: any, error: string | null }> {
   try {
     const authHeader = c.req.raw.headers.get('Authorization') || c.req.raw.headers.get('authorization');
-    if (!authHeader) return { user: null, error: 'Header Missing (เบราว์เซอร์ไม่ได้ส่งกุญแจมา ให้ลองกด Ctrl+F5 เพื่อล้างแคช)' };
+    if (!authHeader) return { user: null, error: 'Header Missing' };
     
     const token = authHeader.replace(/^Bearer\s+/i, '').replace(/['"]/g, '').trim();
-    if (!token || token === 'undefined' || token === 'null') return { user: null, error: 'Token Empty (กุญแจว่างเปล่า)' };
+    if (!token || token === 'undefined' || token === 'null') return { user: null, error: 'Token Empty' };
 
     const secret = c.env?.JWT_SECRET || DEFAULT_JWT_SECRET;
     const decoded = await verify(token, secret, 'HS256');
     
     return { user: decoded, error: null };
   } catch (e: any) {
-    console.error("JWT Verification Error:", e);
-    return { user: null, error: `Token Invalid (${e.message})` };
+    return { user: null, error: `Token Invalid` };
   }
+}
+
+// 🌟 แปลงเวลา Cloudflare (UTC) ให้เป็นเวลาไทย (+7)
+function getThaiTimeStr() {
+  const thaiMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+  const now = new Date(Date.now() + 7 * 60 * 60 * 1000); // บวก 7 ชั่วโมง
+  return now.getUTCDate() + ' ' + thaiMonths[now.getUTCMonth()] + ' ' + (now.getUTCFullYear() + 543) + ' | ' + String(now.getUTCHours()).padStart(2, '0') + ':' + String(now.getUTCMinutes()).padStart(2, '0') + ' น.';
 }
 
 function calculateRank(karma: number, currentRole: string, currentRankName: string) {
@@ -83,7 +88,7 @@ async function addKarma(db: D1Database, username: string, amount: number) {
     await db.prepare(
       "UPDATE users SET karma = ?, role = ?, rank_name = ? WHERE username = ?"
     ).bind(newKarma, rankInfo.role, rankInfo.rank_name, username).run()
-  } catch (e) { console.error("Error adding karma:", e) }
+  } catch (e) {}
 }
 
 const loginAttempts = new Map<string, { count: number, lockUntil: number }>();
@@ -145,8 +150,7 @@ app.post('/api/login', async (c) => {
 
     resetLoginAttempts(ip);
 
-    const now = Date.now()
-    try { await c.env.DB.prepare("UPDATE users SET last_login = ? WHERE username = ?").bind(now, user.username).run() } catch(e) {}
+    try { await c.env.DB.prepare("UPDATE users SET last_login = ? WHERE username = ?").bind(Date.now(), user.username).run() } catch(e) {}
 
     const secret = c.env.JWT_SECRET || DEFAULT_JWT_SECRET
     const token = await generateToken({ username: user.username, role: String(user.role || '5'), rank_name: user.rank_name || 'เด็กวัด' }, secret)
@@ -202,9 +206,8 @@ app.post('/api/admin/login', async (c) => {
 app.get('/api/me', async (c) => {
   const authResult = await getAuthenticatedUser(c)
   if (!authResult.user) return c.json({ authenticated: false, error: authResult.error }, 401)
-  const authUser = authResult.user;
-
-  const user: any = await c.env.DB.prepare("SELECT username, role, rank_name, karma, last_login FROM users WHERE username = ?").bind(authUser.username).first()
+  
+  const user: any = await c.env.DB.prepare("SELECT username, role, rank_name, karma, last_login FROM users WHERE username = ?").bind(authResult.user.username).first()
   if (!user) return c.json({ authenticated: false }, 404)
   const rankInfo = calculateRank(user.karma || 0, String(user.role), user.rank_name)
   return c.json({ authenticated: true, user: { ...user, nextRankMsg: rankInfo.nextRankMsg } })
@@ -314,23 +317,23 @@ app.post('/api/posts', async (c) => {
   await c.env.DB.prepare("UPDATE users SET last_post_time = ? WHERE username = ?").bind(now, author).run();
   await addKarma(c.env.DB, author, 2);
 
-  // 🛡️ [เพิ่มใหม่] สร้างแจ้งเตือนเมื่อมีการ Mention ในกระทู้หลัก
+  // 🛡️ [กู้คืน] สร้างแจ้งเตือนเมื่อมีการ Mention ในกระทู้หลัก
   try {
       const mentionRegex = /@([\u0E00-\u0E7Fa-zA-Z0-9_-]+)/g;
       const combinedText = `${body.title} ${safeContent}`;
       const matches = [...combinedText.matchAll(mentionRegex)];
       const mentionedUsers = [...new Set(matches.map(m => m[1]))];
-      const notiTimeStrISO = new Date().toISOString();
+      const notiTimeStr = getThaiTimeStr();
       
       for (const mentionedUser of mentionedUsers) {
           if (mentionedUser !== author) {
               const notiId = Date.now().toString() + Math.floor(Math.random() * 10000);
               await c.env.DB.prepare(
                   "INSERT INTO notifications (id, recipient, actor, action_type, post_id, is_read, timestamp) VALUES (?, ?, ?, 'mention', ?, 0, ?)"
-              ).bind(notiId, mentionedUser, author, body.id, notiTimeStrISO).run().catch(()=>{});
+              ).bind(notiId, mentionedUser, author, body.id, notiTimeStr).run().catch(()=>{});
           }
       }
-  } catch (notiErr) { console.error(notiErr) }
+  } catch (notiErr) {}
 
   return c.json({ success: true })
 })
@@ -397,7 +400,7 @@ app.post('/api/posts/:postId/like', async (c) => {
     
     if (post && post.author && post.author !== actor) {
       const notiId = Date.now().toString()
-      const timeStr = new Date().toISOString()
+      const timeStr = getThaiTimeStr() // 🌟 ใช้เวลาไทย
       await c.env.DB.prepare(
         "INSERT INTO notifications (id, recipient, actor, action_type, post_id, is_read, timestamp) VALUES (?, ?, ?, 'like_post', ?, 0, ?)"
       ).bind(notiId, post.author, actor, postId, timeStr).run().catch(() => {})
@@ -442,11 +445,11 @@ app.post('/api/comments', async (c) => {
   await c.env.DB.prepare("UPDATE users SET last_comment_time = ? WHERE username = ?").bind(now, author).run();
   await addKarma(c.env.DB, author, 1);
 
-  // 🛡️ [เพิ่มใหม่] สร้างการแจ้งเตือนจากฝั่ง Backend โดยตรง (ชัวร์ 100%)
+  // 🛡️ [กู้คืน] สร้างแจ้งเตือนคอมเมนต์จาก Backend
   try {
       const post: any = await c.env.DB.prepare("SELECT author FROM posts WHERE id = ?").bind(body.postId).first();
       const targetCommentId = `${body.postId}#comment-${body.id}`;
-      const notiTimeStrISO = new Date().toISOString();
+      const notiTimeStr = getThaiTimeStr(); // 🌟 ใช้เวลาไทย
 
       // 1. แจ้งเตือนคนถูกตอบกลับ (Reply)
       let repliedAuthor = null;
@@ -457,7 +460,7 @@ app.post('/api/comments', async (c) => {
               const notiId1 = Date.now().toString() + Math.floor(Math.random() * 1000);
               await c.env.DB.prepare(
                   "INSERT INTO notifications (id, recipient, actor, action_type, post_id, is_read, timestamp) VALUES (?, ?, ?, 'reply', ?, 0, ?)"
-              ).bind(notiId1, repliedAuthor, author, targetCommentId, notiTimeStrISO).run().catch(()=>{});
+              ).bind(notiId1, repliedAuthor, author, targetCommentId, notiTimeStr).run().catch(()=>{});
           }
       }
 
@@ -471,18 +474,18 @@ app.post('/api/comments', async (c) => {
               const notiId2 = Date.now().toString() + Math.floor(Math.random() * 10000);
               await c.env.DB.prepare(
                   "INSERT INTO notifications (id, recipient, actor, action_type, post_id, is_read, timestamp) VALUES (?, ?, ?, 'mention', ?, 0, ?)"
-              ).bind(notiId2, mentionedUser, author, targetCommentId, notiTimeStrISO).run().catch(()=>{});
+              ).bind(notiId2, mentionedUser, author, targetCommentId, notiTimeStr).run().catch(()=>{});
           }
       }
 
-      // 3. แจ้งเตือนเจ้าของกระทู้ (ถ้าไม่ได้ถูกตอบกลับหรือถูกแท็กไปแล้ว)
+      // 3. แจ้งเตือนเจ้าของกระทู้
       if (post && post.author && post.author !== author && post.author !== repliedAuthor && !mentionedUsers.includes(post.author)) {
           const notiId3 = Date.now().toString() + Math.floor(Math.random() * 100000);
           await c.env.DB.prepare(
               "INSERT INTO notifications (id, recipient, actor, action_type, post_id, is_read, timestamp) VALUES (?, ?, ?, 'comment', ?, 0, ?)"
-          ).bind(notiId3, post.author, author, targetCommentId, notiTimeStrISO).run().catch(()=>{});
+          ).bind(notiId3, post.author, author, targetCommentId, notiTimeStr).run().catch(()=>{});
       }
-  } catch (notiErr) { console.error("Notification Error:", notiErr) }
+  } catch (notiErr) {}
 
   return c.json({ success: true })
 })
@@ -518,7 +521,7 @@ app.post('/api/comments/:commentId/like', async (c) => {
     
     if (comment && comment.author && comment.author !== actor) {
       const notiId = Date.now().toString()
-      const timeStr = new Date().toISOString()
+      const timeStr = getThaiTimeStr() // 🌟 ใช้เวลาไทย
       await c.env.DB.prepare(
         "INSERT INTO notifications (id, recipient, actor, action_type, post_id, is_read, timestamp) VALUES (?, ?, ?, 'like_comment', ?, 0, ?)"
       ).bind(notiId, comment.author, actor, `${comment.post_id}#comment-${commentId}`, timeStr).run().catch(() => {})
@@ -660,13 +663,13 @@ app.get('/api/notifications/:username', async (c) => {
 })
 
 app.post('/api/notifications', async (c) => {
-  // 🛡️ ระบบนี้ถูกย้ายไปทำงานใน Backend แบบออโต้แล้ว (ใส่ไว้กัน Error เฉยๆ เผื่อเว็บหน้าบ้านลืมลบโค้ด)
+  // 🛡️ ระบบนี้ถูกย้ายไปทำงานใน Backend แบบออโต้แล้ว 
   return c.json({ success: true, ignored: true });
 })
 
 app.put('/api/notifications/:id/read', async (c) => {
   const authResult = await getAuthenticatedUser(c)
-  if (!authResult.user) return c.json({ success: false, error: `Unauthorized: ${authResult.error}` }, 401)
+  if (!authResult.user) return c.json({ success: false, error: `Unauthorized` }, 401)
 
   const id = c.req.param('id')
   try {
