@@ -38,18 +38,25 @@ async function generateToken(payload: { username: string; role: string; rank_nam
   return await sign({
     ...payload,
     exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 30)
-  }, secret)
+  }, secret, 'HS256')
 }
 
-async function getAuthenticatedUser(c: any): Promise<{ username: string; role: string; rank_name: string } | null> {
-  const authHeader = c.req.header('Authorization') || c.req.header('authorization');
-  if (!authHeader) return null;
-  const token = authHeader.replace(/^Bearer\s+/i, '').trim();
+// 🛡️ [อัปเกรดใหม่] ระบบสแกนกุญแจแบบเจาะลึก พร้อมรายงานสาเหตุ Error
+async function getAuthenticatedUser(c: any): Promise<{ user: any, error: string | null }> {
   try {
-    const secret = c.env.JWT_SECRET || DEFAULT_JWT_SECRET;
-    return await verify(token, secret) as any;
-  } catch (e) {
-    return null;
+    const authHeader = c.req.raw.headers.get('Authorization') || c.req.raw.headers.get('authorization');
+    if (!authHeader) return { user: null, error: 'Header Missing (เบราว์เซอร์ไม่ได้ส่งกุญแจมา ให้ลองกด Ctrl+F5 เพื่อล้างแคช)' };
+    
+    const token = authHeader.replace(/^Bearer\s+/i, '').replace(/['"]/g, '').trim();
+    if (!token || token === 'undefined' || token === 'null') return { user: null, error: 'Token Empty (กุญแจว่างเปล่า)' };
+
+    const secret = c.env?.JWT_SECRET || DEFAULT_JWT_SECRET;
+    const decoded = await verify(token, secret, 'HS256');
+    
+    return { user: decoded, error: null };
+  } catch (e: any) {
+    console.error("JWT Verification Error:", e);
+    return { user: null, error: `Token Invalid (${e.message})` };
   }
 }
 
@@ -79,20 +86,18 @@ async function addKarma(db: D1Database, username: string, amount: number) {
   } catch (e) { console.error("Error adding karma:", e) }
 }
 
-// 🛡️ IN-MEMORY RATE LIMITER (ป้องกัน Brute-force Login โดยไม่พึ่ง D1/KV)
 const loginAttempts = new Map<string, { count: number, lockUntil: number }>();
 
 function checkLoginRateLimit(ip: string): { allowed: boolean, waitTimeStr?: string } {
   const now = Date.now();
   const attempt = loginAttempts.get(ip);
-  
   if (attempt) {
     if (attempt.lockUntil > now) {
       const waitMins = Math.ceil((attempt.lockUntil - now) / 60000);
       return { allowed: false, waitTimeStr: `${waitMins} นาที` };
     }
     if (attempt.lockUntil > 0 && attempt.lockUntil <= now) {
-      loginAttempts.delete(ip); // หมดเวลาบล็อกแล้ว ให้ล้างประวัติ
+      loginAttempts.delete(ip); 
     }
   }
   return { allowed: true };
@@ -102,13 +107,8 @@ function recordFailedLogin(ip: string) {
   if (ip === 'unknown') return;
   const now = Date.now();
   const attempt = loginAttempts.get(ip) || { count: 0, lockUntil: 0 };
-  
   attempt.count += 1;
-  // หากล็อกอินผิดครบ 5 ครั้ง จะโดนบล็อก 15 นาที
-  if (attempt.count >= 5) {
-    attempt.lockUntil = now + (15 * 60 * 1000);
-  }
-  
+  if (attempt.count >= 5) attempt.lockUntil = now + (15 * 60 * 1000);
   loginAttempts.set(ip, attempt);
 }
 
@@ -116,17 +116,12 @@ function resetLoginAttempts(ip: string) {
   loginAttempts.delete(ip);
 }
 
-
 // === AUTH & USERS ROUTES ===
 
 app.post('/api/login', async (c) => {
-  // 🛡️ เช็ค Rate Limit ก่อนแตะ Database
   const ip = c.req.header('cf-connecting-ip') || 'unknown';
   const rateLimit = checkLoginRateLimit(ip);
-  
-  if (!rateLimit.allowed) {
-    return c.json({ success: false, error: `ระงับชั่วคราวจากการเข้าระบบผิดพลาดเกินขีดจำกัด โปรดรออีก ${rateLimit.waitTimeStr}` }, 429);
-  }
+  if (!rateLimit.allowed) return c.json({ success: false, error: `ระงับชั่วคราวจากการเข้าระบบผิดพลาดเกินขีดจำกัด โปรดรออีก ${rateLimit.waitTimeStr}` }, 429);
 
   try {
     const { username, password } = await c.req.json()
@@ -148,7 +143,7 @@ app.post('/api/login', async (c) => {
       return c.json({ success: false, error: 'รหัสผ่านลับไม่ถูกต้อง' }, 400);
     }
 
-    resetLoginAttempts(ip); // ล็อกอินสำเร็จ ล้างประวัติการทำผิด
+    resetLoginAttempts(ip);
 
     const now = Date.now()
     try { await c.env.DB.prepare("UPDATE users SET last_login = ? WHERE username = ?").bind(now, user.username).run() } catch(e) {}
@@ -164,13 +159,9 @@ app.post('/api/login', async (c) => {
 })
 
 app.post('/api/admin/login', async (c) => {
-  // 🛡️ เช็ค Rate Limit แอดมินป้องกันการยิงสุ่มรหัส
   const ip = c.req.header('cf-connecting-ip') || 'unknown';
   const rateLimit = checkLoginRateLimit(ip);
-  
-  if (!rateLimit.allowed) {
-    return c.json({ success: false, error: `ระบบป้องกันทำงาน! อาณาเขตถูกปิดกั้น โปรดรออีก ${rateLimit.waitTimeStr}` }, 429);
-  }
+  if (!rateLimit.allowed) return c.json({ success: false, error: `ระบบป้องกันทำงาน! อาณาเขตถูกปิดกั้น โปรดรออีก ${rateLimit.waitTimeStr}` }, 429);
 
   try {
     const { username, password } = await c.req.json();
@@ -197,7 +188,7 @@ app.post('/api/admin/login', async (c) => {
       return c.json({ success: false, error: 'รหัสผ่านอาคมผิดเพี้ยน!' }, 400);
     }
 
-    resetLoginAttempts(ip); // ล็อกอินแอดมินสำเร็จ ล้างประวัติ
+    resetLoginAttempts(ip);
 
     try { await c.env.DB.prepare("UPDATE users SET last_login = ? WHERE username = ?").bind(Date.now(), user.username).run(); } catch(e) {}
 
@@ -209,8 +200,10 @@ app.post('/api/admin/login', async (c) => {
 });
 
 app.get('/api/me', async (c) => {
-  const authUser = await getAuthenticatedUser(c)
-  if (!authUser) return c.json({ authenticated: false }, 401)
+  const authResult = await getAuthenticatedUser(c)
+  if (!authResult.user) return c.json({ authenticated: false, error: authResult.error }, 401)
+  const authUser = authResult.user;
+
   const user: any = await c.env.DB.prepare("SELECT username, role, rank_name, karma, last_login FROM users WHERE username = ?").bind(authUser.username).first()
   if (!user) return c.json({ authenticated: false }, 404)
   const rankInfo = calculateRank(user.karma || 0, String(user.role), user.rank_name)
@@ -218,7 +211,6 @@ app.get('/api/me', async (c) => {
 })
 
 app.get('/api/users', async (c) => {
-  // 🛡️ SECURITY FIX: ไม่ส่ง password, salt หรือ password_hash ออกไปหน้าบ้านเด็ดขาด
   const { results } = await c.env.DB.prepare("SELECT username, role, rank_name, karma, last_login FROM users").all()
   const usersWithKarmaInfo = results.map((u: any) => {
     const rankInfo = calculateRank(u.karma || 0, String(u.role), u.rank_name);
@@ -233,7 +225,6 @@ app.post('/api/users', async (c) => {
   
   if (bot_check !== 'สัตยาสาบาน') return c.json({ success: false, message: 'โดนสกัดกั้น! คำปฏิญาณยืนยันตัวตนไม่ถูกต้อง' }, 403);
 
-  // 🛡️ SECURITY FIX: ตรวจสอบอักขระภาษาไทยและห้ามเว้นวรรคจากฝั่ง Backend
   if (!/^[\u0E00-\u0E7F]+$/.test(username)) {
       return c.json({ success: false, message: 'นามแฝงอนุญาตเฉพาะ "อักขระภาษาไทย" และห้ามเว้นวรรคเด็ดขาด!' }, 400);
   }
@@ -254,8 +245,8 @@ app.post('/api/users', async (c) => {
 })
 
 app.put('/api/users', async (c) => {
-  const authUser = await getAuthenticatedUser(c)
-  if (!authUser || String(authUser.role) !== '1') return c.json({ success: false, error: 'Forbidden' }, 403)
+  const authResult = await getAuthenticatedUser(c)
+  if (!authResult.user || String(authResult.user.role) !== '1') return c.json({ success: false, error: 'Forbidden' }, 403)
 
   const { username, oldUsername, password, role, rank_name, last_login, karma } = await c.req.json()
   const targetName = oldUsername || username
@@ -282,8 +273,8 @@ app.put('/api/users', async (c) => {
 })
 
 app.delete('/api/users/:username', async (c) => {
-  const authUser = await getAuthenticatedUser(c)
-  if (!authUser || String(authUser.role) !== '1') return c.json({ success: false, error: 'Forbidden' }, 403)
+  const authResult = await getAuthenticatedUser(c)
+  if (!authResult.user || String(authResult.user.role) !== '1') return c.json({ success: false, error: 'Forbidden' }, 403)
 
   const username = c.req.param('username')
   await c.env.DB.prepare("DELETE FROM users WHERE username = ?").bind(username).run()
@@ -298,9 +289,9 @@ app.get('/api/posts', async (c) => {
 })
 
 app.post('/api/posts', async (c) => {
-  const authUser = await getAuthenticatedUser(c)
-  if (!authUser) return c.json({ success: false, error: 'Unauthorized: ท่านยังไม่ได้ลงนามเข้าสู่ระบบ' }, 401)
-  const author = authUser.username;
+  const authResult = await getAuthenticatedUser(c)
+  if (!authResult.user) return c.json({ success: false, error: `Unauthorized: ${authResult.error}` }, 401)
+  const author = authResult.user.username;
 
   const body = await c.req.json()
   const now = Date.now();
@@ -323,12 +314,31 @@ app.post('/api/posts', async (c) => {
   await c.env.DB.prepare("UPDATE users SET last_post_time = ? WHERE username = ?").bind(now, author).run();
   await addKarma(c.env.DB, author, 2);
 
+  // 🛡️ [เพิ่มใหม่] สร้างแจ้งเตือนเมื่อมีการ Mention ในกระทู้หลัก
+  try {
+      const mentionRegex = /@([\u0E00-\u0E7Fa-zA-Z0-9_-]+)/g;
+      const combinedText = `${body.title} ${safeContent}`;
+      const matches = [...combinedText.matchAll(mentionRegex)];
+      const mentionedUsers = [...new Set(matches.map(m => m[1]))];
+      const notiTimeStrISO = new Date().toISOString();
+      
+      for (const mentionedUser of mentionedUsers) {
+          if (mentionedUser !== author) {
+              const notiId = Date.now().toString() + Math.floor(Math.random() * 10000);
+              await c.env.DB.prepare(
+                  "INSERT INTO notifications (id, recipient, actor, action_type, post_id, is_read, timestamp) VALUES (?, ?, ?, 'mention', ?, 0, ?)"
+              ).bind(notiId, mentionedUser, author, body.id, notiTimeStrISO).run().catch(()=>{});
+          }
+      }
+  } catch (notiErr) { console.error(notiErr) }
+
   return c.json({ success: true })
 })
 
 app.put('/api/posts', async (c) => {
-  const authUser = await getAuthenticatedUser(c)
-  if (!authUser) return c.json({ success: false, error: 'Unauthorized' }, 401)
+  const authResult = await getAuthenticatedUser(c)
+  if (!authResult.user) return c.json({ success: false, error: `Unauthorized: ${authResult.error}` }, 401)
+  const authUser = authResult.user;
 
   const body = await c.req.json()
   const post: any = await c.env.DB.prepare("SELECT author FROM posts WHERE id = ?").bind(body.id).first()
@@ -357,8 +367,9 @@ app.get('/api/posts/:id', async (c) => {
 })
 
 app.delete('/api/posts/:id', async (c) => {
-  const authUser = await getAuthenticatedUser(c)
-  if (!authUser) return c.json({ success: false, error: 'Unauthorized' }, 401)
+  const authResult = await getAuthenticatedUser(c)
+  if (!authResult.user) return c.json({ success: false, error: `Unauthorized: ${authResult.error}` }, 401)
+  const authUser = authResult.user;
 
   const id = c.req.param('id')
   const post: any = await c.env.DB.prepare("SELECT author FROM posts WHERE id = ?").bind(id).first()
@@ -376,9 +387,9 @@ app.delete('/api/posts/:id', async (c) => {
 
 app.post('/api/posts/:postId/like', async (c) => {
   const postId = c.req.param('postId')
-  const authUser = await getAuthenticatedUser(c)
-  if (!authUser) return c.json({ success: false, error: 'Unauthorized: เฉพาะผู้มีตัวตนเท่านั้นที่อนุโมทนาได้' }, 401)
-  const actor = authUser.username;
+  const authResult = await getAuthenticatedUser(c)
+  if (!authResult.user) return c.json({ success: false, error: `Unauthorized: ${authResult.error}` }, 401)
+  const actor = authResult.user.username;
 
   try {
     await c.env.DB.prepare("UPDATE posts SET likes = COALESCE(likes, 0) + 1 WHERE id = ?").bind(postId).run()
@@ -408,9 +419,9 @@ app.get('/api/posts/:postId/comments', async (c) => {
 })
 
 app.post('/api/comments', async (c) => {
-  const authUser = await getAuthenticatedUser(c)
-  if (!authUser) return c.json({ success: false, error: 'Unauthorized: ท่านยังไม่ได้ลงนามเข้าสู่ระบบ' }, 401)
-  const author = authUser.username;
+  const authResult = await getAuthenticatedUser(c)
+  if (!authResult.user) return c.json({ success: false, error: `Unauthorized: ${authResult.error}` }, 401)
+  const author = authResult.user.username;
 
   const body = await c.req.json()
   const now = Date.now();
@@ -431,12 +442,55 @@ app.post('/api/comments', async (c) => {
   await c.env.DB.prepare("UPDATE users SET last_comment_time = ? WHERE username = ?").bind(now, author).run();
   await addKarma(c.env.DB, author, 1);
 
+  // 🛡️ [เพิ่มใหม่] สร้างการแจ้งเตือนจากฝั่ง Backend โดยตรง (ชัวร์ 100%)
+  try {
+      const post: any = await c.env.DB.prepare("SELECT author FROM posts WHERE id = ?").bind(body.postId).first();
+      const targetCommentId = `${body.postId}#comment-${body.id}`;
+      const notiTimeStrISO = new Date().toISOString();
+
+      // 1. แจ้งเตือนคนถูกตอบกลับ (Reply)
+      let repliedAuthor = null;
+      const replyMatch = safeContent.match(/\[AUTHOR:([^\]]+)\]/);
+      if (replyMatch && replyMatch[1]) {
+          repliedAuthor = replyMatch[1];
+          if (repliedAuthor !== author) {
+              const notiId1 = Date.now().toString() + Math.floor(Math.random() * 1000);
+              await c.env.DB.prepare(
+                  "INSERT INTO notifications (id, recipient, actor, action_type, post_id, is_read, timestamp) VALUES (?, ?, ?, 'reply', ?, 0, ?)"
+              ).bind(notiId1, repliedAuthor, author, targetCommentId, notiTimeStrISO).run().catch(()=>{});
+          }
+      }
+
+      // 2. แจ้งเตือนคนถูกแท็ก (Mention)
+      const mentionRegex = /@([\u0E00-\u0E7Fa-zA-Z0-9_-]+)/g;
+      const matches = [...safeContent.matchAll(mentionRegex)];
+      const mentionedUsers = [...new Set(matches.map(m => m[1]))];
+      
+      for (const mentionedUser of mentionedUsers) {
+          if (mentionedUser !== author && mentionedUser !== repliedAuthor) {
+              const notiId2 = Date.now().toString() + Math.floor(Math.random() * 10000);
+              await c.env.DB.prepare(
+                  "INSERT INTO notifications (id, recipient, actor, action_type, post_id, is_read, timestamp) VALUES (?, ?, ?, 'mention', ?, 0, ?)"
+              ).bind(notiId2, mentionedUser, author, targetCommentId, notiTimeStrISO).run().catch(()=>{});
+          }
+      }
+
+      // 3. แจ้งเตือนเจ้าของกระทู้ (ถ้าไม่ได้ถูกตอบกลับหรือถูกแท็กไปแล้ว)
+      if (post && post.author && post.author !== author && post.author !== repliedAuthor && !mentionedUsers.includes(post.author)) {
+          const notiId3 = Date.now().toString() + Math.floor(Math.random() * 100000);
+          await c.env.DB.prepare(
+              "INSERT INTO notifications (id, recipient, actor, action_type, post_id, is_read, timestamp) VALUES (?, ?, ?, 'comment', ?, 0, ?)"
+          ).bind(notiId3, post.author, author, targetCommentId, notiTimeStrISO).run().catch(()=>{});
+      }
+  } catch (notiErr) { console.error("Notification Error:", notiErr) }
+
   return c.json({ success: true })
 })
 
 app.delete('/api/comments/:id', async (c) => {
-  const authUser = await getAuthenticatedUser(c)
-  if (!authUser) return c.json({ success: false, error: 'Unauthorized' }, 401)
+  const authResult = await getAuthenticatedUser(c)
+  if (!authResult.user) return c.json({ success: false, error: `Unauthorized: ${authResult.error}` }, 401)
+  const authUser = authResult.user;
 
   const id = c.req.param('id')
   const comment: any = await c.env.DB.prepare("SELECT post_id, author FROM comments WHERE id = ?").bind(id).first()
@@ -454,9 +508,9 @@ app.delete('/api/comments/:id', async (c) => {
 
 app.post('/api/comments/:commentId/like', async (c) => {
   const commentId = c.req.param('commentId')
-  const authUser = await getAuthenticatedUser(c)
-  if (!authUser) return c.json({ success: false, error: 'Unauthorized: เฉพาะผู้มีตัวตนเท่านั้นที่อนุโมทนาได้' }, 401)
-  const actor = authUser.username;
+  const authResult = await getAuthenticatedUser(c)
+  if (!authResult.user) return c.json({ success: false, error: `Unauthorized: ${authResult.error}` }, 401)
+  const actor = authResult.user.username;
 
   try {
     await c.env.DB.prepare("UPDATE comments SET likes = COALESCE(likes, 0) + 1 WHERE id = ?").bind(commentId).run()
@@ -484,8 +538,9 @@ app.get('/api/roles', async (c) => {
 })
 
 app.post('/api/roles', async (c) => {
-  const authUser = await getAuthenticatedUser(c)
-  if (!authUser || String(authUser.role) !== '1') return c.json({ success: false, error: 'Forbidden' }, 403)
+  const authResult = await getAuthenticatedUser(c)
+  if (!authResult.user || String(authResult.user.role) !== '1') return c.json({ success: false, error: 'Forbidden' }, 403)
+  
   const body = await c.req.json()
   try {
     const id = `dynamic_${crypto.randomUUID().substring(0, 8)}`
@@ -497,8 +552,9 @@ app.post('/api/roles', async (c) => {
 })
 
 app.delete('/api/roles/:id', async (c) => {
-  const authUser = await getAuthenticatedUser(c)
-  if (!authUser || String(authUser.role) !== '1') return c.json({ success: false, error: 'Forbidden' }, 403)
+  const authResult = await getAuthenticatedUser(c)
+  if (!authResult.user || String(authResult.user.role) !== '1') return c.json({ success: false, error: 'Forbidden' }, 403)
+  
   const id = c.req.param('id')
   try {
     await c.env.DB.prepare("DELETE FROM roles WHERE id = ?").bind(id).run()
@@ -507,8 +563,8 @@ app.delete('/api/roles/:id', async (c) => {
 })
 
 app.get('/api/reports', async (c) => {
-  const authUser = await getAuthenticatedUser(c)
-  if (!authUser || String(authUser.role) !== '1') return c.json([], 403)
+  const authResult = await getAuthenticatedUser(c)
+  if (!authResult.user || String(authResult.user.role) !== '1') return c.json([], 403)
 
   try {
     const { results } = await c.env.DB.prepare("SELECT * FROM reports ORDER BY id DESC").all()
@@ -527,8 +583,9 @@ app.post('/api/reports', async (c) => {
 })
 
 app.delete('/api/reports/:id', async (c) => {
-  const authUser = await getAuthenticatedUser(c)
-  if (!authUser || String(authUser.role) !== '1') return c.json({ success: false, error: 'Forbidden' }, 403)
+  const authResult = await getAuthenticatedUser(c)
+  if (!authResult.user || String(authResult.user.role) !== '1') return c.json({ success: false, error: 'Forbidden' }, 403)
+  
   const id = c.req.param('id')
   try {
     await c.env.DB.prepare("DELETE FROM reports WHERE id = ?").bind(id).run()
@@ -537,40 +594,43 @@ app.delete('/api/reports/:id', async (c) => {
 })
 
 app.get('/api/bookmarks', async (c) => {
-  const authUser = await getAuthenticatedUser(c)
-  if (!authUser) return c.json([], 200)
+  const authResult = await getAuthenticatedUser(c)
+  if (!authResult.user) return c.json([], 200)
+  
   try {
     const { results } = await c.env.DB.prepare(
       "SELECT b.post_id, p.title, b.timestamp FROM bookmarks b JOIN posts p ON CAST(b.post_id AS TEXT) = CAST(p.id AS TEXT) WHERE b.username = ? ORDER BY b.timestamp DESC"
-    ).bind(authUser.username).all()
+    ).bind(authResult.user.username).all()
     return c.json(results || [])
   } catch (e: any) { return c.json([], 200) }
 })
 
 app.post('/api/bookmarks', async (c) => {
-  const authUser = await getAuthenticatedUser(c)
-  if (!authUser) return c.json({ success: false, error: 'Unauthorized' }, 401)
+  const authResult = await getAuthenticatedUser(c)
+  if (!authResult.user) return c.json({ success: false, error: `Unauthorized: ${authResult.error}` }, 401)
+  
   const body = await c.req.json().catch(() => ({}))
   const postId = body.postId || body.post_id
   if (!postId) return c.json({ success: false, error: 'ไม่พบรหัสจารึก' }, 400)
   try {
-    const id = `${authUser.username}_${postId}`
+    const id = `${authResult.user.username}_${postId}`
     const timeStr = new Date().toISOString()
     await c.env.DB.prepare(
       "INSERT OR REPLACE INTO bookmarks (id, username, post_id, timestamp) VALUES (?, ?, ?, ?)"
-    ).bind(id, authUser.username, String(postId), timeStr).run()
+    ).bind(id, authResult.user.username, String(postId), timeStr).run()
     return c.json({ success: true })
   } catch (e: any) { return c.json({ success: false, error: e.message }, 500) }
 })
 
 app.delete('/api/bookmarks/:postId', async (c) => {
-  const authUser = await getAuthenticatedUser(c)
-  if (!authUser) return c.json({ success: false, error: 'Unauthorized' }, 401)
+  const authResult = await getAuthenticatedUser(c)
+  if (!authResult.user) return c.json({ success: false, error: `Unauthorized: ${authResult.error}` }, 401)
+  
   const postId = c.req.param('postId')
   try {
     await c.env.DB.prepare(
       "DELETE FROM bookmarks WHERE username = ? AND CAST(post_id AS TEXT) = CAST(? AS TEXT)"
-    ).bind(authUser.username, String(postId)).run()
+    ).bind(authResult.user.username, String(postId)).run()
     return c.json({ success: true })
   } catch (e: any) { return c.json({ success: false, error: e.message }, 500) }
 })
@@ -581,8 +641,9 @@ app.get('/api/cms', async (c) => {
 })
 
 app.post('/api/cms', async (c) => {
-  const authUser = await getAuthenticatedUser(c)
-  if (!authUser || String(authUser.role) !== '1') return c.json({ success: false, error: 'Forbidden' }, 403)
+  const authResult = await getAuthenticatedUser(c)
+  if (!authResult.user || String(authResult.user.role) !== '1') return c.json({ success: false, error: 'Forbidden' }, 403)
+  
   const body = await c.req.json()
   await c.env.DB.prepare(
     "INSERT INTO cms (id, heroSubtitle, heroDesc, heroImg, heroBtnText, heroBtnUrl) VALUES (1, ?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET heroSubtitle = ?, heroDesc = ?, heroImg = ?, heroBtnText = ?, heroBtnUrl = ?"
@@ -599,24 +660,13 @@ app.get('/api/notifications/:username', async (c) => {
 })
 
 app.post('/api/notifications', async (c) => {
-  // 🛡️ SECURITY FIX: ตรวจสอบ Auth ก่อนการยิงแจ้งเตือนเสมอ
-  const authUser = await getAuthenticatedUser(c)
-  if (!authUser) return c.json({ success: false, error: 'Unauthorized' }, 401)
-
-  const body = await c.req.json()
-  const { id, recipient, actor, action_type, post_id, timestamp } = body
-  if (recipient === actor) { return c.json({ success: true, ignored: true }) }
-  try {
-      await c.env.DB.prepare(
-        "INSERT INTO notifications (id, recipient, actor, action_type, post_id, is_read, timestamp) VALUES (?, ?, ?, ?, ?, 0, ?)"
-      ).bind(id, recipient, actor, action_type, post_id, timestamp).run()
-      return c.json({ success: true })
-  } catch (error: any) { return c.json({ success: false, error: error.message }, 500) }
+  // 🛡️ ระบบนี้ถูกย้ายไปทำงานใน Backend แบบออโต้แล้ว (ใส่ไว้กัน Error เฉยๆ เผื่อเว็บหน้าบ้านลืมลบโค้ด)
+  return c.json({ success: true, ignored: true });
 })
 
 app.put('/api/notifications/:id/read', async (c) => {
-  const authUser = await getAuthenticatedUser(c)
-  if (!authUser) return c.json({ success: false, error: 'Unauthorized' }, 401)
+  const authResult = await getAuthenticatedUser(c)
+  if (!authResult.user) return c.json({ success: false, error: `Unauthorized: ${authResult.error}` }, 401)
 
   const id = c.req.param('id')
   try {
