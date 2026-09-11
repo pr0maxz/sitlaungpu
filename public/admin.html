@@ -814,10 +814,20 @@
                 const headers = {'Content-Type': 'application/json'};
                 if (token) headers['Authorization'] = `Bearer ${token}`;
                 const method = oldUsername ? 'PUT' : 'POST';
+                
+                // 🌟 เพิ่มคำปฏิญาณกันบอท
+                if (!oldUsername) {
+                    userData.bot_check = 'สัตยาสาบาน';
+                }
+
                 const res = await fetch(`${API_CONFIG.BASE_URL}/users`, { 
                     method: method, headers: headers, body: JSON.stringify({...userData, oldUsername}) 
                 });
-                if (!res.ok) throw new Error('DUPLICATE');
+                
+                if (!res.ok) {
+                    const errData = await res.json().catch(() => ({}));
+                    throw new Error(errData.message || errData.error || 'เกิดข้อผิดพลาดในการเชื่อมต่อ');
+                }
             },
             async deleteUser(username) { 
                 const token = localStorage.getItem('siy_token');
@@ -1636,8 +1646,10 @@
                 closeModal('userModal'); 
                 loadAdminData(); 
                 showCustomAlert('✅ บันทึกสำเร็จ'); 
-            } catch (err) { showCustomAlert('❌ ชื่อนี้ซ้ำ หรือเชื่อมต่อล้มเหลว'); }
-            document.getElementById('btnSaveUser').textContent = 'บันทึก';
+            } catch (err) { 
+                showCustomAlert('❌ ' + err.message); 
+            }
+            document.getElementById('btnSaveUser').textContent = 'บันทึกข้อมูล';
         }
 
         function deleteUser(username) { 
