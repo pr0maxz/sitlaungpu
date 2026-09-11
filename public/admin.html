@@ -451,8 +451,8 @@
                             <table class="data-table">
                                 <thead>
                                     <tr>
-                                        <th style="width: 10%;">รหัสอ้างอิง</th>
-                                        <th style="width: 35%;">หัวข้อเรื่อง</th>
+                                        <th style="width: 15%;">รหัสอ้างอิง</th>
+                                        <th style="width: 30%;">หัวข้อเรื่อง</th>
                                         <th style="width: 12%;">สถานะ</th>
                                         <th style="width: 15%;">ผู้เขียน</th>
                                         <th style="width: 28%; min-width: 220px;">จัดการ</th>
@@ -470,8 +470,8 @@
                             <table class="data-table">
                                 <thead>
                                     <tr>
-                                        <th style="width: 10%;">รหัสอ้างอิง</th>
-                                        <th style="width: 35%;">หัวข้อเรื่อง</th>
+                                        <th style="width: 15%;">รหัสอ้างอิง</th>
+                                        <th style="width: 30%;">หัวข้อเรื่อง</th>
                                         <th style="width: 12%;">สถานะ</th>
                                         <th style="width: 15%;">ผู้เขียน</th>
                                         <th style="width: 28%; min-width: 220px;">จัดการ</th>
@@ -1073,7 +1073,7 @@
                 pinnedContainer.innerHTML = pinnedList.map(p => `
                     <a href="post.html?id=${p.id}" target="_blank" class="list-item" style="border-left: 2px solid var(--success-color); padding-left: 6px;">
                         <div class="list-title" style="color:var(--success-color);">${safeHTML(p.title)}</div>
-                        <div class="list-meta"><span>${safeHTML(p.author)}</span><span>ID: ${p.id.substring(0, 6)}</span></div>
+                        <div class="list-meta"><span>${safeHTML(p.author)}</span><span>ID: ${p.id}</span></div>
                     </a>
                 `).join('');
             } else { pinnedContainer.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 10px;">ไม่มีจารึกที่ถูกปักหมุด</div>'; }
@@ -1100,7 +1100,7 @@
                         <div class="list-title" style="color:var(--danger-color);">${safeHTML(r.reason)}</div>
                         <div class="list-meta">
                             <span>ผู้แจ้ง: ${safeHTML(r.reporter)}</span>
-                            <span style="font-family:monospace; color:var(--text-light);">ID: ${r.target_id.substring(0, 6)}...</span>
+                            <span style="font-family:monospace; color:var(--text-light);">ID: ${r.target_id}</span>
                         </div>
                     </div>
                 `).join('');
@@ -1339,7 +1339,7 @@
                 const pinBtnHtml = `<button class="btn ${isPinned ? 'btn-edit' : 'btn-pin'}" data-action="toggle-pin" data-id="${safeHTML(p.id)}"><span class="material-symbols-outlined" style="font-size: 14px;">${isPinned ? 'location_off' : 'push_pin'}</span> ${isPinned ? 'ถอด' : 'ปัก'}</button>`;
                 
                 const rowHtml = `<tr>
-                    <td style="color: var(--text-muted); font-family: monospace;">${String(p.id).substring(0, 8)}...</td>
+                    <td style="color: var(--text-muted); font-family: monospace;">${String(p.id)}</td>
                     <td class="wrap-text" style="line-height: 1.3;"><strong style="color: var(--gold-light); font-size: 0.8rem; cursor:pointer;" data-action="open-post" data-id="${safeHTML(p.id)}">${safeHTML(p.title)}</strong></td>
                     <td>${isPinned ? '<span class="admin-badge" style="border-color:var(--gold-main); color:var(--gold-main);"><span class="material-symbols-outlined" style="font-size: 12px; vertical-align: middle;">push_pin</span> ปักหมุด</span>' : '<span style="color:var(--text-muted); font-size:0.75rem;">ทั่วไป</span>'}</td>
                     <td>${safeHTML(p.author)}</td>
@@ -1526,7 +1526,7 @@
                         <td><strong style="color: #fff;">${safeHTML(r.reporter)}</strong></td>
                         <td class="wrap-text" style="color: #ffb17a; font-weight: 500;">${safeHTML(r.reason)}</td>
                         <td><span class="role-badge role-4">${targetText}</span></td>
-                        <td><code style="color: var(--gold-light); font-family: monospace;">${r.target_id.substring(0, 10)}...</code></td>
+                        <td><code style="color: var(--gold-light); font-family: monospace;">${r.target_id}</code></td>
                         <td><span class="post-time" style="font-size:0.7rem; color: var(--text-muted);">${r.timestamp}</span></td>
                         <td>
                             <div style="display:flex; gap:4px; flex-wrap:nowrap;">
