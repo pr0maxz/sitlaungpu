@@ -624,7 +624,7 @@
     
     <div class="modal-overlay" id="roleModal">
         <div class="modal-box" style="max-width: 400px;">
-            <h3 id="roleModalTitle" style="margin-bottom: 12px; text-align: center; font-size: 1.1rem;">✨ สร้างยศพิเศษ</h3>
+            <h3 id="roleModalTitle" style="margin-bottom: 12px; text-align: center; font-size: 1.1rem;"><span class="material-symbols-outlined" style="font-size: 18px; vertical-align: middle;">add_moderator</span> สร้างยศพิเศษ</h3>
             <form id="roleForm" onsubmit="submitRoleForm(event)">
                 <input type="hidden" id="edit-role-id">
                 
@@ -812,10 +812,10 @@
                     return false;
                 }
                 const nameDisplay = document.getElementById('currentAdminName');
-                if (nameDisplay) nameDisplay.textContent = `👤 ${safeHTML(currentUser.username)}`;
+                if (nameDisplay) nameDisplay.innerHTML = `<span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle;">person</span> ${safeHTML(currentUser.username)}`;
             } catch (e) {
                 const nameDisplay = document.getElementById('currentAdminName');
-                if (nameDisplay) nameDisplay.textContent = `👤 ${safeHTML(savedUsername)}`;
+                if (nameDisplay) nameDisplay.innerHTML = `<span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle;">person</span> ${safeHTML(savedUsername)}`;
             }
             return true;
         }
@@ -1117,7 +1117,7 @@
                                 <div>${getRoleBadge(u)}</div>
                             </div>
                         </div>
-                        <div class="karma-score">${u.karma || 0} ✨</div>
+                        <div class="karma-score">${u.karma || 0} <span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">auto_awesome</span></div>
                     </div>
                 `).join('');
             }
@@ -1130,7 +1130,7 @@
                         <div class="list-title">${safeHTML(p.title)}</div>
                         <div class="list-meta">
                             <span>ผู้เขียน: ${safeHTML(p.author)}</span>
-                            <span>👀 <strong style="color:#ffb17a;">${p.views || 0}</strong> วิว</span>
+                            <span><span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">visibility</span> <strong style="color:#ffb17a;">${p.views || 0}</strong> วิว</span>
                         </div>
                     </a>
                 `).join('');
@@ -1144,7 +1144,7 @@
                         <div class="list-title">${safeHTML(p.title)}</div>
                         <div class="list-meta">
                             <span>หมวด: ${p.category === '1' ? 'สัตยาสาบาน' : 'คุยกับศิษย์'}</span>
-                            <span>🙏 <strong style="color:var(--gold-main);">${p.likes || 0}</strong> ครั้ง</span>
+                            <span><span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">volunteer_activism</span> <strong style="color:var(--gold-main);">${p.likes || 0}</strong> ครั้ง</span>
                         </div>
                     </a>
                 `).join('');
@@ -1215,9 +1215,9 @@
                     document.getElementById('edit-role-text').value = role.text_color;
                     document.getElementById('edit-role-border').value = role.border_color || '#000000';
                 }
-                document.getElementById('roleModalTitle').textContent = '✏️ แก้ไขยศพิเศษ';
+                document.getElementById('roleModalTitle').innerHTML = '<span class="material-symbols-outlined" style="font-size: 18px; vertical-align: middle;">edit</span> แก้ไขยศพิเศษ';
             } else {
-                document.getElementById('roleModalTitle').textContent = '✨ สร้างยศพิเศษใหม่';
+                document.getElementById('roleModalTitle').innerHTML = '<span class="material-symbols-outlined" style="font-size: 18px; vertical-align: middle;">add_moderator</span> สร้างยศพิเศษใหม่';
                 document.getElementById('edit-role-bg').value = '#4a3b22';
                 document.getElementById('edit-role-text').value = '#e8cd9c';
                 document.getElementById('edit-role-border').value = '#8a6315';
@@ -1373,13 +1373,11 @@
             container.innerHTML = html;
         }
 
-        // 🛡️ แก้ไขระบบกรองค้นหาและม่านบังตา (ซ่อนยศ) ให้ทำงานถูกต้อง 100%
         function handleUserSearch() {
             const query = document.getElementById('searchUserField').value.toLowerCase().trim();
             const roleFilter = document.getElementById('filterRoleField').value;
             const sortOrder = document.getElementById('sortOrderField').value;
 
-            // ตรวจสอบค่า Checkbox แต่ละตัว
             const hideRoleChar = document.getElementById('hideRoleChar') ? document.getElementById('hideRoleChar').checked : false;
             const hideRoleNormal = document.getElementById('hideRoleNormal') ? document.getElementById('hideRoleNormal').checked : false;
             const hideRolePathom = document.getElementById('hideRolePathom') ? document.getElementById('hideRolePathom').checked : false;
@@ -1399,7 +1397,6 @@
                     matchRole = String(u.role) === roleFilter && u.rank_name !== 'ตัวละคร';
                 }
 
-                // จำแนกประเภทของสมาชิกอย่างแม่นยำ
                 const isChar = (u.rank_name === 'ตัวละคร');
                 const isDynamic = String(u.role).startsWith('dynamic_') || globalRolesData.some(r => r.id === String(u.role));
                 const isNormal = !isChar && !isDynamic && (String(u.role) === '5' || u.rank_name === 'เด็กวัด');
@@ -1407,7 +1404,6 @@
                 const isThuti = !isChar && !isDynamic && (String(u.role) === '3' || u.rank_name === 'ทุติยภูมิ');
                 const isTati = !isChar && !isDynamic && (String(u.role) === '2' || u.rank_name === 'ตติยภูมิ');
 
-                // ดึงม่านบังตา: หากติ๊กซ่อนยศใด ให้ตัดรายชื่อนั้นออกทันที
                 if (hideRoleChar && isChar) return false;
                 if (hideRoleNormal && isNormal) return false;
                 if (hideRolePathom && isPathom) return false;
@@ -1589,8 +1585,8 @@
                     document.getElementById('edit-post-content').value = p.content.replace(/<br>/g, '\n'); 
                     document.getElementById('edit-post-pinned').value = checkIsPinned(p.pinned) ? '1' : '0'; 
                 }
-                document.getElementById('postModalTitle').textContent = '✏️ แก้ไขกระทู้จารึก';
-            } else { document.getElementById('postModalTitle').textContent = '✨ สลักกระทู้ใหม่'; }
+                document.getElementById('postModalTitle').innerHTML = '<span class="material-symbols-outlined" style="font-size: 18px; vertical-align: middle;">edit_note</span> แก้ไขกระทู้จารึก';
+            } else { document.getElementById('postModalTitle').innerHTML = '<span class="material-symbols-outlined" style="font-size: 18px; vertical-align: middle;">note_add</span> สลักกระทู้ใหม่'; }
             document.getElementById('postModal').classList.add('active');
         }
         function editPost(id) { openPostModal(id); }
@@ -1650,8 +1646,8 @@
                         document.getElementById('edit-user-role').value = u.role || '5'; 
                     }
                 }
-                document.getElementById('userModalTitle').textContent = '✏️ แก้ไขข้อมูลสมาชิก';
-            } else { document.getElementById('userModalTitle').textContent = '✨ เพิ่มสมาชิกใหม่'; }
+                document.getElementById('userModalTitle').innerHTML = '<span class="material-symbols-outlined" style="font-size: 18px; vertical-align: middle;">manage_accounts</span> แก้ไขข้อมูลสมาชิก';
+            } else { document.getElementById('userModalTitle').innerHTML = '<span class="material-symbols-outlined" style="font-size: 18px; vertical-align: middle;">person_add</span> เพิ่มสมาชิกใหม่'; }
             document.getElementById('userModal').classList.add('active');
         }
         function editUser(username) { openUserModal(username); }
