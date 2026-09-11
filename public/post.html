@@ -402,11 +402,11 @@
 
         let currentPostAuthorGlobal = ''; 
 
-        // 🛡️ ป้องกัน XSS
+        // 🛡️ ป้องกัน XSS (ยกเว้นเครื่องหมาย " ไว้ให้แสดงผลปกติในหัวข้อ)
         function safeHTML(str) {
             if (!str) return '';
-            return String(str).replace(/[&<>'"]/g, tag => ({
-                '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+            return String(str).replace(/[&<>']/g, tag => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;'
             }[tag] || tag));
         }
 
@@ -1143,8 +1143,23 @@
             if (isSubmittingComment) return;
 
             const textarea = document.getElementById('commentInput');
-            const content = textarea.value.trim();
+            let content = textarea.value.trim();
             if(!content) { showCustomAlert('ท่านต้องเปล่งวาจาเสียก่อน'); return; }
+
+            // --- ส่วนที่เพิ่มเข้ามาเพื่อเติมเว้นวรรคหลัง @ชื่ออัตโนมัติ ---
+            const usersMap = await ApiManager.fetchUsersOnce();
+            let usernames = ['Admin', 'admin'];
+            if (usersMap && Object.keys(usersMap).length > 0) {
+                usernames = usernames.concat(Object.keys(usersMap));
+            }
+            const uniqueUsers = [...new Set(usernames)];
+            uniqueUsers.sort((a, b) => b.length - a.length);
+            const escaped = uniqueUsers.map(u => u.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+            const mentionRegexAutoSpace = new RegExp('@(' + escaped.join('|') + ')(?=[\\u0E00-\\u0E7Fa-zA-Z0-9_-])', 'g');
+            
+            content = content.replace(mentionRegexAutoSpace, '@$1 ');
+            // ----------------------------------------------------
+
             const validation = validateComment(content);
             if (!validation.valid) { showCustomAlert(validation.error); return; }
 
@@ -1188,8 +1203,23 @@
 
             const textarea = document.getElementById(`replyInput-${parentId}`);
             if (!textarea) return;
-            const content = textarea.value.trim();
+            let content = textarea.value.trim();
             if(!content) { showCustomAlert('ท่านต้องพิมพ์ข้อความตอบกลับเสียก่อน'); return; }
+
+            // --- ส่วนที่เพิ่มเข้ามาเพื่อเติมเว้นวรรคหลัง @ชื่ออัตโนมัติ ---
+            const usersMap = await ApiManager.fetchUsersOnce();
+            let usernames = ['Admin', 'admin'];
+            if (usersMap && Object.keys(usersMap).length > 0) {
+                usernames = usernames.concat(Object.keys(usersMap));
+            }
+            const uniqueUsers = [...new Set(usernames)];
+            uniqueUsers.sort((a, b) => b.length - a.length);
+            const escaped = uniqueUsers.map(u => u.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+            const mentionRegexAutoSpace = new RegExp('@(' + escaped.join('|') + ')(?=[\\u0E00-\\u0E7Fa-zA-Z0-9_-])', 'g');
+            
+            content = content.replace(mentionRegexAutoSpace, '@$1 ');
+            // ----------------------------------------------------
+
             const validation = validateComment(content);
             if (!validation.valid) { showCustomAlert(validation.error); return; }
 
