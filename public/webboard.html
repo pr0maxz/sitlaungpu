@@ -13,7 +13,6 @@
         html { scroll-behavior: smooth; overflow-x: hidden; width: 100%; } * { box-sizing: border-box; }
         :root { --bg-deep: #070402; --bg-glow: #2a1805; --gold-light: #f5d77f; --gold-main: #d4af37; --gold-dark: #8a6315; --text-muted: #8a7761; --danger-color: #ff6b6b; }
         
-        /* 🌟 เปลี่ยนฟอนต์หลักทั้งหน้าเป็น Prompt ทั้งหมด */
         body { 
             margin: 0; padding: 0; width: 100%; min-height: 100vh; 
             background-color: var(--bg-deep); 
@@ -225,6 +224,8 @@
 </head>
 <body>
 
+    <header class="admin-header" style="display:none;"></header>
+    
     <div class="main-container">
         <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="corner-decor corner-top-left" alt="" width="110" height="110">
         <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="corner-decor corner-top-right" alt="" width="110" height="110">
@@ -479,6 +480,14 @@
             async fetchPosts() {
                 try {
                     const response = await fetch(`${API_CONFIG.BASE_URL}/posts`);
+                    if (!response.ok) return [];
+                    return await response.json();
+                } catch (error) { return []; }
+            },
+            // 🌟 ดึงข้อมูลคอมเมนต์ทั้งหมดเพื่อคำนวณวันอัปเดตล่าสุด
+            async fetchComments() {
+                try {
+                    const response = await fetch(`${API_CONFIG.BASE_URL}/comments`);
                     if (!response.ok) return [];
                     return await response.json();
                 } catch (error) { return []; }
@@ -844,6 +853,7 @@
         let globalPostsCat2 = [];
         const POSTS_PER_PAGE = 10; 
 
+        // 🌟 ปรับปรุงการโหลดกระทู้และคำนวณวันอัปเดตล่าสุดจากคอมเมนต์
         async function loadAndRenderPosts(searchQuery = '') {
             const cat1Container = document.getElementById('dynamic-category-1');
             const cat2Container = document.getElementById('dynamic-category-2');
@@ -854,13 +864,44 @@
             document.getElementById('pagination-cat-1').innerHTML = '';
             document.getElementById('pagination-cat-2').innerHTML = '';
 
-            let posts = await ApiManager.fetchPosts();
+            let [posts, comments] = await Promise.all([
+                ApiManager.fetchPosts(),
+                ApiManager.fetchComments()
+            ]);
 
             if (!posts || posts.length === 0) {
                 cat1Container.innerHTML = '<div style="padding: 20px; color: var(--gold-dark); text-align:center;">ยังไม่มีจารึกในหมวดนี้</div>';
                 cat2Container.innerHTML = '<div style="padding: 20px; color: var(--gold-dark); text-align:center;">ยังไม่มีจารึกในหมวดนี้</div>';
                 return;
             }
+
+            // จัดทำตารางแม็ปหาคอมเมนต์ล่าสุดของแต่ละกระทู้
+            const latestCommentMap = {};
+            if (Array.isArray(comments)) {
+                comments.forEach(c => {
+                    const pId = String(c.post_id);
+                    const commentIdNum = Number(c.id) || 0;
+                    if (!latestCommentMap[pId] || commentIdNum > (latestCommentMap[pId].idNum || 0)) {
+                        latestCommentMap[pId] = {
+                            idNum: commentIdNum,
+                            timestamp: c.timestamp
+                        };
+                    }
+                });
+            }
+
+            // ผูกข้อมูลวันอัปเดตล่าสุดและเวลาเพื่อใช้จัดเรียง
+            posts.forEach(p => {
+                const pId = String(p.id);
+                const lc = latestCommentMap[pId];
+                if (lc && lc.timestamp) {
+                    p.lastUpdatedText = lc.timestamp.split('|')[0].trim();
+                    p.lastActivityTime = lc.idNum;
+                } else {
+                    p.lastUpdatedText = p.timestamp ? p.timestamp.split('|')[0].trim() : '-';
+                    p.lastActivityTime = Number(p.id) || 0;
+                }
+            });
 
             if (searchQuery && searchQuery.trim() !== '') {
                 const q = searchQuery.toLowerCase().trim();
@@ -877,11 +918,12 @@
                 return;
             }
 
+            // จัดเรียงตามกระทู้ปักหมุดก่อน ตามด้วยกระทู้ที่มีความเคลื่อนไหวล่าสุด
             posts.sort((a, b) => {
                 const aPin = checkIsPinned(a.pinned) ? 1 : 0;
                 const bPin = checkIsPinned(b.pinned) ? 1 : 0;
                 if (aPin !== bPin) return bPin - aPin;
-                return parseInt(b.id) - parseInt(a.id); 
+                return (b.lastActivityTime || 0) - (a.lastActivityTime || 0); 
             });
 
             globalPostsCat1 = posts.filter(p => String(p.category) === "1");
@@ -915,7 +957,6 @@
                 const pinTag = checkIsPinned(post.pinned) ? '<span class="wb-tag wb-tag-pin">📌 ปักหมุด</span> ' : '';
                 const authorBadge = await getRoleBadgeFromAPI(post.author);
                 
-                // 🛡️ ป้องกัน XSS
                 const safeAuthor = safeHTML(post.author);
                 const safeTitle = safeHTML(post.title);
                 const displayTitle = formatMentions(safeTitle);
@@ -924,7 +965,7 @@
                     <div class="thread-item">
                         <div class="thread-content">
                             <a data-action="go-post" data-url="post.html?id=${post.id}" class="thread-title">${pinTag}${displayTitle}</a>
-                            <div class="thread-details">โดย <span>${safeAuthor}</span> ${authorBadge} | อัปเดตล่าสุด: ${post.timestamp ? post.timestamp.split('|')[0].trim() : '-'}</div>
+                            <div class="thread-details">โดย <span>${safeAuthor}</span> ${authorBadge} | อัปเดตล่าสุด: ${post.lastUpdatedText || '-'}</div>
                         </div>
                         <div class="thread-stats">
                             <div class="stat-box">👤 ${safeAuthor}</div>
