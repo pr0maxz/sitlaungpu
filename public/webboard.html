@@ -420,8 +420,9 @@
             </div>
 
             <div class="form-group" id="botCheckContainer">
-                <label style="color: var(--success-color);">ด่านตรวจสอบวิญญาณ</label>
-                <input type="text" id="botCheckInput" class="form-input" placeholder='พิมพ์คำว่า "สัตยาสาบาน" เพื่อยืนยัน' style="border-color: var(--success-color);">
+                <label style="color: var(--success-color);" id="botCheckLabel">ด่านตรวจสอบวิญญาณ</label>
+                <input type="text" id="botCheckInput" class="form-input" placeholder="พิมพ์คำตอบที่นี่" style="border-color: var(--success-color);">
+                <div id="botCheckCooldownMsg" style="display:none; color: var(--danger-color); font-size: 0.8rem; margin-top: 8px;"></div>
             </div>
 
             <div class="modal-actions">
@@ -1130,6 +1131,81 @@
             window.location.href = targetUrl;
         }
 
+        // ===== ด่านตรวจสอบวิญญาณ: สุ่มคำถามยืนยัน (กันบอทจดจำคำตายตัว) =====
+        const BOT_CHECK_POOL = [
+            { q: 'พิมพ์คำว่า "สัตยาสาบาน" เพื่อยืนยัน', a: 'สัตยาสาบาน' },
+            { q: 'พิมพ์คำว่า "ศิษย์หลวงปู่" เพื่อยืนยัน', a: 'ศิษย์หลวงปู่' },
+            { q: 'พิมพ์คำว่า "ลานเสวนา" เพื่อยืนยัน', a: 'ลานเสวนา' },
+            { q: 'พิมพ์ชื่อสำนักนี้ (คำเดียว): "ศิษย์___ปู่" ให้เต็มคำ', a: 'ศิษย์หลวงปู่' },
+            { q: '1 บวก 1 เท่ากับเท่าไหร่? (ตอบเป็นตัวเลข)', a: '2' },
+            { q: '5 ลบ 2 เท่ากับเท่าไหร่? (ตอบเป็นตัวเลข)', a: '3' },
+            { q: '3 บวก 4 เท่ากับเท่าไหร่? (ตอบเป็นตัวเลข)', a: '7' },
+            { q: 'ท่านคือ "คน" หรือ "บอท"? พิมพ์คำตอบ', a: 'คน' },
+        ];
+        let currentBotCheck = null;
+
+        function pickBotCheckQuestion() {
+            currentBotCheck = BOT_CHECK_POOL[Math.floor(Math.random() * BOT_CHECK_POOL.length)];
+            const label = document.getElementById('botCheckLabel');
+            const input = document.getElementById('botCheckInput');
+            if (label) label.textContent = 'ด่านตรวจสอบวิญญาณ';
+            if (input) input.placeholder = currentBotCheck.q;
+        }
+
+        function normalizeAnswer(str) {
+            return String(str || '').trim().replace(/\s+/g, '');
+        }
+
+        // ซอฟต์-รีมิตฝั่ง client: หน่วงการยิงสมัครรัวๆ จากเบราว์เซอร์เดียวกัน
+        // หมายเหตุ: นี่ "ไม่ใช่" การกันบอทจริงจัง เพราะบอทที่ยิงตรงไปที่ API เลี่ยงหน้าเว็บได้เสมอ
+        // การกัน IP ที่เชื่อถือได้ต้องทำที่ฝั่ง Cloudflare Worker (ดูไฟล์ rate-limit-worker-snippet.js ที่แนบให้)
+        const REG_ATTEMPT_KEY = 'siy_reg_attempts';
+        const REG_MAX_ATTEMPTS = 5;
+        const REG_WINDOW_MS = 10 * 60 * 1000; // 10 นาที
+        const REG_COOLDOWN_MS = 5 * 60 * 1000; // บล็อก 5 นาทีเมื่อเกิน
+
+        function getRegAttempts() {
+            try { return JSON.parse(localStorage.getItem(REG_ATTEMPT_KEY) || '[]'); }
+            catch (e) { return []; }
+        }
+
+        function checkClientRateLimit() {
+            const now = Date.now();
+            const attempts = getRegAttempts().filter(t => now - t < REG_WINDOW_MS);
+            if (attempts.length >= REG_MAX_ATTEMPTS) {
+                const oldest = Math.min(...attempts);
+                const remainMs = REG_COOLDOWN_MS - (now - oldest);
+                if (remainMs > 0) {
+                    return Math.ceil(remainMs / 1000);
+                }
+            }
+            return 0;
+        }
+
+        function recordRegAttempt() {
+            const now = Date.now();
+            const attempts = getRegAttempts().filter(t => now - t < REG_WINDOW_MS);
+            attempts.push(now);
+            localStorage.setItem(REG_ATTEMPT_KEY, JSON.stringify(attempts));
+        }
+
+        function showBotCheckCooldown(seconds) {
+            const msg = document.getElementById('botCheckCooldownMsg');
+            const btn = document.getElementById('modalSubmitBtn');
+            if (msg) {
+                msg.style.display = 'block';
+                msg.textContent = `ลองสมัครถี่เกินไป โปรดรออีก ${seconds} วินาทีแล้วลองใหม่`;
+            }
+            if (btn) btn.disabled = true;
+        }
+
+        function hideBotCheckCooldown() {
+            const msg = document.getElementById('botCheckCooldownMsg');
+            const btn = document.getElementById('modalSubmitBtn');
+            if (msg) msg.style.display = 'none';
+            if (btn) btn.disabled = false;
+        }
+
         function openRegisterModal(mode) {
             currentModalMode = mode;
             if (mode === 'login') {
@@ -1144,6 +1220,9 @@
                 document.getElementById('modalWarning').style.display = 'block';
                 document.getElementById('botCheckContainer').style.display = 'block'; 
                 document.getElementById('modalSubmitBtn').textContent = 'ลงนาม';
+                pickBotCheckQuestion();
+                const waitSec = checkClientRateLimit();
+                if (waitSec > 0) { showBotCheckCooldown(waitSec); } else { hideBotCheckCooldown(); }
             }
             document.getElementById('regUsername').value = '';
             document.getElementById('regPassword').value = '';
@@ -1174,11 +1253,21 @@
             const nowTimestamp = Date.now();
 
             if (currentModalMode === 'register') {
-                const botCheckVal = document.getElementById('botCheckInput').value.trim();
-                if (botCheckVal !== 'สัตยาสาบาน') {
-                    showCustomAlert('โดนสกัดกั้น! ท่านพิมพ์คำปฏิญาณยืนยันตัวตนไม่ถูกต้อง');
+                const waitSec = checkClientRateLimit();
+                if (waitSec > 0) {
+                    showBotCheckCooldown(waitSec);
                     return;
                 }
+
+                const botCheckVal = document.getElementById('botCheckInput').value.trim();
+                if (!currentBotCheck || normalizeAnswer(botCheckVal) !== normalizeAnswer(currentBotCheck.a)) {
+                    recordRegAttempt();
+                    showCustomAlert('โดนสกัดกั้น! ท่านตอบคำถามยืนยันตัวตนไม่ถูกต้อง');
+                    pickBotCheckQuestion();
+                    document.getElementById('botCheckInput').value = '';
+                    return;
+                }
+                recordRegAttempt();
 
                 try {
                     const res = await fetch(`${API_CONFIG.BASE_URL}/users`, {
@@ -1190,11 +1279,17 @@
                             role: '5',             
                             rank_name: 'เด็กวัด',
                             last_login: nowTimestamp,
-                            bot_check: botCheckVal 
+                            bot_check_question: currentBotCheck.q,
+                            bot_check_answer: botCheckVal 
                         })
                     });
                     const result = await res.json();
                     
+                    if (res.status === 429) {
+                        showCustomAlert(result.message || 'มีการสมัครถี่เกินไปจาก IP นี้ โปรดลองใหม่ภายหลัง');
+                        return;
+                    }
+
                     if (res.status === 403) {
                         showCustomAlert(result.message || 'ตรวจพบการรุกล้ำโดย Bot โปรดลองใหม่');
                         return;

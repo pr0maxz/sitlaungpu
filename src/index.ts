@@ -121,6 +121,64 @@ function resetLoginAttempts(ip: string) {
   loginAttempts.delete(ip);
 }
 
+// 🛡️ กัน Bot ยิงสมัครสมาชิกรัว ๆ ตาม IP (แยก Map จาก login โดยเฉพาะ)
+const registerAttempts = new Map<string, { count: number, windowStart: number, lockUntil: number }>();
+const REGISTER_MAX_ATTEMPTS = 5;          // สมัครได้สูงสุดกี่ครั้ง
+const REGISTER_WINDOW_MS = 10 * 60 * 1000;  // ต่อช่วงเวลา 10 นาที
+const REGISTER_LOCK_MS = 15 * 60 * 1000;    // เกินแล้วล็อก 15 นาที
+
+function checkRegisterRateLimit(ip: string): { allowed: boolean, waitTimeStr?: string } {
+  if (ip === 'unknown') return { allowed: true }; // ไม่มี IP ให้เช็ค ปล่อยผ่าน (กันเคส proxy แปลกๆ)
+  const now = Date.now();
+  const attempt = registerAttempts.get(ip);
+  if (!attempt) return { allowed: true };
+
+  if (attempt.lockUntil > now) {
+    const waitMins = Math.ceil((attempt.lockUntil - now) / 60000);
+    return { allowed: false, waitTimeStr: `${waitMins} นาที` };
+  }
+  if (now - attempt.windowStart > REGISTER_WINDOW_MS) {
+    registerAttempts.delete(ip); // หมดช่วงเวลาแล้ว รีเซ็ต
+  }
+  return { allowed: true };
+}
+
+function recordRegisterAttempt(ip: string) {
+  if (ip === 'unknown') return;
+  const now = Date.now();
+  const attempt = registerAttempts.get(ip);
+
+  if (!attempt || now - attempt.windowStart > REGISTER_WINDOW_MS) {
+    registerAttempts.set(ip, { count: 1, windowStart: now, lockUntil: 0 });
+    return;
+  }
+
+  attempt.count += 1;
+  if (attempt.count >= REGISTER_MAX_ATTEMPTS) {
+    attempt.lockUntil = now + REGISTER_LOCK_MS;
+  }
+  registerAttempts.set(ip, attempt);
+}
+
+// 🛡️ ชุดคำถาม-คำตอบด่านตรวจสอบวิญญาณ ต้องตรงกับ BOT_CHECK_POOL ฝั่ง webboard.html
+const BOT_CHECK_ANSWERS = new Set([
+  'สัตยาสาบาน',
+  'ศิษย์หลวงปู่',
+  'ลานเสวนา',
+  '2',
+  '3',
+  '7',
+  'คน',
+]);
+
+function normalizeAnswer(str: string) {
+  return String(str || '').trim().replace(/\s+/g, '');
+}
+
+function isValidBotCheckAnswer(answer: string) {
+  return BOT_CHECK_ANSWERS.has(normalizeAnswer(answer));
+}
+
 // === AUTH & USERS ROUTES ===
 
 app.post('/api/login', async (c) => {
@@ -223,10 +281,17 @@ app.get('/api/users', async (c) => {
 })
 
 app.post('/api/users', async (c) => {
+  const ip = c.req.header('cf-connecting-ip') || 'unknown';
+  const rateLimit = checkRegisterRateLimit(ip);
+  if (!rateLimit.allowed) return c.json({ success: false, message: `มีการสมัครถี่เกินไปจาก IP นี้ โปรดรออีก ${rateLimit.waitTimeStr}` }, 429);
+
   const body = await c.req.json()
-  const { username, password, role, rank_name, last_login, bot_check } = body
-  
-  if (bot_check !== 'สัตยาสาบาน') return c.json({ success: false, message: 'โดนสกัดกั้น! คำปฏิญาณยืนยันตัวตนไม่ถูกต้อง' }, 403);
+  const { username, password, role, rank_name, last_login, bot_check_answer } = body
+
+  if (!isValidBotCheckAnswer(bot_check_answer)) {
+    recordRegisterAttempt(ip);
+    return c.json({ success: false, message: 'โดนสกัดกั้น! คำตอบยืนยันตัวตนไม่ถูกต้อง' }, 403);
+  }
 
   if (!/^[\u0E00-\u0E7F]+$/.test(username)) {
       return c.json({ success: false, message: 'นามแฝงอนุญาตเฉพาะ "อักขระภาษาไทย" และห้ามเว้นวรรคเด็ดขาด!' }, 400);
@@ -238,6 +303,8 @@ app.post('/api/users', async (c) => {
   if (reservedWords.some(word => username.includes(word))) {
       return c.json({ success: false, message: 'นามแฝงนี้มีคำสงวนของสำนักประทับอยู่ ไม่อนุญาตให้ใช้งาน!' }, 400);
   }
+
+  recordRegisterAttempt(ip);
 
   const salt = crypto.randomUUID()
   const hashed = await hashPassword(password, salt)
