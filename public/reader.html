@@ -152,7 +152,7 @@
         .btn-primary:hover { filter: brightness(1.15); }
 
         .site-footer { text-align: center; margin-top: 50px; padding-top: 20px; border-top: 1px dashed rgba(138, 99, 21, 0.3); }
-        .site-footer p { color: var(--text-muted); font-size: 0.85rem; letter-spacing: 0.5px; margin: 0; }
+        .site-footer p { color: var(--text-muted); font-family: 'Sarabun', sans-serif; font-size: 0.85rem; letter-spacing: 0.5px; margin: 0; }
 
         @media (max-width: 600px) { 
             .reader-controls { justify-content: center; } 
@@ -423,7 +423,7 @@
                         
                         <p>พร้อมกันนั้น ก็ได้นำพาเสียงกระซิบแผ่วเบา... เสียงทุ้มลึกที่คุ้นเคย ดังขึ้นในโสตประสาทของฟ้าเพียงคนเดียว...</p>
 
-                        <p style="color: var(--gold-main); font-weight: bold;">"หากคราหน้ามีโอกาส... กลับมาเยี่ยมพี่บ้าง ธารนภาเทวีของพี่... พี่จักอยู่ตรงนี้นับอีกนานนับพันปี... และบำเพ็ญเพียรตบะต่อไป... โดยที่ไร้เจ้าเคียงคู่ตลอดกาล..."</b></p>
+                        <p style="text-align: center; font-style: italic; color: var(--gold-light); margin-top: 40px; font-size: clamp(1rem, 2.5vw, 1.1rem);">"หากคราหน้ามีโอกาส... กลับมาเยี่ยมพี่บ้าง ธารนภาเทวีของพี่... พี่จักอยู่ตรงนี้นับอีกนานนับพันปี... และบำเพ็ญเพียรตบะต่อไป... โดยที่ไร้เจ้าเคียงคู่ตลอดกาล..."</p>
                         
                         <div style="text-align: center; color: var(--gold-main); font-weight: bold; margin-top: 60px; letter-spacing: 2px;">♪ ภวังค์จิต ♪</div>
 
@@ -518,15 +518,14 @@
         // 🌟 ระบบจดจำจุดอ่าน (Smart Scroll Save)
         const STORAGE_KEY = 'siy_reading_pos_' + window.location.pathname;
         let scrollTimer = null;
+        let initialSavedPosition = 0; // เพิ่มตัวแปรเก็บตำแหน่งเดิมก่อนโดนทับ
 
         window.addEventListener('scroll', () => {
             if (scrollTimer) clearTimeout(scrollTimer);
             scrollTimer = setTimeout(() => {
-                // ถ้าเลื่อนอ่านลงไปเกิน 200px ให้จำค่าไว้
                 if (window.scrollY > 200) {
                     localStorage.setItem(STORAGE_KEY, window.scrollY);
                 } else {
-                    // ถ้าเลื่อนกลับขึ้นมาบนสุด ให้ล้างความจำทิ้ง จะได้ไม่เด้งขึ้นมากวนใจรอบหน้า
                     localStorage.removeItem(STORAGE_KEY);
                 }
             }, 500);
@@ -535,6 +534,7 @@
         window.addEventListener('DOMContentLoaded', () => {
             const savedPosition = localStorage.getItem(STORAGE_KEY);
             if (savedPosition && parseInt(savedPosition, 10) > 200) {
+                initialSavedPosition = parseInt(savedPosition, 10);
                 const banner = document.getElementById('resume-scroll-banner');
                 if (banner) {
                     banner.style.display = 'flex';
@@ -543,12 +543,14 @@
         });
 
         function jumpToSavedPosition() {
-            const savedPosition = localStorage.getItem(STORAGE_KEY);
-            if (savedPosition) {
-                window.scrollTo({
-                    top: parseInt(savedPosition, 10),
-                    behavior: 'smooth'
-                });
+            if (initialSavedPosition > 0) {
+                // เลื่อนไปยังจุดเดิมที่เซฟไว้ก่อนหน้า (ไม่ใช่จุดที่เพิ่งถูก scroll ทับไปเมื่อกี้)
+                setTimeout(() => {
+                    window.scrollTo({
+                        top: initialSavedPosition,
+                        behavior: 'smooth'
+                    });
+                }, 100);
             }
             dismissResumeBanner();
         }
