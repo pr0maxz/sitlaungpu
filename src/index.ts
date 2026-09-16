@@ -11,14 +11,14 @@ type Bindings = {
 const app = new Hono<{ Bindings: Bindings }>()
 
 app.use('/api/*', cors({
-  origin: '*', // แนะนำว่าเมื่อระบบนิ่งแล้ว สามารถเปลี่ยนเป็นโดเมนเว็บไซต์ของคุณเพื่อความปลอดภัย
+  origin: '*', // ⚠️ แนะนำให้เปลี่ยนเป็นโดเมนเว็บไซต์ของคุณเมื่อระบบขึ้นใช้งานจริง
   allowHeaders: ['Content-Type', 'Authorization'],
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
 }))
 
 const DEFAULT_JWT_SECRET = 'sitluangpu_telepathy_secret_token_2026'
 
-// ฟังก์ชันแฮชรหัสผ่านด้วย SHA-256 ผสม Salt
+// ฟังก์ชันแฮชรหัสผ่านด้วย SHA-256 และ Salt
 async function hashPassword(password: string, salt: string) {
   const encoder = new TextEncoder()
   const data = encoder.encode(password + salt)
@@ -96,7 +96,7 @@ async function addKarma(db: D1Database, username: string, amount: number) {
   } catch (e) {}
 }
 
-// ระบบ Rate Limit สำหรับการเข้าสู่ระบบ (ป้องกันการ Brute Force)
+// ระบบ Rate Limit สำหรับการเข้าสู่ระบบ
 const loginAttempts = new Map<string, { count: number, lockUntil: number }>();
 
 function checkLoginRateLimit(ip: string): { allowed: boolean, waitTimeStr?: string } {
@@ -279,7 +279,7 @@ app.get('/api/me', async (c) => {
 })
 
 app.get('/api/users', async (c) => {
-  const { results } = await c.env.DB.prepare("SELECT username, role, rank_name, karma, last_login FROM users").all()
+  const { results } = await c.env.DB.prepare("SELECT username, role, rank_name, karma, last_login, sort_order FROM users ORDER BY sort_order ASC, username ASC").all()
   const usersWithKarmaInfo = results.map((u: any) => {
     const rankInfo = calculateRank(u.karma || 0, String(u.role), u.rank_name);
     return { ...u, nextRankMsg: rankInfo.nextRankMsg }
@@ -292,7 +292,7 @@ app.post('/api/users', async (c) => {
   const body = await c.req.json()
   const { username, password, role, rank_name, last_login, bot_check_answer } = body
 
-  // 🌟 ตรวจสอบว่าเป็น Admin ที่เข้าสู่ระบบอยู่หรือไม่ (ถ้าใช่ ข้าม Bot Check ทันทีเพื่อแก้ปัญหาแอดมินเพิ่มผู้ใช้ไม่ได้)
+  // ตรวจสอบสิทธิ์ Admin (ถ้า Admin สร้างจากหลังบ้าน ให้ข้าม Bot Check)
   const authResult = await getAuthenticatedUser(c);
   const isAdmin = authResult.user && String(authResult.user.role) === '1';
 
@@ -320,7 +320,7 @@ app.post('/api/users', async (c) => {
   const hashed = await hashPassword(password, salt)
   try {
     await c.env.DB.prepare(
-      "INSERT INTO users (username, password_hash, salt, role, rank_name, last_login, karma) VALUES (?, ?, ?, ?, ?, ?, 0)"
+      "INSERT INTO users (username, password_hash, salt, role, rank_name, last_login, karma, sort_order) VALUES (?, ?, ?, ?, ?, ?, 0, 0)"
     ).bind(username, hashed, salt, role || '5', rank_name || 'เด็กวัด', last_login || null).run()
     
     const secret = c.env.JWT_SECRET || DEFAULT_JWT_SECRET
@@ -362,6 +362,31 @@ app.put('/api/users', async (c) => {
     }
     return c.json({ success: true })
   } catch (e) { return c.json({ success: false, message: 'ไม่สามารถอัปเดตข้อมูลผู้ใช้ได้' }, 400) }
+})
+
+// 🌟 API สำหรับอัปเดตลำดับสมาชิก (Reorder)
+app.put('/api/users/reorder', async (c) => {
+  const authResult = await getAuthenticatedUser(c)
+  if (!authResult.user || String(authResult.user.role) !== '1') {
+    return c.json({ success: false, error: 'Forbidden' }, 403)
+  }
+
+  try {
+    const { orderedUsernames } = await c.req.json()
+    if (!Array.isArray(orderedUsernames)) {
+      return c.json({ success: false, error: 'Invalid data format' }, 400)
+    }
+
+    for (let i = 0; i < orderedUsernames.length; i++) {
+      await c.env.DB.prepare(
+        "UPDATE users SET sort_order = ? WHERE username = ?"
+      ).bind(i, orderedUsernames[i]).run()
+    }
+
+    return c.json({ success: true })
+  } catch (e: any) {
+    return c.json({ success: false, error: e.message }, 500)
+  }
 })
 
 app.delete('/api/users/:username', async (c) => {
@@ -729,7 +754,6 @@ app.get('/api/cms', async (c) => {
   return c.json(cms || {})
 })
 
-// 🌟 ปรับปรุง Endpoint CMS ให้ถูกต้องและสะอาดเรียบร้อย
 app.post('/api/cms', async (c) => {
   const authResult = await getAuthenticatedUser(c)
   if (!authResult.user || String(authResult.user.role) !== '1') return c.json({ success: false, error: 'Forbidden' }, 403)
