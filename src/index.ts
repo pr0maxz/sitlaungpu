@@ -127,7 +127,7 @@ function resetLoginAttempts(ip: string) {
   loginAttempts.delete(ip);
 }
 
-// ระบบ Rate Limit สำหรับการสมัครสมาชิก
+// 🛡️ ระบบ Rate Limit สำหรับการสมัครสมาชิก (ป้องกันการสแปมสมัครรัวๆ ตาม IP)[cite: 15]
 const registerAttempts = new Map<string, { count: number, windowStart: number, lockUntil: number }>();
 const REGISTER_MAX_ATTEMPTS = 5;          
 const REGISTER_WINDOW_MS = 10 * 60 * 1000;  
@@ -292,7 +292,7 @@ app.post('/api/users', async (c) => {
   const body = await c.req.json()
   const { username, password, role, rank_name, last_login, bot_check_answer } = body
 
-  // ตรวจสอบสิทธิ์ Admin (ถ้า Admin สร้างจากหลังบ้าน ให้ข้าม Bot Check)
+  // ตรวจสอบสิทธิ์ Admin (ถ้า Admin สร้างจากหลังบ้าน ให้ข้าม Rate Limit และ Bot Check)[cite: 15]
   const authResult = await getAuthenticatedUser(c);
   const isAdmin = authResult.user && String(authResult.user.role) === '1';
 

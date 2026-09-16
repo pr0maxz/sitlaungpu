@@ -128,9 +128,6 @@
         .widget { background: rgba(12, 7, 4, 0.85); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 8px; padding: 45px 20px 20px 20px; margin-top: 45px; margin-bottom: 40px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); position: relative; width: 100%; max-width: 100%; box-sizing: border-box; }
         .user-status-box { text-align: center; width: 100%; } 
         
-        /* ---------------------------------------------------- */
-        /* แก้ไขส่วน Profile แอดมินให้ชื่อและยศจัดกลางซ้อนกัน */
-        /* ---------------------------------------------------- */
         .user-logged-in-profile { display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 15px; background: rgba(212, 175, 55, 0.05); padding: 25px 20px; border-radius: 8px; border: 1px dashed var(--gold-dark); width: 100%; box-sizing: border-box; min-height: 130px; } 
         .user-info-text { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; width: 100%; } 
         .user-info-text h4 { color: var(--gold-light); font-size: 1.25rem; margin: 0 0 10px 0; word-wrap: break-word; font-weight: 600; line-height: 1; } 
@@ -503,7 +500,6 @@
                     return await response.json();
                 } catch (error) { return []; }
             },
-            // 🌟 ดึงข้อมูลคอมเมนต์ทั้งหมดเพื่อคำนวณวันอัปเดตล่าสุด
             async fetchComments() {
                 try {
                     const response = await fetch(`${API_CONFIG.BASE_URL}/comments`);
@@ -872,7 +868,6 @@
         let globalPostsCat2 = [];
         const POSTS_PER_PAGE = 10; 
 
-        // 🌟 ปรับปรุงการโหลดกระทู้และคำนวณวันอัปเดตล่าสุดจากคอมเมนต์
         async function loadAndRenderPosts(searchQuery = '') {
             const cat1Container = document.getElementById('dynamic-category-1');
             const cat2Container = document.getElementById('dynamic-category-2');
@@ -894,7 +889,6 @@
                 return;
             }
 
-            // จัดทำตารางแม็ปหาคอมเมนต์ล่าสุดของแต่ละกระทู้
             const latestCommentMap = {};
             if (Array.isArray(comments)) {
                 comments.forEach(c => {
@@ -909,7 +903,6 @@
                 });
             }
 
-            // ผูกข้อมูลวันอัปเดตล่าสุดและเวลาเพื่อใช้จัดเรียง
             posts.forEach(p => {
                 const pId = String(p.id);
                 const lc = latestCommentMap[pId];
@@ -937,7 +930,6 @@
                 return;
             }
 
-            // จัดเรียงตามกระทู้ปักหมุดก่อน ตามด้วยกระทู้ที่มีความเคลื่อนไหวล่าสุด
             posts.sort((a, b) => {
                 const aPin = checkIsPinned(a.pinned) ? 1 : 0;
                 const bPin = checkIsPinned(b.pinned) ? 1 : 0;
@@ -1156,56 +1148,6 @@
             return String(str || '').trim().replace(/\s+/g, '');
         }
 
-        // ซอฟต์-รีมิตฝั่ง client: หน่วงการยิงสมัครรัวๆ จากเบราว์เซอร์เดียวกัน
-        // หมายเหตุ: นี่ "ไม่ใช่" การกันบอทจริงจัง เพราะบอทที่ยิงตรงไปที่ API เลี่ยงหน้าเว็บได้เสมอ
-        // การกัน IP ที่เชื่อถือได้ต้องทำที่ฝั่ง Cloudflare Worker (ดูไฟล์ rate-limit-worker-snippet.js ที่แนบให้)
-        const REG_ATTEMPT_KEY = 'siy_reg_attempts';
-        const REG_MAX_ATTEMPTS = 5;
-        const REG_WINDOW_MS = 10 * 60 * 1000; // 10 นาที
-        const REG_COOLDOWN_MS = 5 * 60 * 1000; // บล็อก 5 นาทีเมื่อเกิน
-
-        function getRegAttempts() {
-            try { return JSON.parse(localStorage.getItem(REG_ATTEMPT_KEY) || '[]'); }
-            catch (e) { return []; }
-        }
-
-        function checkClientRateLimit() {
-            const now = Date.now();
-            const attempts = getRegAttempts().filter(t => now - t < REG_WINDOW_MS);
-            if (attempts.length >= REG_MAX_ATTEMPTS) {
-                const oldest = Math.min(...attempts);
-                const remainMs = REG_COOLDOWN_MS - (now - oldest);
-                if (remainMs > 0) {
-                    return Math.ceil(remainMs / 1000);
-                }
-            }
-            return 0;
-        }
-
-        function recordRegAttempt() {
-            const now = Date.now();
-            const attempts = getRegAttempts().filter(t => now - t < REG_WINDOW_MS);
-            attempts.push(now);
-            localStorage.setItem(REG_ATTEMPT_KEY, JSON.stringify(attempts));
-        }
-
-        function showBotCheckCooldown(seconds) {
-            const msg = document.getElementById('botCheckCooldownMsg');
-            const btn = document.getElementById('modalSubmitBtn');
-            if (msg) {
-                msg.style.display = 'block';
-                msg.textContent = `ลองสมัครถี่เกินไป โปรดรออีก ${seconds} วินาทีแล้วลองใหม่`;
-            }
-            if (btn) btn.disabled = true;
-        }
-
-        function hideBotCheckCooldown() {
-            const msg = document.getElementById('botCheckCooldownMsg');
-            const btn = document.getElementById('modalSubmitBtn');
-            if (msg) msg.style.display = 'none';
-            if (btn) btn.disabled = false;
-        }
-
         function openRegisterModal(mode) {
             currentModalMode = mode;
             if (mode === 'login') {
@@ -1221,8 +1163,6 @@
                 document.getElementById('botCheckContainer').style.display = 'block'; 
                 document.getElementById('modalSubmitBtn').textContent = 'ลงนาม';
                 pickBotCheckQuestion();
-                const waitSec = checkClientRateLimit();
-                if (waitSec > 0) { showBotCheckCooldown(waitSec); } else { hideBotCheckCooldown(); }
             }
             document.getElementById('regUsername').value = '';
             document.getElementById('regPassword').value = '';
@@ -1253,21 +1193,13 @@
             const nowTimestamp = Date.now();
 
             if (currentModalMode === 'register') {
-                const waitSec = checkClientRateLimit();
-                if (waitSec > 0) {
-                    showBotCheckCooldown(waitSec);
-                    return;
-                }
-
                 const botCheckVal = document.getElementById('botCheckInput').value.trim();
                 if (!currentBotCheck || normalizeAnswer(botCheckVal) !== normalizeAnswer(currentBotCheck.a)) {
-                    recordRegAttempt();
                     showCustomAlert('โดนสกัดกั้น! ท่านตอบคำถามยืนยันตัวตนไม่ถูกต้อง');
                     pickBotCheckQuestion();
                     document.getElementById('botCheckInput').value = '';
                     return;
                 }
-                recordRegAttempt();
 
                 try {
                     const res = await fetch(`${API_CONFIG.BASE_URL}/users`, {
@@ -1285,8 +1217,9 @@
                     });
                     const result = await res.json();
                     
+                    // 🌟 รองรับการดักจับสถานะ 429 Too Many Requests จาก Backend เมื่อสมัครถี่เกินไป
                     if (res.status === 429) {
-                        showCustomAlert(result.message || 'มีการสมัครถี่เกินไปจาก IP นี้ โปรดลองใหม่ภายหลัง');
+                        showCustomAlert(result.message || 'มีการสมัครถี่เกินไปจาก IP นี้ โปรดรอสักครู่แล้วลองใหม่');
                         return;
                     }
 
@@ -1322,6 +1255,11 @@
                     });
                     const result = await res.json();
                     
+                    if (res.status === 429) {
+                        showCustomAlert(result.error || 'เข้าระบบผิดพลาดเกินขีดจำกัด โปรดรอลดความถี่');
+                        return;
+                    }
+
                     if (!res.ok || !result.success) {
                         showCustomAlert(result.error || 'รหัสผ่านลับไม่ถูกต้อง! อาถรรพ์กำลังสะท้อนกลับ');
                         return;
