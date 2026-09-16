@@ -1247,6 +1247,7 @@
                     text_color: document.getElementById('edit-role-text').value,
                     border_color: document.getElementById('edit-role-border').value
                 };
+                // ส่งข้อมูลยศไปยัง API Backend[cite: 2]
                 await AdminAPI.saveRole(data, id || null);
                 closeModal('roleModal');
                 await loadAdminData();

@@ -11,13 +11,14 @@ type Bindings = {
 const app = new Hono<{ Bindings: Bindings }>()
 
 app.use('/api/*', cors({
-  origin: '*', // ⚠️ ข้อเสนอแนะ: เมื่อระบบนิ่ง ให้เปลี่ยนเป็นโดเมนเว็บคุณ
+  origin: '*', // แนะนำว่าเมื่อระบบนิ่งแล้ว สามารถเปลี่ยนเป็นโดเมนเว็บไซต์ของคุณเพื่อความปลอดภัย
   allowHeaders: ['Content-Type', 'Authorization'],
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
 }))
 
 const DEFAULT_JWT_SECRET = 'sitluangpu_telepathy_secret_token_2026'
 
+// ฟังก์ชันแฮชรหัสผ่านด้วย SHA-256 ผสม Salt
 async function hashPassword(password: string, salt: string) {
   const encoder = new TextEncoder()
   const data = encoder.encode(password + salt)
@@ -26,6 +27,7 @@ async function hashPassword(password: string, salt: string) {
   return hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
 }
 
+// ฟังก์ชันทำความสะอาดข้อความ ป้องกันการฝัง Script (XSS)
 function sanitize(text: string) {
   if (!text) return text;
   return text.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
@@ -33,6 +35,7 @@ function sanitize(text: string) {
              .replace(/on\w+='[^']*'/gi, '');
 }
 
+// ฟังก์ชันสร้าง JWT Token สำหรับยืนยันตัวตน
 async function generateToken(payload: { username: string; role: string; rank_name: string }, secret: string) {
   return await sign({
     ...payload,
@@ -40,7 +43,7 @@ async function generateToken(payload: { username: string; role: string; rank_nam
   }, secret, 'HS256')
 }
 
-// 🛡️ ระบบสแกนกุญแจ
+// ฟังก์ชันตรวจสอบและแกะข้อมูลจาก Token
 async function getAuthenticatedUser(c: any): Promise<{ user: any, error: string | null }> {
   try {
     const authHeader = c.req.raw.headers.get('Authorization') || c.req.raw.headers.get('authorization');
@@ -58,13 +61,14 @@ async function getAuthenticatedUser(c: any): Promise<{ user: any, error: string 
   }
 }
 
-// 🌟 แปลงเวลา Cloudflare (UTC) ให้เป็นเวลาไทย (+7)
+// แปลงเวลา Cloudflare (UTC) ให้เป็นเวลาไทย (+7)
 function getThaiTimeStr() {
   const thaiMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
-  const now = new Date(Date.now() + 7 * 60 * 60 * 1000); // บวก 7 ชั่วโมง
+  const now = new Date(Date.now() + 7 * 60 * 60 * 1000); 
   return now.getUTCDate() + ' ' + thaiMonths[now.getUTCMonth()] + ' ' + (now.getUTCFullYear() + 543) + ' | ' + String(now.getUTCHours()).padStart(2, '0') + ':' + String(now.getUTCMinutes()).padStart(2, '0') + ' น.';
 }
 
+// ระบบคำนวณยศและแต้มบุญ (Karma)
 function calculateRank(karma: number, currentRole: string, currentRankName: string) {
   const standardRoles = ['2', '3', '4', '5'];
   if (currentRole === '1' || currentRankName === 'ตัวละคร' || (!standardRoles.includes(String(currentRole)) && currentRole !== '')) {
@@ -76,6 +80,7 @@ function calculateRank(karma: number, currentRole: string, currentRankName: stri
   return { role: '5', rank_name: 'เด็กวัด', nextRankMsg: `อีก ${11 - karma} แต้มบุญ จะเลื่อนเป็น ปฐมภูมิ` };
 }
 
+// ฟังก์ชันเพิ่มแต้มบุญให้สมาชิก
 async function addKarma(db: D1Database, username: string, amount: number) {
   try {
     if (!username || username.includes('ผู้ไม่ประสงค์ออกนาม')) return;
@@ -91,6 +96,7 @@ async function addKarma(db: D1Database, username: string, amount: number) {
   } catch (e) {}
 }
 
+// ระบบ Rate Limit สำหรับการเข้าสู่ระบบ (ป้องกันการ Brute Force)
 const loginAttempts = new Map<string, { count: number, lockUntil: number }>();
 
 function checkLoginRateLimit(ip: string): { allowed: boolean, waitTimeStr?: string } {
@@ -121,14 +127,14 @@ function resetLoginAttempts(ip: string) {
   loginAttempts.delete(ip);
 }
 
-// 🛡️ กัน Bot ยิงสมัครสมาชิกรัว ๆ ตาม IP (แยก Map จาก login โดยเฉพาะ)
+// ระบบ Rate Limit สำหรับการสมัครสมาชิก
 const registerAttempts = new Map<string, { count: number, windowStart: number, lockUntil: number }>();
-const REGISTER_MAX_ATTEMPTS = 5;          // สมัครได้สูงสุดกี่ครั้ง
-const REGISTER_WINDOW_MS = 10 * 60 * 1000;  // ต่อช่วงเวลา 10 นาที
-const REGISTER_LOCK_MS = 15 * 60 * 1000;    // เกินแล้วล็อก 15 นาที
+const REGISTER_MAX_ATTEMPTS = 5;          
+const REGISTER_WINDOW_MS = 10 * 60 * 1000;  
+const REGISTER_LOCK_MS = 15 * 60 * 1000;    
 
 function checkRegisterRateLimit(ip: string): { allowed: boolean, waitTimeStr?: string } {
-  if (ip === 'unknown') return { allowed: true }; // ไม่มี IP ให้เช็ค ปล่อยผ่าน (กันเคส proxy แปลกๆ)
+  if (ip === 'unknown') return { allowed: true }; 
   const now = Date.now();
   const attempt = registerAttempts.get(ip);
   if (!attempt) return { allowed: true };
@@ -138,7 +144,7 @@ function checkRegisterRateLimit(ip: string): { allowed: boolean, waitTimeStr?: s
     return { allowed: false, waitTimeStr: `${waitMins} นาที` };
   }
   if (now - attempt.windowStart > REGISTER_WINDOW_MS) {
-    registerAttempts.delete(ip); // หมดช่วงเวลาแล้ว รีเซ็ต
+    registerAttempts.delete(ip); 
   }
   return { allowed: true };
 }
@@ -160,7 +166,7 @@ function recordRegisterAttempt(ip: string) {
   registerAttempts.set(ip, attempt);
 }
 
-// 🛡️ ชุดคำถาม-คำตอบด่านตรวจสอบวิญญาณ ต้องตรงกับ BOT_CHECK_POOL ฝั่ง webboard.html
+// คำตอบตรวจสอบวิญญาณ (Bot Check)
 const BOT_CHECK_ANSWERS = new Set([
   'สัตยาสาบาน',
   'ศิษย์หลวงปู่',
@@ -178,6 +184,7 @@ function normalizeAnswer(str: string) {
 function isValidBotCheckAnswer(answer: string) {
   return BOT_CHECK_ANSWERS.has(normalizeAnswer(answer));
 }
+
 
 // === AUTH & USERS ROUTES ===
 
@@ -282,29 +289,32 @@ app.get('/api/users', async (c) => {
 
 app.post('/api/users', async (c) => {
   const ip = c.req.header('cf-connecting-ip') || 'unknown';
-  const rateLimit = checkRegisterRateLimit(ip);
-  if (!rateLimit.allowed) return c.json({ success: false, message: `มีการสมัครถี่เกินไปจาก IP นี้ โปรดรออีก ${rateLimit.waitTimeStr}` }, 429);
-
   const body = await c.req.json()
   const { username, password, role, rank_name, last_login, bot_check_answer } = body
 
-  if (!isValidBotCheckAnswer(bot_check_answer)) {
+  // 🌟 ตรวจสอบว่าเป็น Admin ที่เข้าสู่ระบบอยู่หรือไม่ (ถ้าใช่ ข้าม Bot Check ทันทีเพื่อแก้ปัญหาแอดมินเพิ่มผู้ใช้ไม่ได้)
+  const authResult = await getAuthenticatedUser(c);
+  const isAdmin = authResult.user && String(authResult.user.role) === '1';
+
+  if (!isAdmin) {
+    const rateLimit = checkRegisterRateLimit(ip);
+    if (!rateLimit.allowed) return c.json({ success: false, message: `มีการสมัครถี่เกินไปจาก IP นี้ โปรดรออีก ${rateLimit.waitTimeStr}` }, 429);
+
+    if (!isValidBotCheckAnswer(bot_check_answer)) {
+      recordRegisterAttempt(ip);
+      return c.json({ success: false, message: 'โดนสกัดกั้น! คำตอบยืนยันตัวตนไม่ถูกต้อง' }, 403);
+    }
     recordRegisterAttempt(ip);
-    return c.json({ success: false, message: 'โดนสกัดกั้น! คำตอบยืนยันตัวตนไม่ถูกต้อง' }, 403);
   }
 
   if (!/^[\u0E00-\u0E7F]+$/.test(username)) {
       return c.json({ success: false, message: 'นามแฝงอนุญาตเฉพาะ "อักขระภาษาไทย" และห้ามเว้นวรรคเด็ดขาด!' }, 400);
   }
 
-  // 🛡️ SECURITY FIX: ตรวจสอบคำสงวน ห้ามใช้ชื่อที่คล้ายแอดมินหรือคำเฉพาะของระบบ
-  const reservedWords = ['แอดมิน', 'แอทมิน', 'ผู้ดูแล', 'ทีมงาน', 'เจ้าหน้าที่', 'ระบบ', 'ผู้คุมกฎ', 'ปรมัตถ์', 'สตาฟ', 'เว็บมาสเตอร์', 'ศิษย์หลวงปู่', 'เจ้าสำนัก', 'ผู้บริหาร','สต๊าฟ', 'ซัพพอร์ต', 'ส่วนกลาง', 'แอด'];
-  
+  const reservedWords = ['แอดมิน', 'แอทมิน', 'ผู้ดูแล', 'ทีมงาน', 'เจ้าหน้าที่', 'ระบบ', 'ผู้คุมกฎ', 'ปรมัตถ์', 'สตาฟ', 'เว็บมาสเตอร์', 'ศิษย์หลวงปู่', 'เจ้าสำนัก', 'ผู้บริหาร', 'สต๊าฟ', 'ซัพพอร์ต', 'ส่วนกลาง', 'แอด'];
   if (reservedWords.some(word => username.includes(word))) {
       return c.json({ success: false, message: 'นามแฝงนี้มีคำสงวนของสำนักประทับอยู่ ไม่อนุญาตให้ใช้งาน!' }, 400);
   }
-
-  recordRegisterAttempt(ip);
 
   const salt = crypto.randomUUID()
   const hashed = await hashPassword(password, salt)
@@ -317,8 +327,6 @@ app.post('/api/users', async (c) => {
     const token = await generateToken({ username, role: role || '5', rank_name: rank_name || 'เด็กวัด' }, secret)
     return c.json({ success: true, token, username })
   } catch (e: any) {
-    console.error("Register Error: ", e);
-    // 🌟 ส่งข้อความ Error จากฐานข้อมูลออกไปโชว์ที่หน้าจอเลย
     return c.json({ success: false, message: `ฐานข้อมูลแจ้งว่า: ${e.message}` }, 400)
   }
 })
@@ -335,9 +343,7 @@ app.put('/api/users', async (c) => {
       return c.json({ success: false, message: 'นามแฝงอนุญาตเฉพาะ "อักขระภาษาไทย" และห้ามเว้นวรรคเด็ดขาด!' }, 400);
   }
 
-  // 🛡️ SECURITY FIX: ตรวจสอบคำสงวน ห้ามใช้ชื่อที่คล้ายแอดมินหรือคำเฉพาะของระบบ
-  const reservedWords = ['แอดมิน', 'แอทมิน', 'ผู้ดูแล', 'ทีมงาน', 'เจ้าหน้าที่', 'ระบบ', 'ผู้คุมกฎ', 'ปรมัตถ์', 'สตาฟ', 'เว็บมาสเตอร์', 'ศิษย์หลวงปู่', 'เจ้าสำนัก', 'ผู้บริหาร','สต๊าฟ', 'ซัพพอร์ต', 'ส่วนกลาง', 'แอด'];
-  
+  const reservedWords = ['แอดมิน', 'แอทมิน', 'ผู้ดูแล', 'ทีมงาน', 'เจ้าหน้าที่', 'ระบบ', 'ผู้คุมกฎ', 'ปรมัตถ์', 'สตาฟ', 'เว็บมาสเตอร์', 'ศิษย์หลวงปู่', 'เจ้าสำนัก', 'ผู้บริหาร', 'สต๊าฟ', 'ซัพพอร์ต', 'ส่วนกลาง', 'แอด'];
   if (reservedWords.some(word => username.includes(word))) {
       return c.json({ success: false, message: 'นามแฝงนี้มีคำสงวนของสำนักประทับอยู่ ไม่อนุญาตให้ใช้งาน!' }, 400);
   }
@@ -366,6 +372,7 @@ app.delete('/api/users/:username', async (c) => {
   await c.env.DB.prepare("DELETE FROM users WHERE username = ?").bind(username).run()
   return c.json({ success: true })
 })
+
 
 // === POSTS & COMMENTS ROUTES ===
 
@@ -400,7 +407,6 @@ app.post('/api/posts', async (c) => {
   await c.env.DB.prepare("UPDATE users SET last_post_time = ? WHERE username = ?").bind(now, author).run();
   await addKarma(c.env.DB, author, 2);
 
-  // 🛡️ [กู้คืน] สร้างแจ้งเตือนเมื่อมีการ Mention ในกระทู้หลัก
   try {
       const mentionRegex = /@([\u0E00-\u0E7Fa-zA-Z0-9_-]+)/g;
       const combinedText = `${body.title} ${safeContent}`;
@@ -483,7 +489,7 @@ app.post('/api/posts/:postId/like', async (c) => {
     
     if (post && post.author && post.author !== actor) {
       const notiId = Date.now().toString()
-      const timeStr = getThaiTimeStr() // 🌟 ใช้เวลาไทย
+      const timeStr = getThaiTimeStr() 
       await c.env.DB.prepare(
         "INSERT INTO notifications (id, recipient, actor, action_type, post_id, is_read, timestamp) VALUES (?, ?, ?, 'like_post', ?, 0, ?)"
       ).bind(notiId, post.author, actor, postId, timeStr).run().catch(() => {})
@@ -528,13 +534,11 @@ app.post('/api/comments', async (c) => {
   await c.env.DB.prepare("UPDATE users SET last_comment_time = ? WHERE username = ?").bind(now, author).run();
   await addKarma(c.env.DB, author, 1);
 
-  // 🛡️ [กู้คืน] สร้างแจ้งเตือนคอมเมนต์จาก Backend
   try {
       const post: any = await c.env.DB.prepare("SELECT author FROM posts WHERE id = ?").bind(body.postId).first();
       const targetCommentId = `${body.postId}#comment-${body.id}`;
-      const notiTimeStr = getThaiTimeStr(); // 🌟 ใช้เวลาไทย
+      const notiTimeStr = getThaiTimeStr(); 
 
-      // 1. แจ้งเตือนคนถูกตอบกลับ (Reply)
       let repliedAuthor = null;
       const replyMatch = safeContent.match(/\[AUTHOR:([^\]]+)\]/);
       if (replyMatch && replyMatch[1]) {
@@ -547,7 +551,6 @@ app.post('/api/comments', async (c) => {
           }
       }
 
-      // 2. แจ้งเตือนคนถูกแท็ก (Mention)
       const mentionRegex = /@([\u0E00-\u0E7Fa-zA-Z0-9_-]+)/g;
       const matches = [...safeContent.matchAll(mentionRegex)];
       const mentionedUsers = [...new Set(matches.map(m => m[1]))];
@@ -561,7 +564,6 @@ app.post('/api/comments', async (c) => {
           }
       }
 
-      // 3. แจ้งเตือนเจ้าของกระทู้
       if (post && post.author && post.author !== author && post.author !== repliedAuthor && !mentionedUsers.includes(post.author)) {
           const notiId3 = Date.now().toString() + Math.floor(Math.random() * 100000);
           await c.env.DB.prepare(
@@ -604,7 +606,7 @@ app.post('/api/comments/:commentId/like', async (c) => {
     
     if (comment && comment.author && comment.author !== actor) {
       const notiId = Date.now().toString()
-      const timeStr = getThaiTimeStr() // 🌟 ใช้เวลาไทย
+      const timeStr = getThaiTimeStr() 
       await c.env.DB.prepare(
         "INSERT INTO notifications (id, recipient, actor, action_type, post_id, is_read, timestamp) VALUES (?, ?, ?, 'like_comment', ?, 0, ?)"
       ).bind(notiId, comment.author, actor, `${comment.post_id}#comment-${commentId}`, timeStr).run().catch(() => {})
@@ -613,6 +615,7 @@ app.post('/api/comments/:commentId/like', async (c) => {
     return c.json({ success: true, likes: comment?.likes || 0 })
   } catch (e: any) { return c.json({ success: false, error: e.message }, 500) }
 })
+
 
 // === OTHERS (ROLES, REPORTS, BOOKMARKS, CMS) ===
 
@@ -726,14 +729,22 @@ app.get('/api/cms', async (c) => {
   return c.json(cms || {})
 })
 
+// 🌟 ปรับปรุง Endpoint CMS ให้ถูกต้องและสะอาดเรียบร้อย
 app.post('/api/cms', async (c) => {
   const authResult = await getAuthenticatedUser(c)
   if (!authResult.user || String(authResult.user.role) !== '1') return c.json({ success: false, error: 'Forbidden' }, 403)
   
   const body = await c.req.json()
   await c.env.DB.prepare(
-    "INSERT INTO cms (id, heroSubtitle, heroDesc, heroImg, heroBtnText, heroBtnUrl) VALUES (1, ?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET heroSubtitle = ?, heroDesc = ?, heroImg = ?, heroBtnText = ?, heroBtnUrl = ?, heroSubtitle = ?, heroDesc = ?, heroImg = ?, heroBtnText = ?, heroBtnUrl = ?"
-  ).bind(body.heroSubtitle || '', body.heroDesc || '', body.heroImg || '', body.heroBtnText || '', body.heroBtnUrl || '', body.heroSubtitle || '', body.heroDesc || '', body.heroImg || '', body.heroBtnText || '', body.heroBtnUrl || '').run()
+    `INSERT INTO cms (id, heroSubtitle, heroDesc, heroImg, heroBtnText, heroBtnUrl) 
+     VALUES (1, ?, ?, ?, ?, ?) 
+     ON CONFLICT(id) DO UPDATE SET 
+       heroSubtitle = ?, heroDesc = ?, heroImg = ?, heroBtnText = ?, heroBtnUrl = ?`
+  ).bind(
+    body.heroSubtitle || '', body.heroDesc || '', body.heroImg || '', body.heroBtnText || '', body.heroBtnUrl || '',
+    body.heroSubtitle || '', body.heroDesc || '', body.heroImg || '', body.heroBtnText || '', body.heroBtnUrl || ''
+  ).run()
+  
   return c.json({ success: true })
 })
 
@@ -746,7 +757,6 @@ app.get('/api/notifications/:username', async (c) => {
 })
 
 app.post('/api/notifications', async (c) => {
-  // 🛡️ ระบบนี้ถูกย้ายไปทำงานใน Backend แบบออโต้แล้ว 
   return c.json({ success: true, ignored: true });
 })
 
@@ -785,6 +795,7 @@ app.get('/api/ws', async (c) => {
 
 export default app
 
+// Durable Object สำหรับระบบ WebSocket เรียลไทม์ (กระแสจิต)
 export class TelepathyRoom {
   state: DurableObjectState
   sessions: Set<WebSocket>
