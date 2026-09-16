@@ -22,7 +22,6 @@
         html { scroll-behavior: smooth; overflow-x: hidden; width: 100%; } * { box-sizing: border-box; }
         :root { --bg-deep: #070402; --bg-glow: #2a1805; --gold-light: #f5d77f; --gold-main: #d4af37; --gold-dark: #8a6315; --text-dark: #3e2709; --text-muted: #8a7761; }
         
-        /* สไตล์สำหรับ Material Icons ให้แสดงผลสวยงามและจัดวางตรงบรรทัด */
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
             vertical-align: middle;
@@ -162,21 +161,21 @@
             </nav>
         </header>
 
+        <!-- 🌟 เพิ่มค่าเริ่มต้น (Default Content) เพื่อไม่ให้หน้าเว็บแหว่งตอนโหลด และแสดงผลได้อย่างเนียนตา -->
         <section class="hero" id="hero">
             <div class="hero-text reveal">
-                <h2 class="hero-subtitle"></h2>
-                <p></p>
-                <a href="#" class="hero-btn"></a>
+                <h2 class="hero-subtitle">ศิษย์หลวงปู่ - สืบสานตำนานอาคมโบราณ</h2>
+                <p>เมื่อรอยยันต์สลักเลือดถูกปลุกขึ้น... คำสาบานที่ถูกลืมเลือนนับพันปี จะหวนกลับมาทวงคืนทุกลมหายใจของผู้ตระบัดสัตย์</p>
+                <a href="reader.html" class="hero-btn">อ่านสัตยาสาบาน</a>
             </div>
             <div class="hero-image reveal">
-                <img src="" alt="" class="hero-center-img" width="480" height="480">
+                <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788335121/FB.jpg" alt="ศิษย์หลวงปู่" class="hero-center-img" width="480" height="480">
             </div>
         </section>
 
         <div class="mystic-divider" style="margin-top: 50px;"><span>❖</span></div>
 
         <section class="card reveal" id="trending-board">
-            <!-- 🌟 คืนค่าโค้ดต้นฉบับ ไม่แก้ไขเพิ่มเติม -->
             <h3 class="section-title">อัคคีจารึกเรืองรอง</h3>
             <div class="webboard-list-container" id="trendingPostsContainer">
                 <div style="text-align: center; color: var(--gold-dark); padding: 20px;">กำลังคำนวณกระแสความฮิต...</div>
@@ -184,7 +183,6 @@
         </section>
 
         <section class="card reveal" id="webboard">
-            <!-- 🌟 คืนค่าโค้ดต้นฉบับ ไม่แก้ไขเพิ่มเติม -->
             <h3 class="section-title">ศิลาจารึกจากลานเสวนา</h3>
             
             <div class="webboard-list-container" id="dynamicIndexPosts">
@@ -199,7 +197,6 @@
         <div class="mystic-divider" style="margin-bottom: 40px;"><span>❖</span></div>
 
         <section class="card reveal" id="contact" style="text-align:center; margin-top: 40px;">
-            <!-- 🌟 คืนค่าโค้ดต้นฉบับ ไม่แก้ไขเพิ่มเติม -->
             <h3 class="section-title">ติดต่อเรา</h3>
             <p style="color:#c7b5a1; margin-top:15px;">สนใจสอบถามข้อมูลเพิ่มเติม ติดต่อได้ทางอีเมล<br>
             <a href="mailto:sitluangpu@proton.me" style="color: var(--gold-light);">sitluangpu@proton.me</a></p>
@@ -217,7 +214,6 @@
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-right" alt="" width="60" height="60">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-bottom-left" alt="" width="60" height="60">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-bottom-right" alt="" width="60" height="60">
-            <!-- 🌟 คืนค่าโค้ดต้นฉบับ ไม่แก้ไขเพิ่มเติม -->
             <div class="modal-header" style="margin-bottom: 15px;"><h3 style="font-size: 1.4rem;">ประกาศสำนัก</h3></div>
             <p id="customAlertMessage" style="color: #e2d4c3; font-size: 1.05rem; margin-bottom: 25px; line-height: 1.5;">ข้อความแจ้งเตือน</p>
             <button type="button" class="btn-submit-modal" id="customAlertBtn">รับทราบ</button>
@@ -229,7 +225,6 @@
             BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
         };
 
-        // 🛡️ XSS Protection function
         function safeHTML(str) {
             if (!str) return '';
             return String(str).replace(/[&<>'"]/g, tag => ({
