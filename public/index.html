@@ -85,7 +85,19 @@
         }
 
         .mystic-divider { display: flex; align-items: center; justify-content: center; margin: 30px 0; opacity: 0.6; } .mystic-divider::before, .mystic-divider::after { content: ''; height: 1px; width: 30%; background: linear-gradient(to right, transparent, var(--gold-main), transparent); } .mystic-divider span { color: var(--gold-main); margin: 0 20px; font-size: 1.5rem; text-shadow: 0 0 10px var(--gold-main); }
-        .hero { display: flex; align-items: center; justify-content: space-between; gap: 40px; padding: 0 30px; } .hero-text { flex: 1.2; max-width: 550px; } .hero-subtitle { font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 700; margin: 0 0 20px 0; line-height: 1.2; color: var(--gold-main); text-shadow: 0px 3px 10px rgba(0,0,0,1), 0px 0px 10px rgba(212,175,55,0.3); } .hero-text p { color: #bfae99; font-size: 1.2rem; line-height: 1.8; margin-bottom: 35px; }
+        
+        /* 🌟 เพิ่มระบบ Fade-in ให้ Hero Section โหลดเนียนตา ไม่กระพริบ */
+        .hero { 
+            display: flex; align-items: center; justify-content: space-between; gap: 40px; padding: 0 30px; 
+            opacity: 0; transition: opacity 0.4s ease-in-out; 
+        } 
+        .hero.loaded { 
+            opacity: 1; 
+        }
+
+        .hero-text { flex: 1.2; max-width: 550px; } 
+        .hero-subtitle { font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 700; margin: 0 0 20px 0; line-height: 1.2; color: var(--gold-main); text-shadow: 0px 3px 10px rgba(0,0,0,1), 0px 0px 10px rgba(212,175,55,0.3); } 
+        .hero-text p { color: #bfae99; font-size: 1.2rem; line-height: 1.8; margin-bottom: 35px; }
         
         .hero-btn { display: inline-block; padding: 15px 40px; background: linear-gradient(to bottom, #f5d77f, #b38b22, #5a3f05); color: #1a0f02; font-weight: bold; font-size: 1.2rem; border-radius: 30px; text-decoration: none; box-shadow: 0 5px 20px rgba(212, 175, 55, 0.3), inset 0 2px 4px rgba(255,255,255,0.4); border: 1px solid #ffeba9; text-transform: uppercase; letter-spacing: 1px; transition: all 0.4s; } 
         .hero-btn:hover { transform: translateY(-3px); filter: brightness(1.1); }
@@ -161,7 +173,7 @@
             </nav>
         </header>
 
-        <!-- 🌟 เพิ่มค่าเริ่มต้น (Default Content) เพื่อไม่ให้หน้าเว็บแหว่งตอนโหลด และแสดงผลได้อย่างเนียนตา -->
+        <!-- Hero Section พร้อมค่าเริ่มต้นป้องกันหน้ากระพริบ -->
         <section class="hero" id="hero">
             <div class="hero-text reveal">
                 <h2 class="hero-subtitle">ศิษย์หลวงปู่ - สืบสานตำนานอาคมโบราณ</h2>
@@ -238,32 +250,36 @@
             return text.replace(mentionRegex, '<span class="user-mention">@$1</span>');
         }
 
+        // 🌟 ปรับปรุงการโหลด CMS ให้ดึงข้อมูลมาใส่และ Fade-in แสดงผลอย่างเนียนตา
         async function loadIndexCMSContent() {
             try {
                 const response = await fetch(`${API_CONFIG.BASE_URL}/cms`);
                 if (response.ok) {
                     const cms = await response.json() || {};
                     
-                    if (!cms || Object.keys(cms).length === 0) return;
-
-                    if (cms.heroSubtitle) document.querySelector('.hero-subtitle').textContent = cms.heroSubtitle;
-                    if (cms.heroDesc) document.querySelector('.hero-text p').textContent = cms.heroDesc;
-                    if (cms.heroImg) document.querySelector('.hero-center-img').src = cms.heroImg;
-                    if (cms.heroBtnText) document.querySelector('.hero-btn').textContent = cms.heroBtnText;
-                    
-                    const heroBtn = document.querySelector('.hero-btn');
-                    if (cms.heroBtnUrl && cms.heroBtnUrl !== '#' && cms.heroBtnUrl.trim() !== '') {
-                        heroBtn.href = cms.heroBtnUrl; 
-                        heroBtn.classList.remove('disabled'); 
-                        heroBtn.onclick = null;
-                    } else { 
-                        heroBtn.removeAttribute('href'); 
-                        heroBtn.classList.add('disabled'); 
-                        heroBtn.onclick = (e) => e.preventDefault(); 
+                    if (cms && Object.keys(cms).length > 0) {
+                        if (cms.heroSubtitle) document.querySelector('.hero-subtitle').textContent = cms.heroSubtitle;
+                        if (cms.heroDesc) document.querySelector('.hero-text p').textContent = cms.heroDesc;
+                        if (cms.heroImg) document.querySelector('.hero-center-img').src = cms.heroImg;
+                        if (cms.heroBtnText) document.querySelector('.hero-btn').textContent = cms.heroBtnText;
+                        
+                        const heroBtn = document.querySelector('.hero-btn');
+                        if (cms.heroBtnUrl && cms.heroBtnUrl !== '#' && cms.heroBtnUrl.trim() !== '') {
+                            heroBtn.href = cms.heroBtnUrl; 
+                            heroBtn.classList.remove('disabled'); 
+                            heroBtn.onclick = null;
+                        } else { 
+                            heroBtn.removeAttribute('href'); 
+                            heroBtn.classList.add('disabled'); 
+                            heroBtn.onclick = (e) => e.preventDefault(); 
+                        }
                     }
                 }
             } catch (error) { 
                 console.error('CMS Error:', error); 
+            } finally {
+                // เมื่อโหลดข้อมูลเสร็จ (หรือดึงไม่ได้และใช้ค่าเริ่มต้น) ให้แสดงผล Hero Section แบบนุ่มนวล
+                document.getElementById('hero').classList.add('loaded');
             }
         }
 
