@@ -18,6 +18,23 @@ app.use('/api/*', cors({
 
 const DEFAULT_JWT_SECRET = 'sitluangpu_telepathy_secret_token_2026'
 
+// ==========================================
+// ฟังก์ชันเสริมสำหรับส่งกระแสจิต (Broadcast) จากฝั่ง Backend
+// ==========================================
+async function broadcastEvent(env: Bindings, eventData: any) {
+  try {
+    const id = env.TELEPATHY_ROOM.idFromName('global-telepathy-room');
+    const stub = env.TELEPATHY_ROOM.get(id);
+    // ส่งข้อมูลไปยัง Durable Object เพื่อกระจายสัญญาณต่อไป
+    await stub.fetch(new Request('http://internal/broadcast', {
+      method: 'POST',
+      body: JSON.stringify(eventData)
+    }));
+  } catch (err) {
+    console.error("Broadcast error:", err);
+  }
+}
+
 // ฟังก์ชันแฮชรหัสผ่านด้วย SHA-256 และ Salt
 async function hashPassword(password: string, salt: string) {
   const encoder = new TextEncoder()
@@ -127,7 +144,7 @@ function resetLoginAttempts(ip: string) {
   loginAttempts.delete(ip);
 }
 
-// 🛡️ ระบบ Rate Limit สำหรับการสมัครสมาชิก (ป้องกันการสแปมสมัครรัวๆ ตาม IP)[cite: 15]
+// 🛡️ ระบบ Rate Limit สำหรับการสมัครสมาชิก
 const registerAttempts = new Map<string, { count: number, windowStart: number, lockUntil: number }>();
 const REGISTER_MAX_ATTEMPTS = 5;          
 const REGISTER_WINDOW_MS = 10 * 60 * 1000;  
@@ -292,7 +309,6 @@ app.post('/api/users', async (c) => {
   const body = await c.req.json()
   const { username, password, role, rank_name, last_login, bot_check_answer } = body
 
-  // ตรวจสอบสิทธิ์ Admin (ถ้า Admin สร้างจากหลังบ้าน ให้ข้าม Rate Limit และ Bot Check)[cite: 15]
   const authResult = await getAuthenticatedUser(c);
   const isAdmin = authResult.user && String(authResult.user.role) === '1';
 
@@ -364,7 +380,6 @@ app.put('/api/users', async (c) => {
   } catch (e) { return c.json({ success: false, message: 'ไม่สามารถอัปเดตข้อมูลผู้ใช้ได้' }, 400) }
 })
 
-// 🌟 API สำหรับอัปเดตลำดับสมาชิก (Reorder)
 app.put('/api/users/reorder', async (c) => {
   const authResult = await getAuthenticatedUser(c)
   if (!authResult.user || String(authResult.user.role) !== '1') {
@@ -445,6 +460,9 @@ app.post('/api/posts', async (c) => {
               await c.env.DB.prepare(
                   "INSERT INTO notifications (id, recipient, actor, action_type, post_id, is_read, timestamp) VALUES (?, ?, ?, 'mention', ?, 0, ?)"
               ).bind(notiId, mentionedUser, author, body.id, notiTimeStr).run().catch(()=>{});
+              
+              // 🔴 ยิงสัญญาณ Broadcast แจ้งเตือนเมื่อมีการแท็ก
+              await broadcastEvent(c.env, { type: 'NEW_NOTIFICATION', targetUser: mentionedUser });
           }
       }
   } catch (notiErr) {}
@@ -519,7 +537,14 @@ app.post('/api/posts/:postId/like', async (c) => {
         "INSERT INTO notifications (id, recipient, actor, action_type, post_id, is_read, timestamp) VALUES (?, ?, ?, 'like_post', ?, 0, ?)"
       ).bind(notiId, post.author, actor, postId, timeStr).run().catch(() => {})
       await addKarma(c.env.DB, post.author, 1);
+      
+      // 🔴 ยิงสัญญาณ Broadcast แจ้งเตือนเมื่อมีการกดไลก์กระทู้
+      await broadcastEvent(c.env, { type: 'NEW_NOTIFICATION', targetUser: post.author });
     }
+    
+    // 🔴 ยิงสัญญาณ Broadcast แจ้งเตือนเพื่อให้ตัวเลขไลก์อัปเดตแบบเรียลไทม์
+    await broadcastEvent(c.env, { type: 'LIKE_UPDATE', targetId: postId, newLikes: post?.likes || 0, isComment: false });
+    
     return c.json({ success: true, likes: post?.likes || 0 })
   } catch (e: any) { return c.json({ success: false, error: e.message }, 500) }
 })
@@ -573,6 +598,9 @@ app.post('/api/comments', async (c) => {
               await c.env.DB.prepare(
                   "INSERT INTO notifications (id, recipient, actor, action_type, post_id, is_read, timestamp) VALUES (?, ?, ?, 'reply', ?, 0, ?)"
               ).bind(notiId1, repliedAuthor, author, targetCommentId, notiTimeStr).run().catch(()=>{});
+              
+              // 🔴 ยิงสัญญาณ Broadcast ให้คนที่ถูกตอบกลับ
+              await broadcastEvent(c.env, { type: 'NEW_NOTIFICATION', targetUser: repliedAuthor });
           }
       }
 
@@ -586,6 +614,9 @@ app.post('/api/comments', async (c) => {
               await c.env.DB.prepare(
                   "INSERT INTO notifications (id, recipient, actor, action_type, post_id, is_read, timestamp) VALUES (?, ?, ?, 'mention', ?, 0, ?)"
               ).bind(notiId2, mentionedUser, author, targetCommentId, notiTimeStr).run().catch(()=>{});
+              
+              // 🔴 ยิงสัญญาณ Broadcast ให้คนที่ถูกเอ่ยชื่อ
+              await broadcastEvent(c.env, { type: 'NEW_NOTIFICATION', targetUser: mentionedUser });
           }
       }
 
@@ -594,7 +625,14 @@ app.post('/api/comments', async (c) => {
           await c.env.DB.prepare(
               "INSERT INTO notifications (id, recipient, actor, action_type, post_id, is_read, timestamp) VALUES (?, ?, ?, 'comment', ?, 0, ?)"
           ).bind(notiId3, post.author, author, targetCommentId, notiTimeStr).run().catch(()=>{});
+          
+          // 🔴 ยิงสัญญาณ Broadcast ให้เจ้าของกระทู้
+          await broadcastEvent(c.env, { type: 'NEW_NOTIFICATION', targetUser: post.author });
       }
+      
+      // 🔴 ยิงสัญญาณเพื่อให้คอมเมนต์อัปเดตแบบเรียลไทม์
+      await broadcastEvent(c.env, { type: 'NEW_COMMENT', postId: body.postId });
+      
   } catch (notiErr) {}
 
   return c.json({ success: true })
@@ -636,7 +674,14 @@ app.post('/api/comments/:commentId/like', async (c) => {
         "INSERT INTO notifications (id, recipient, actor, action_type, post_id, is_read, timestamp) VALUES (?, ?, ?, 'like_comment', ?, 0, ?)"
       ).bind(notiId, comment.author, actor, `${comment.post_id}#comment-${commentId}`, timeStr).run().catch(() => {})
       await addKarma(c.env.DB, comment.author, 1);
+      
+      // 🔴 ยิงสัญญาณ Broadcast แจ้งเตือนเมื่อมีการกดไลก์ความเห็น
+      await broadcastEvent(c.env, { type: 'NEW_NOTIFICATION', targetUser: comment.author });
     }
+    
+    // 🔴 ยิงสัญญาณ Broadcast ยอดไลก์คอมเมนต์
+    await broadcastEvent(c.env, { type: 'LIKE_UPDATE', targetId: commentId, newLikes: comment?.likes || 0, isComment: true });
+    
     return c.json({ success: true, likes: comment?.likes || 0 })
   } catch (e: any) { return c.json({ success: false, error: e.message }, 500) }
 })
@@ -819,7 +864,9 @@ app.get('/api/ws', async (c) => {
 
 export default app
 
-// Durable Object สำหรับระบบ WebSocket เรียลไทม์ (กระแสจิต)
+// ==========================================
+// 🔴 แก้ไขคลาส TelepathyRoom ให้รองรับการรับคำสั่งจาก Backend
+// ==========================================
 export class TelepathyRoom {
   state: DurableObjectState
   sessions: Set<WebSocket>
@@ -828,6 +875,15 @@ export class TelepathyRoom {
     this.sessions = new Set()
   }
   async fetch(request: Request) {
+    // 🔴 ถ้ารับคำสั่ง HTTP POST มาจากฟังก์ชัน broadcastEvent() ให้ส่งต่อข้อมูลให้ WebSocket ทุกคน
+    if (request.method === "POST" && request.url.endsWith("/broadcast")) {
+      const payload = await request.text();
+      for (const session of this.sessions) {
+        try { session.send(payload); } catch (e) { this.sessions.delete(session); }
+      }
+      return new Response("Broadcast Success", { status: 200 });
+    }
+
     if (request.headers.get("Upgrade") !== "websocket") return new Response("Expected Upgrade: websocket", { status: 426 });
     const webSocketPair = new WebSocketPair();
     const client = webSocketPair[0];
