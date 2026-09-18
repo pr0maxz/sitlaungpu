@@ -190,6 +190,11 @@
         .modal-box { background: linear-gradient(135deg, #1f1107, #0a0603); border: 1px solid var(--gold-main); border-radius: 12px; width: 100%; max-width: 450px; padding: 30px 25px; position: relative; box-shadow: 0 15px 40px rgba(0,0,0,0.9), inset 0 0 15px rgba(212,175,55,0.1); max-height: 90vh; overflow-y: auto; }
         .modal-box::-webkit-scrollbar { width: 5px; } .modal-box::-webkit-scrollbar-thumb { background: var(--gold-dark); border-radius: 3px; }
         
+        /* สัญลักษณ์แสดงสถานะการรีเฟรชออโต้ */
+        .refresh-indicator { font-size: 0.7rem; color: var(--text-muted); display: flex; align-items: center; gap: 4px; margin-left: 10px; }
+        .refresh-indicator .dot { width: 6px; height: 6px; border-radius: 50%; background-color: var(--success-color); animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.5); opacity: 0.5; } 100% { transform: scale(1); opacity: 1; } }
+
         @media (max-width: 992px) { 
             .admin-layout { grid-template-columns: 1fr; padding: 15px; gap: 15px; } 
             .dashboard-grid-3 { grid-template-columns: 1fr; }
@@ -199,7 +204,7 @@
         }
         @media (max-width: 600px) {
             .admin-header { padding: 10px 15px; flex-direction: column; align-items: flex-start; gap: 8px; }
-            .admin-header-actions { width: 100%; justify-content: space-between; gap: 6px; }
+            .admin-header-actions { width: 100%; justify-content: space-between; gap: 6px; flex-wrap: wrap; }
             .admin-title img { height: 24px; }
             .panel-card { padding: 15px 12px; margin-bottom: 15px; }
             .filter-toolbar { flex-direction: column; align-items: flex-start; }
@@ -216,6 +221,7 @@
         <div class="admin-title">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019626/logo.png" alt="ศิษย์หลวงปู่">
             <h3>ระบบเมืองลับแล (Admin NOC)</h3>
+            <div class="refresh-indicator" id="autoRefreshStatus" title="รีเฟรชข้อมูลอัตโนมัติทุก 5 นาที"><div class="dot"></div> Auto-Sync</div>
         </div>
         <div class="admin-header-actions">
             <span class="admin-badge"><span class="material-symbols-outlined" style="font-size: 14px;">shield</span> API Mode</span>
@@ -765,6 +771,10 @@
         const USERS_PER_PAGE = 15; 
 
         let globalRolesData = [];
+        
+        // 🌟 ตัวแปรเช็คว่ามี Modal เปิดค้างอยู่หรือไม่ ป้องกันการรีเฟรชข้อมูลแล้วพิมพ์หาย
+        let isAnyModalOpen = false;
+        let autoSyncInterval;
 
         // 🛡️ ป้องกัน XSS
         function safeHTML(str) {
@@ -911,7 +921,6 @@
             async getComments() {
                 try { const res = await fetch(`${API_CONFIG.BASE_URL}/comments`); return await res.json(); } catch(e){ return []; }
             },
-            // 🌟 เพิ่ม API สำหรับบันทึกลำดับสมาชิก (Reorder) ลงฐานข้อมูล Backend
             async saveUserOrder(orderedUsernames) {
                 const token = localStorage.getItem('siy_token');
                 const headers = {'Content-Type': 'application/json'};
@@ -936,16 +945,23 @@
 
         function showCustomAlert(msg) { 
             document.getElementById('customAlertMessage').textContent = msg; 
-            document.getElementById('customAlertModal').classList.add('active'); 
+            document.getElementById('customAlertModal').classList.add('active');
+            isAnyModalOpen = true;
         }
 
-        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+        function closeModal(id) { 
+            document.getElementById(id).classList.remove('active'); 
+            // ตรวจสอบว่ายังมี Modal อื่นเปิดอยู่อีกไหม ถ้าไม่มีให้ปลดล็อค
+            const anyOpen = document.querySelectorAll('.modal-overlay.active').length > 0;
+            isAnyModalOpen = anyOpen;
+        }
 
         let pendingConfirmAction = null;
         function showCustomConfirm(message, callback) {
             document.getElementById('customConfirmMessage').innerHTML = message;
             document.getElementById('customConfirmModal').classList.add('active');
             pendingConfirmAction = callback;
+            isAnyModalOpen = true;
         }
 
         document.getElementById('customConfirmBtn').addEventListener('click', async () => {
@@ -997,10 +1013,18 @@
             }
         }
 
-        async function loadAdminData() {
+        async function loadAdminData(isBackgroundSync = false) {
+            // หากเป็นการอัปเดตพื้นหลัง ให้เช็คก่อนว่ามีเปิดกล่องข้อความค้างไว้หรือไม่
+            if (isBackgroundSync && isAnyModalOpen) {
+                console.log("ข้ามการรีเฟรชออโต้ เนื่องจากผู้ใช้กำลังทำงานอยู่");
+                return;
+            }
+
             globalRolesData = await AdminAPI.getRoles();
-            renderRolesTable();
-            populateUserRoleDropdown();
+            if (!isBackgroundSync) {
+                renderRolesTable();
+                populateUserRoleDropdown();
+            }
 
             globalPostsData = await AdminAPI.getPosts();
             globalCommentsData = await AdminAPI.getComments(); 
@@ -1169,20 +1193,24 @@
                 `).join('');
             } else { topLikedContainer.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 10px;">ยังไม่มีจารึกที่ได้รับการอนุโมทนา</div>'; }
 
-            handlePostSearch();
-            handleUserSearch();
+            // ให้ทำงานร่วมกับสถานะการค้นหา/การแบ่งหน้าปัจจุบัน โดยไม่เด้งกลับหน้าแรก
+            handlePostSearch(true);
+            handleUserSearch(true);
             loadReportsTable(reports);
 
-            const cms = await AdminAPI.getCMS();
-            if (cms) {
-                document.getElementById('cms-hero-subtitle').value = cms.heroSubtitle || cms.hero_subtitle || cms.subtitle || ''; 
-                document.getElementById('cms-hero-desc').value = cms.heroDesc || cms.hero_desc || cms.description || cms.desc || ''; 
-                document.getElementById('cms-hero-img').value = cms.heroImg || cms.hero_img || cms.image || cms.img || ''; 
-                document.getElementById('cms-hero-btn-text').value = cms.heroBtnText || cms.hero_btn_text || cms.btn_text || cms.btnText || ''; 
-                document.getElementById('cms-hero-btn-url').value = cms.heroBtnUrl || cms.hero_btn_url || cms.btn_url || cms.btnUrl || '#';
+            if (!isBackgroundSync) {
+                const cms = await AdminAPI.getCMS();
+                if (cms) {
+                    document.getElementById('cms-hero-subtitle').value = cms.heroSubtitle || cms.hero_subtitle || cms.subtitle || ''; 
+                    document.getElementById('cms-hero-desc').value = cms.heroDesc || cms.hero_desc || cms.description || cms.desc || ''; 
+                    document.getElementById('cms-hero-img').value = cms.heroImg || cms.hero_img || cms.image || cms.img || ''; 
+                    document.getElementById('cms-hero-btn-text').value = cms.heroBtnText || cms.hero_btn_text || cms.btn_text || cms.btnText || ''; 
+                    document.getElementById('cms-hero-btn-url').value = cms.heroBtnUrl || cms.hero_btn_url || cms.btn_url || cms.btnUrl || '#';
+                }
             }
 
             await checkSystemHealth();
+            console.log("Admin Data Synced @ " + new Date().toLocaleTimeString());
         }
 
         function renderRolesTable() {
@@ -1243,6 +1271,7 @@
             }
             updateRolePreview(); 
             document.getElementById('roleModal').classList.add('active');
+            isAnyModalOpen = true;
         }
 
         function editRole(id) { openRoleModal(id); }
@@ -1297,7 +1326,7 @@
         document.getElementById('edit-role-text').addEventListener('input', updateRolePreview);
         document.getElementById('edit-role-border').addEventListener('input', updateRolePreview);
 
-        function handlePostSearch() {
+        function handlePostSearch(preservePage = false) {
             const queryField = document.getElementById('searchPostField');
             const query = queryField ? queryField.value.toLowerCase().trim() : '';
             const catFilterField = document.getElementById('filterPostCategory');
@@ -1324,8 +1353,8 @@
             filteredPostsCat1 = filtered.filter(p => String(p.category) === "1");
             filteredPostsCat2 = filtered.filter(p => String(p.category) === "2");
 
-            renderPostsPage(1, 1);
-            renderPostsPage(2, 1);
+            renderPostsPage(1, preservePage ? currentPostPage1 : 1);
+            renderPostsPage(2, preservePage ? currentPostPage2 : 1);
         }
 
         function renderPostsPage(categoryId, page) {
@@ -1392,7 +1421,7 @@
             container.innerHTML = html;
         }
 
-        function handleUserSearch() {
+        function handleUserSearch(preservePage = false) {
             const query = document.getElementById('searchUserField').value.toLowerCase().trim();
             const roleFilter = document.getElementById('filterRoleField').value;
             const sortOrder = document.getElementById('sortOrderField').value;
@@ -1439,10 +1468,9 @@
             else if (sortOrder === 'role-asc') { data.sort((a, b) => parseInt(a.role || 5) - parseInt(b.role || 5)); }
 
             filteredUsersData = data;
-            renderUsersPage(1);
+            renderUsersPage(preservePage ? currentUserPage : 1);
         }
 
-        // 🌟 ปรับปรุงฟังก์ชันสลับตำแหน่งให้บันทึกลงฐานข้อมูล Backend อัตโนมัติทันที
         async function moveUserRow(indexInFiltered, direction) {
             const currentItem = filteredUsersData[indexInFiltered];
             const targetItem = filteredUsersData[indexInFiltered + direction];
@@ -1455,9 +1483,8 @@
                 const temp = globalUsersData[globalIdxCurrent];
                 globalUsersData[globalIdxCurrent] = globalUsersData[globalIdxTarget];
                 globalUsersData[globalIdxTarget] = temp;
-                handleUserSearch();
+                handleUserSearch(true); // คงไว้หน้าเดิม
 
-                // ส่งลำดับใหม่ทั้งหมดไปบันทึกที่ Backend
                 try {
                     const allUsernames = globalUsersData.map(u => u.username);
                     await AdminAPI.saveUserOrder(allUsernames);
@@ -1624,6 +1651,7 @@
                 document.getElementById('postModalTitle').innerHTML = '<span class="material-symbols-outlined" style="font-size: 18px; vertical-align: middle;">edit_note</span> แก้ไขกระทู้จารึก';
             } else { document.getElementById('postModalTitle').innerHTML = '<span class="material-symbols-outlined" style="font-size: 18px; vertical-align: middle;">note_add</span> สลักกระทู้ใหม่'; }
             document.getElementById('postModal').classList.add('active');
+            isAnyModalOpen = true;
         }
         function editPost(id) { openPostModal(id); }
         async function submitPostForm(e) {
@@ -1685,6 +1713,7 @@
                 document.getElementById('userModalTitle').innerHTML = '<span class="material-symbols-outlined" style="font-size: 18px; vertical-align: middle;">manage_accounts</span> แก้ไขข้อมูลสมาชิก';
             } else { document.getElementById('userModalTitle').innerHTML = '<span class="material-symbols-outlined" style="font-size: 18px; vertical-align: middle;">person_add</span> เพิ่มสมาชิกใหม่'; }
             document.getElementById('userModal').classList.add('active');
+            isAnyModalOpen = true;
         }
         function editUser(username) { openUserModal(username); }
 
@@ -1807,14 +1836,38 @@
             });
         }
 
+        // 🌟 เริ่มการทำงานเมื่อโหลดหน้าเสร็จ
         document.addEventListener('DOMContentLoaded', async () => {
             if (await checkAdminAuth()) {
                 initDashboardDragAndDrop(); 
-                loadAdminData();
+                await loadAdminData(false);
+
+                // เริ่มตั้งเวลาดึงข้อมูลออโต้ทุกๆ 5 นาที (300,000 มิลลิวินาที)
+                autoSyncInterval = setInterval(() => {
+                    // ดึงข้อมูลเมื่อผู้ใช้เปิดหน้าต่างนี้ทิ้งไว้ และไม่ได้เปิดกล่องแก้ไขทิ้งไว้
+                    if (document.visibilityState === 'visible') {
+                        loadAdminData(true);
+                    }
+                }, 300000);
+            }
+        });
+
+        // ดึงข้อมูลทันทีถ้าแอดมินสลับกลับมาจากแท็บอื่น แล้วข้อมูลเก่านานเกิน 5 นาที
+        let lastVisibilityTime = Date.now();
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                const now = Date.now();
+                if (now - lastVisibilityTime > 300000) {
+                    loadAdminData(true);
+                    lastVisibilityTime = now;
+                }
+            } else {
+                lastVisibilityTime = Date.now();
             }
         });
 
         function handleAdminLogout() {
+            if (autoSyncInterval) clearInterval(autoSyncInterval);
             localStorage.removeItem('siy_token');
             localStorage.removeItem('siy_username');
             localStorage.removeItem('siy_usertype');
