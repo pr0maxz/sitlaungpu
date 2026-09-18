@@ -507,6 +507,16 @@
                         loadComments(data.postId);
                     }
                 }
+                
+                // 🔴 [ส่วนที่เพิ่มใหม่ 1] - รองรับการแจ้งเตือนแบบเรียลไทม์จาก WebSocket
+                if (data.type === 'NEW_NOTIFICATION') {
+                    const savedUser = localStorage.getItem('siy_username');
+                    if (savedUser && localStorage.getItem('siy_usertype') !== 'guest') {
+                        if (data.targetUser === savedUser || !data.targetUser) {
+                            loadNotifications();
+                        }
+                    }
+                }
             };
             telepathySocket.onclose = () => { setTimeout(connectTelepathy, 5000); };
             telepathySocket.onerror = (err) => { console.error("❌ กระแสจิตขัดข้อง:", err); };
@@ -1060,7 +1070,7 @@
 
                 container.innerHTML = outputHtml;
 
-                // 🌟 ปรับปรุงการหน่วงเวลา (Timeout) ให้เพิ่มขึ้นเป็น 600ms เพื่อให้แน่ใจว่า DOM และภาพถูกเรนเดอร์สมบูรณ์ก่อนเลื่อนจอ[cite: 17]
+                // 🌟 ปรับปรุงการหน่วงเวลา (Timeout) ให้เพิ่มขึ้นเป็น 600ms เพื่อให้แน่ใจว่า DOM และภาพถูกเรนเดอร์สมบูรณ์ก่อนเลื่อนจอ
                 setTimeout(() => {
                     if (window.location.hash && window.location.hash.startsWith('#comment-')) {
                         const targetId = window.location.hash.substring(1);
@@ -1264,6 +1274,25 @@
             }
         });
 
+        // 🔴 [ส่วนที่เพิ่มใหม่ 2] - ระบบดึงการแจ้งเตือนอัตโนมัติสำรอง (Polling & Focus)
+        let notiPollingInterval;
+        function startNotificationPolling() {
+            if (notiPollingInterval) clearInterval(notiPollingInterval);
+            notiPollingInterval = setInterval(() => {
+                const savedUser = localStorage.getItem('siy_username');
+                if (savedUser && localStorage.getItem('siy_usertype') !== 'guest') {
+                    loadNotifications(); 
+                }
+            }, 15000); // แอบเช็คอัปเดตแจ้งเตือนทุก 15 วินาที
+        }
+        
+        window.addEventListener('focus', () => {
+            const savedUser = localStorage.getItem('siy_username');
+            if (savedUser && localStorage.getItem('siy_usertype') !== 'guest') {
+                loadNotifications(); // อัปเดตทันทีที่ผู้ใช้สลับหน้าจอกลับมา
+            }
+        });
+
         document.addEventListener('DOMContentLoaded', () => {
             const savedUser = localStorage.getItem('siy_username');
             const userType = localStorage.getItem('siy_usertype'); 
@@ -1274,7 +1303,9 @@
 
             const usersPromise = ApiManager.fetchUsersOnce();
             const rolesPromise = ApiManager.fetchRolesCache(); 
+            
             loadNotifications();
+            startNotificationPolling(); // 🔴 เรียกใช้งาน Polling ทันทีที่โหลดหน้าเสร็จ
 
             document.getElementById('displayUsername').textContent = safeHTML(savedUser);
 
