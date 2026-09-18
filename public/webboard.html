@@ -486,6 +486,17 @@
                     const urlParams = new URLSearchParams(window.location.search);
                     if (data.postId === urlParams.get('id') && typeof loadComments === 'function') loadComments(data.postId);
                 }
+                // --- ส่วนที่เพิ่มเข้ามาใหม่สำหรับการแจ้งเตือนแบบเรียลไทม์ ---
+                if (data.type === 'NEW_NOTIFICATION') {
+                    const savedUser = localStorage.getItem('siy_username');
+                    // ตรวจสอบว่าล็อกอินอยู่และเป้าหมายการแจ้งเตือนตรงกับผู้ใช้ปัจจุบัน
+                    if (savedUser && localStorage.getItem('siy_usertype') !== 'guest') {
+                        if (data.targetUser === savedUser || !data.targetUser) {
+                            loadNotifications(); // เรียกโหลดแจ้งเตือนใหม่ทันที
+                        }
+                    }
+                }
+                // --------------------------------------------------
             };
             telepathySocket.onclose = () => { setTimeout(connectTelepathy, 5000); };
             telepathySocket.onerror = (err) => { console.error("❌ กระแสจิตขัดข้อง:", err); };
