@@ -217,7 +217,13 @@
         }
         .btn-submit-modal:hover { filter: brightness(1.15); }
 
-        @media (max-width: 950px) { .board-layout { grid-template-columns: 1fr; } .thread-stats { display: none; } }
+        /* แก้ไขเพิ่ม Grid Order ในมือถือเพื่อดัน Sidebar ขึ้นก่อน Board-Main */
+        @media (max-width: 950px) { 
+            .board-layout { grid-template-columns: 1fr; } 
+            .board-sidebar { order: -1; } 
+            .thread-stats { display: none; } 
+        }
+
         @media (max-width: 768px) {
             .site-title img { height: 65px !important; }
             nav { flex-wrap: nowrap !important; justify-content: flex-start; overflow-x: auto; scrollbar-width: none; border-radius: 40px; padding: 0 20px !important; height: 50px !important; }
