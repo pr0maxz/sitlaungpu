@@ -218,7 +218,14 @@
         .ghost-btn-group { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
         .ghost-btn-group > * { flex: 1 1 auto; min-width: 140px; text-align: center; display: flex; align-items: center; justify-content: center; }
 
-        @media (max-width: 950px) { .post-layout { grid-template-columns: 1fr; } .replies-container { margin-left: 10px; border-left-width: 1px; } .comment-card.is-reply::before { width: 10px; left: -11px; } }
+        /* ปรับเพิ่ม order: -1; เพื่อให้ Sidebar ขึ้นมาก่อนสำหรับหน้าจอ 950px ลงไป */
+        @media (max-width: 950px) { 
+            .post-layout { grid-template-columns: 1fr; } 
+            .post-sidebar { order: -1; } 
+            .replies-container { margin-left: 10px; border-left-width: 1px; } 
+            .comment-card.is-reply::before { width: 10px; left: -11px; } 
+        }
+        
         @media (max-width: 768px) {
             .site-title img { height: 65px !important; }
             nav { flex-wrap: nowrap !important; justify-content: flex-start; overflow-x: auto; scrollbar-width: none; border-radius: 40px; padding: 0 20px !important; height: 50px !important; }
