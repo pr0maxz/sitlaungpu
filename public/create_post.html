@@ -56,6 +56,7 @@
         .form-header { color: var(--gold-main); font-size: 1.5rem; margin-bottom: 25px; border-bottom: 1px solid rgba(138, 99, 21, 0.3); padding-bottom: 15px; }
         .form-group { margin-bottom: 20px; width: 100%; max-width: 100%; box-sizing: border-box; } .form-group label { display: block; color: var(--gold-light); margin-bottom: 8px; font-family: 'Prompt', sans-serif; }
         .form-input, .form-select { width: 100%; max-width: 100%; background: rgba(0,0,0,0.6); border: 1px solid rgba(138, 99, 21, 0.5); color: #fff; padding: 12px 15px; border-radius: 6px; font-size: 1.05rem; box-sizing: border-box; font-family: 'Prompt', sans-serif !important; } .form-select option { background: #1a120b; }
+        .form-select:focus, .form-input:focus { outline: none; border-color: var(--gold-main); box-shadow: 0 0 8px rgba(212,175,55,0.2); }
         
         .form-textarea {
             width: 100% !important;
@@ -78,23 +79,9 @@
         }
         .form-textarea:focus { outline: none; border-color: var(--gold-main); box-shadow: 0 0 8px rgba(212,175,55,0.3); }
 
-        .btn-attach-img {
-            background: linear-gradient(135deg, #8a6315, #d4af37);
-            color: #070402;
-            border: none;
-            padding: 8px 16px;
-            font-family: 'Prompt', sans-serif;
-            font-weight: bold;
-            font-size: 0.9rem;
-            border-radius: 6px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            margin-bottom: 10px;
-            transition: all 0.2s;
-        }
-        .btn-attach-img:hover { filter: brightness(1.15); transform: translateY(-1px); }
+        /* 🌟 ปุ่มกดอรรถประโยชน์ */
+        .btn-secondary-custom { background: transparent; border: 1px solid var(--gold-dark); color: var(--gold-light); padding: 10px 20px; border-radius: 20px; font-family: 'Prompt', sans-serif; font-size: 0.9rem; cursor: pointer; transition: all 0.3s; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
+        .btn-secondary-custom:hover { background: rgba(212, 175, 55, 0.15); color: #fff; border-color: var(--gold-main); }
 
         .form-actions { display: flex; gap: 15px; margin-top: 30px; width: 100%; } 
         .btn-submit { flex: 2; background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; border: none; padding: 15px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-weight: bold; font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: 0.3s; } 
@@ -111,7 +98,7 @@
         
         .sect-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(7, 4, 2, 0.95); z-index: 9999; justify-content: center; align-items: center; } 
         .sect-modal-overlay.active { display: flex; }
-        .sect-modal-content { position: relative; background: linear-gradient(135deg, #1a120b, #0a0603); border: 1px solid var(--gold-main); border-radius: 12px; width: 90%; max-width: 380px; padding: 30px 20px 40px 20px; text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.9); } 
+        .sect-modal-content { position: relative; background: linear-gradient(135deg, #1a120b, #0a0603); border: 1px solid var(--gold-main); border-radius: 12px; width: 90%; max-width: 380px; padding: 30px 20px 40px 20px; text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.9); box-sizing: border-box; } 
         .modal-corner { position: absolute; width: 60px; height: 60px; pointer-events: none; opacity: 0.8; } .mc-top-left { top: 12px; left: 12px; transform: scaleX(-1); } .mc-top-right { top: 12px; right: 12px; } .mc-bottom-left { bottom: 12px; left: 12px; transform: scaleX(-1) scaleY(-1); } .mc-bottom-right { bottom: 12px; right: 12px; transform: scaleY(-1); }
         .modal-header { text-align: center; margin-bottom: 15px; } .modal-header h3 { color: var(--gold-light); font-size: 1.4rem; margin-bottom: 5px; text-shadow: 0 2px 5px rgba(0,0,0,0.8); }
         
@@ -171,7 +158,13 @@
 
                     <div class="form-group">
                         <label>เนื้อหา (Content)</label>
-                        <button type="button" class="btn-attach-img" data-action="insert-image"><span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle;">image</span> แนบรูปภาพ</button>
+                        
+                        <!-- 🌟 เปลี่ยนปุ่มแทรกรูปและ YouTube ให้เหมือนหน้าลานเสวนา -->
+                        <div style="display: flex; gap: 10px; margin-bottom: 8px;">
+                            <button type="button" class="btn-secondary-custom" style="padding: 4px 12px; font-size: 0.85rem;" onclick="insertMediaTag('postContent', 'image')"><span class="material-symbols-outlined" style="font-size: 16px; margin-right: 4px;">image</span>แทรกรูป</button>
+                            <button type="button" class="btn-secondary-custom" style="padding: 4px 12px; font-size: 0.85rem;" onclick="insertMediaTag('postContent', 'youtube')"><span class="material-symbols-outlined" style="font-size: 16px; margin-right: 4px;">smart_display</span>วิดีโอ YouTube</button>
+                        </div>
+                        
                         <textarea id="postContent" class="form-textarea" placeholder="จงเขียนเล่าเรื่องราวหรือสิ่งที่ท่านต้องการสนทนา (สามารถพิมพ์ @ตามด้วยชื่อ เพื่อเรียกขานสมาชิกลานเสวนา)..."></textarea>
                     </div>
 
@@ -221,10 +214,77 @@
         </div>
     </div>
 
+    <!-- 🌟 Modal แทรกสื่อ (รูปภาพ/YouTube) แบบกำหนดเอง -->
+    <div class="sect-modal-overlay" id="mediaModal" style="z-index: 9999;">
+        <div class="sect-modal-content" style="max-width: 400px;">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-left" alt="">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-right" alt="">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-bottom-left" alt="">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-bottom-right" alt="">
+            <div class="modal-header"><h3 id="mediaModalTitle" style="font-size: 1.4rem; color: var(--gold-light);">แทรกรูปภาพ</h3></div>
+            <p id="mediaModalDesc" style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">กรุณาวางลิงก์ (URL)</p>
+            <input type="text" id="mediaModalInput" class="form-input" autocomplete="off" style="margin-bottom: 20px;">
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button type="button" style="flex: 1; padding: 12px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-weight: bold; font-size: 1rem; cursor: pointer; transition: 0.2s; background: transparent; border: 1px solid var(--text-muted); color: #d1bfae; outline: none;" onclick="closeMediaModal()" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">ถอยกลับ</button>
+                <button type="button" style="flex: 1; padding: 12px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-weight: bold; font-size: 1rem; cursor: pointer; transition: 0.2s; background: rgba(212, 175, 55, 0.15); border: 1px solid rgba(212, 175, 55, 0.5); color: var(--gold-light); outline: none;" onclick="confirmMediaModal()" onmouseover="this.style.background='rgba(212, 175, 55, 0.25)'" onmouseout="this.style.background='rgba(212, 175, 55, 0.15)'">ยืนยัน</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const API_CONFIG = { 
             BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
         };
+
+        let pendingMediaTarget = '';
+        let pendingMediaType = '';
+
+        // 🌟 ฟังก์ชันสำหรับเปิดหน้าต่าง Custom Modal แทรกสื่อ
+        function insertMediaTag(targetId, type) {
+            pendingMediaTarget = targetId;
+            pendingMediaType = type;
+            
+            const modal = document.getElementById('mediaModal');
+            const title = document.getElementById('mediaModalTitle');
+            const desc = document.getElementById('mediaModalDesc');
+            const input = document.getElementById('mediaModalInput');
+            
+            if (type === 'image') {
+                title.innerHTML = '<span class="material-symbols-outlined" style="font-size: 24px; vertical-align: middle;">image</span> แทรกรูปภาพ';
+                desc.textContent = 'กรุณาวางลิงก์รูปภาพ (URL):';
+                input.placeholder = 'https://...';
+                input.value = '';
+            } else if (type === 'youtube') {
+                title.innerHTML = '<span class="material-symbols-outlined" style="font-size: 24px; vertical-align: middle;">smart_display</span> แทรกวิดีโอ YouTube';
+                desc.textContent = 'กรุณาวางลิงก์ YouTube:';
+                input.placeholder = 'https://www.youtube.com/watch?v=...';
+                input.value = '';
+            }
+            
+            modal.classList.add('active');
+            setTimeout(() => input.focus(), 100);
+        }
+
+        function closeMediaModal() {
+            document.getElementById('mediaModal').classList.remove('active');
+            pendingMediaTarget = '';
+            pendingMediaType = '';
+        }
+
+        function confirmMediaModal() {
+            const inputVal = document.getElementById('mediaModalInput').value.trim();
+            const textarea = document.getElementById(pendingMediaTarget);
+            
+            if (inputVal && textarea) {
+                if (pendingMediaType === 'image') {
+                    textarea.value += `<img src="${inputVal}">`;
+                } else if (pendingMediaType === 'youtube') {
+                    textarea.value += `[YOUTUBE:${inputVal}]`;
+                }
+                textarea.focus();
+            }
+            closeMediaModal();
+        }
 
         function safeHTML(str) {
             if (!str) return '';
@@ -343,47 +403,39 @@
             
             const action = btn.getAttribute('data-action');
             
-            if (action === 'insert-image') {
-                insertImageTag();
-            } else if (action === 'submit-post') {
+            if (action === 'submit-post') {
                 handleCreatePost();
             } else if (action === 'close-alert') {
                 closeCustomAlert();
             }
         });
 
-        function insertImageTag() {
-            const textarea = document.getElementById('postContent');
-            const startPos = textarea.selectionStart;
-            const endPos = textarea.selectionEnd;
-            const textVal = textarea.value;
-
-            const imgCode = '<img src="">';
-
-            textarea.value = textVal.substring(0, startPos) + imgCode + textVal.substring(endPos, textVal.length);
-            
-            textarea.focus();
-            const cursorTarget = startPos + 10; 
-            textarea.setSelectionRange(cursorTarget, cursorTarget);
-        }
-
+        // 🌟 อัปเดต Validation ให้รองรับการตัดแท็กรูป/YouTube ออกก่อนตรวจสอบลิงก์สแปม
         function validatePostContent(content) {
             const htmlTags = content.match(/<\/?[a-z][a-z0-9]*\b[^>]*>/gi);
             if (htmlTags) {
                 for (let tag of htmlTags) {
                     const lowerTag = tag.toLowerCase();
-                    if (!lowerTag.startsWith('<img') || !lowerTag.includes('src=')) {
-                        return { valid: false, error: '<span class="material-symbols-outlined" style="color: #ff6b6b; vertical-align: middle;">error</span> อาถรรพ์สะท้อนกลับ!<br>ไม่อนุญาตให้ใช้แท็ก HTML หรือโค้ดอื่นๆ (อนุญาตเฉพาะรูปภาพ <img src="..."> เท่านั้น)' };
+                    if (!lowerTag.startsWith('<img') && lowerTag !== '<br>' && lowerTag !== '<br/>') {
+                        return { valid: false, error: '<span class="material-symbols-outlined" style="color: #ff6b6b; vertical-align: middle;">error</span> อาถรรพ์สะท้อนกลับ!<br>ไม่อนุญาตให้ใช้แท็ก HTML' };
+                    }
+                }
+            }
+            if (htmlTags) {
+                for (let tag of htmlTags) {
+                    if (tag.toLowerCase().startsWith('<img') && !tag.toLowerCase().includes('src=')) {
+                        return { valid: false, error: '<span class="material-symbols-outlined" style="color: #ff6b6b; vertical-align: middle;">error</span> อาถรรพ์สะท้อนกลับ!<br>โครงสร้างรูปภาพไม่ถูกต้อง' };
                     }
                 }
             }
 
-            let textWithoutImgs = content.replace(/<img\s+[^>]*src="[^"]*"[^>]*>/gi, '');
-            textWithoutImgs = textWithoutImgs.replace(/<img\s+[^>]*src=[^\s>]+[^>]*>/gi, '');
+            let textForUrlCheck = content.replace(/<img\s+[^>]*src="[^"]*"[^>]*>/gi, '');
+            textForUrlCheck = textForUrlCheck.replace(/<img\s+[^>]*src=[^\s>]+[^>]*>/gi, '');
+            textForUrlCheck = textForUrlCheck.replace(/\[YOUTUBE:[^\]]+\]/gi, ''); 
 
             const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+)/i;
-            if (urlRegex.test(textWithoutImgs)) {
-                return { valid: false, error: '<span class="material-symbols-outlined" style="color: #ff6b6b; vertical-align: middle;">error</span> อาถรรพ์สะท้อนกลับ!<br>ไม่อนุญาตให้วางลิงก์ (URL) ภายนอกในเนื้อหา' };
+            if (urlRegex.test(textForUrlCheck)) {
+                return { valid: false, error: '<span class="material-symbols-outlined" style="color: #ff6b6b; vertical-align: middle;">error</span> อาถรรพ์สะท้อนกลับ!<br>ไม่อนุญาตให้วางลิงก์ (URL) เว้นแต่เป็นการใช้ปุ่มแทรกรูป/วิดีโอ' };
             }
 
             return { valid: true };
@@ -418,6 +470,7 @@
                 id: Date.now().toString(),
                 category: document.getElementById('postCategory').value,
                 title: title,
+                // แปลงเฉพาะการขึ้นบรรทัดใหม่ เครื่องหมาย " จะถูกส่งไปแบบไม่แปลงเพื่อให้รูปภาพทำงานได้ปกติ
                 content: content.replace(/\n/g, '<br>'), 
                 author: author,
                 timestamp: timeStr,
