@@ -409,6 +409,25 @@
 
         let currentPostAuthorGlobal = ''; 
 
+        // 🌟 [เพิ่มใหม่] ฟังก์ชันสำหรับแทรกรูปและ YouTube ลงในช่องข้อความ
+        function insertMediaTag(targetId, type) {
+            const textarea = document.getElementById(targetId);
+            if (!textarea) return;
+
+            if (type === 'image') {
+                const url = prompt("กรุณาวางลิงก์รูปภาพ (URL):", "https://...");
+                if (url && url !== "https://...") {
+                    textarea.value += `<img src="${url}">`;
+                }
+            } else if (type === 'youtube') {
+                const url = prompt("กรุณาวางลิงก์ YouTube:", "https://www.youtube.com/watch?v=...");
+                if (url && url !== "https://www.youtube.com/watch?v=...") {
+                    textarea.value += `[YOUTUBE:${url}]`; 
+                }
+            }
+            textarea.focus();
+        }
+
         // 🛡️ ป้องกัน XSS (ยกเว้นเครื่องหมาย " ไว้ให้แสดงผลปกติในหัวข้อ)
         function safeHTML(str) {
             if (!str) return '';
@@ -422,7 +441,26 @@
             if (!content) return '';
             let safeText = safeHTML(content);
             safeText = safeText.replace(/&lt;br\/?&gt;/gi, '<br>');
-            safeText = safeText.replace(/&lt;img\s+src=(?:&quot;|&#39;)(https?:\/\/[^&]+)(?:&quot;|&#39;)[^&]*&gt;/gi, '<img src="$1">');
+            
+            // Render รูปภาพ
+            safeText = safeText.replace(/&lt;img\s+src=(?:&quot;|&#39;)(https?:\/\/[^&]+)(?:&quot;|&#39;)[^&]*&gt;/gi, '<img src="$1" style="max-width: 100%; border-radius: 8px; margin-top: 10px;">');
+            
+            // 🌟 [เพิ่มใหม่] Render YouTube Iframe (Responsive)
+            safeText = safeText.replace(/\[YOUTUBE:(https?:\/\/[^\]]+)\]/gi, function(match, url) {
+                let videoId = '';
+                // แยก ID ของคลิปออกจากลิงก์รูปแบบต่างๆ ของ YouTube
+                const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+                const matchId = url.match(regExp);
+                if (matchId && matchId[2].length === 11) { videoId = matchId[2]; }
+                
+                if (videoId) {
+                    return `<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; border-radius: 8px; margin-top: 10px; border: 1px solid var(--gold-dark); box-shadow: 0 4px 10px rgba(0,0,0,0.5);">
+                                <iframe src="https://www.youtube.com/embed/${videoId}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            </div>`;
+                }
+                return match; 
+            });
+
             return safeText;
         }
 
@@ -515,7 +553,6 @@
                     }
                 }
                 
-                // 🔴 [ส่วนที่เพิ่มใหม่ 1] - รองรับการแจ้งเตือนแบบเรียลไทม์จาก WebSocket
                 if (data.type === 'NEW_NOTIFICATION') {
                     const savedUser = localStorage.getItem('siy_username');
                     if (savedUser && localStorage.getItem('siy_usertype') !== 'guest') {
@@ -1041,8 +1078,13 @@
                         repliesHtml += `</div>`;
                     }
 
+                    // 🌟 เพิ่มปุ่มในกล่องตอบกลับย่อย
                     let replyFormHtml = (userType !== 'guest') ? `
                         <div id="reply-box-${c.id}" class="reply-form-container">
+                            <div style="display: flex; gap: 10px; margin-bottom: 8px;">
+                                <button type="button" class="btn-secondary-custom" style="padding: 3px 10px; font-size: 0.75rem;" onclick="insertMediaTag('replyInput-${c.id}', 'image')"><span class="material-symbols-outlined" style="font-size: 14px; margin-right: 4px;">image</span>รูป</button>
+                                <button type="button" class="btn-secondary-custom" style="padding: 3px 10px; font-size: 0.75rem;" onclick="insertMediaTag('replyInput-${c.id}', 'youtube')"><span class="material-symbols-outlined" style="font-size: 14px; margin-right: 4px;">smart_display</span>YouTube</button>
+                            </div>
                             <textarea id="replyInput-${c.id}" class="form-textarea" placeholder="พิมพ์ข้อความตอบกลับคุณ ${safeHTML(c.author)}..."></textarea>
                             <div style="display: flex; gap: 8px;">
                                 <button type="button" class="btn-submit-comment" data-action="submit-reply" data-id="${c.id}" data-author="${safeHTML(c.author)}" data-post-id="${postId}" style="padding: 6px 15px; font-size: 0.85rem;">ส่งคำตอบกลับ</button>
@@ -1077,7 +1119,6 @@
 
                 container.innerHTML = outputHtml;
 
-                // 🌟 ปรับปรุงการหน่วงเวลา (Timeout) ให้เพิ่มขึ้นเป็น 600ms เพื่อให้แน่ใจว่า DOM และภาพถูกเรนเดอร์สมบูรณ์ก่อนเลื่อนจอ
                 setTimeout(() => {
                     if (window.location.hash && window.location.hash.startsWith('#comment-')) {
                         const targetId = window.location.hash.substring(1);
@@ -1151,10 +1192,15 @@
                     if (tag.toLowerCase().startsWith('<img') && !tag.toLowerCase().includes('src=')) return { valid: false, error: '<span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">warning</span> โครงสร้างรูปภาพไม่ถูกต้อง' };
                 }
             }
-            let textWithoutImgs = content.replace(/<img\s+[^>]*src="[^"]*"[^>]*>/gi, '');
-            textWithoutImgs = textWithoutImgs.replace(/<img\s+[^>]*src=[^\s>]+[^>]*>/gi, '');
+            
+            // 🌟 ตัดแท็กรูป และแท็ก YouTube ออกชั่วคราวก่อนเช็คว่ามี URL ผิดกฎหลงเหลืออยู่ไหม
+            let textForUrlCheck = content.replace(/<img\s+[^>]*src="[^"]*"[^>]*>/gi, '');
+            textForUrlCheck = textForUrlCheck.replace(/<img\s+[^>]*src=[^\s>]+[^>]*>/gi, '');
+            textForUrlCheck = textForUrlCheck.replace(/\[YOUTUBE:[^\]]+\]/gi, ''); 
+
             const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+)/i;
-            if (urlRegex.test(textWithoutImgs)) return { valid: false, error: '<span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">warning</span> ไม่อนุญาตให้วางลิงก์ (URL)' };
+            if (urlRegex.test(textForUrlCheck)) return { valid: false, error: '<span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">warning</span> ไม่อนุญาตให้วางลิงก์ (URL) เว้นแต่เป็นการใช้ปุ่มแทรกรูป/วิดีโอ' };
+            
             return { valid: true };
         }
 
@@ -1281,7 +1327,6 @@
             }
         });
 
-        // 🔴 [ส่วนที่เพิ่มใหม่ 2] - ระบบดึงการแจ้งเตือนอัตโนมัติสำรอง (Polling & Focus)
         let notiPollingInterval;
         function startNotificationPolling() {
             if (notiPollingInterval) clearInterval(notiPollingInterval);
@@ -1290,13 +1335,13 @@
                 if (savedUser && localStorage.getItem('siy_usertype') !== 'guest') {
                     loadNotifications(); 
                 }
-            }, 15000); // แอบเช็คอัปเดตแจ้งเตือนทุก 15 วินาที
+            }, 15000); 
         }
         
         window.addEventListener('focus', () => {
             const savedUser = localStorage.getItem('siy_username');
             if (savedUser && localStorage.getItem('siy_usertype') !== 'guest') {
-                loadNotifications(); // อัปเดตทันทีที่ผู้ใช้สลับหน้าจอกลับมา
+                loadNotifications(); 
             }
         });
 
@@ -1312,7 +1357,7 @@
             const rolesPromise = ApiManager.fetchRolesCache(); 
             
             loadNotifications();
-            startNotificationPolling(); // 🔴 เรียกใช้งาน Polling ทันทีที่โหลดหน้าเสร็จ
+            startNotificationPolling(); 
 
             document.getElementById('displayUsername').textContent = safeHTML(savedUser);
 
@@ -1336,11 +1381,19 @@
                 `;
             } else {
                 document.getElementById('logoutBtnText').textContent = 'ออกจากระบบ';
+                
+                // 🌟 เพิ่มปุ่มเครื่องมือในกล่องข้อความหลัก
                 commentArea.innerHTML = `
                     <div class="comment-form-box">
                         <h4 style="margin-bottom: 18px; display: flex; align-items: center; flex-wrap: wrap; gap: 5px;">
                             ร่วมแสดงความคิดเห็นในนาม: <span style="color: var(--gold-light); margin-left: 5px;">${safeHTML(savedUser)}</span> <span id="commentAreaAuthorBadge"></span>
                         </h4>
+                        
+                        <div style="display: flex; gap: 10px; margin-bottom: 8px;">
+                            <button type="button" class="btn-secondary-custom" style="padding: 4px 12px; font-size: 0.8rem;" onclick="insertMediaTag('commentInput', 'image')"><span class="material-symbols-outlined" style="font-size: 16px; margin-right: 4px;">image</span>แทรกรูป</button>
+                            <button type="button" class="btn-secondary-custom" style="padding: 4px 12px; font-size: 0.8rem;" onclick="insertMediaTag('commentInput', 'youtube')"><span class="material-symbols-outlined" style="font-size: 16px; margin-right: 4px;">smart_display</span>วิดีโอ YouTube</button>
+                        </div>
+
                         <textarea id="commentInput" class="form-textarea" placeholder="พิมพ์ความคิดเห็นของคุณที่นี่... สามารถเรียกขานผู้อื่นได้โดยพิมพ์ @ตามด้วยชื่อ"></textarea>
                         <div style="display: flex; gap: 10px; align-items: center; margin-top: 10px; flex-wrap: wrap;">
                             <button type="button" id="submitCommentBtn" class="btn-submit-comment" onclick="submitComment()">ส่งความคิดเห็น</button>
