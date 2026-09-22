@@ -430,7 +430,7 @@
         let pendingMediaTarget = '';
         let pendingMediaType = '';
 
-        // 🌟 [ปรับปรุงใหม่] ฟังก์ชันสำหรับเปิดหน้าต่าง Custom Modal แทรกสื่อ
+        // 🌟 ฟังก์ชันสำหรับเปิดหน้าต่าง Custom Modal แทรกสื่อ
         function insertMediaTag(targetId, type) {
             pendingMediaTarget = targetId;
             pendingMediaType = type;
@@ -493,8 +493,8 @@
             let safeText = safeHTML(content);
             safeText = safeText.replace(/&lt;br\/?&gt;/gi, '<br>');
             
-            // Render รูปภาพ
-            safeText = safeText.replace(/&lt;img\s+src=(?:&quot;|&#39;)(https?:\/\/[^&]+)(?:&quot;|&#39;)[^&]*&gt;/gi, '<img src="$1" style="max-width: 100%; border-radius: 8px; margin-top: 10px;">');
+            // 🌟 [แก้ไขใหม่] Render รูปภาพให้รองรับเครื่องหมาย " (Double Quote) ที่ไม่ได้ถูกแปลง
+            safeText = safeText.replace(/&lt;img\s+src=(?:"|&quot;|&#39;)(https?:\/\/[^"'<>]+)(?:"|&quot;|&#39;)[^>]*&gt;/gi, '<img src="$1" style="max-width: 100%; border-radius: 8px; margin-top: 10px;">');
             
             // Render YouTube Iframe (Responsive)
             safeText = safeText.replace(/\[YOUTUBE:(https?:\/\/[^\]]+)\]/gi, function(match, url) {
