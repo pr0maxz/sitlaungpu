@@ -209,7 +209,9 @@
         .modal-corner { position: absolute; width: 60px; pointer-events: none; opacity: 0.8; } .mc-top-left { top: 12px; left: 12px; transform: scaleX(-1); } .mc-top-right { top: 12px; right: 12px; } .mc-bottom-left { bottom: 12px; left: 12px; transform: scaleX(-1) scaleY(-1); } .mc-bottom-right { bottom: 12px; right: 12px; transform: scaleY(-1); }
         .modal-header { text-align: center; margin-bottom: 20px; } .modal-header h3 { color: var(--gold-light); font-size: 1.5rem; margin-bottom: 5px; } .modal-header p { color: var(--gold-dark); font-size: 0.85rem; margin: 0; }
         
-        .form-select { width: 100%; background: rgba(0,0,0,0.6); border: 1px solid rgba(138, 99, 21, 0.5); color: #fff; padding: 12px 15px; border-radius: 6px; font-size: 1rem; margin-bottom: 20px; font-family: 'Prompt', sans-serif !important; } .form-select option { background: #1a120b; }
+        .form-select, .form-input { width: 100%; background: rgba(0,0,0,0.6); border: 1px solid rgba(138, 99, 21, 0.5); color: #fff; padding: 12px 15px; border-radius: 6px; font-size: 1rem; margin-bottom: 20px; font-family: 'Prompt', sans-serif !important; box-sizing: border-box; } 
+        .form-select option { background: #1a120b; }
+        .form-select:focus, .form-input:focus { outline: none; border-color: var(--gold-main); box-shadow: 0 0 8px rgba(212,175,55,0.2); }
 
         .ghost-warning-box { background: linear-gradient(180deg, rgba(20, 9, 5, 0.8) 0%, rgba(7, 4, 2, 0.9) 100%); border: 1px solid rgba(168, 46, 46, 0.4); border-radius: 10px; padding: clamp(20px, 4vw, 30px) clamp(15px, 3vw, 20px); margin-top: 30px; text-align: center; box-shadow: inset 0 0 20px rgba(168, 46, 46, 0.05), 0 5px 15px rgba(0,0,0,0.5); }
         .ghost-warning-box h4 { color: #ff6b6b; font-size: clamp(1.1rem, 4vw, 1.25rem); margin-bottom: 12px; }
@@ -386,6 +388,23 @@
         </div>
     </div>
 
+    <!-- 🌟 Modal แทรกสื่อ (รูปภาพ/YouTube) แบบกำหนดเอง -->
+    <div class="sect-modal-overlay" id="mediaModal" style="z-index: 9999;">
+        <div class="sect-modal-content" style="max-width: 400px; text-align: center; padding: 30px 20px 40px 20px;">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-left" alt="" width="60" height="60" loading="lazy">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-right" alt="" width="60" height="60" loading="lazy">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-bottom-left" alt="" width="60" height="60" loading="lazy">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-bottom-right" alt="" width="60" height="60" loading="lazy">
+            <div class="modal-header"><h3 id="mediaModalTitle" style="font-size: 1.4rem; color: var(--gold-light);">แทรกรูปภาพ</h3></div>
+            <p id="mediaModalDesc" style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">กรุณาวางลิงก์ (URL)</p>
+            <input type="text" id="mediaModalInput" class="form-input" autocomplete="off">
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button type="button" style="flex: 1; padding: 12px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-weight: bold; font-size: 1rem; cursor: pointer; transition: 0.2s; background: transparent; border: 1px solid var(--text-muted); color: #d1bfae; outline: none;" onclick="closeMediaModal()" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">ถอยกลับ</button>
+                <button type="button" style="flex: 1; padding: 12px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-weight: bold; font-size: 1rem; cursor: pointer; transition: 0.2s; background: rgba(212, 175, 55, 0.15); border: 1px solid rgba(212, 175, 55, 0.5); color: var(--gold-light); outline: none;" onclick="confirmMediaModal()" onmouseover="this.style.background='rgba(212, 175, 55, 0.25)'" onmouseout="this.style.background='rgba(212, 175, 55, 0.15)'">ยืนยัน</button>
+            </div>
+        </div>
+    </div>
+
     <!-- ยืนยันการทำลาย -->
     <div class="sect-modal-overlay" id="customConfirmModal" style="z-index: 9999;">
         <div class="sect-modal-content" style="max-width: 380px; text-align: center; padding: 30px 20px 40px 20px;">
@@ -408,24 +427,56 @@
         };
 
         let currentPostAuthorGlobal = ''; 
+        let pendingMediaTarget = '';
+        let pendingMediaType = '';
 
-        // 🌟 [เพิ่มใหม่] ฟังก์ชันสำหรับแทรกรูปและ YouTube ลงในช่องข้อความ
+        // 🌟 [ปรับปรุงใหม่] ฟังก์ชันสำหรับเปิดหน้าต่าง Custom Modal แทรกสื่อ
         function insertMediaTag(targetId, type) {
-            const textarea = document.getElementById(targetId);
-            if (!textarea) return;
-
+            pendingMediaTarget = targetId;
+            pendingMediaType = type;
+            
+            const modal = document.getElementById('mediaModal');
+            const title = document.getElementById('mediaModalTitle');
+            const desc = document.getElementById('mediaModalDesc');
+            const input = document.getElementById('mediaModalInput');
+            
             if (type === 'image') {
-                const url = prompt("กรุณาวางลิงก์รูปภาพ (URL):", "https://...");
-                if (url && url !== "https://...") {
-                    textarea.value += `<img src="${url}">`;
-                }
+                title.innerHTML = '<span class="material-symbols-outlined" style="font-size: 24px; vertical-align: middle;">image</span> แทรกรูปภาพ';
+                desc.textContent = 'กรุณาวางลิงก์รูปภาพ (URL):';
+                input.placeholder = 'https://...';
+                input.value = '';
             } else if (type === 'youtube') {
-                const url = prompt("กรุณาวางลิงก์ YouTube:", "https://www.youtube.com/watch?v=...");
-                if (url && url !== "https://www.youtube.com/watch?v=...") {
-                    textarea.value += `[YOUTUBE:${url}]`; 
-                }
+                title.innerHTML = '<span class="material-symbols-outlined" style="font-size: 24px; vertical-align: middle;">smart_display</span> แทรกวิดีโอ YouTube';
+                desc.textContent = 'กรุณาวางลิงก์ YouTube:';
+                input.placeholder = 'https://www.youtube.com/watch?v=...';
+                input.value = '';
             }
-            textarea.focus();
+            
+            modal.classList.add('active');
+            setTimeout(() => input.focus(), 100);
+        }
+
+        // ปิดกล่องแทรกสื่อ
+        function closeMediaModal() {
+            document.getElementById('mediaModal').classList.remove('active');
+            pendingMediaTarget = '';
+            pendingMediaType = '';
+        }
+
+        // เมื่อกดยืนยันในกล่องแทรกสื่อ
+        function confirmMediaModal() {
+            const inputVal = document.getElementById('mediaModalInput').value.trim();
+            const textarea = document.getElementById(pendingMediaTarget);
+            
+            if (inputVal && textarea) {
+                if (pendingMediaType === 'image') {
+                    textarea.value += `<img src="${inputVal}">`;
+                } else if (pendingMediaType === 'youtube') {
+                    textarea.value += `[YOUTUBE:${inputVal}]`;
+                }
+                textarea.focus();
+            }
+            closeMediaModal();
         }
 
         // 🛡️ ป้องกัน XSS (ยกเว้นเครื่องหมาย " ไว้ให้แสดงผลปกติในหัวข้อ)
@@ -445,10 +496,9 @@
             // Render รูปภาพ
             safeText = safeText.replace(/&lt;img\s+src=(?:&quot;|&#39;)(https?:\/\/[^&]+)(?:&quot;|&#39;)[^&]*&gt;/gi, '<img src="$1" style="max-width: 100%; border-radius: 8px; margin-top: 10px;">');
             
-            // 🌟 [เพิ่มใหม่] Render YouTube Iframe (Responsive)
+            // Render YouTube Iframe (Responsive)
             safeText = safeText.replace(/\[YOUTUBE:(https?:\/\/[^\]]+)\]/gi, function(match, url) {
                 let videoId = '';
-                // แยก ID ของคลิปออกจากลิงก์รูปแบบต่างๆ ของ YouTube
                 const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
                 const matchId = url.match(regExp);
                 if (matchId && matchId[2].length === 11) { videoId = matchId[2]; }
@@ -1078,7 +1128,6 @@
                         repliesHtml += `</div>`;
                     }
 
-                    // 🌟 เพิ่มปุ่มในกล่องตอบกลับย่อย
                     let replyFormHtml = (userType !== 'guest') ? `
                         <div id="reply-box-${c.id}" class="reply-form-container">
                             <div style="display: flex; gap: 10px; margin-bottom: 8px;">
@@ -1193,7 +1242,6 @@
                 }
             }
             
-            // 🌟 ตัดแท็กรูป และแท็ก YouTube ออกชั่วคราวก่อนเช็คว่ามี URL ผิดกฎหลงเหลืออยู่ไหม
             let textForUrlCheck = content.replace(/<img\s+[^>]*src="[^"]*"[^>]*>/gi, '');
             textForUrlCheck = textForUrlCheck.replace(/<img\s+[^>]*src=[^\s>]+[^>]*>/gi, '');
             textForUrlCheck = textForUrlCheck.replace(/\[YOUTUBE:[^\]]+\]/gi, ''); 
@@ -1382,7 +1430,6 @@
             } else {
                 document.getElementById('logoutBtnText').textContent = 'ออกจากระบบ';
                 
-                // 🌟 เพิ่มปุ่มเครื่องมือในกล่องข้อความหลัก
                 commentArea.innerHTML = `
                     <div class="comment-form-box">
                         <h4 style="margin-bottom: 18px; display: flex; align-items: center; flex-wrap: wrap; gap: 5px;">
