@@ -228,7 +228,7 @@
             const newInit = { ...init };
             const headers = new Headers(newInit.headers || (input instanceof Request ? input.headers : undefined));
             
-            const token = localStorage.getItem('siy_token');
+            const token = localStorage.getItem('siy_token') || localStorage.getItem('token');
             if (token && !headers.has('Authorization')) {
                 headers.set('Authorization', `Bearer ${token}`);
             }
@@ -331,7 +331,7 @@
         const ApiManager = {
             async createPost(postData) {
                 try {
-                    const token = localStorage.getItem('siy_token');
+                    const token = localStorage.getItem('siy_token') || localStorage.getItem('token');
                     const headers = { 'Content-Type': 'application/json' };
                     if (token) {
                         headers['Authorization'] = `Bearer ${token}`;
@@ -340,16 +340,23 @@
                     const response = await fetch(`${API_CONFIG.BASE_URL}/posts`, {
                         method: 'POST',
                         headers: headers,
+                        credentials: 'include',
                         body: JSON.stringify(postData)
                     });
-                    return await response.json();
+                    
+                    const text = await response.text();
+                    try {
+                        return JSON.parse(text);
+                    } catch (e) {
+                        return { success: response.ok, error: response.ok ? null : text };
+                    }
                 } catch (error) { 
                     return { success: false, error: 'เกิดอาถรรพ์ขัดข้องในการเชื่อมต่อเซิร์ฟเวอร์' }; 
                 }
             },
             async sendNotification(data) {
                 try {
-                    const token = localStorage.getItem('siy_token');
+                    const token = localStorage.getItem('siy_token') || localStorage.getItem('token');
                     const headers = { 'Content-Type': 'application/json' };
                     if (token) {
                         headers['Authorization'] = `Bearer ${token}`;
@@ -358,6 +365,7 @@
                     await fetch(`${API_CONFIG.BASE_URL}/notifications`, {
                         method: 'POST',
                         headers: headers,
+                        credentials: 'include',
                         body: JSON.stringify(data)
                     });
                 } catch (e) {}
@@ -378,7 +386,6 @@
             };
         }
 
-        // 🌟 ปรับปรุงการตรวจสอบสิทธิ์ให้ดึงจาก localStorage เป็นหลัก ป้องกันติดบั๊ก API /me
         document.addEventListener('DOMContentLoaded', async () => {
             const savedUser = localStorage.getItem('siy_username');
             const userType = localStorage.getItem('siy_usertype'); 
@@ -393,7 +400,7 @@
                     document.getElementById('authorRoleBadge').innerHTML = await getRoleBadgeFromAPI(savedUser);
                     document.getElementById('mainContent').style.display = 'block';
                 }
-            }, 500);
+            }, 300);
         });
 
         document.addEventListener('click', function(e) {
