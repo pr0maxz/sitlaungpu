@@ -174,22 +174,9 @@
             const url = typeof input === 'string' ? input : input.url;
             if (!url.startsWith(API_CONFIG.BASE_URL)) return nativeFetch(input, init);
             const headers = new Headers(init.headers || (input instanceof Request ? input.headers : undefined));
-            headers.delete('Authorization');
             return nativeFetch(input, { ...init, headers, credentials: 'include' });
         };
-        localStorage.removeItem('siy_token');
-
-        function togglePassword() {
-            const pwdInput = document.getElementById('adminPass');
-            const toggleIcon = document.querySelector('.toggle-password');
-            if (pwdInput.type === 'password') { 
-                pwdInput.type = 'text'; 
-                toggleIcon.innerHTML = '<span class="material-symbols-outlined" style="font-size: 16px;">visibility_off</span> หลับตา'; 
-            } else { 
-                pwdInput.type = 'password'; 
-                toggleIcon.innerHTML = '<span class="material-symbols-outlined" style="font-size: 16px;">visibility</span> เพ่งมอง'; 
-            }
-        }
+        
 
         function showAlert(title, message, isSuccess = false) {
             document.getElementById('alertTitle').textContent = title;

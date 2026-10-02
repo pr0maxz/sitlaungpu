@@ -6,7 +6,6 @@ type Bindings = {
   DB: D1Database
   TELEPATHY_ROOM: DurableObjectNamespace
   JWT_SECRET?: string          // บังคับตั้งผ่าน `wrangler secret put JWT_SECRET`
-  // เช่น "https://sitluangpu.pages.dev,https://yourdomain.com" — ต้องตั้งใน production
   ALLOWED_ORIGINS?: string
   SITE_URL?: string            // ใช้สร้าง sitemap เช่น "https://sitluangpu.pages.dev"
   TURNSTILE_SECRET?: string    // ถ้าตั้งไว้ จะใช้ Cloudflare Turnstile แทน bot check แบบเดิม
@@ -17,41 +16,24 @@ const app = new Hono<{ Bindings: Bindings }>()
 // ==========================================
 // ค่าคงที่
 // ==========================================
-const TOKEN_TTL_SECONDS = 60 * 60 * 24 * 7      // อายุ token 7 วัน (เดิม 30 วัน)
+const TOKEN_TTL_SECONDS = 60 * 60 * 24 * 7      // อายุ token 7 วัน
 const MIN_PASSWORD_LENGTH = 8
 const MAX_PASSWORD_LENGTH = 128
 const PBKDF2_ITERATIONS = 100000                // เพดานที่ Cloudflare Workers รองรับ
 const PBKDF2_PREFIX = 'p1:'                     // ขึ้นต้น salt เพื่อบอกว่าเป็นรหัสแบบ PBKDF2
-const REQUIRE_AUTH_NOTIFICATIONS = true         // ต้องมี session cookie เมื่อดึงแจ้งเตือน
+const REQUIRE_AUTH_NOTIFICATIONS = true         // ต้องมี token เมื่อดึงแจ้งเตือน
 const ID_RE = /^[A-Za-z0-9_-]{1,64}$/
-const DEFAULT_ALLOWED_ORIGINS = ['https://sitluangpu.pages.dev']
+const DEFAULT_ALLOWED_ORIGINS = ['https://sitluangpu.pages.dev', 'https://my-backend.pr0maxz.workers.dev']
 const MAX_WS_CONNECTIONS = 500
-const SESSION_COOKIE = 'siy_session'
 
 function allowedOrigins(env: Bindings) {
   const configured = String(env.ALLOWED_ORIGINS || '')
     .split(',').map(s => s.trim()).filter(Boolean)
-  // Fail closed: ในกรณีลืมตั้ง environment ให้รองรับเฉพาะ Pages domain หลัก
   return configured.length > 0 ? configured : DEFAULT_ALLOWED_ORIGINS
 }
 
 function isAllowedOrigin(origin: string | undefined, env: Bindings) {
   return !!origin && allowedOrigins(env).includes(origin)
-}
-
-function readCookie(request: Request, name: string) {
-  const prefix = `${name}=`
-  return (request.headers.get('Cookie') || '').split(';').map(v => v.trim())
-    .find(v => v.startsWith(prefix))?.slice(prefix.length) || ''
-}
-
-function setSessionCookie(c: any, token: string) {
-  // API กับ Pages อยู่คนละ origin ในปัจจุบัน จึงต้องใช้ SameSite=None; ควรย้ายไป custom domain เดียวกันภายหลัง
-  c.header('Set-Cookie', `${SESSION_COOKIE}=${token}; Path=/; Max-Age=${TOKEN_TTL_SECONDS}; HttpOnly; Secure; SameSite=None`)
-}
-
-function clearSessionCookie(c: any) {
-  c.header('Set-Cookie', `${SESSION_COOKIE}=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=None`)
 }
 
 // ==========================================
@@ -75,18 +57,17 @@ app.use('/*', (c, next) => {
 })
 
 // ==========================================
-// CORS
+// CORS (อนุญาต Header Authorization สำหรับส่ง Token)
 // ==========================================
 app.use('/api/*', cors({
   origin: (origin, c) => {
     return isAllowedOrigin(origin, c.env) ? origin : ''
   },
-  allowHeaders: ['Content-Type'],
+  allowHeaders: ['Content-Type', 'Authorization'],
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   credentials: true
 }))
 
-// Cookie ถูกส่งอัตโนมัติได้ จึงรับคำสั่งเปลี่ยนข้อมูลจากหน้าเว็บที่อนุญาตเท่านั้น
 app.use('/api/*', async (c, next) => {
   if (!['GET', 'HEAD', 'OPTIONS'].includes(c.req.method) && !isAllowedOrigin(c.req.header('Origin'), c.env)) {
     return c.json({ success: false, error: 'Forbidden origin' }, 403)
@@ -95,7 +76,7 @@ app.use('/api/*', async (c, next) => {
 })
 
 // ==========================================
-// สร้างตาราง/ดัชนีเสริมอัตโนมัติ (ทำครั้งเดียวต่อ isolate)
+// สร้างตาราง/ดัชนีเสริมอัตโนมัติ
 // ==========================================
 let schemaReady: Promise<void> | null = null
 function ensureSchema(db: D1Database) {
@@ -149,7 +130,6 @@ function safeEqual(a: string, b: string) {
   return diff === 0
 }
 
-// รหัสผ่านแบบเดิม (SHA-256 + salt) เก็บไว้เพื่อให้ผู้ใช้เก่าล็อกอินได้ แล้วอัปเกรดอัตโนมัติ
 async function hashPasswordLegacy(password: string, salt: string) {
   const data = new TextEncoder().encode(password + salt)
   return toHex(await crypto.subtle.digest('SHA-256', data))
@@ -189,7 +169,6 @@ async function upgradePasswordHash(db: D1Database, username: string, password: s
   } catch (e) {}
 }
 
-// ทำความสะอาดข้อความ: ตัดแท็กอันตราย, event handler และ URL แบบ javascript: (เกราะชั้นแรก — ฝั่งหน้าเว็บยัง escape ซ้ำเสมอ)
 function sanitize(text: any) {
   if (!text) return ''
   return String(text)
@@ -225,7 +204,6 @@ function isSafeCssValue(v: string) {
   return /^[#\w\s().,%\-]{1,120}$/.test(v) && !/url\s*\(|expression|javascript|@import/i.test(v)
 }
 
-// แปลงเวลา Cloudflare (UTC) ให้เป็นเวลาไทย (+7)
 function getThaiTimeStr() {
   const thaiMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.']
   const now = new Date(Date.now() + 7 * 60 * 60 * 1000)
@@ -233,7 +211,7 @@ function getThaiTimeStr() {
 }
 
 // ==========================================
-// JWT & Authentication (ตรวจ role จากฐานข้อมูลทุกครั้ง)
+// JWT & Authentication (รองรับ Authorization Header)
 // ==========================================
 async function generateToken(payload: { username: string; role: string; rank_name: string }, secret: string) {
   return await sign({
@@ -247,12 +225,13 @@ async function getAuthenticatedUser(c: any): Promise<{ user: any, error: string 
     const secret = c.env?.JWT_SECRET
     if (!secret) return { user: null, error: 'Server Misconfigured' }
 
-    const token = readCookie(c.req.raw, SESSION_COOKIE)
+    const authHeader = c.req.raw.headers.get('Authorization') || ''
+    const token = authHeader.startsWith('Bearer ') ? authHeader.substring(7) : ''
+
     if (!token || token === 'undefined' || token === 'null') return { user: null, error: 'Token Empty' }
 
     const decoded: any = await verify(token, secret, 'HS256')
 
-    // role / rank ใช้ค่าล่าสุดจาก DB เสมอ — ถ้าถูกลบหรือลดสิทธิ์ token เก่าจะไม่มีผลทันที
     const row: any = await c.env.DB.prepare("SELECT username, role, rank_name FROM users WHERE username = ?").bind(decoded.username).first()
     if (!row) return { user: null, error: 'User Not Found' }
 
@@ -281,7 +260,6 @@ function calculateRank(karma: number, currentRole: string, currentRankName: stri
   return { role: '5', rank_name: 'เด็กวัด', nextRankMsg: `อีก ${11 - karma} แต้มบุญ จะเลื่อนเป็น ปฐมภูมิ` }
 }
 
-// เพิ่มแต้มแบบ atomic (ไม่อ่านแล้วเขียนทับ) แล้วค่อยคำนวณยศ
 async function addKarma(db: D1Database, username: string, amount: number) {
   try {
     if (!username || username.includes('ผู้ไม่ประสงค์ออกนาม')) return
@@ -299,7 +277,7 @@ async function addKarma(db: D1Database, username: string, amount: number) {
 }
 
 // ==========================================
-// Rate Limit แบบเก็บใน D1 (ใช้ได้จริงข้ามทุก isolate)
+// Rate Limit
 // ==========================================
 async function rlCheck(db: D1Database, key: string): Promise<{ allowed: boolean, waitTimeStr?: string }> {
   try {
@@ -340,9 +318,7 @@ const COMMENT_MAX = 12, COMMENT_WINDOW = 10 * 60 * 1000, COMMENT_LOCK = 10 * 60 
 const COMMENT_IP_MAX = 40, COMMENT_IP_WINDOW = 60 * 60 * 1000, COMMENT_IP_LOCK = 30 * 60 * 1000
 const LIKE_MAX = 30, LIKE_WINDOW = 60 * 1000, LIKE_LOCK = 5 * 60 * 1000
 const LIKE_IP_MAX = 100, LIKE_IP_WINDOW = 60 * 60 * 1000, LIKE_IP_LOCK = 30 * 60 * 1000
-const WS_MAX = 30, WS_WINDOW = 60 * 1000, WS_LOCK = 5 * 60 * 1000
 
-// เพิ่มตัวนับและตรวจ lock ในคำสั่งเดียว ลดช่องว่างระหว่าง check กับ record เมื่อมี request พร้อมกัน
 async function rlConsume(db: D1Database, key: string, max: number, windowMs: number, lockMs: number): Promise<{ allowed: boolean, waitTimeStr?: string }> {
   const now = Date.now()
   try {
@@ -365,7 +341,6 @@ async function rlConsume(db: D1Database, key: string, max: number, windowMs: num
     }
     return { allowed: true }
   } catch (e) {
-    // การบันทึก limit ผิดพลาดไม่ควรทำให้ระบบหลักใช้งานไม่ได้
     return { allowed: true }
   }
 }
@@ -374,9 +349,6 @@ function getIp(c: any) {
   return c.req.header('cf-connecting-ip') || 'unknown'
 }
 
-// ==========================================
-// ตรวจสอบว่าเป็นมนุษย์ (Turnstile ถ้าตั้งค่าไว้ ไม่เช่นนั้นใช้ bot check เดิม)
-// ==========================================
 const BOT_CHECK_ANSWERS = new Set(['สัตยาสาบาน', 'ศิษย์หลวงปู่', 'ลานเสวนา', '2', '3', '7', 'คน'])
 
 function normalizeAnswer(str: string) {
@@ -406,9 +378,6 @@ async function isHuman(c: any, body: any, ip: string) {
   return isValidBotCheckAnswer(body.bot_check_answer)
 }
 
-// ==========================================
-// กฎของชื่อผู้ใช้
-// ==========================================
 const RESERVED_WORDS = ['แอดมิน', 'แอทมิน', 'ผู้ดูแล', 'ทีมงาน', 'เจ้าหน้าที่', 'ระบบ', 'ผู้คุมกฎ', 'ปรมัตถ์', 'สตาฟ', 'เว็บมาสเตอร์', 'ศิษย์หลวงปู่', 'เจ้าสำนัก', 'ผู้บริหาร', 'สต๊าฟ', 'ซัพพอร์ต', 'ส่วนกลาง', 'แอด']
 
 function validateUsername(username: any): string | null {
@@ -429,9 +398,6 @@ function validatePassword(password: any): string | null {
   return null
 }
 
-// ==========================================
-// ระบบแจ้งเตือน (ตรวจว่าผู้รับมีอยู่จริง + กันแจ้งซ้ำคนเดิม)
-// ==========================================
 async function notify(env: Bindings, recipient: string, actor: string, actionType: string, postRef: string, notified: Set<string>, timeStr: string) {
   if (!recipient || recipient === actor || notified.has(recipient)) return
   try {
@@ -475,7 +441,7 @@ app.post('/api/login', async (c) => {
 
     const user: any = await c.env.DB.prepare("SELECT * FROM users WHERE username = ?").bind(username).first()
     if (!user) {
-      await hashPasswordPbkdf2(password, PBKDF2_PREFIX + 'dummy') // เท่ากันเรื่องเวลา ไม่บอกว่าชื่อมีอยู่หรือไม่
+      await hashPasswordPbkdf2(password, PBKDF2_PREFIX + 'dummy')
       if (ip !== 'unknown') await rlRecord(c.env.DB, key, LOGIN_MAX, LOGIN_WINDOW, LOGIN_LOCK)
       return c.json({ success: false, error: LOGIN_FAIL_MSG }, 400)
     }
@@ -493,8 +459,7 @@ app.post('/api/login', async (c) => {
     const token = await generateToken({ username: user.username, role: String(user.role || '5'), rank_name: user.rank_name || 'เด็กวัด' }, secret)
     const rankInfo = calculateRank(user.karma || 0, String(user.role), user.rank_name)
 
-    setSessionCookie(c, token)
-    return c.json({ success: true, username: user.username, role: user.role, rank_name: user.rank_name, karma: user.karma || 0, nextRankMsg: rankInfo.nextRankMsg })
+    return c.json({ success: true, username: user.username, role: user.role, rank_name: user.rank_name, karma: user.karma || 0, nextRankMsg: rankInfo.nextRankMsg, token })
   } catch (err: any) {
     return c.json({ success: false, error: 'เกิดข้อผิดพลาดในการตรวจสอบตัวตน' }, 500)
   }
@@ -537,13 +502,11 @@ app.post('/api/admin/login', async (c) => {
     try { await c.env.DB.prepare("UPDATE users SET last_login = ? WHERE username = ?").bind(Date.now(), user.username).run() } catch (e) {}
 
     const token = await generateToken({ username: user.username, role: '1', rank_name: user.rank_name || 'ปรมัตถ์' }, secret)
-    setSessionCookie(c, token)
-    return c.json({ success: true, username: user.username, rank_name: user.rank_name || 'เด็กวัด' })
+    return c.json({ success: true, username: user.username, rank_name: user.rank_name || 'เด็กวัด', token })
   } catch (err) { return c.json({ success: false, error: 'เกิดข้อผิดพลาดที่แก่นเซิร์ฟเวอร์' }, 500) }
 })
 
 app.post('/api/logout', async (c) => {
-  clearSessionCookie(c)
   return c.json({ success: true })
 })
 
@@ -558,7 +521,6 @@ app.get('/api/me', async (c) => {
 })
 
 app.get('/api/users', async (c) => {
-  // endpoint นี้ใช้แสดงยศในหน้าเว็บสาธารณะ จึงไม่ส่ง last_login หรือ sort_order ออกไป
   const { results } = await c.env.DB.prepare("SELECT username, role, rank_name, karma FROM users ORDER BY username ASC").all()
   const usersWithKarmaInfo = results.map((u: any) => {
     const rankInfo = calculateRank(u.karma || 0, String(u.role), u.rank_name)
@@ -591,7 +553,6 @@ app.post('/api/users', async (c) => {
   const pwErr = validatePassword(password)
   if (pwErr) return c.json({ success: false, message: pwErr }, 400)
 
-  // ผู้สมัครทั่วไปได้ยศเริ่มต้นเท่านั้น — กำหนดเองได้เฉพาะแอดมิน
   const safeRole = isAdmin && typeof role !== 'undefined' && /^[\w-]{1,40}$/.test(String(role)) ? String(role) : '5'
   const safeRank = isAdmin ? (cleanStr(rank_name, 40) || 'เด็กวัด') : 'เด็กวัด'
 
@@ -605,8 +566,7 @@ app.post('/api/users', async (c) => {
     ).bind(username, rec.hash, rec.salt, safeRole, safeRank).run()
 
     const token = await generateToken({ username, role: safeRole, rank_name: safeRank }, secret)
-    setSessionCookie(c, token)
-    return c.json({ success: true, username })
+    return c.json({ success: true, username, token })
   } catch (e: any) {
     return c.json({ success: false, message: 'ไม่สามารถสร้างบัญชีได้ นามแฝงนี้อาจถูกใช้ไปแล้ว' }, 400)
   }
@@ -632,7 +592,6 @@ app.put('/api/users', async (c) => {
 
   const safeRole = /^[\w-]{1,40}$/.test(String(role ?? '5')) ? String(role ?? '5') : '5'
   const safeRank = cleanStr(rank_name, 40) || 'เด็กวัด'
-  // ถ้าไม่ได้ส่ง karma มา ให้คงค่าเดิม (เดิมถูกรีเซ็ตเป็น 0)
   const safeKarma = typeof karma === 'number' && isFinite(karma) ? Math.max(0, Math.floor(karma)) : null
 
   if (targetName === admin.username && safeRole !== '1') {
@@ -664,7 +623,6 @@ app.put('/api/users', async (c) => {
       ).bind(username, safeRole, safeRank, lastLogin, safeKarma, targetName))
     }
 
-    // เปลี่ยนชื่อแล้วต้องย้ายข้อมูลที่อ้างอิงชื่อเดิมตามไปด้วย (กันข้อมูลกำพร้า)
     if (renamed) {
       statements.push(db.prepare("UPDATE posts SET author = ? WHERE author = ?").bind(username, targetName))
       statements.push(db.prepare("UPDATE comments SET author = ? WHERE author = ?").bind(username, targetName))
@@ -715,7 +673,6 @@ app.delete('/api/users/:username', async (c) => {
 // ==========================================
 
 app.get('/api/posts', async (c) => {
-  // รองรับ ?limit=&offset= (ไม่ส่งมา = ส่งทั้งหมดเหมือนเดิม)
   const limitQ = parseInt(c.req.query('limit') || '', 10)
   const offsetQ = parseInt(c.req.query('offset') || '', 10)
   if (limitQ > 0) {
@@ -764,7 +721,6 @@ app.post('/api/posts', async (c) => {
     }
   }
 
-  // เฉพาะแอดมินที่ปักหมุดได้
   const isPinned = isAdmin && (body.pinned === true || body.pinned === 1 || body.pinned === '1') ? 1 : 0
   const timeStr = getThaiTimeStr()
 
@@ -810,7 +766,6 @@ app.put('/api/posts', async (c) => {
   const safeContent = sanitize(typeof body.content === 'string' ? body.content.slice(0, 50000) : '')
   if (!title || !safeContent.trim()) return c.json({ success: false, error: 'กรุณากรอกหัวข้อและเนื้อหา' }, 400)
 
-  // ผู้ใช้ทั่วไปแก้สถานะปักหมุดไม่ได้ — คงค่าเดิมไว้
   const isPinned = isAdmin
     ? ((body.pinned === true || body.pinned === 1 || body.pinned === '1') ? 1 : 0)
     : (post.pinned ? 1 : 0)
@@ -825,7 +780,6 @@ app.put('/api/posts', async (c) => {
 
 app.get('/api/posts/:id', async (c) => {
   const id = c.req.param('id')
-  // ?noview=1 ใช้สำหรับ middleware/บอต เพื่อไม่ให้นับยอดวิวซ้ำ
   if (c.req.query('noview') !== '1') {
     try { await c.env.DB.prepare("UPDATE posts SET views = COALESCE(views, 0) + 1 WHERE id = ?").bind(id).run() } catch (e) {}
   }
@@ -853,7 +807,6 @@ app.delete('/api/posts/:id', async (c) => {
     db.prepare("DELETE FROM comments WHERE post_id = ?").bind(id),
     db.prepare("DELETE FROM post_likes WHERE post_id = ?").bind(id),
     db.prepare("DELETE FROM bookmarks WHERE CAST(post_id AS TEXT) = ?").bind(id),
-    // ลบเฉพาะแจ้งเตือนของกระทู้นี้ (เดิมใช้ LIKE 'id%' ทำให้กระทู้ id ขึ้นต้นเหมือนกันโดนลบไปด้วย)
     db.prepare("DELETE FROM notifications WHERE post_id = ? OR substr(post_id, 1, ?) = ?").bind(id, id.length + 1, `${id}#`),
     db.prepare("DELETE FROM posts WHERE id = ?").bind(id),
   ])
@@ -878,7 +831,6 @@ app.post('/api/posts/:postId/like', async (c) => {
     const post: any = await c.env.DB.prepare("SELECT id, author, likes FROM posts WHERE id = ?").bind(postId).first()
     if (!post) return c.json({ success: false, error: 'ไม่พบศิลาจารึก' }, 404)
 
-    // 1 คน 1 ไลก์ต่อกระทู้
     const ins = await c.env.DB.prepare("INSERT OR IGNORE INTO post_likes (post_id, username) VALUES (?, ?)").bind(String(postId), actor).run()
     const added = ((ins as any).meta?.changes ?? 0) > 0
 
@@ -964,7 +916,6 @@ app.post('/api/comments', async (c) => {
     const targetRef = `${postId}#comment-${commentId}`
     const notified = new Set<string>()
 
-    // 1) คนที่ถูกตอบกลับ  2) คนที่ถูกแท็ก  3) เจ้าของกระทู้ — คนเดียวกันได้แจ้งเตือนครั้งเดียว
     const replyMatch = safeContent.match(/\[AUTHOR:([^\]]+)\]/)
     if (replyMatch && replyMatch[1]) {
       await notify(c.env, replyMatch[1], author, 'reply', targetRef, notified, timeStr)
@@ -1059,7 +1010,6 @@ app.post('/api/roles', async (c) => {
   const bg = cleanStr(body.bg_color, 120)
   const text = cleanStr(body.text_color, 120)
   const border = cleanStr(body.border_color, 120)
-  // ค่าสีถูกนำไปใส่ใน style="..." ฝั่งหน้าเว็บ จึงต้องจำกัดรูปแบบ
   if (!rankName || !isSafeCssValue(bg) || !isSafeCssValue(text) || (border && !isSafeCssValue(border))) {
     return c.json({ success: false, error: 'ข้อมูลยศหรือรหัสสีไม่ถูกต้อง' }, 400)
   }
@@ -1094,7 +1044,6 @@ app.get('/api/reports', async (c) => {
 })
 
 app.post('/api/reports', async (c) => {
-  // รับรายงานแบบไม่ล็อกอินได้ (เพื่อให้หน้าเว็บเดิมใช้งานต่อได้) แต่จำกัดอัตราต่อ IP และตรวจรูปแบบข้อมูลทั้งหมด
   const ip = getIp(c)
   const key = `report:${ip}`
   if (ip !== 'unknown') {
@@ -1192,7 +1141,6 @@ app.post('/api/cms', async (c) => {
   const heroBtnText = cleanStr(body.heroBtnText, 100)
   const heroBtnUrl = cleanStr(body.heroBtnUrl, 1000)
 
-  // กันลิงก์ javascript:/data: ที่หน้าแรกจะนำไปใส่ href/src
   if (!isSafeUrl(heroImg) || !isSafeUrl(heroBtnUrl)) {
     return c.json({ success: false, error: 'รูปแบบลิงก์ไม่ปลอดภัย' }, 400)
   }
@@ -1233,7 +1181,6 @@ app.put('/api/notifications/:id/read', async (c) => {
 
   const id = c.req.param('id')
   try {
-    // แก้ได้เฉพาะแจ้งเตือนของตัวเอง (แอดมินแก้ได้ทั้งหมด)
     if (String(authResult.user.role) === '1') {
       await c.env.DB.prepare("UPDATE notifications SET is_read = 1 WHERE id = ?").bind(id).run()
     } else {
@@ -1261,27 +1208,27 @@ app.get('/sitemap.xml', async (c) => {
   } catch (e: any) { return c.text('Error generating sitemap', 500) }
 })
 
-app.get('/api/ws', async (c) => {
-  const upgradeHeader = c.req.header('Upgrade')
-  if (upgradeHeader !== 'websocket') return c.text('Expected Upgrade: websocket', 426)
-  if (!isAllowedOrigin(c.req.header('Origin'), c.env)) return c.text('Forbidden origin', 403)
-  const ip = getIp(c)
-  if (ip !== 'unknown') {
-    const limit = await rlConsume(c.env.DB, `ws:${ip}`, WS_MAX, WS_WINDOW, WS_LOCK)
-    if (!limit.allowed) return c.text(`Too many connections; retry in ${limit.waitTimeStr}`, 429)
-  }
-  const id = c.env.TELEPATHY_ROOM.idFromName('global-telepathy-room')
-  const stub = c.env.TELEPATHY_ROOM.get(id)
-  return stub.fetch(c.req.raw)
-})
+// ==========================================
+// Admin Pages (รวมเส้นทางให้เสถียร ไม่เกิดลูป Redirect 308)
+// ==========================================
+app.get('/admin_login', async (c) => {
+    const fs = await import('node:fs');
+    const path = await import('node:path');
+    const html = fs.readFileSync(path.join(__dirname, '..', 'public', 'admin_login.html'), 'utf-8');
+    c.header('Content-Type', 'text/html; charset=utf-8');
+    return c.text(html);
+});
+
+app.get('/admin', async (c) => {
+    const fs = await import('node:fs');
+    const path = await import('node:path');
+    const html = fs.readFileSync(path.join(__dirname, '..', 'public', 'admin.html'), 'utf-8');
+    c.header('Content-Type', 'text/html; charset=utf-8');
+    return c.text(html);
+});
 
 export default app
 
-// ==========================================
-// Durable Object: ห้องกระแสจิต (WebSocket Hibernation)
-// - กระจายสัญญาณเฉพาะที่ Backend ส่งมาทาง /broadcast เท่านั้น
-// - ข้อความที่ client ส่งเข้ามาจะถูกเพิกเฉย (กันการปลอมแจ้งเตือน/ยอดไลก์)
-// ==========================================
 export class TelepathyRoom {
   state: DurableObjectState
 
@@ -1312,9 +1259,7 @@ export class TelepathyRoom {
     return new Response(null, { status: 101, webSocket: client })
   }
 
-  async webSocketMessage(ws: WebSocket, message: string | ArrayBuffer) {
-    // ไม่รับคำสั่งจากฝั่ง client
-  }
+  async webSocketMessage(ws: WebSocket, message: string | ArrayBuffer) {}
 
   async webSocketClose(ws: WebSocket, code: number, reason: string, wasClean: boolean) {
     try { ws.close(1000, 'closing') } catch (e) {}
