@@ -190,7 +190,6 @@
         .modal-box { background: linear-gradient(135deg, #1f1107, #0a0603); border: 1px solid var(--gold-main); border-radius: 12px; width: 100%; max-width: 450px; padding: 30px 25px; position: relative; box-shadow: 0 15px 40px rgba(0,0,0,0.9), inset 0 0 15px rgba(212,175,55,0.1); max-height: 90vh; overflow-y: auto; }
         .modal-box::-webkit-scrollbar { width: 5px; } .modal-box::-webkit-scrollbar-thumb { background: var(--gold-dark); border-radius: 3px; }
         
-        /* สัญลักษณ์แสดงสถานะการรีเฟรชออโต้ */
         .refresh-indicator { font-size: 0.7rem; color: var(--text-muted); display: flex; align-items: center; gap: 4px; margin-left: 10px; }
         .refresh-indicator .dot { width: 6px; height: 6px; border-radius: 50%; background-color: var(--success-color); animation: pulse 2s infinite; }
         @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.5); opacity: 0.5; } 100% { transform: scale(1); opacity: 1; } }
@@ -445,7 +444,7 @@
                     <div class="filter-toolbar">
                         <input type="text" id="searchPostField" class="search-input" placeholder="🔍 ค้นหาหัวข้อ, รหัส (ID) หรือผู้เขียน..." aria-label="ค้นหากระทู้" oninput="handlePostSearch()">
                         <select id="filterPostCategory" class="filter-select" aria-label="กรองหมวดหมู่" onchange="handlePostSearch()">
-                            <option value="">🏷️️ แสดงทุกหมวดหมู่</option>
+                            <option value="">🏷 แสดงทุกหมวดหมู่</option>
                             <option value="1">หมวด: นิยาย "สัตยาสาบาน"</option>
                             <option value="2">หมวด: คุยกับศิษย์หลวงปู่</option>
                         </select>
@@ -764,7 +763,6 @@
             
             const headers = new Headers(init.headers || (input instanceof Request ? input.headers : undefined));
             
-            // เพิ่ม Token อัตโนมัติหากมีอยู่ในระบบ
             const token = localStorage.getItem('siy_token');
             if (token && !headers.has('Authorization')) {
                 headers.set('Authorization', `Bearer ${token}`);
@@ -773,8 +771,6 @@
             return nativeFetch(input, { ...init, headers, credentials: 'include' });
         };
         
-        // ลบคำสั่ง localStorage.removeItem('siy_token'); ออกไป
-
         let globalPostsData = [];
         let globalCommentsData = []; 
         let filteredPostsCat1 = [];
@@ -790,11 +786,9 @@
 
         let globalRolesData = [];
         
-        // 🌟 ตัวแปรเช็คว่ามี Modal เปิดค้างอยู่หรือไม่ ป้องกันการรีเฟรชข้อมูลแล้วพิมพ์หาย
         let isAnyModalOpen = false;
         let autoSyncInterval;
 
-        // 🛡️ ป้องกัน XSS
         function safeHTML(str) {
             if (str === null || str === undefined) return '';
             return String(str).replace(/[&<>'"]/g, tag => ({
@@ -953,7 +947,6 @@
 
         function closeModal(id) { 
             document.getElementById(id).classList.remove('active'); 
-            // ตรวจสอบว่ายังมี Modal อื่นเปิดอยู่อีกไหม ถ้าไม่มีให้ปลดล็อค
             const anyOpen = document.querySelectorAll('.modal-overlay.active').length > 0;
             isAnyModalOpen = anyOpen;
         }
@@ -1016,7 +1009,6 @@
         }
 
         async function loadAdminData(isBackgroundSync = false) {
-            // หากเป็นการอัปเดตพื้นหลัง ให้เช็คก่อนว่ามีเปิดกล่องข้อความค้างไว้หรือไม่
             if (isBackgroundSync && isAnyModalOpen) {
                 console.log("ข้ามการรีเฟรชออโต้ เนื่องจากผู้ใช้กำลังทำงานอยู่");
                 return;
@@ -1195,7 +1187,6 @@
                 `).join('');
             } else { topLikedContainer.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 10px;">ยังไม่มีจารึกที่ได้รับการอนุโมทนา</div>'; }
 
-            // ให้ทำงานร่วมกับสถานะการค้นหา/การแบ่งหน้าปัจจุบัน โดยไม่เด้งกลับหน้าแรก
             handlePostSearch(true);
             handleUserSearch(true);
             loadReportsTable(reports);
@@ -1473,6 +1464,7 @@
             renderUsersPage(preservePage ? currentUserPage : 1);
         }
 
+        // 🌟 แก้ไขฟังก์ชัน moveUserRow ให้ส่งลำดับใหม่ไปยัง Cloudflare D1 ทันที
         async function moveUserRow(indexInFiltered, direction) {
             const currentItem = filteredUsersData[indexInFiltered];
             const targetItem = filteredUsersData[indexInFiltered + direction];
@@ -1485,11 +1477,12 @@
                 const temp = globalUsersData[globalIdxCurrent];
                 globalUsersData[globalIdxCurrent] = globalUsersData[globalIdxTarget];
                 globalUsersData[globalIdxTarget] = temp;
-                handleUserSearch(true); // คงไว้หน้าเดิม
+                handleUserSearch(true); 
 
                 try {
                     const allUsernames = globalUsersData.map(u => u.username);
                     await AdminAPI.saveUserOrder(allUsernames);
+                    showCustomAlert('✅ อัปเดตลำดับในฐานข้อมูลสำเร็จ');
                 } catch (err) {
                     showCustomAlert('⚠️ ' + err.message);
                 }
@@ -1838,15 +1831,12 @@
             });
         }
 
-        // 🌟 เริ่มการทำงานเมื่อโหลดหน้าเสร็จ
         document.addEventListener('DOMContentLoaded', async () => {
             if (await checkAdminAuth()) {
                 initDashboardDragAndDrop(); 
                 await loadAdminData(false);
 
-                // เริ่มตั้งเวลาดึงข้อมูลออโต้ทุกๆ 5 นาที (300,000 มิลลิวินาที)
                 autoSyncInterval = setInterval(() => {
-                    // ดึงข้อมูลเมื่อผู้ใช้เปิดหน้าต่างนี้ทิ้งไว้ และไม่ได้เปิดกล่องแก้ไขทิ้งไว้
                     if (document.visibilityState === 'visible') {
                         loadAdminData(true);
                     }
@@ -1854,7 +1844,6 @@
             }
         });
 
-        // ดึงข้อมูลทันทีถ้าแอดมินสลับกลับมาจากแท็บอื่น แล้วข้อมูลเก่านานเกิน 5 นาที
         let lastVisibilityTime = Date.now();
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') {
