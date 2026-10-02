@@ -510,6 +510,8 @@
                     const urlParams = new URLSearchParams(window.location.search);
                     if (data.postId === urlParams.get('id') && typeof loadComments === 'function') loadComments(data.postId);
                 }
+                
+                // 🌟 เพิ่มเงื่อนไขรับสัญญาณแจ้งเตือนแบบ Realtime ให้ทำงานทันที
                 if (data.type === 'NEW_NOTIFICATION') {
                     const savedUser = localStorage.getItem('siy_username');
                     if (savedUser && localStorage.getItem('siy_usertype') !== 'guest') {
@@ -547,7 +549,10 @@
             },
             async readNotification(id) {
                 try { 
-                    await fetch(`${API_CONFIG.BASE_URL}/notifications/${id}/read`, { method: 'PUT' }); 
+                    await fetch(`${API_CONFIG.BASE_URL}/notifications/${id}/read`, { 
+                        method: 'PUT',
+                        body: JSON.stringify({})
+                    }); 
                 } catch(e) {}
             },
             async sendNotification(data) {
