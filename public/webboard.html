@@ -458,11 +458,17 @@
         window.fetch = (input, init = {}) => {
             const url = typeof input === 'string' ? input : input.url;
             if (!url.startsWith(API_CONFIG.BASE_URL)) return nativeFetch(input, init);
+            
             const headers = new Headers(init.headers || (input instanceof Request ? input.headers : undefined));
-            headers.delete('Authorization');
+            
+            // แนบ Token จาก localStorage อัตโนมัติเพื่อให้การยืนยันตัวตนถูกต้องสมบูรณ์
+            const token = localStorage.getItem('siy_token');
+            if (token && !headers.has('Authorization')) {
+                headers.set('Authorization', `Bearer ${token}`);
+            }
+            
             return nativeFetch(input, { ...init, headers, credentials: 'include' });
         };
-        localStorage.removeItem('siy_token');
 
         function safeHTML(str) {
             if (!str) return '';
@@ -501,17 +507,14 @@
                     const urlParams = new URLSearchParams(window.location.search);
                     if (data.postId === urlParams.get('id') && typeof loadComments === 'function') loadComments(data.postId);
                 }
-                // --- ส่วนที่เพิ่มเข้ามาใหม่สำหรับการแจ้งเตือนแบบเรียลไทม์ ---
                 if (data.type === 'NEW_NOTIFICATION') {
                     const savedUser = localStorage.getItem('siy_username');
-                    // ตรวจสอบว่าล็อกอินอยู่และเป้าหมายการแจ้งเตือนตรงกับผู้ใช้ปัจจุบัน
                     if (savedUser && localStorage.getItem('siy_usertype') !== 'guest') {
                         if (data.targetUser === savedUser || !data.targetUser) {
-                            loadNotifications(); // เรียกโหลดแจ้งเตือนใหม่ทันที
+                            loadNotifications();
                         }
                     }
                 }
-                // --------------------------------------------------
             };
             telepathySocket.onclose = () => { setTimeout(connectTelepathy, 5000); };
             telepathySocket.onerror = (err) => { console.error("❌ กระแสจิตขัดข้อง:", err); };
@@ -617,7 +620,7 @@
 
         async function loadNotifications() {
             const savedUser = localStorage.getItem('siy_username');
-            if (!savedUser || localStorage.getItem('siy_usertype') === 'guest') return;
+            if (!savedUser || localStorage.getItem('siy_usertype'] === 'guest') return;
 
             document.getElementById('notiContainer').style.display = 'block';
             
@@ -1149,7 +1152,6 @@
             window.location.href = targetUrl;
         }
 
-        // ===== ด่านตรวจสอบวิญญาณ: สุ่มคำถามยืนยัน (กันบอทจดจำคำตายตัว) =====
         const BOT_CHECK_POOL = [
             { q: 'พิมพ์คำว่า "สัตยาสาบาน" เพื่อยืนยัน', a: 'สัตยาสาบาน' },
             { q: 'พิมพ์คำว่า "ศิษย์หลวงปู่" เพื่อยืนยัน', a: 'ศิษย์หลวงปู่' },
@@ -1243,7 +1245,6 @@
                     });
                     const result = await res.json();
                     
-                    // 🌟 รองรับการดักจับสถานะ 429 Too Many Requests จาก Backend เมื่อสมัครถี่เกินไป
                     if (res.status === 429) {
                         showCustomAlert(result.message || 'มีการสมัครถี่เกินไปจาก IP นี้ โปรดรอสักครู่แล้วลองใหม่');
                         return;
@@ -1257,6 +1258,10 @@
                     if (!res.ok || !result.success) {
                         showCustomAlert(result.message || 'นามแฝงนี้มีผู้ใช้งานแล้ว');
                         return;
+                    }
+
+                    if (result.token) {
+                        localStorage.setItem('siy_token', result.token);
                     }
 
                     showCustomAlert('ลงนามสำเร็จ ยินดีต้อนรับสู่สำนัก, ' + usernameInput);
@@ -1287,6 +1292,10 @@
                         return;
                     }
 
+                    if (result.token) {
+                        localStorage.setItem('siy_token', result.token);
+                    }
+
                     showCustomAlert('เข้าสู่ระบบสำเร็จ, ยินดีต้อนรับกลับมา ' + usernameInput);
                 } catch (e) {
                     showCustomAlert('เกิดอาถรรพ์ขัดข้องในการเชื่อมต่อแก่นเซิร์ฟเวอร์');
@@ -1304,6 +1313,7 @@
 
         function handleLogout() {
             fetch(`${API_CONFIG.BASE_URL}/logout`, { method: 'POST' }).catch(() => {});
+            localStorage.removeItem('siy_token');
             localStorage.removeItem('siy_username'); 
             localStorage.removeItem('siy_usertype'); 
             localStorage.removeItem('siy_login_timestamp');
