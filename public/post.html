@@ -620,6 +620,7 @@
                     }
                 }
                 
+                // 🌟 เพิ่มเงื่อนไขรับสัญญาณแจ้งเตือนแบบ Realtime ให้ทำงานทันที
                 if (data.type === 'NEW_NOTIFICATION') {
                     const savedUser = localStorage.getItem('siy_username');
                     if (savedUser && localStorage.getItem('siy_usertype') !== 'guest') {
