@@ -393,7 +393,7 @@
         </div>
     </div>
 
-    <!-- 🌟 Modal แทรกสื่อ (รูปภาพ/YouTube) แบบกำหนดเอง -->
+    <!-- Modal แทรกสื่อ (รูปภาพ/YouTube) -->
     <div class="sect-modal-overlay" id="mediaModal" style="z-index: 9999;">
         <div class="sect-modal-content" style="max-width: 400px; text-align: center; padding: 30px 20px 40px 20px;">
             <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-left" alt="" width="60" height="60" loading="lazy">
@@ -431,7 +431,6 @@
             BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
         };
         
-        // 🌟 แก้ไขตัวดักจับ fetch ให้แนบ Token และส่ง credentials ไปยัง backend อย่างถูกต้องสมบูรณ์
         const nativeFetch = window.fetch.bind(window);
         window.fetch = (input, init = {}) => {
             const url = typeof input === 'string' ? input : input.url;
@@ -554,7 +553,6 @@
             if (usersMap && Object.keys(usersMap).length > 0) {
                 usernames = usernames.concat(Object.keys(usersMap));
             }
-            
             const uniqueUsers = [...new Set(usernames)];
             uniqueUsers.sort((a, b) => b.length - a.length);
             const escaped = uniqueUsers.map(u => u.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
@@ -586,7 +584,15 @@
         function connectTelepathy() {
             const wsUrl = API_CONFIG.BASE_URL.replace('http', 'ws') + '/ws';
             telepathySocket = new WebSocket(wsUrl);
-            telepathySocket.onopen = () => { console.log("⚡ เปิดช่องรับกระแสจิตจากสำนักสำเร็จ!"); };
+
+            telepathySocket.onopen = () => { 
+                console.log("⚡ เปิดช่องรับกระแสจิตจากสำนักสำเร็จ!"); 
+                const savedUser = localStorage.getItem('siy_username');
+                if (savedUser && telepathySocket.readyState === WebSocket.OPEN) {
+                    telepathySocket.send(JSON.stringify({ type: 'REGISTER', username: savedUser }));
+                }
+            };
+
             telepathySocket.onmessage = (event) => {
                 const data = JSON.parse(event.data);
                 if (data.type === 'LIKE_UPDATE') {
@@ -620,16 +626,17 @@
                     }
                 }
                 
-                // 🌟 เพิ่มเงื่อนไขรับสัญญาณแจ้งเตือนแบบ Realtime ให้ทำงานทันที
+                // 🌟 อัปเดตแจ้งเตือนทันทีแบบเรียลไทม์เมื่อได้รับสัญญาณ
                 if (data.type === 'NEW_NOTIFICATION') {
                     const savedUser = localStorage.getItem('siy_username');
                     if (savedUser && localStorage.getItem('siy_usertype') !== 'guest') {
-                        if (data.targetUser === savedUser || !data.targetUser) {
+                        if (!data.targetUser || data.targetUser === savedUser) {
                             loadNotifications();
                         }
                     }
                 }
             };
+
             telepathySocket.onclose = () => { setTimeout(connectTelepathy, 5000); };
             telepathySocket.onerror = (err) => { console.error("❌ กระแสจิตขัดข้อง:", err); };
         }
@@ -729,7 +736,7 @@
                         method: 'PUT',
                         body: JSON.stringify({})
                     }); 
-                } catch(e) { console.error("Read Noti Error:", e); }
+                } catch(e) {}
             },
             async getBookmarks() {
                 try {
@@ -954,7 +961,6 @@
             const targetId = document.getElementById('reportTargetId').value;
             const reason = document.getElementById('reportReason').value;
             const reporter = localStorage.getItem('siy_username') || 'ไม่ระบุตัวตน';
-            
             const timeStr = getThaiTimeStr();
 
             try {
@@ -1104,7 +1110,7 @@
                                             ${rBadge}
                                         </div>
                                         <div>
-                                            <span class="post-time">${r.timestamp}</span>
+                                            <span class="post-time">${r.timestamp || '-'}</span>
                                         </div>
                                     </div>
                                     <div class="comment-body">${cleanReplyContent}</div>
@@ -1141,7 +1147,7 @@
                                     ${badge}
                                 </div>
                                 <div>
-                                    <span class="post-time">${c.timestamp}</span>
+                                    <span class="post-time">${c.timestamp || '-'}</span>
                                 </div>
                             </div>
                             <div class="comment-body">${cleanMainContent}</div>
@@ -1274,7 +1280,6 @@
             const urlParams = new URLSearchParams(window.location.search);
             const postId = urlParams.get('id');
             const author = localStorage.getItem('siy_username');
-            
             const timeStr = getThaiTimeStr();
 
             const commentData = {
@@ -1286,7 +1291,6 @@
                 const result = await ApiManager.saveComment(commentData);
                 if(result && result.success !== false) {
                     textarea.value = ''; 
-
                     broadcastAction('NEW_COMMENT', postId, { postId: postId });
                     showCustomAlert('บันทึกจารึกสำเร็จ!', true); 
                 } else {
@@ -1330,9 +1334,7 @@
             if(btn) { btn.textContent = 'กำลังส่ง...'; btn.disabled = true; }
 
             const author = localStorage.getItem('siy_username');
-            
             const timeStr = getThaiTimeStr();
-            
             const hiddenPrefix = `[REPLY_TO:${parentId}][AUTHOR:${parentAuthor}]`;
             const finalContent = hiddenPrefix + content.replace(/\n/g, '<br>');
 
@@ -1345,7 +1347,6 @@
                 const result = await ApiManager.saveComment(commentData);
                 if(result && result.success !== false) {
                     textarea.value = '';
-
                     broadcastAction('NEW_COMMENT', postId, { postId: postId });
                     showCustomAlert('ส่งคำตอบกลับสำเร็จ!', true);
                 } else {
@@ -1534,10 +1535,7 @@
             if (!event.target.matches('.noti-btn') && !event.target.closest('.noti-btn') && !event.target.closest('.noti-dropdown')) {
                 const dropdowns = document.getElementsByClassName("noti-dropdown");
                 for (let i = 0; i < dropdowns.length; i++) {
-                    const openDropdown = dropdowns[i];
-                    if (openDropdown.classList.contains('active')) {
-                        openDropdown.classList.remove('active');
-                    }
+                    dropdowns[i].classList.remove('active');
                 }
             }
         }
