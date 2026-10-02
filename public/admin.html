@@ -445,7 +445,7 @@
                     <div class="filter-toolbar">
                         <input type="text" id="searchPostField" class="search-input" placeholder="🔍 ค้นหาหัวข้อ, รหัส (ID) หรือผู้เขียน..." aria-label="ค้นหากระทู้" oninput="handlePostSearch()">
                         <select id="filterPostCategory" class="filter-select" aria-label="กรองหมวดหมู่" onchange="handlePostSearch()">
-                            <option value="">🏷️ แสดงทุกหมวดหมู่</option>
+                            <option value="">🏷️️ แสดงทุกหมวดหมู่</option>
                             <option value="1">หมวด: นิยาย "สัตยาสาบาน"</option>
                             <option value="2">หมวด: คุยกับศิษย์หลวงปู่</option>
                         </select>
@@ -756,15 +756,24 @@
         const API_CONFIG = { 
             BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
         };
+        
         const nativeFetch = window.fetch.bind(window);
         window.fetch = (input, init = {}) => {
             const url = typeof input === 'string' ? input : input.url;
             if (!url.startsWith(API_CONFIG.BASE_URL)) return nativeFetch(input, init);
+            
             const headers = new Headers(init.headers || (input instanceof Request ? input.headers : undefined));
-            headers.delete('Authorization');
+            
+            // เพิ่ม Token อัตโนมัติหากมีอยู่ในระบบ
+            const token = localStorage.getItem('siy_token');
+            if (token && !headers.has('Authorization')) {
+                headers.set('Authorization', `Bearer ${token}`);
+            }
+            
             return nativeFetch(input, { ...init, headers, credentials: 'include' });
         };
-        localStorage.removeItem('siy_token');
+        
+        // ลบคำสั่ง localStorage.removeItem('siy_token'); ออกไป
 
         let globalPostsData = [];
         let globalCommentsData = []; 
@@ -815,8 +824,9 @@
         async function checkAdminAuth() {
             const savedUsername = localStorage.getItem('siy_username');
             const userType = localStorage.getItem('siy_usertype');
+            const token = localStorage.getItem('siy_token');
 
-            if (!savedUsername || userType !== 'admin') {
+            if (!savedUsername || userType !== 'admin' || !token) {
                 window.location.replace('admin_login.html');
                 return false;
             }
@@ -844,36 +854,30 @@
                 try { const res = await fetch(`${API_CONFIG.BASE_URL}/posts`); return await res.json(); } catch(e){ return []; } 
             },
             async savePost(postData) { 
-                const token = localStorage.getItem('siy_token');
-                const headers = {'Content-Type': 'application/json'};
-                if (token) headers['Authorization'] = `Bearer ${token}`;
                 const res = await fetch(`${API_CONFIG.BASE_URL}/posts`, { 
-                    method: postData.id && postData.id.length < 15 ? 'PUT' : 'POST', headers: headers, body: JSON.stringify(postData) 
+                    method: postData.id && postData.id.length < 15 ? 'PUT' : 'POST', 
+                    headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify(postData) 
                 });
                 if (!res.ok) throw new Error(await res.text() || 'Failed to save post');
                 return await res.json();
             },
             async deletePost(id) { 
-                const token = localStorage.getItem('siy_token');
-                const headers = {};
-                if (token) headers['Authorization'] = `Bearer ${token}`;
-                await fetch(`${API_CONFIG.BASE_URL}/posts/${id}`, { method: 'DELETE', headers: headers }); 
+                await fetch(`${API_CONFIG.BASE_URL}/posts/${id}`, { method: 'DELETE' }); 
             },
             async getUsers() { 
                 try { const res = await fetch(`${API_CONFIG.BASE_URL}/users`); return await res.json(); } catch(e){ return []; } 
             },
             async saveUser(userData, oldUsername) { 
-                const token = localStorage.getItem('siy_token');
-                const headers = {'Content-Type': 'application/json'};
-                if (token) headers['Authorization'] = `Bearer ${token}`;
                 const method = oldUsername ? 'PUT' : 'POST';
-                
                 if (!oldUsername) {
                     userData.bot_check = 'สัตยาสาบาน';
                 }
 
                 const res = await fetch(`${API_CONFIG.BASE_URL}/users`, { 
-                    method: method, headers: headers, body: JSON.stringify({...userData, oldUsername}) 
+                    method: method, 
+                    headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify({...userData, oldUsername}) 
                 });
                 
                 if (!res.ok) {
@@ -882,61 +886,51 @@
                 }
             },
             async deleteUser(username) { 
-                const token = localStorage.getItem('siy_token');
-                const headers = {};
-                if (token) headers['Authorization'] = `Bearer ${token}`;
-                await fetch(`${API_CONFIG.BASE_URL}/users/${username}`, { method: 'DELETE', headers: headers }); 
+                await fetch(`${API_CONFIG.BASE_URL}/users/${username}`, { method: 'DELETE' }); 
             },
             async getCMS() { 
                 try { const res = await fetch(`${API_CONFIG.BASE_URL}/cms`); return await res.json(); } catch(e){ return {}; } 
             },
             async saveCMS(cmsData) { 
-                const token = localStorage.getItem('siy_token');
-                const headers = {'Content-Type': 'application/json'};
-                if (token) headers['Authorization'] = `Bearer ${token}`;
-                await fetch(`${API_CONFIG.BASE_URL}/cms`, { method: 'POST', headers: headers, body: JSON.stringify(cmsData) }); 
+                await fetch(`${API_CONFIG.BASE_URL}/cms`, { 
+                    method: 'POST', 
+                    headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify(cmsData) 
+                }); 
             },
             async getReports() {
-                const token = localStorage.getItem('siy_token');
                 try { 
-                    const res = await fetch(`${API_CONFIG.BASE_URL}/reports`, { headers: {'Authorization': `Bearer ${token}`} }); 
+                    const res = await fetch(`${API_CONFIG.BASE_URL}/reports`); 
                     return await res.json(); 
                 } catch(e){ return []; }
             },
             async deleteReport(id) {
-                const token = localStorage.getItem('siy_token');
-                const headers = {};
-                if (token) headers['Authorization'] = `Bearer ${token}`;
-                await fetch(`${API_CONFIG.BASE_URL}/reports/${id}`, { method: 'DELETE', headers: headers }); 
+                await fetch(`${API_CONFIG.BASE_URL}/reports/${id}`, { method: 'DELETE' }); 
             },
             async getRoles() {
                 try { const res = await fetch(`${API_CONFIG.BASE_URL}/roles`); return await res.json(); } catch(e){ return []; }
             },
             async saveRole(roleData, id = null) {
-                const token = localStorage.getItem('siy_token');
-                const headers = {'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`};
                 const url = id ? `${API_CONFIG.BASE_URL}/roles/${id}` : `${API_CONFIG.BASE_URL}/roles`;
                 const method = id ? 'PUT' : 'POST';
-                const res = await fetch(url, { method, headers, body: JSON.stringify(roleData) });
+                const res = await fetch(url, { 
+                    method, 
+                    headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify(roleData) 
+                });
                 if (!res.ok) throw new Error('เกิดข้อผิดพลาดในการสร้างยศ');
                 return await res.json();
             },
             async deleteRole(id) {
-                const token = localStorage.getItem('siy_token');
-                const headers = {'Authorization': `Bearer ${token}`};
-                await fetch(`${API_CONFIG.BASE_URL}/roles/${id}`, { method: 'DELETE', headers });
+                await fetch(`${API_CONFIG.BASE_URL}/roles/${id}`, { method: 'DELETE' });
             },
             async getComments() {
                 try { const res = await fetch(`${API_CONFIG.BASE_URL}/comments`); return await res.json(); } catch(e){ return []; }
             },
             async saveUserOrder(orderedUsernames) {
-                const token = localStorage.getItem('siy_token');
-                const headers = {'Content-Type': 'application/json'};
-                if (token) headers['Authorization'] = `Bearer ${token}`;
-                
                 const res = await fetch(`${API_CONFIG.BASE_URL}/users/reorder`, {
                     method: 'PUT',
-                    headers: headers,
+                    headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({ orderedUsernames })
                 });
                 if (!res.ok) throw new Error('ไม่สามารถบันทึกลำดับลงฐานข้อมูลได้');
