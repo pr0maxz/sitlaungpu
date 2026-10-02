@@ -453,6 +453,7 @@
             BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
         };
         
+        // 🌟 ตัวดักจับ fetch ที่ได้รับการแก้ไขให้ปลอดภัย รองรับทั้ง GET, POST, PUT, DELETE และทุกระบบ (ไลก์, คอมเมนต์, แจ้งเตือน)
         const nativeFetch = window.fetch.bind(window);
         window.fetch = (input, init = {}) => {
             const url = typeof input === 'string' ? input : input.url;
@@ -461,7 +462,7 @@
             const newInit = { ...init };
             const headers = new Headers(newInit.headers || (input instanceof Request ? input.headers : undefined));
             
-            const token = localStorage.getItem('siy_token');
+            const token = localStorage.getItem('siy_token') || localStorage.getItem('token');
             if (token && !headers.has('Authorization')) {
                 headers.set('Authorization', `Bearer ${token}`);
             }

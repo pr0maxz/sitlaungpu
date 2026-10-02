@@ -22,7 +22,6 @@
         * { box-sizing: border-box; }
         :root { --bg-deep: #070402; --bg-glow: #2a1805; --gold-light: #f5d77f; --gold-main: #d4af37; --gold-dark: #8a6315; --text-muted: #8a7761; --danger-color: #ff6b6b; }
         
-        /* สไตล์สำหรับ Material Icons ให้แสดงผลสวยงามและจัดวางตรงบรรทัด */
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
             vertical-align: middle;
@@ -32,7 +31,6 @@
             font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
 
-        /* 🌟 เปลี่ยนฟอนต์หลักทั้งหน้าเป็น Prompt ทั้งหมด */
         body { 
             margin: 0; padding: 0; width: 100%; min-height: 100vh; 
             background-color: var(--bg-deep); 
@@ -220,7 +218,6 @@
         .ghost-btn-group { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
         .ghost-btn-group > * { flex: 1 1 auto; min-width: 140px; text-align: center; display: flex; align-items: center; justify-content: center; }
 
-        /* 🌟 คลาสใหม่สำหรับปุ่มในช่องคอมเมนต์ */
         .comment-btn-group { display: flex; gap: 10px; align-items: center; margin-top: 15px; flex-wrap: wrap; width: 100%; box-sizing: border-box; }
 
         @media (max-width: 950px) { 
@@ -241,8 +238,6 @@
         @media (max-width: 480px) { 
             .ghost-btn-group { flex-direction: column; } 
             .ghost-btn-group > * { width: 100%; max-width: 100%; flex: 1 1 100%; } 
-            
-            /* 🌟 บังคับปุ่มจัดเรียงแนวตั้งและขยายเต็ม 100% บนมือถือ */
             .comment-btn-group { flex-direction: column; align-items: stretch; }
             .comment-btn-group > * { width: 100%; text-align: center; justify-content: center; box-sizing: border-box; }
         }
@@ -435,21 +430,31 @@
         const API_CONFIG = { 
             BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
         };
+        
+        // 🌟 แก้ไขตัวดักจับ fetch ให้แนบ Token และส่ง credentials ไปยัง backend อย่างถูกต้องสมบูรณ์
         const nativeFetch = window.fetch.bind(window);
         window.fetch = (input, init = {}) => {
             const url = typeof input === 'string' ? input : input.url;
             if (!url.startsWith(API_CONFIG.BASE_URL)) return nativeFetch(input, init);
-            const headers = new Headers(init.headers || (input instanceof Request ? input.headers : undefined));
-            headers.delete('Authorization');
-            return nativeFetch(input, { ...init, headers, credentials: 'include' });
+            
+            const newInit = { ...init };
+            const headers = new Headers(newInit.headers || (input instanceof Request ? input.headers : undefined));
+            
+            const token = localStorage.getItem('siy_token') || localStorage.getItem('token');
+            if (token && !headers.has('Authorization')) {
+                headers.set('Authorization', `Bearer ${token}`);
+            }
+            
+            newInit.headers = headers;
+            newInit.credentials = 'include';
+            
+            return nativeFetch(input, newInit);
         };
-        localStorage.removeItem('siy_token');
 
         let currentPostAuthorGlobal = ''; 
         let pendingMediaTarget = '';
         let pendingMediaType = '';
 
-        // 🌟 ฟังก์ชันสำหรับเปิดหน้าต่าง Custom Modal แทรกสื่อ
         function insertMediaTag(targetId, type) {
             pendingMediaTarget = targetId;
             pendingMediaType = type;
@@ -475,14 +480,12 @@
             setTimeout(() => input.focus(), 100);
         }
 
-        // ปิดกล่องแทรกสื่อ
         function closeMediaModal() {
             document.getElementById('mediaModal').classList.remove('active');
             pendingMediaTarget = '';
             pendingMediaType = '';
         }
 
-        // เมื่อกดยืนยันในกล่องแทรกสื่อ
         function confirmMediaModal() {
             const inputVal = document.getElementById('mediaModalInput').value.trim();
             const textarea = document.getElementById(pendingMediaTarget);
@@ -498,7 +501,6 @@
             closeMediaModal();
         }
 
-        // 🛡️ ป้องกัน XSS (ยกเว้นเครื่องหมาย " ไว้ให้แสดงผลปกติในหัวข้อ)
         function safeHTML(str) {
             if (!str) return '';
             return String(str).replace(/[&<>']/g, tag => ({
@@ -506,16 +508,12 @@
             }[tag] || tag));
         }
 
-        // 🛡️ สำหรับเนื้อหากระทู้/คอมเมนต์
         function safeContentRender(content) {
             if (!content) return '';
             let safeText = safeHTML(content);
             safeText = safeText.replace(/&lt;br\/?&gt;/gi, '<br>');
-            
-            // 🌟 [แก้ไขใหม่] Render รูปภาพให้รองรับเครื่องหมาย " (Double Quote) ที่ไม่ได้ถูกแปลง
             safeText = safeText.replace(/&lt;img\s+src=(?:"|&quot;|&#39;)(https?:\/\/[^"'<>]+)(?:"|&quot;|&#39;)[^>]*&gt;/gi, '<img src="$1" style="max-width: 100%; border-radius: 8px; margin-top: 10px;">');
             
-            // Render YouTube Iframe (Responsive)
             safeText = safeText.replace(/\[YOUTUBE:(https?:\/\/[^\]]+)\]/gi, function(match, url) {
                 let videoId = '';
                 const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
@@ -688,46 +686,32 @@
             },
             async saveComment(commentData) {
                 try {
-                    const token = localStorage.getItem('siy_token');
-                    const headers = { 'Content-Type': 'application/json' };
-                    if (token) { headers['Authorization'] = `Bearer ${token}`; }
-
                     const response = await fetch(`${API_CONFIG.BASE_URL}/comments`, {
-                        method: 'POST', headers: headers, body: JSON.stringify(commentData)
+                        method: 'POST', body: JSON.stringify(commentData)
                     });
                     return await response.json();
                 } catch (error) { return { success: false, error: 'เกิดการเชื่อมต่อขัดข้อง' }; }
             },
             async deleteComment(commentId) {
                 try {
-                    const token = localStorage.getItem('siy_token');
-                    const headers = {};
-                    if (token) { headers['Authorization'] = `Bearer ${token}`; }
-
-                    const response = await fetch(`${API_CONFIG.BASE_URL}/comments/${commentId}`, { method: 'DELETE', headers: headers });
+                    const response = await fetch(`${API_CONFIG.BASE_URL}/comments/${commentId}`, { method: 'DELETE' });
                     return await response.json();
                 } catch (error) { return { success: false }; }
             },
             async likePost(postId) {
                 try {
-                    const token = localStorage.getItem('siy_token');
-                    const headers = { 'Content-Type': 'application/json' };
-                    if (token) { headers['Authorization'] = `Bearer ${token}`; }
                     const actor = localStorage.getItem('siy_username') || 'วิญญาณเร่ร่อน';
                     const res = await fetch(`${API_CONFIG.BASE_URL}/posts/${postId}/like`, { 
-                        method: 'POST', headers: headers, body: JSON.stringify({ actor })
+                        method: 'POST', body: JSON.stringify({ actor })
                     });
                     return await res.json();
                 } catch (e) { return { success: false }; }
             },
             async likeComment(commentId) {
                 try {
-                    const token = localStorage.getItem('siy_token');
-                    const headers = { 'Content-Type': 'application/json' };
-                    if (token) { headers['Authorization'] = `Bearer ${token}`; }
                     const actor = localStorage.getItem('siy_username') || 'วิญญาณเร่ร่อน';
                     const res = await fetch(`${API_CONFIG.BASE_URL}/comments/${commentId}/like`, { 
-                        method: 'POST', headers: headers, body: JSON.stringify({ actor })
+                        method: 'POST', body: JSON.stringify({ actor })
                     });
                     return await res.json();
                 } catch (e) { return { success: false }; }
@@ -740,24 +724,17 @@
             },
             async readNotification(id) {
                 try { 
-                    const token = localStorage.getItem('siy_token');
-                    const headers = { 'Content-Type': 'application/json' };
-                    if (token) headers['Authorization'] = `Bearer ${token}`;
-                    
                     await fetch(`${API_CONFIG.BASE_URL}/notifications/${id}/read`, { 
                         method: 'PUT',
-                        headers: headers,
                         body: JSON.stringify({})
                     }); 
                 } catch(e) { console.error("Read Noti Error:", e); }
             },
             async getBookmarks() {
                 try {
-                    const token = localStorage.getItem('siy_token');
+                    const token = localStorage.getItem('siy_token') || localStorage.getItem('token');
                     if (!token) return [];
-                    const res = await fetch(`${API_CONFIG.BASE_URL}/bookmarks`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
+                    const res = await fetch(`${API_CONFIG.BASE_URL}/bookmarks`);
                     if (!res.ok) return [];
                     const data = await res.json();
                     return Array.isArray(data) ? data : [];
@@ -765,11 +742,10 @@
             },
             async saveBookmark(postId) {
                 try {
-                    const token = localStorage.getItem('siy_token');
+                    const token = localStorage.getItem('siy_token') || localStorage.getItem('token');
                     if (!token) return { success: false, error: 'ไม่พบตรายางวิญญาณ' };
                     const res = await fetch(`${API_CONFIG.BASE_URL}/bookmarks`, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                         body: JSON.stringify({ postId })
                     });
                     return await res.json();
@@ -777,11 +753,7 @@
             },
             async removeBookmark(postId) {
                 try {
-                    const token = localStorage.getItem('siy_token');
-                    if (!token) return;
-                    await fetch(`${API_CONFIG.BASE_URL}/bookmarks/${postId}`, {
-                        method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` }
-                    });
+                    await fetch(`${API_CONFIG.BASE_URL}/bookmarks/${postId}`, { method: 'DELETE' });
                 } catch (e) {}
             }
         };
@@ -916,7 +888,7 @@
             const postId = urlParams.get('id');
             if (!postId) return;
 
-            const token = localStorage.getItem('siy_token');
+            const token = localStorage.getItem('siy_token') || localStorage.getItem('token');
             if (!token) {
                 showCustomAlert('<span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">warning</span> ท่านยังไม่ได้เข้าสู่ระบบ ไม่สามารถบันทึกคัมภีร์ได้'); return;
             }
@@ -986,8 +958,7 @@
 
             try {
                 await fetch(`${API_CONFIG.BASE_URL}/reports`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id: Date.now().toString(), target_type: targetType, target_id: targetId, reporter: reporter, reason: reason, timestamp: timeStr })
+                    method: 'POST', body: JSON.stringify({ id: Date.now().toString(), target_type: targetType, target_id: targetId, reporter: reporter, reason: reason, timestamp: timeStr })
                 });
                 closeReportModal(); showCustomAlert('แจ้งเบาะแสผู้คุมกฎเรียบร้อยแล้ว ขอบคุณที่ช่วยสอดส่องสำนัก!');
             } catch (err) { showCustomAlert('เกิดอาถรรพ์ขัดข้อง ไม่สามารถส่งรายงานได้'); }
