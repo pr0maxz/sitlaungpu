@@ -165,7 +165,7 @@
     </div>
 
     <script>
-        // กำหนด Endpoint ของเซิร์ฟเวอร์[cite: 2]
+        // กำหนด Endpoint ของเซิร์ฟเวอร์
         const API_CONFIG = { 
             BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
         };
@@ -176,7 +176,18 @@
             const headers = new Headers(init.headers || (input instanceof Request ? input.headers : undefined));
             return nativeFetch(input, { ...init, headers, credentials: 'include' });
         };
-        
+
+        function togglePassword() {
+            const pwdInput = document.getElementById('adminPass');
+            const toggleIcon = document.querySelector('.toggle-password');
+            if (pwdInput.type === 'password') {
+                pwdInput.type = 'text';
+                toggleIcon.innerHTML = '<span class="material-symbols-outlined" style="font-size: 16px;">visibility_off</span> หลับตา';
+            } else {
+                pwdInput.type = 'password';
+                toggleIcon.innerHTML = '<span class="material-symbols-outlined" style="font-size: 16px;">visibility</span> เพ่งมอง';
+            }
+        }
 
         function showAlert(title, message, isSuccess = false) {
             document.getElementById('alertTitle').textContent = title;
@@ -206,7 +217,7 @@
             btn.disabled = true;
 
             try {
-                // ส่งคำขอไปที่ D1 Database บน Cloudflare Worker[cite: 2]
+                // ส่งคำขอไปที่ D1 Database บน Cloudflare Worker
                 const response = await fetch(`${API_CONFIG.BASE_URL}/admin/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -222,16 +233,23 @@
                     return;
                 }
 
+                if (!result.token) {
+                    showAlert('อาถรรพ์ขัดข้อง!', 'เซิร์ฟเวอร์ไม่ได้ส่งกุญแจ (token) กลับมา');
+                    btn.textContent = 'ล่วงล้ำเขตแดน (Login)';
+                    btn.disabled = false;
+                    return;
+                }
+
                 showAlert('ยินดีต้อนรับ', 'มนตราบรรลุผล... ประตูเมืองลับแลเปิดออกแล้วท่านผู้คุมกฎ', true);
-                
-                // session ถูกเก็บใน HttpOnly cookie โดย Worker; JavaScript อ่านค่าไม่ได้
+
+                // เก็บ token ใน localStorage ให้หน้า admin.html ใช้แนบ Authorization: Bearer
                 localStorage.setItem('siy_token', result.token);
                 localStorage.setItem('siy_username', result.username || username);
                 localStorage.setItem('siy_usertype', 'admin');
 
-                // พาย้ายเข้าเมืองลับแล (หน้าแอดมิน)[cite: 2]
+                // พาย้ายเข้าเมืองลับแล (หน้าแอดมิน)
                 setTimeout(() => {
-                    window.location.href = '/admin';
+                    window.location.href = 'admin.html';
                 }, 1500);
 
             } catch (error) {
