@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- นำเข้า Google Material Symbols & Material Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
     <style>
         html, body { scroll-behavior: smooth; overflow-x: hidden; width: 100%; max-width: 100vw; margin: 0; padding: 0; }
         * { box-sizing: border-box; }
@@ -756,6 +756,15 @@
         const API_CONFIG = { 
             BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
         };
+        const nativeFetch = window.fetch.bind(window);
+        window.fetch = (input, init = {}) => {
+            const url = typeof input === 'string' ? input : input.url;
+            if (!url.startsWith(API_CONFIG.BASE_URL)) return nativeFetch(input, init);
+            const headers = new Headers(init.headers || (input instanceof Request ? input.headers : undefined));
+            headers.delete('Authorization');
+            return nativeFetch(input, { ...init, headers, credentials: 'include' });
+        };
+        localStorage.removeItem('siy_token');
 
         let globalPostsData = [];
         let globalCommentsData = []; 
@@ -806,27 +815,26 @@
         async function checkAdminAuth() {
             const savedUsername = localStorage.getItem('siy_username');
             const userType = localStorage.getItem('siy_usertype');
-            const token = localStorage.getItem('siy_token');
 
-            if (!savedUsername || userType !== 'admin' || !token) {
+            if (!savedUsername || userType !== 'admin') {
                 window.location.replace('admin_login.html');
                 return false;
             }
 
             try {
-                const res = await fetch(`${API_CONFIG.BASE_URL}/users`);
-                const usersDB = await res.json();
-                const currentUser = usersDB.find(u => u.username === savedUsername);
+                const res = await fetch(`${API_CONFIG.BASE_URL}/me`);
+                const auth = await res.json();
+                const currentUser = auth.user;
 
-                if (!currentUser || String(currentUser.role) !== '1') {
+                if (!res.ok || !currentUser || currentUser.username !== savedUsername || String(currentUser.role) !== '1') {
                     window.location.replace('admin_login.html');
                     return false;
                 }
                 const nameDisplay = document.getElementById('currentAdminName');
                 if (nameDisplay) nameDisplay.innerHTML = `<span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle;">person</span> ${safeHTML(currentUser.username)}`;
             } catch (e) {
-                const nameDisplay = document.getElementById('currentAdminName');
-                if (nameDisplay) nameDisplay.innerHTML = `<span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle;">person</span> ${safeHTML(savedUsername)}`;
+                window.location.replace('admin_login.html');
+                return false;
             }
             return true;
         }
@@ -1866,9 +1874,9 @@
             }
         });
 
-        function handleAdminLogout() {
+        async function handleAdminLogout() {
             if (autoSyncInterval) clearInterval(autoSyncInterval);
-            localStorage.removeItem('siy_token');
+            await fetch(`${API_CONFIG.BASE_URL}/logout`, { method: 'POST' }).catch(() => {});
             localStorage.removeItem('siy_username');
             localStorage.removeItem('siy_usertype');
             sessionStorage.clear();

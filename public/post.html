@@ -435,6 +435,15 @@
         const API_CONFIG = { 
             BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
         };
+        const nativeFetch = window.fetch.bind(window);
+        window.fetch = (input, init = {}) => {
+            const url = typeof input === 'string' ? input : input.url;
+            if (!url.startsWith(API_CONFIG.BASE_URL)) return nativeFetch(input, init);
+            const headers = new Headers(init.headers || (input instanceof Request ? input.headers : undefined));
+            headers.delete('Authorization');
+            return nativeFetch(input, { ...init, headers, credentials: 'include' });
+        };
+        localStorage.removeItem('siy_token');
 
         let currentPostAuthorGlobal = ''; 
         let pendingMediaTarget = '';
@@ -725,8 +734,8 @@
             },
             async getNotifications(username) {
                 try {
-                    const res = await fetch(`${API_CONFIG.BASE_URL}/notifications/${username}`);
-                    return await res.json();
+                    const res = await fetch(`${API_CONFIG.BASE_URL}/notifications/${encodeURIComponent(username)}`);
+                    return res.ok ? await res.json() : [];
                 } catch (e) { return []; }
             },
             async readNotification(id) {
@@ -1542,7 +1551,7 @@
         });
 
         function handleLogout() {
-            localStorage.removeItem('siy_token'); 
+            fetch(`${API_CONFIG.BASE_URL}/logout`, { method: 'POST' }).catch(() => {});
             localStorage.removeItem('siy_username'); 
             localStorage.removeItem('siy_usertype'); 
             localStorage.removeItem('siy_login_timestamp');

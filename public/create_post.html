@@ -235,6 +235,15 @@
         const API_CONFIG = { 
             BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
         };
+        const nativeFetch = window.fetch.bind(window);
+        window.fetch = (input, init = {}) => {
+            const url = typeof input === 'string' ? input : input.url;
+            if (!url.startsWith(API_CONFIG.BASE_URL)) return nativeFetch(input, init);
+            const headers = new Headers(init.headers || (input instanceof Request ? input.headers : undefined));
+            headers.delete('Authorization');
+            return nativeFetch(input, { ...init, headers, credentials: 'include' });
+        };
+        localStorage.removeItem('siy_token');
 
         let pendingMediaTarget = '';
         let pendingMediaType = '';
@@ -380,19 +389,22 @@
         document.addEventListener('DOMContentLoaded', async () => {
             const savedUser = localStorage.getItem('siy_username');
             const userType = localStorage.getItem('siy_usertype'); 
-            const token = localStorage.getItem('siy_token'); 
             
             setTimeout(async () => {
                 document.getElementById('guardOverlay').style.display = 'none';
 
                 if (!savedUser || userType === 'guest') {
                     showCustomAlert('เขตหวงห้าม! วิญญาณเร่ร่อนไม่อาจสร้างศิลาจารึกใหม่ได้ ต้องฝากตัวเป็นศิษย์ก่อน', 'webboard.html');
-                } else if (!token) {
-                    showCustomAlert('<span class="material-symbols-outlined" style="color: #ffb17a; vertical-align: middle;">warning</span> <b>ระบบแจ้งเตือนความปลอดภัย</b><br><br>เซสชันของคุณเป็นเวอร์ชันเก่า (ยังไม่มีกุญแจ Token)<br>กรุณากลับไปที่ลานเสวนา กด <b>"ออกจากระบบ"</b><br>แล้ว <b>"เข้าสู่ระบบใหม่"</b> เพื่ออัปเดตกุญแจครับ!', 'webboard.html');
                 } else {
-                    document.getElementById('authorName').textContent = safeHTML(savedUser);
-                    document.getElementById('authorRoleBadge').innerHTML = await getRoleBadgeFromAPI(savedUser);
-                    document.getElementById('mainContent').style.display = 'block';
+                    const res = await fetch(`${API_CONFIG.BASE_URL}/me`);
+                    const auth = await res.json();
+                    if (!res.ok || !auth.user || auth.user.username !== savedUser) {
+                        showCustomAlert('เซสชันหมดอายุ กรุณาเข้าสู่ระบบใหม่', 'webboard.html');
+                    } else {
+                        document.getElementById('authorName').textContent = safeHTML(savedUser);
+                        document.getElementById('authorRoleBadge').innerHTML = await getRoleBadgeFromAPI(savedUser);
+                        document.getElementById('mainContent').style.display = 'block';
+                    }
                 }
             }, 800);
         });

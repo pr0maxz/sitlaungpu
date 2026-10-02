@@ -92,9 +92,9 @@ CREATE TABLE IF NOT EXISTS cms (
     heroBtnUrl TEXT
 );
 
--- สร้างบัญชี ADMIN ตั้งต้น
-INSERT OR IGNORE INTO users (username, password_hash, salt, role, rank_name, karma)
-VALUES ('ADMIN', 'c67dd1fbf41eef557161b4028fa681fbece78d8a7ff8b71217643b4f6057a627', 'random_salt_123', '1', 'ปรมัตถ์', 0);
+-- ห้ามสร้างบัญชี ADMIN พร้อมรหัสผ่าน/hash ตายตัวใน schema
+-- ให้สร้างผู้ดูแลครั้งแรกผ่านขั้นตอน bootstrap ที่ใช้ secret นอก repository
+-- และเก็บรหัสผ่านด้วย createPasswordRecord() ใน src/index.ts เท่านั้น
 
 -- ============================================================
 -- หมายเหตุสำคัญ: ถ้า D1 จริงของคุณสร้างมาจาก schema.sql เวอร์ชันเก่า (ไม่มีคอลัมน์พวกนี้)

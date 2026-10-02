@@ -169,6 +169,15 @@
         const API_CONFIG = { 
             BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
         };
+        const nativeFetch = window.fetch.bind(window);
+        window.fetch = (input, init = {}) => {
+            const url = typeof input === 'string' ? input : input.url;
+            if (!url.startsWith(API_CONFIG.BASE_URL)) return nativeFetch(input, init);
+            const headers = new Headers(init.headers || (input instanceof Request ? input.headers : undefined));
+            headers.delete('Authorization');
+            return nativeFetch(input, { ...init, headers, credentials: 'include' });
+        };
+        localStorage.removeItem('siy_token');
 
         function togglePassword() {
             const pwdInput = document.getElementById('adminPass');
@@ -228,10 +237,7 @@
 
                 showAlert('ยินดีต้อนรับ', 'มนตราบรรลุผล... ประตูเมืองลับแลเปิดออกแล้วท่านผู้คุมกฎ', true);
                 
-                // จัดเก็บ Token และข้อมูลผู้ใช้[cite: 2]
-                if (result.token) {
-                    localStorage.setItem('siy_token', result.token);
-                }
+                // session ถูกเก็บใน HttpOnly cookie โดย Worker; JavaScript อ่านค่าไม่ได้
                 localStorage.setItem('siy_username', result.username || username);
                 localStorage.setItem('siy_usertype', 'admin');
 

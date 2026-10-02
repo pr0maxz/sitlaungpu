@@ -6,7 +6,8 @@ type Bindings = {
   DB: D1Database
   TELEPATHY_ROOM: DurableObjectNamespace
   JWT_SECRET?: string          // บังคับตั้งผ่าน `wrangler secret put JWT_SECRET`
-  ALLOWED_ORIGINS?: string     // เช่น "https://sitluangpu.pages.dev,https://yourdomain.com" (เว้นว่าง = อนุญาตทุกโดเมน)
+  // เช่น "https://sitluangpu.pages.dev,https://yourdomain.com" — ต้องตั้งใน production
+  ALLOWED_ORIGINS?: string
   SITE_URL?: string            // ใช้สร้าง sitemap เช่น "https://sitluangpu.pages.dev"
   TURNSTILE_SECRET?: string    // ถ้าตั้งไว้ จะใช้ Cloudflare Turnstile แทน bot check แบบเดิม
 }
@@ -21,21 +22,77 @@ const MIN_PASSWORD_LENGTH = 8
 const MAX_PASSWORD_LENGTH = 128
 const PBKDF2_ITERATIONS = 100000                // เพดานที่ Cloudflare Workers รองรับ
 const PBKDF2_PREFIX = 'p1:'                     // ขึ้นต้น salt เพื่อบอกว่าเป็นรหัสแบบ PBKDF2
-const REQUIRE_AUTH_NOTIFICATIONS = true         // ต้องส่ง Authorization header เมื่อดึงแจ้งเตือน
+const REQUIRE_AUTH_NOTIFICATIONS = true         // ต้องมี session cookie เมื่อดึงแจ้งเตือน
 const ID_RE = /^[A-Za-z0-9_-]{1,64}$/
+const DEFAULT_ALLOWED_ORIGINS = ['https://sitluangpu.pages.dev']
+const MAX_WS_CONNECTIONS = 500
+const SESSION_COOKIE = 'siy_session'
+
+function allowedOrigins(env: Bindings) {
+  const configured = String(env.ALLOWED_ORIGINS || '')
+    .split(',').map(s => s.trim()).filter(Boolean)
+  // Fail closed: ในกรณีลืมตั้ง environment ให้รองรับเฉพาะ Pages domain หลัก
+  return configured.length > 0 ? configured : DEFAULT_ALLOWED_ORIGINS
+}
+
+function isAllowedOrigin(origin: string | undefined, env: Bindings) {
+  return !!origin && allowedOrigins(env).includes(origin)
+}
+
+function readCookie(request: Request, name: string) {
+  const prefix = `${name}=`
+  return (request.headers.get('Cookie') || '').split(';').map(v => v.trim())
+    .find(v => v.startsWith(prefix))?.slice(prefix.length) || ''
+}
+
+function setSessionCookie(c: any, token: string) {
+  // API กับ Pages อยู่คนละ origin ในปัจจุบัน จึงต้องใช้ SameSite=None; ควรย้ายไป custom domain เดียวกันภายหลัง
+  c.header('Set-Cookie', `${SESSION_COOKIE}=${token}; Path=/; Max-Age=${TOKEN_TTL_SECONDS}; HttpOnly; Secure; SameSite=None`)
+}
+
+function clearSessionCookie(c: any) {
+  c.header('Set-Cookie', `${SESSION_COOKIE}=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=None`)
+}
+
+// ==========================================
+// Content-Security-Policy (ป้องกัน XSS ชั้นที่สอง)
+// ==========================================
+const CSP_VALUE = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline'",
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  "font-src 'self' https://fonts.gstatic.com https://res.cloudinary.com",
+  "img-src 'self' https: data: https://res.cloudinary.com",
+  "connect-src 'self' https://my-backend.pr0maxz.workers.dev",
+  "frame-ancestors 'none'",
+  "base-uri 'self'",
+  "form-action 'self'"
+].join("; ")
+
+app.use('/*', (c, next) => {
+  c.header('Content-Security-Policy', CSP_VALUE)
+  return next()
+})
 
 // ==========================================
 // CORS
 // ==========================================
 app.use('/api/*', cors({
   origin: (origin, c) => {
-    const allowed = String((c.env as any)?.ALLOWED_ORIGINS || '').split(',').map((s: string) => s.trim()).filter(Boolean)
-    if (allowed.length === 0) return '*'
-    return allowed.includes(origin) ? origin : ''
+    return isAllowedOrigin(origin, c.env) ? origin : ''
   },
-  allowHeaders: ['Content-Type', 'Authorization'],
-  allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
+  allowHeaders: ['Content-Type'],
+  allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  credentials: true
 }))
+
+// Cookie ถูกส่งอัตโนมัติได้ จึงรับคำสั่งเปลี่ยนข้อมูลจากหน้าเว็บที่อนุญาตเท่านั้น
+app.use('/api/*', async (c, next) => {
+  if (!['GET', 'HEAD', 'OPTIONS'].includes(c.req.method) && !isAllowedOrigin(c.req.header('Origin'), c.env)) {
+    return c.json({ success: false, error: 'Forbidden origin' }, 403)
+  }
+  await next()
+})
 
 // ==========================================
 // สร้างตาราง/ดัชนีเสริมอัตโนมัติ (ทำครั้งเดียวต่อ isolate)
@@ -190,10 +247,7 @@ async function getAuthenticatedUser(c: any): Promise<{ user: any, error: string 
     const secret = c.env?.JWT_SECRET
     if (!secret) return { user: null, error: 'Server Misconfigured' }
 
-    const authHeader = c.req.raw.headers.get('Authorization') || c.req.raw.headers.get('authorization')
-    if (!authHeader) return { user: null, error: 'Header Missing' }
-
-    const token = authHeader.replace(/^Bearer\s+/i, '').replace(/['"]/g, '').trim()
+    const token = readCookie(c.req.raw, SESSION_COOKIE)
     if (!token || token === 'undefined' || token === 'null') return { user: null, error: 'Token Empty' }
 
     const decoded: any = await verify(token, secret, 'HS256')
@@ -280,6 +334,41 @@ async function rlReset(db: D1Database, key: string) {
 const LOGIN_MAX = 5, LOGIN_WINDOW = 15 * 60 * 1000, LOGIN_LOCK = 15 * 60 * 1000
 const REGISTER_MAX = 5, REGISTER_WINDOW = 10 * 60 * 1000, REGISTER_LOCK = 15 * 60 * 1000
 const REPORT_MAX = 10, REPORT_WINDOW = 10 * 60 * 1000, REPORT_LOCK = 10 * 60 * 1000
+const POST_MAX = 5, POST_WINDOW = 10 * 60 * 1000, POST_LOCK = 10 * 60 * 1000
+const POST_IP_MAX = 15, POST_IP_WINDOW = 60 * 60 * 1000, POST_IP_LOCK = 30 * 60 * 1000
+const COMMENT_MAX = 12, COMMENT_WINDOW = 10 * 60 * 1000, COMMENT_LOCK = 10 * 60 * 1000
+const COMMENT_IP_MAX = 40, COMMENT_IP_WINDOW = 60 * 60 * 1000, COMMENT_IP_LOCK = 30 * 60 * 1000
+const LIKE_MAX = 30, LIKE_WINDOW = 60 * 1000, LIKE_LOCK = 5 * 60 * 1000
+const LIKE_IP_MAX = 100, LIKE_IP_WINDOW = 60 * 60 * 1000, LIKE_IP_LOCK = 30 * 60 * 1000
+const WS_MAX = 30, WS_WINDOW = 60 * 1000, WS_LOCK = 5 * 60 * 1000
+
+// เพิ่มตัวนับและตรวจ lock ในคำสั่งเดียว ลดช่องว่างระหว่าง check กับ record เมื่อมี request พร้อมกัน
+async function rlConsume(db: D1Database, key: string, max: number, windowMs: number, lockMs: number): Promise<{ allowed: boolean, waitTimeStr?: string }> {
+  const now = Date.now()
+  try {
+    await db.prepare(`
+      INSERT INTO rate_limits (k, count, window_start, lock_until) VALUES (?, 1, ?, 0)
+      ON CONFLICT(k) DO UPDATE SET
+        count = CASE
+          WHEN rate_limits.lock_until > ? OR ? - rate_limits.window_start <= ? THEN rate_limits.count + 1
+          ELSE 1 END,
+        window_start = CASE WHEN ? - rate_limits.window_start <= ? THEN rate_limits.window_start ELSE ? END,
+        lock_until = CASE
+          WHEN rate_limits.lock_until > ? THEN rate_limits.lock_until
+          WHEN ? - rate_limits.window_start > ? THEN 0
+          WHEN rate_limits.count + 1 > ? THEN ?
+          ELSE 0 END
+    `).bind(key, now, now, now, windowMs, now, windowMs, now, now, now, windowMs, max, now + lockMs).run()
+    const row: any = await db.prepare("SELECT count, lock_until FROM rate_limits WHERE k = ?").bind(key).first()
+    if (row?.lock_until > now) {
+      return { allowed: false, waitTimeStr: `${Math.ceil((row.lock_until - now) / 60000)} นาที` }
+    }
+    return { allowed: true }
+  } catch (e) {
+    // การบันทึก limit ผิดพลาดไม่ควรทำให้ระบบหลักใช้งานไม่ได้
+    return { allowed: true }
+  }
+}
 
 function getIp(c: any) {
   return c.req.header('cf-connecting-ip') || 'unknown'
@@ -404,7 +493,8 @@ app.post('/api/login', async (c) => {
     const token = await generateToken({ username: user.username, role: String(user.role || '5'), rank_name: user.rank_name || 'เด็กวัด' }, secret)
     const rankInfo = calculateRank(user.karma || 0, String(user.role), user.rank_name)
 
-    return c.json({ success: true, token, username: user.username, role: user.role, rank_name: user.rank_name, karma: user.karma || 0, nextRankMsg: rankInfo.nextRankMsg })
+    setSessionCookie(c, token)
+    return c.json({ success: true, username: user.username, role: user.role, rank_name: user.rank_name, karma: user.karma || 0, nextRankMsg: rankInfo.nextRankMsg })
   } catch (err: any) {
     return c.json({ success: false, error: 'เกิดข้อผิดพลาดในการตรวจสอบตัวตน' }, 500)
   }
@@ -447,8 +537,14 @@ app.post('/api/admin/login', async (c) => {
     try { await c.env.DB.prepare("UPDATE users SET last_login = ? WHERE username = ?").bind(Date.now(), user.username).run() } catch (e) {}
 
     const token = await generateToken({ username: user.username, role: '1', rank_name: user.rank_name || 'ปรมัตถ์' }, secret)
-    return c.json({ success: true, token, username: user.username, rank_name: user.rank_name || 'เด็กวัด' })
+    setSessionCookie(c, token)
+    return c.json({ success: true, username: user.username, rank_name: user.rank_name || 'เด็กวัด' })
   } catch (err) { return c.json({ success: false, error: 'เกิดข้อผิดพลาดที่แก่นเซิร์ฟเวอร์' }, 500) }
+})
+
+app.post('/api/logout', async (c) => {
+  clearSessionCookie(c)
+  return c.json({ success: true })
 })
 
 app.get('/api/me', async (c) => {
@@ -462,7 +558,8 @@ app.get('/api/me', async (c) => {
 })
 
 app.get('/api/users', async (c) => {
-  const { results } = await c.env.DB.prepare("SELECT username, role, rank_name, karma, last_login, sort_order FROM users ORDER BY sort_order ASC, username ASC").all()
+  // endpoint นี้ใช้แสดงยศในหน้าเว็บสาธารณะ จึงไม่ส่ง last_login หรือ sort_order ออกไป
+  const { results } = await c.env.DB.prepare("SELECT username, role, rank_name, karma FROM users ORDER BY username ASC").all()
   const usersWithKarmaInfo = results.map((u: any) => {
     const rankInfo = calculateRank(u.karma || 0, String(u.role), u.rank_name)
     return { ...u, nextRankMsg: rankInfo.nextRankMsg }
@@ -508,7 +605,8 @@ app.post('/api/users', async (c) => {
     ).bind(username, rec.hash, rec.salt, safeRole, safeRank).run()
 
     const token = await generateToken({ username, role: safeRole, rank_name: safeRank }, secret)
-    return c.json({ success: true, token, username })
+    setSessionCookie(c, token)
+    return c.json({ success: true, username })
   } catch (e: any) {
     return c.json({ success: false, message: 'ไม่สามารถสร้างบัญชีได้ นามแฝงนี้อาจถูกใช้ไปแล้ว' }, 400)
   }
@@ -635,6 +733,16 @@ app.post('/api/posts', async (c) => {
   if (!authResult.user) return c.json({ success: false, error: `Unauthorized: ${authResult.error}` }, 401)
   const author = authResult.user.username
   const isAdmin = String(authResult.user.role) === '1'
+  const ip = getIp(c)
+
+  if (!isAdmin) {
+    const limit = await rlConsume(c.env.DB, `post:${author}`, POST_MAX, POST_WINDOW, POST_LOCK)
+    if (!limit.allowed) return c.json({ success: false, error: `ตั้งกระทู้ถี่เกินไป โปรดรออีก ${limit.waitTimeStr}` }, 429)
+    if (ip !== 'unknown') {
+      const ipLimit = await rlConsume(c.env.DB, `post:ip:${ip}`, POST_IP_MAX, POST_IP_WINDOW, POST_IP_LOCK)
+      if (!ipLimit.allowed) return c.json({ success: false, error: `มีจำนวนกระทู้จาก IP นี้เกินขีดจำกัด โปรดรออีก ${ipLimit.waitTimeStr}` }, 429)
+    }
+  }
 
   const body: any = await c.req.json().catch(() => null)
   if (!body || typeof body !== 'object') return c.json({ success: false, error: 'ข้อมูลไม่ถูกต้อง' }, 400)
@@ -757,6 +865,14 @@ app.post('/api/posts/:postId/like', async (c) => {
   const authResult = await getAuthenticatedUser(c)
   if (!authResult.user) return c.json({ success: false, error: `Unauthorized: ${authResult.error}` }, 401)
   const actor = authResult.user.username
+  const ip = getIp(c)
+
+  const limit = await rlConsume(c.env.DB, `like:${actor}`, LIKE_MAX, LIKE_WINDOW, LIKE_LOCK)
+  if (!limit.allowed) return c.json({ success: false, error: `กดไลก์ถี่เกินไป โปรดรออีก ${limit.waitTimeStr}` }, 429)
+  if (ip !== 'unknown') {
+    const ipLimit = await rlConsume(c.env.DB, `like:ip:${ip}`, LIKE_IP_MAX, LIKE_IP_WINDOW, LIKE_IP_LOCK)
+    if (!ipLimit.allowed) return c.json({ success: false, error: `มีจำนวนการกดไลก์จาก IP นี้เกินขีดจำกัด โปรดรออีก ${ipLimit.waitTimeStr}` }, 429)
+  }
 
   try {
     const post: any = await c.env.DB.prepare("SELECT id, author, likes FROM posts WHERE id = ?").bind(postId).first()
@@ -798,6 +914,16 @@ app.post('/api/comments', async (c) => {
   if (!authResult.user) return c.json({ success: false, error: `Unauthorized: ${authResult.error}` }, 401)
   const author = authResult.user.username
   const isAdmin = String(authResult.user.role) === '1'
+  const ip = getIp(c)
+
+  if (!isAdmin) {
+    const limit = await rlConsume(c.env.DB, `comment:${author}`, COMMENT_MAX, COMMENT_WINDOW, COMMENT_LOCK)
+    if (!limit.allowed) return c.json({ success: false, error: `ส่งความเห็นถี่เกินไป โปรดรออีก ${limit.waitTimeStr}` }, 429)
+    if (ip !== 'unknown') {
+      const ipLimit = await rlConsume(c.env.DB, `comment:ip:${ip}`, COMMENT_IP_MAX, COMMENT_IP_WINDOW, COMMENT_IP_LOCK)
+      if (!ipLimit.allowed) return c.json({ success: false, error: `มีจำนวนความเห็นจาก IP นี้เกินขีดจำกัด โปรดรออีก ${ipLimit.waitTimeStr}` }, 429)
+    }
+  }
 
   const body: any = await c.req.json().catch(() => null)
   if (!body || typeof body !== 'object' || !isValidId(body.postId)) return c.json({ success: false, error: 'ข้อมูลไม่ถูกต้อง' }, 400)
@@ -882,6 +1008,14 @@ app.post('/api/comments/:commentId/like', async (c) => {
   const authResult = await getAuthenticatedUser(c)
   if (!authResult.user) return c.json({ success: false, error: `Unauthorized: ${authResult.error}` }, 401)
   const actor = authResult.user.username
+  const ip = getIp(c)
+
+  const limit = await rlConsume(c.env.DB, `like:${actor}`, LIKE_MAX, LIKE_WINDOW, LIKE_LOCK)
+  if (!limit.allowed) return c.json({ success: false, error: `กดไลก์ถี่เกินไป โปรดรออีก ${limit.waitTimeStr}` }, 429)
+  if (ip !== 'unknown') {
+    const ipLimit = await rlConsume(c.env.DB, `like:ip:${ip}`, LIKE_IP_MAX, LIKE_IP_WINDOW, LIKE_IP_LOCK)
+    if (!ipLimit.allowed) return c.json({ success: false, error: `มีจำนวนการกดไลก์จาก IP นี้เกินขีดจำกัด โปรดรออีก ${ipLimit.waitTimeStr}` }, 429)
+  }
 
   try {
     const comment: any = await c.env.DB.prepare("SELECT id, post_id, author FROM comments WHERE id = ?").bind(commentId).first()
@@ -1130,6 +1264,12 @@ app.get('/sitemap.xml', async (c) => {
 app.get('/api/ws', async (c) => {
   const upgradeHeader = c.req.header('Upgrade')
   if (upgradeHeader !== 'websocket') return c.text('Expected Upgrade: websocket', 426)
+  if (!isAllowedOrigin(c.req.header('Origin'), c.env)) return c.text('Forbidden origin', 403)
+  const ip = getIp(c)
+  if (ip !== 'unknown') {
+    const limit = await rlConsume(c.env.DB, `ws:${ip}`, WS_MAX, WS_WINDOW, WS_LOCK)
+    if (!limit.allowed) return c.text(`Too many connections; retry in ${limit.waitTimeStr}`, 429)
+  }
   const id = c.env.TELEPATHY_ROOM.idFromName('global-telepathy-room')
   const stub = c.env.TELEPATHY_ROOM.get(id)
   return stub.fetch(c.req.raw)
@@ -1161,6 +1301,9 @@ export class TelepathyRoom {
     }
 
     if (request.headers.get('Upgrade') !== 'websocket') return new Response('Expected Upgrade: websocket', { status: 426 })
+    if (this.state.getWebSockets().length >= MAX_WS_CONNECTIONS) {
+      return new Response('Room capacity reached', { status: 503 })
+    }
 
     const webSocketPair = new WebSocketPair()
     const client = webSocketPair[0]
