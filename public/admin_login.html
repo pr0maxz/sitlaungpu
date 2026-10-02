@@ -225,6 +225,7 @@
                 showAlert('ยินดีต้อนรับ', 'มนตราบรรลุผล... ประตูเมืองลับแลเปิดออกแล้วท่านผู้คุมกฎ', true);
                 
                 // session ถูกเก็บใน HttpOnly cookie โดย Worker; JavaScript อ่านค่าไม่ได้
+                localStorage.setItem('siy_token', result.token);
                 localStorage.setItem('siy_username', result.username || username);
                 localStorage.setItem('siy_usertype', 'admin');
 
