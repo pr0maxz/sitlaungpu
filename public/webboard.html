@@ -152,13 +152,11 @@
 
         .pagination { display: flex; justify-content: center; align-items: center; gap: 6px; margin-top: 25px; padding-bottom: 25px; flex-wrap: wrap; width: 100%; }
         .page-btn { background: rgba(0,0,0,0.5); border: 1px solid rgba(138, 99, 21, 0.5); color: var(--gold-light); padding: 6px 14px; border-radius: 6px; cursor: pointer; transition: background 0.2s; font-family: 'Prompt', sans-serif; font-size: 0.9rem; min-width: 35px; text-align: center; }
-        .page-btn:hover:not(:disabled) { background: rgba(212,175,55,0.15); border-color: var(--gold-main); color: #fff; }
         .page-btn.active { background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; font-weight: bold; border-color: var(--gold-light); }
         .page-btn:disabled { opacity: 0.4; cursor: not-allowed; border-color: rgba(138, 99, 21, 0.2); }
 
         .noti-wrapper { position: absolute; top: -20px; right: 25px; z-index: 50; }
         .noti-btn { background: rgba(7, 4, 2, 0.95); border: 1px solid var(--gold-main); border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; padding: 0; }
-        .noti-btn:hover { border-color: var(--gold-light); }
         .noti-btn svg { width: 18px; height: 18px; fill: var(--gold-light); }
         .noti-badge { position: absolute; top: -3px; right: -3px; background: linear-gradient(135deg, #ff6b6b, #a82e2e); color: white; font-size: 0.65rem; font-weight: bold; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; border: 1px solid #ffeea8; }
         
@@ -176,9 +174,6 @@
         
         .rules-modal-content { max-width: 650px; max-height: 85vh; display: flex; flex-direction: column; }
         .rules-body-box { background: rgba(0,0,0,0.5); border: 1px solid rgba(138, 99, 21, 0.4); border-radius: 8px; padding: 15px 20px; max-height: 280px; overflow-y: auto; margin-bottom: 15px; text-align: left; font-size: 0.9rem; line-height: 1.6; color: #d1bfae; }
-        .rules-body-box h4 { color: var(--gold-main); margin-top: 12px; margin-bottom: 5px; font-size: 0.95rem; }
-        .rules-body-box ul, .rules-body-box ol { padding-left: 20px; margin: 5px 0; }
-        .rules-body-box li { margin-bottom: 6px; }
         .scroll-warning-hint { font-size: 0.8rem; color: #ff6b6b; text-align: center; margin-bottom: 10px; font-style: italic; }
         .checkbox-group { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; cursor: pointer; font-size: 0.95rem; color: var(--gold-light); text-align: left; transition: opacity 0.3s; }
         .checkbox-group input[type="checkbox"] { accent-color: var(--gold-main); width: 18px; height: 18px; cursor: pointer; }
@@ -187,64 +182,24 @@
         .modal-header { text-align: center; margin-bottom: 20px; } .modal-header h3 { color: var(--gold-light); font-size: 1.5rem; margin-bottom: 5px; } .modal-header p { color: var(--gold-dark); font-size: 0.85rem; margin: 0; }
         
         .form-group { margin-bottom: 20px; width: 100%; box-sizing: border-box; } .form-group label { display: block; color: var(--gold-main); font-size: 0.95rem; margin-bottom: 8px; } .form-input { width: 100%; background: rgba(0,0,0,0.6); border: 1px solid rgba(138, 99, 21, 0.5); color: #fff; padding: 12px 15px; border-radius: 6px; font-family: 'Prompt', sans-serif; font-size: 1rem; box-sizing: border-box; } .form-input:focus { outline: none; border-color: var(--gold-light); }
-        .password-wrapper { position: relative; display: flex; align-items: center; width: 100%; } .password-wrapper .form-input { padding-right: 60px; } .toggle-password { position: absolute; right: 15px; cursor: pointer; font-size: 0.9rem; color: var(--gold-main); opacity: 0.8; } .toggle-password:hover { opacity: 1; }
+        .password-wrapper { position: relative; display: flex; align-items: center; width: 100%; } .password-wrapper .form-input { padding-right: 60px; } .toggle-password { position: absolute; right: 15px; cursor: pointer; font-size: 0.9rem; color: var(--gold-main); opacity: 0.8; }
         .privacy-warning { background: rgba(168, 46, 46, 0.1); border-left: 3px solid #a82e2e; padding: 12px 15px; font-size: 0.8rem; color: #d1bfae; line-height: 1.5; margin-bottom: 25px; border-radius: 0 4px 4px 0; } .privacy-warning strong { color: #ff6b6b; }
         
         .modal-actions { display: flex; gap: 10px; width: 100%; box-sizing: border-box; } 
-        .btn-submit { flex: 1; background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; border: none; padding: 12px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-weight: bold; font-size: 1rem; cursor: pointer; transition: filter 0.2s; box-sizing: border-box; } 
-        .btn-submit:hover { filter: brightness(1.15); } 
+        .btn-submit { flex: 1; background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; border: none; padding: 12px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-weight: bold; font-size: 1rem; cursor: pointer; } 
         .btn-submit:disabled, .btn-submit.disabled { background: linear-gradient(180deg, #4a3b1a 0%, #2a1805 100%) !important; color: #8a7761 !important; border: 1px solid #5a4f35 !important; cursor: not-allowed !important; opacity: 0.6; }
-        .btn-cancel { background: transparent; color: var(--text-muted); border: 1px solid var(--text-muted); padding: 12px 20px; border-radius: 25px; font-family: 'Prompt', sans-serif; cursor: pointer; transition: background 0.2s; } .btn-cancel:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .btn-cancel { background: transparent; color: var(--text-muted); border: 1px solid var(--text-muted); padding: 12px 20px; border-radius: 25px; font-family: 'Prompt', sans-serif; cursor: pointer; }
         
         .btn-submit-modal { 
             background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); 
-            color: #150a03 !important; 
-            border: 1px solid #ffeba9; 
-            padding: 12px; 
-            border-radius: 25px; 
-            font-family: 'Prompt', sans-serif; 
-            font-weight: bold; 
-            font-size: 1rem; 
-            cursor: pointer; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5); 
-            transition: filter 0.2s; 
-            width: 80%; 
-            margin: 0 auto; 
-            display: block; 
-            text-align: center;
-            text-decoration: none;
-        }
-        .btn-submit-modal:hover { filter: brightness(1.15); }
-
-        @media (max-width: 950px) { 
-            .board-layout { grid-template-columns: 1fr; } 
-            .board-sidebar { order: -1; } 
-            .thread-stats { display: none; } 
-        }
-
-        @media (max-width: 768px) {
-            .site-title img { height: 65px !important; }
-            nav { flex-wrap: nowrap !important; justify-content: flex-start; overflow-x: auto; scrollbar-width: none; border-radius: 40px; padding: 0 20px !important; height: 50px !important; }
-            nav::-webkit-scrollbar { display: none; }
-            nav a { font-size: 0.95rem !important; flex-shrink: 0; }
-        }
-        @media (max-width: 600px) { .main-container { padding: 45px 20px 40px 20px !important; width: 95%; margin-top: 30px; } }
-        
-        .loading-text { font-family: 'Prompt', sans-serif; color: var(--gold-main); text-align: center; padding: 40px; }
-        
-        @media (max-width: 1200px), (hover: none) and (pointer: coarse) {
-            body { background-attachment: scroll !important; }
-            body::before, body::after { display: none !important; }
-            .main-container { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; background-color: rgba(7, 4, 2, 0.98) !important; animation: none !important; box-shadow: 0 5px 15px rgba(0,0,0,0.9) !important; border: 1px solid var(--gold-main) !important; }
-            .main-container::before { display: none !important; }
-            .corner-decor, .noti-btn, .loading-text { animation: none !important; }
+            color: #150a03 !important; border: 1px solid #ffeba9; padding: 12px; 
+            border-radius: 25px; font-family: 'Prompt', sans-serif; font-weight: bold; 
+            font-size: 1rem; cursor: pointer; width: 80%; margin: 0 auto; display: block; text-align: center; text-decoration: none;
         }
     </style>
 </head>
 <body>
 
-    <header class="admin-header" style="display:none;"></header>
-    
     <div class="main-container">
         <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="corner-decor corner-top-left" alt="" width="110" height="110">
         <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="corner-decor corner-top-right" alt="" width="110" height="110">
@@ -340,7 +295,6 @@
                     <div id="historyListContainer" style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
                     </div>
                 </div>
-                
             </div>
         </div>
 
@@ -349,44 +303,35 @@
         </footer>
     </div>
 
-    <!-- 📜 Modal ประกาศิตกฎระเบียบ -->
+    <!-- Modal กฎระเบียบ -->
     <div class="sect-modal-overlay" id="webboardRulesModal">
         <div class="sect-modal-content rules-modal-content">
-            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-left" alt="" width="60" height="60">
-            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-right" alt="" width="60" height="60">
-            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-bottom-left" alt="" width="60" height="60">
-            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-bottom-right" alt="" width="60" height="60">
-            
             <div class="modal-header">
                 <h3>ประกาศิตแห่งสำนัก</h3>
                 <p>โปรดอ่านและน้อมรับกฎเหล็กก่อนเข้าสู่ลานเสวนา</p>
             </div>
-
             <div class="rules-body-box" id="rulesBodyContainer">
-                <p style="color: var(--gold-light); margin-bottom: 10px;">📜 ประกาศิตและข้อห้ามแห่งสำนักลับแล (โปรดเลื่อนอ่านจนถึงบรรทัดสุดท้าย):</p>
+                <p style="color: var(--gold-light); margin-bottom: 10px;">📜 ประกาศิตและข้อห้ามแห่งสำนักลับแล:</p>
                 <ol>
-                    <li><strong>ห้ามลบหลู่เบื้องสูง:</strong> ห้ามเผยแพร่ข้อความหรือภาพใดๆ ที่ลบหลู่หรือสร้างความเสื่อมเสียต่อสถาบันชาติ ศาสนา พระมหากษัตริย์ และพระบรมวงศานุวงศ์เด็ดขาด</li>
-                    <li><strong>ห้ามปล่อยคาถาหลอกลวง:</strong> ห้ามเผยแพร่กลอุบาย มนต์มายา หรือโฆษณาชวนเชื่ออันเป็นเท็จเพื่อหลอกลวงเหล่าศิษย์ในสำนัก</li>
-                    <li><strong>ห้ามสร้างความเดือดร้อนรำคาญ:</strong> ห้ามสลักถ้อยคำหรือเนื้อหาที่ก่อให้เกิดความทุกข์ระทม ความรำคาญใจ หรือสร้างมลพิษทางจิตวิญญาณแก่ผู้อื่น</li>
-                    <li><strong>ห้ามกล่าววาจาอาฆาต:</strong> ห้ามส่อเสียด ใส่ร้าย หรือกล่าวให้ร้ายศิษย์พี่ศิษย์น้องและสมาชิกในสำนัก ไม่ว่าจะเอ่ยนามตรงๆ หรือไม่ก็ตาม</li>
-                    <li><strong>ห้ามปลุกปั่นความแตกแยก:</strong> ห้ามใช้วายายุยงส่งเสริมให้เกิดความบาดหมางหรือความขัดแย้งขึ้นภายในลานเสวนา</li>
-                    <li><strong>ห้ามสิ่งอัปมงคลลามก:</strong> ห้ามเผยแพร่ภาพหรือข้อความที่แปดเปื้อนกามารมณ์ ลามกอนาจาร หรือขัดต่อศีลธรรมอันดีงาม</li>
-                    <li><strong>ห้ามโปรยข้อความขยะ:</strong> ห้ามสลักถ้อยคำไร้แก่นสาร หรือปั๊มข้อความซ้ำซากน่ารำคาญในกระทู้เดียวกันหรือหลายกระทู้</li>
-                    <li><strong>ห้ามข้องเกี่ยวกับพนันขันต่อ:</strong> ห้ามเปิดประตูหรือชักชวนเล่นการพนันขันต่อในทุกรูปแบบ</li>
-                    <li><strong>ห้ามเปิดเผยความลับส่วนตัว:</strong> ห้ามโพสต์ข้อมูลลับส่วนบุคคล เช่น หมายเลขโทรศัพท์ หรือรหัสลับทางการเงิน อันจะนำภัยมาสู่ตัวท่านเองหรือผู้อื่น</li>
-                    <li><strong>นามแห่งผู้คุมกฎ:</strong> ห้ามผู้ใดใช้ฉายาหรือนามแฝงของผู้ดูแลระบบ เช่น “admin”, “webmaster”, “customer service” ฯลฯ</li>
-                    <li><strong>อาญาแห่งผู้คุมกฎ:</strong> ทีมงานผู้คุมกฎมีสิทธิ์ขาดในการทำลายศิลาจารึก ขับไล่สมาชิก หรือปิดประตูสำนักได้ทันทีโดยไม่ต้องแจ้งล่วงหน้า</li>
-                    <li><strong>ประกาศิตปัดความรับผิดชอบ:</strong> ถ้อยคำและภาพในลานเสวนาเป็นสิ่งที่สาธารณชนร้อยเรียงขึ้น ทางสำนักและผู้คุมกฎมิได้เห็นพ้องและ "ไม่ขอรับผิดชอบ" ต่อความเสียหายใดๆ ทั้งสิ้น ผู้เสพข้อมูลพึงใช้วิจารณญาณด้วยตนเอง</li>
+                    <li><strong>ห้ามลบหลู่เบื้องสูง:</strong> ห้ามเผยแพร่ข้อความที่ลบหลู่สถาบันชาติ ศาสนา พระมหากษัตริย์</li>
+                    <li><strong>ห้ามปล่อยคาถาหลอกลวง:</strong> ห้ามเผยแพร่กลอุบายหรือโฆษณาชวนเชื่ออันเป็นเท็จ</li>
+                    <li><strong>ห้ามสร้างความเดือดร้อนรำคาญ:</strong> ห้ามสลักถ้อยคำที่ก่อให้เกิดความรำคาญใจแก่ผู้อื่น</li>
+                    <li><strong>ห้ามกล่าววาจาอาฆาต:</strong> ห้ามใส่ร้ายป้ายสีศิษย์พี่ศิษย์น้องในสำนัก</li>
+                    <li><strong>ห้ามปลุกปั่นความแตกแยก:</strong> ห้ามใช้วายายุยงให้เกิดความบาดหมาง</li>
+                    <li><strong>ห้ามสิ่งอัปมงคลลามก:</strong> ห้ามเผยแพร่ภาพหรือข้อความลามกอนาจาร</li>
+                    <li><strong>ห้ามโปรยข้อความขยะ:</strong> ห้ามสลักถ้อยคำไร้แก่นสารซ้ำซาก</li>
+                    <li><strong>ห้ามข้องเกี่ยวกับพนันขันต่อ:</strong> ห้ามชักชวนเล่นการพนันทุกรูปแบบ</li>
+                    <li><strong>ห้ามเปิดเผยความลับส่วนตัว:</strong> ห้ามโพสต์ข้อมูลลับส่วนบุคคล</li>
+                    <li><strong>นามแห่งผู้คุมกฎ:</strong> ห้ามผู้ใดใช้ฉายาของผู้ดูแลระบบ เช่น admin</li>
+                    <li><strong>อาญาแห่งผู้คุมกฎ:</strong> ทีมงานมีสิทธิ์ขาดในการทำลายศิลาจารึกหรือขับไล่สมาชิก</li>
+                    <li><strong>ประกาศิตปัดความรับผิดชอบ:</strong> ทางสำนักไม่ขอรับผิดชอบต่อความเสียหายใดๆ</li>
                 </ol>
             </div>
-
-            <div class="scroll-warning-hint" id="scrollWarningHint">⬇️ กรุณาเลื่อนอ่านกฎประกาศิตด้านบนให้ถึงบรรทัดสุดท้ายก่อน จึงจะสามารถกดยอมรับได้</div>
-
+            <div class="scroll-warning-hint" id="scrollWarningHint">⬇️ กรุณาเลื่อนอ่านกฎประกาศิตด้านบนให้ถึงบรรทัดสุดท้ายก่อน</div>
             <label class="checkbox-group" id="rulesCheckboxWrapper" style="opacity: 0.5; pointer-events: none;">
                 <input type="checkbox" id="acceptWebboardRulesCheckbox">
-                <span>ข้าพเจ้ารับทราบ ได้อ่านกฎและเงื่อนไขโดยละเอียด และยินดีปฏิบัติตามกฎของสำนักทุกประการ</span>
+                <span>ข้าพเจ้ารับทราบและยินดีปฏิบัติตามกฎของสำนักทุกประการ</span>
             </label>
-
             <div class="modal-actions">
                 <button type="button" class="btn-cancel" onclick="cancelWebboardRules()">ยกเลิก</button>
                 <button type="button" class="btn-submit disabled" id="acceptRulesBtn" onclick="acceptWebboardRules()" disabled>ตกลง</button>
@@ -397,16 +342,12 @@
     <!-- Modal สมัครสมาชิก / เข้าสู่ระบบ -->
     <div class="sect-modal-overlay" id="registerModal">
         <div class="sect-modal-content">
-            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-left" alt="" width="60" height="60">
-            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-right" alt="" width="60" height="60">
-            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-bottom-left" alt="" width="60" height="60">
-            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-bottom-right" alt="" width="60" height="60">
             <div class="modal-header">
                 <h3 id="modalTitle">ใบสัตยาบัน</h3>
                 <p id="modalSubTitle">ลงนามเพื่อเข้าร่วมลานเสวนา</p>
             </div>
             <div class="privacy-warning" id="modalWarning">
-                <strong>❖ กฎแห่งลานเสวนา:</strong> เพื่อป้องกันการสวมรอย ระบบจะไม่บันทึกข้อมูลส่วนตัวใดๆ ของท่าน ข้อมูลนี้ใช้เพื่อยืนยันตัวตนในเว็บนี้ <strong>เท่านั้น</strong> และหากท่านลืมรหัสผ่าน จะไม่มีการแจ้งลืมรหัส ให้ท่านต้องสมัครใหม่เท่านั้น <strong>ดังนั้นจงตั้งรหัสที่ท่านจำได้</strong>
+                <strong>❖ กฎแห่งลานเสวนา:</strong> ตั้งรหัสผ่านที่ท่านจำได้ หากลืมจะต้องสมัครใหม่เท่านั้น
             </div>
             <div class="form-group">
                 <label id="usernameLabel">นามแฝง (Username)</label>
@@ -419,13 +360,10 @@
                     <span class="toggle-password" onclick="togglePasswordVisibility()" id="togglePwdBtn">แสดง</span>
                 </div>
             </div>
-
             <div class="form-group" id="botCheckContainer">
-                <label style="color: var(--success-color);" id="botCheckLabel">ด่านตรวจสอบวิญญาณ</label>
-                <input type="text" id="botCheckInput" class="form-input" placeholder="พิมพ์คำตอบที่นี่" style="border-color: var(--success-color);">
-                <div id="botCheckCooldownMsg" style="display:none; color: var(--danger-color); font-size: 0.8rem; margin-top: 8px;"></div>
+                <label id="botCheckLabel" style="color: var(--gold-main);">ด่านตรวจสอบวิญญาณ</label>
+                <input type="text" id="botCheckInput" class="form-input" placeholder="พิมพ์คำตอบที่นี่">
             </div>
-
             <div class="modal-actions">
                 <button type="button" class="btn-cancel" onclick="closeRegisterModal()">ถอยกลับ</button>
                 <button type="button" class="btn-submit" id="modalSubmitBtn" onclick="handleSubmitAction()">ลงนาม</button>
@@ -436,10 +374,6 @@
     <!-- Modal แจ้งเตือนทั่วไป -->
     <div class="sect-modal-overlay" id="customAlertModal" style="z-index: 9999;">
         <div class="sect-modal-content" style="max-width: 350px; text-align: center; padding: 30px 20px 40px 20px;">
-            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-left" alt="" width="60" height="60">
-            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-top-right" alt="" width="60" height="60">
-            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-bottom-left" alt="" width="60" height="60">
-            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1787493037/corner.png" class="modal-corner mc-bottom-right" alt="" width="60" height="60">
             <div class="modal-header" style="margin-bottom: 15px;"><h3 style="font-size: 1.4rem;">ประกาศสำนัก</h3></div>
             <p id="customAlertMessage" style="color: #e2d4c3; font-size: 1.05rem; margin-bottom: 25px; text-align:center;">ข้อความแจ้งเตือน</p>
             <button type="button" class="btn-submit-modal" onclick="closeCustomAlert()" id="customAlertBtn">รับทราบ</button>
@@ -453,7 +387,6 @@
             BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
         };
         
-        // 🌟 ตัวดักจับ fetch ที่ได้รับการแก้ไขให้ปลอดภัย รองรับทั้ง GET, POST, PUT, DELETE และทุกระบบ (ไลก์, คอมเมนต์, แจ้งเตือน)
         const nativeFetch = window.fetch.bind(window);
         window.fetch = (input, init = {}) => {
             const url = typeof input === 'string' ? input : input.url;
@@ -491,7 +424,14 @@
             const wsUrl = API_CONFIG.BASE_URL.replace('http', 'ws') + '/ws';
             telepathySocket = new WebSocket(wsUrl);
 
-            telepathySocket.onopen = () => { console.log("⚡ เปิดช่องรับกระแสจิตสำเร็จ!"); };
+            telepathySocket.onopen = () => { 
+                console.log("⚡ เปิดช่องรับกระแสจิตสำเร็จ!"); 
+                const savedUser = localStorage.getItem('siy_username');
+                if (savedUser && telepathySocket.readyState === WebSocket.OPEN) {
+                    telepathySocket.send(JSON.stringify({ type: 'REGISTER', username: savedUser }));
+                }
+            };
+
             telepathySocket.onmessage = (event) => {
                 const data = JSON.parse(event.data);
                 if (data.type === 'LIKE_UPDATE') {
@@ -511,16 +451,17 @@
                     if (data.postId === urlParams.get('id') && typeof loadComments === 'function') loadComments(data.postId);
                 }
                 
-                // 🌟 เพิ่มเงื่อนไขรับสัญญาณแจ้งเตือนแบบ Realtime ให้ทำงานทันที
+                // 🌟 อัปเดตและดึงข้อมูลแจ้งเตือนทันทีโดยไม่ต้องรีเฟรชหน้าจอเมื่อได้รับสัญญาณ Realtime
                 if (data.type === 'NEW_NOTIFICATION') {
                     const savedUser = localStorage.getItem('siy_username');
                     if (savedUser && localStorage.getItem('siy_usertype') !== 'guest') {
-                        if (data.targetUser === savedUser || !data.targetUser) {
+                        if (!data.targetUser || data.targetUser === savedUser) {
                             loadNotifications();
                         }
                     }
                 }
             };
+
             telepathySocket.onclose = () => { setTimeout(connectTelepathy, 5000); };
             telepathySocket.onerror = (err) => { console.error("❌ กระแสจิตขัดข้อง:", err); };
         }
@@ -554,15 +495,6 @@
                         body: JSON.stringify({})
                     }); 
                 } catch(e) {}
-            },
-            async sendNotification(data) {
-                try {
-                    await fetch(`${API_CONFIG.BASE_URL}/notifications`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(data)
-                    });
-                } catch (e) {}
             },
             async getBookmarks() {
                 try {
@@ -656,10 +588,7 @@
             if (!event.target.matches('.noti-btn') && !event.target.closest('.noti-btn') && !event.target.closest('.noti-dropdown')) {
                 const dropdowns = document.getElementsByClassName("noti-dropdown");
                 for (let i = 0; i < dropdowns.length; i++) {
-                    const openDropdown = dropdowns[i];
-                    if (openDropdown.classList.contains('active')) {
-                        openDropdown.classList.remove('active');
-                    }
+                    dropdowns[i].classList.remove('active');
                 }
             }
         }
@@ -682,7 +611,7 @@
                 const displayTitle = formatMentions(safeTitle);
                 
                 container.innerHTML += `
-                    <a data-action="go-post" data-url="post.html?id=${item.id}" style="cursor: pointer; display: block; width: 100%; box-sizing: border-box; overflow: hidden; padding: 12px 15px; background: rgba(0,0,0,0.4); border: 1px dashed rgba(138, 99, 21, 0.3); border-radius: 6px; text-decoration: none; color: var(--gold-light); font-size: 0.9rem; transition: background 0.2s;" onmouseover="this.style.borderColor='var(--gold-main)'; this.style.background='rgba(212,175,55,0.05)'" onmouseout="this.style.borderColor='rgba(138, 99, 21, 0.3)'; this.style.background='rgba(0,0,0,0.4)'">
+                    <a data-action="go-post" data-url="post.html?id=${item.id}" style="cursor: pointer; display: block; width: 100%; box-sizing: border-box; overflow: hidden; padding: 12px 15px; background: rgba(0,0,0,0.4); border: 1px dashed rgba(138, 99, 21, 0.3); border-radius: 6px; text-decoration: none; color: var(--gold-light); font-size: 0.9rem;" onmouseover="this.style.borderColor='var(--gold-main)'; this.style.background='rgba(212,175,55,0.05)'" onmouseout="this.style.borderColor='rgba(138, 99, 21, 0.3)'; this.style.background='rgba(0,0,0,0.4)'">
                         <div style="white-space: normal; word-break: break-word; line-height: 1.4; font-family: 'Prompt', sans-serif; width: 100%;">${displayTitle}</div>
                     </a>
                 `;
@@ -700,7 +629,6 @@
             }
 
             const bookmarks = await ApiManager.getBookmarks();
-            
             if (!bookmarks || bookmarks.length === 0) {
                 widget.style.display = 'none';
                 return;
@@ -733,11 +661,24 @@
             }
         }
 
+        // 🌟 เพิ่ม Polling สำรองอัตโนมัติทุกๆ 15 วินาที เพื่อความมั่นใจว่าแจ้งเตือนจะไม่พลาดแม้การเชื่อมต่อ WebSocket จะสะดุด
+        let notiPollingInterval;
+        function startNotificationPolling() {
+            if (notiPollingInterval) clearInterval(notiPollingInterval);
+            notiPollingInterval = setInterval(() => {
+                const savedUser = localStorage.getItem('siy_username');
+                if (savedUser && localStorage.getItem('siy_usertype') !== 'guest') {
+                    loadNotifications(); 
+                }
+            }, 15000); 
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             loadAndRenderPosts();
             checkUserLoginStatus();
             renderViewHistory(); 
             renderBookmarks();
+            startNotificationPolling();
 
             const hasAcceptedRules = localStorage.getItem('siy_webboard_rules_accepted');
             if (!hasAcceptedRules) {
@@ -800,12 +741,18 @@
             }
         });
 
+        window.addEventListener('focus', () => {
+            const savedUser = localStorage.getItem('siy_username');
+            if (savedUser && localStorage.getItem('siy_usertype') !== 'guest') {
+                loadNotifications();
+            }
+        });
+
         document.addEventListener('click', function(e) {
             const btn = e.target.closest('[data-action]');
             if (!btn) return;
             
             const action = btn.getAttribute('data-action');
-            
             if (action === 'noti-click') {
                 handleNotiClick(btn.getAttribute('data-id'), btn.getAttribute('data-post-id'));
             } else if (action === 'go-post') {
@@ -820,7 +767,7 @@
             const checkbox = document.getElementById('acceptWebboardRulesCheckbox');
 
             if (!checkbox.checked || acceptBtn.disabled) {
-                showCustomAlert('ท่านต้องเลื่อนอ่านจนจบ และทำเครื่องหมายติ๊กยอมรับกฎของสำนักเสียก่อน จึงจะสามารถกดตกลงได้!');
+                showCustomAlert('ท่านต้องเลื่อนอ่านจนจบ และทำเครื่องหมายติ๊กยอมรับกฎของสำนักเสียก่อน!');
                 return;
             }
 
@@ -1003,11 +950,7 @@
 
         function renderPaginationControls(categoryId, currentPage, totalPages) {
             const paginationContainer = document.getElementById(`pagination-cat-${categoryId}`);
-            
-            if (totalPages <= 1) {
-                paginationContainer.innerHTML = '';
-                return;
-            }
+            if (totalPages <= 1) { paginationContainer.innerHTML = ''; return; }
 
             let html = '<div class="pagination">';
             html += `<button class="page-btn" ${currentPage === 1 ? 'disabled' : ''} onclick="renderCategoryPage(${categoryId}, ${currentPage - 1})">« ย้อนกลับ</button>`;
@@ -1138,10 +1081,8 @@
             { q: 'พิมพ์คำว่า "สัตยาสาบาน" เพื่อยืนยัน', a: 'สัตยาสาบาน' },
             { q: 'พิมพ์คำว่า "ศิษย์หลวงปู่" เพื่อยืนยัน', a: 'ศิษย์หลวงปู่' },
             { q: 'พิมพ์คำว่า "ลานเสวนา" เพื่อยืนยัน', a: 'ลานเสวนา' },
-            { q: 'พิมพ์ชื่อสำนักนี้ (คำเดียว): "ศิษย์___ปู่" ให้เต็มคำ', a: 'ศิษย์หลวงปู่' },
             { q: '1 บวก 1 เท่ากับเท่าไหร่? (ตอบเป็นตัวเลข)', a: '2' },
             { q: '5 ลบ 2 เท่ากับเท่าไหร่? (ตอบเป็นตัวเลข)', a: '3' },
-            { q: '3 บวก 4 เท่ากับเท่าไหร่? (ตอบเป็นตัวเลข)', a: '7' },
             { q: 'ท่านคือ "คน" หรือ "บอท"? พิมพ์คำตอบ', a: 'คน' },
         ];
         let currentBotCheck = null;
@@ -1218,8 +1159,7 @@
                         body: JSON.stringify({ 
                             username: usernameInput, 
                             password: passwordInput, 
-                            role: '5',             
-                            rank_name: 'เด็กวัด',
+                            role: '5', rank_name: 'เด็กวัด',
                             last_login: nowTimestamp,
                             bot_check_question: currentBotCheck.q,
                             bot_check_answer: botCheckVal 
@@ -1227,57 +1167,32 @@
                     });
                     const result = await res.json();
                     
-                    if (res.status === 429) {
-                        showCustomAlert(result.message || 'มีการสมัครถี่เกินไปจาก IP นี้ โปรดรอสักครู่แล้วลองใหม่');
-                        return;
-                    }
-
-                    if (res.status === 403) {
-                        showCustomAlert(result.message || 'ตรวจพบการรุกล้ำโดย Bot โปรดลองใหม่');
-                        return;
-                    }
-
                     if (!res.ok || !result.success) {
                         showCustomAlert(result.message || 'นามแฝงนี้มีผู้ใช้งานแล้ว');
                         return;
                     }
 
-                    if (result.token) {
-                        localStorage.setItem('siy_token', result.token);
-                    }
-
+                    if (result.token) localStorage.setItem('siy_token', result.token);
                     showCustomAlert('ลงนามสำเร็จ ยินดีต้อนรับสู่สำนัก, ' + usernameInput);
                 } catch (e) {
                     showCustomAlert('เกิดอาถรรพ์ขัดข้องในการเชื่อมต่อ');
                     return;
                 }
-
             } else {
                 try {
                     const res = await fetch(`${API_CONFIG.BASE_URL}/login`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            username: usernameInput,
-                            password: passwordInput
-                        })
+                        body: JSON.stringify({ username: usernameInput, password: passwordInput })
                     });
                     const result = await res.json();
                     
-                    if (res.status === 429) {
-                        showCustomAlert(result.error || 'เข้าระบบผิดพลาดเกินขีดจำกัด โปรดรอลดความถี่');
-                        return;
-                    }
-
                     if (!res.ok || !result.success) {
-                        showCustomAlert(result.error || 'รหัสผ่านลับไม่ถูกต้อง! อาถรรพ์กำลังสะท้อนกลับ');
+                        showCustomAlert(result.error || 'รหัสผ่านลับไม่ถูกต้อง!');
                         return;
                     }
 
-                    if (result.token) {
-                        localStorage.setItem('siy_token', result.token);
-                    }
-
+                    if (result.token) localStorage.setItem('siy_token', result.token);
                     showCustomAlert('เข้าสู่ระบบสำเร็จ, ยินดีต้อนรับกลับมา ' + usernameInput);
                 } catch (e) {
                     showCustomAlert('เกิดอาถรรพ์ขัดข้องในการเชื่อมต่อแก่นเซิร์ฟเวอร์');
@@ -1290,7 +1205,10 @@
             localStorage.setItem('siy_login_timestamp', nowTimestamp.toString()); 
             closeRegisterModal(); 
             checkUserLoginStatus();
-            renderBookmarks(); 
+            renderBookmarks();
+            if (telepathySocket && telepathySocket.readyState === WebSocket.OPEN) {
+                telepathySocket.send(JSON.stringify({ type: 'REGISTER', username: usernameInput }));
+            }
         }
 
         function handleLogout() {
