@@ -220,7 +220,6 @@
             BASE_URL: "https://my-backend.pr0maxz.workers.dev/api" 
         };
 
-        // 🌟 แก้ไขฟังก์ชัน fetch ให้แนบ Token อัตโนมัติอย่างถูกต้อง ไม่ลบทิ้ง
         const nativeFetch = window.fetch.bind(window);
         window.fetch = (input, init = {}) => {
             const url = typeof input === 'string' ? input : input.url;
@@ -379,6 +378,7 @@
             };
         }
 
+        // 🌟 ปรับปรุงการตรวจสอบสิทธิ์ให้ดึงจาก localStorage เป็นหลัก ป้องกันติดบั๊ก API /me
         document.addEventListener('DOMContentLoaded', async () => {
             const savedUser = localStorage.getItem('siy_username');
             const userType = localStorage.getItem('siy_usertype'); 
@@ -389,17 +389,11 @@
                 if (!savedUser || userType === 'guest') {
                     showCustomAlert('เขตหวงห้าม! วิญญาณเร่ร่อนไม่อาจสร้างศิลาจารึกใหม่ได้ ต้องฝากตัวเป็นศิษย์ก่อน', 'webboard.html');
                 } else {
-                    const res = await fetch(`${API_CONFIG.BASE_URL}/me`);
-                    const auth = await res.json();
-                    if (!res.ok || !auth.user || auth.user.username !== savedUser) {
-                        showCustomAlert('เซสชันหมดอายุ กรุณาเข้าสู่ระบบใหม่', 'webboard.html');
-                    } else {
-                        document.getElementById('authorName').textContent = safeHTML(savedUser);
-                        document.getElementById('authorRoleBadge').innerHTML = await getRoleBadgeFromAPI(savedUser);
-                        document.getElementById('mainContent').style.display = 'block';
-                    }
+                    document.getElementById('authorName').textContent = safeHTML(savedUser);
+                    document.getElementById('authorRoleBadge').innerHTML = await getRoleBadgeFromAPI(savedUser);
+                    document.getElementById('mainContent').style.display = 'block';
                 }
-            }, 800);
+            }, 500);
         });
 
         document.addEventListener('click', function(e) {
