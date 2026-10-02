@@ -520,8 +520,9 @@ app.get('/api/me', async (c) => {
   return c.json({ authenticated: true, user: { ...user, nextRankMsg: rankInfo.nextRankMsg } })
 })
 
+// 🌟 แก้ไขให้เรียงตาม sort_order ก่อน เพื่อให้ลำดับที่จัดในแอดมินบันทึกถาวร
 app.get('/api/users', async (c) => {
-  const { results } = await c.env.DB.prepare("SELECT username, role, rank_name, karma FROM users ORDER BY username ASC").all()
+  const { results } = await c.env.DB.prepare("SELECT username, role, rank_name, karma FROM users ORDER BY sort_order ASC, username ASC").all()
   const usersWithKarmaInfo = results.map((u: any) => {
     const rankInfo = calculateRank(u.karma || 0, String(u.role), u.rank_name)
     return { ...u, nextRankMsg: rankInfo.nextRankMsg }
