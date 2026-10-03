@@ -106,12 +106,12 @@
         }
         .user-mention:hover { background: rgba(212, 175, 55, 0.25); color: #fff; box-shadow: 0 0 10px rgba(212, 175, 55, 0.5); }
         
-        /* 🛠️ โครงสร้าง Layout ลานเสวนา (ให้ Sidebar ขึ้นมาก่อนบนมือถือ) */
+        /* 🛠️ โครงสร้าง Layout หน้าลานเสวนา Desktop & Mobile */
         .board-layout { display: flex; flex-direction: column; gap: 30px; margin-top: 10px; width: 100%; box-sizing: border-box; }
         @media (min-width: 992px) {
-            .board-layout { display: grid; grid-template-columns: 2.2fr 1fr; gap: 25px; }
-            .board-sidebar { order: 2; }
-            .board-main { order: 1; }
+            .board-layout { display: grid; grid-template-columns: 1fr 340px; gap: 25px; align-items: start; }
+            .board-main { order: 1; min-width: 0; }
+            .board-sidebar { order: 2; min-width: 0; }
         }
         @media (max-width: 991px) {
             .board-layout { display: flex; flex-direction: column; }
@@ -125,15 +125,15 @@
             text-align: center; background: linear-gradient(180deg, #3a2511 0%, #150a03 100%); 
             color: var(--gold-light); padding: 8px 25px; border: 1px solid var(--gold-main); 
             border-radius: 8px; display: inline-block; position: absolute; top: -20px; left: 20px; 
-            font-size: 1.1rem; font-weight: 700; white-space: nowrap; 
+            font-size: 1.1rem; font-weight: 700; white-space: nowrap !important; 
             box-shadow: 0 8px 16px rgba(0,0,0,0.9), inset 0 1px 2px rgba(255,255,255,0.15); 
             text-shadow: 0 2px 4px rgba(0,0,0,0.8); letter-spacing: 1px; margin: 0; z-index: 5; 
         }
         
         .category-block { background: rgba(12, 7, 4, 0.9); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 8px; margin-top: 25px; margin-bottom: 20px; padding-top: 35px; padding-bottom: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); position: relative; width: 100%; box-sizing: border-box; }
-        .category-posts-container { min-height: 250px; }
+        .category-posts-container { min-height: 250px; width: 100%; }
 
-        .thread-item { padding: 15px 20px; border-bottom: 1px solid rgba(138, 99, 21, 0.2); display: flex; align-items: center; gap: 15px; transition: background 0.2s; width: 100%; box-sizing: border-box; cursor: pointer; } 
+        .thread-item { padding: 15px 20px; border-bottom: 1px solid rgba(138, 99, 21, 0.2); display: flex; align-items: center; justify-content: space-between; gap: 15px; transition: background 0.2s; width: 100%; box-sizing: border-box; cursor: pointer; } 
         @media (max-width: 640px) {
             .thread-item { flex-direction: column; align-items: flex-start; }
         }
@@ -167,9 +167,9 @@
         .wb-tag-pin { border-color: #d4af37; color: #150a03; background: var(--gold-main); font-weight: bold; }
         
         .thread-details { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; word-break: break-word; max-width: 100%; } .thread-details span { color: #a69477; } 
-        .thread-stats { display: flex; gap: 15px; font-size: 0.85rem; color: #a69477; text-align: right; align-items: center; flex-shrink: 0; width: 100%; justify-content: flex-end; } 
-        @media (max-width: 640px) { .thread-stats { justify-content: space-between; border-top: 1px dashed rgba(138, 99, 21, 0.2); padding-top: 8px; margin-top: 5px; } }
-        .thread-stats .stat-box { display: flex; align-items: center; gap: 5px; min-width: 80px; justify-content: flex-start; }
+        .thread-stats { display: flex; gap: 15px; font-size: 0.85rem; color: #a69477; text-align: right; align-items: center; flex-shrink: 0; width: auto; justify-content: flex-end; } 
+        @media (max-width: 640px) { .thread-stats { justify-content: space-between; border-top: 1px dashed rgba(138, 99, 21, 0.2); padding-top: 8px; margin-top: 5px; width: 100%; } }
+        .thread-stats .stat-box { display: flex; align-items: center; gap: 5px; min-width: 70px; justify-content: flex-start; }
         
         .widget { background: rgba(12, 7, 4, 0.85); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 8px; padding: 45px 20px 20px 20px; margin-top: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); position: relative; width: 100%; max-width: 100%; box-sizing: border-box; }
         .user-status-box { text-align: center; width: 100%; } 
@@ -265,7 +265,7 @@
         </header>
 
         <div class="board-layout">
-            <!-- คอลัมน์ Sidebar (สถานะสำนัก, เมนูหลัก) ขยับขึ้นมาก่อนบนมือถือตามต้องการ -->
+            <!-- คอลัมน์ Sidebar (สถานะสำนัก, เมนูหลัก) ขยับขึ้นมาแสดงก่อนบนมือถือตามต้องการ แต่จัดระเบียบบน Desktop ปกติ -->
             <div class="board-sidebar">
                 <div class="widget user-status-box">
                     <div class="noti-wrapper" id="notiContainer" style="display: none;">
