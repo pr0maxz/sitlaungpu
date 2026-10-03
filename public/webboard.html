@@ -76,20 +76,38 @@
             .site-title img { height: 85px !important; }
         }
 
+        /* 🛠️️ แถบเมนูคงรูปแคปซูลแถวเดียวและเลื่อนซ้าย-ขวาได้ (Horizontal Scroll) */
         nav { 
-            display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px; 
-            background: linear-gradient(to bottom, #1f1107, #070402); border: 1px solid var(--gold-dark); 
-            border-radius: 25px; padding: 10px 15px !important; box-shadow: 0 5px 20px rgba(0,0,0,0.9); 
-            width: 100%; max-width: 800px !important; height: auto !important; 
-            margin: 0 auto !important; box-sizing: border-box;
+            display: flex; 
+            flex-wrap: nowrap; 
+            justify-content: flex-start; 
+            align-items: center; 
+            gap: 15px; 
+            background: linear-gradient(to bottom, #1f1107, #070402); 
+            border: 1px solid var(--gold-dark); 
+            border-radius: 50px; 
+            padding: 0 20px !important; 
+            box-shadow: 0 5px 20px rgba(0,0,0,0.9); 
+            width: 100%; 
+            max-width: 800px !important; 
+            height: 52px !important; 
+            margin: 0 auto !important; 
+            box-sizing: border-box;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scrollbar-width: none; 
+            -ms-overflow-style: none; 
         }
+        nav::-webkit-scrollbar { display: none; }
+
         @media (min-width: 768px) {
-            nav { border-radius: 50px; padding: 0 30px !important; height: 55px !important; gap: 15px; }
+            nav { justify-content: center; padding: 0 30px !important; height: 55px !important; gap: 15px; overflow-x: visible; }
         }
-        nav a { color: var(--gold-light); text-decoration: none; font-size: 0.95rem !important; padding: 4px 10px; transition: color 0.3s; position: relative; white-space: nowrap; line-height: 1.2; }
+
+        nav a { color: var(--gold-light); text-decoration: none; font-size: 0.95rem !important; padding: 5px 12px; transition: color 0.3s; position: relative; white-space: nowrap; line-height: 1; flex-shrink: 0; }
         @media (min-width: 768px) { nav a { font-size: 1.05rem !important; padding: 5px 15px; } }
         nav a:hover, nav a.active { color: #fff; text-shadow: 0 0 10px var(--gold-main); }
-        nav a::after { content: ''; position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); width: 0; height: 2px; background-color: var(--gold-main); transition: width 0.3s; }
+        nav a::after { content: ''; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); width: 0; height: 2px; background-color: var(--gold-main); transition: width 0.3s; }
         nav a:hover::after, nav a.active::after { width: 100%; }
 
         .user-mention {
@@ -99,11 +117,19 @@
         }
         .user-mention:hover { background: rgba(212, 175, 55, 0.25); color: #fff; box-shadow: 0 0 10px rgba(212, 175, 55, 0.5); }
         
-        /* 🛠️ แก้ไข Layout หลักให้สลับเป็น Column บนมือถือ และ Grid 2 คอลัมน์บนจอใหญ่ */
+        /* 🛠️ ปรับโครงสร้าง Layout หลัก: ให้ Sidebar (สถานะสำนัก, เมนูหลัก) ขยับขึ้นมาก่อนบนมือถือ */
         .board-layout { display: flex; flex-direction: column; gap: 30px; margin-top: 10px; width: 100%; box-sizing: border-box; }
         @media (min-width: 992px) {
             .board-layout { display: grid; grid-template-columns: 2.2fr 1fr; gap: 25px; }
+            .board-sidebar { order: 2; }
+            .board-main { order: 1; }
         }
+        @media (max-width: 991px) {
+            .board-layout { display: flex; flex-direction: column; }
+            .board-sidebar { order: 1; }
+            .board-main { order: 2; }
+        }
+
         .board-main, .board-sidebar { min-width: 0; max-width: 100%; box-sizing: border-box; display: flex; flex-direction: column; gap: 25px; }
         
         .section-title { 
@@ -296,20 +322,7 @@
         </header>
 
         <div class="board-layout">
-            <div class="board-main">
-                <div class="category-block">
-                    <h3 class="section-title">นิยายสัตยาสาบาน</h3>
-                    <div id="dynamic-category-1" class="category-posts-container"><div style="text-align: center; color: var(--gold-main); padding: 40px;">กำลังอัญเชิญจารึก...</div></div>
-                    <div id="pagination-cat-1"></div>
-                </div>
-
-                <div class="category-block">
-                    <h3 class="section-title">คุยกับศิษย์หลวงปู่</h3>
-                    <div id="dynamic-category-2" class="category-posts-container"><div style="text-align: center; color: var(--gold-main); padding: 40px;">กำลังอัญเชิญจารึก...</div></div>
-                    <div id="pagination-cat-2"></div>
-                </div>
-            </div>
-
+            <!-- คอลัมน์ Sidebar (สถานะสำนัก, เมนูหลัก) ขยับขึ้นมาแสดงก่อนบนมือถือ -->
             <div class="board-sidebar">
                 <div class="widget user-status-box">
                     <div class="noti-wrapper" id="notiContainer" style="display: none;">
@@ -373,6 +386,21 @@
                     <h4 class="section-title">รอยเท้าจารึก</h4>
                     <div id="historyListContainer" style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
                     </div>
+                </div>
+            </div>
+
+            <!-- คอลัมน์ Main Board (รายการกระทู้) -->
+            <div class="board-main">
+                <div class="category-block">
+                    <h3 class="section-title">นิยายสัตยาสาบาน</h3>
+                    <div id="dynamic-category-1" class="category-posts-container"><div style="text-align: center; color: var(--gold-main); padding: 40px;">กำลังอัญเชิญจารึก...</div></div>
+                    <div id="pagination-cat-1"></div>
+                </div>
+
+                <div class="category-block">
+                    <h3 class="section-title">คุยกับศิษย์หลวงปู่</h3>
+                    <div id="dynamic-category-2" class="category-posts-container"><div style="text-align: center; color: var(--gold-main); padding: 40px;">กำลังอัญเชิญจารึก...</div></div>
+                    <div id="pagination-cat-2"></div>
                 </div>
             </div>
         </div>
