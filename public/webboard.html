@@ -225,14 +225,20 @@
         .checkbox-group { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; cursor: pointer; font-size: 0.95rem; color: var(--gold-light); text-align: left; transition: opacity 0.3s; }
         .checkbox-group input[type="checkbox"] { accent-color: var(--gold-main); width: 18px; height: 18px; cursor: pointer; flex-shrink: 0; }
 
-        .modal-corner { position: absolute; width: 60px; pointer-events: none; opacity: 0.8; } .mc-top-left { top: 12px; left: 12px; transform: scaleX(-1); } .mc-top-right { top: 12px; right: 12px; } .mc-bottom-left { bottom: 12px; left: 12px; transform: scaleX(-1) scaleY(-1); } .mc-bottom-right { bottom: 12px; right: 12px; transform: scaleY(-1); }
-        .modal-header { text-align: center; margin-bottom: 20px; } .modal-header h3 { color: var(--gold-light); font-size: 1.5rem; margin-bottom: 5px; } .modal-header p { color: var(--gold-dark); font-size: 0.85rem; margin: 0; }
+        /* คลาสใหม่สำหรับมุม Modal */
+        .modal-corner { position: absolute; width: 60px; height: 60px; pointer-events: none; opacity: 0.8; z-index: 10; } 
+        .mc-top-left { top: 10px; left: 10px; transform: scaleX(-1); } 
+        .mc-top-right { top: 10px; right: 10px; } 
+        .mc-bottom-left { bottom: 10px; left: 10px; transform: scaleX(-1) scaleY(-1); } 
+        .mc-bottom-right { bottom: 10px; right: 10px; transform: scaleY(-1); }
+
+        .modal-header { text-align: center; margin-bottom: 20px; position: relative; z-index: 20;} .modal-header h3 { color: var(--gold-light); font-size: 1.5rem; margin-bottom: 5px; } .modal-header p { color: var(--gold-dark); font-size: 0.85rem; margin: 0; }
         
-        .form-group { margin-bottom: 20px; width: 100%; box-sizing: border-box; } .form-group label { display: block; color: var(--gold-main); font-size: 0.95rem; margin-bottom: 8px; } .form-input { width: 100%; background: rgba(0,0,0,0.6); border: 1px solid rgba(138, 99, 21, 0.5); color: #fff; padding: 12px 15px; border-radius: 6px; font-family: 'Prompt', sans-serif; font-size: 1rem; box-sizing: border-box; } .form-input:focus { outline: none; border-color: var(--gold-light); }
+        .form-group { margin-bottom: 20px; width: 100%; box-sizing: border-box; position: relative; z-index: 20;} .form-group label { display: block; color: var(--gold-main); font-size: 0.95rem; margin-bottom: 8px; } .form-input { width: 100%; background: rgba(0,0,0,0.6); border: 1px solid rgba(138, 99, 21, 0.5); color: #fff; padding: 12px 15px; border-radius: 6px; font-family: 'Prompt', sans-serif; font-size: 1rem; box-sizing: border-box; } .form-input:focus { outline: none; border-color: var(--gold-light); }
         .password-wrapper { position: relative; display: flex; align-items: center; width: 100%; } .password-wrapper .form-input { padding-right: 60px; } .toggle-password { position: absolute; right: 15px; cursor: pointer; font-size: 0.9rem; color: var(--gold-main); opacity: 0.8; }
-        .privacy-warning { background: rgba(168, 46, 46, 0.1); border-left: 3px solid #a82e2e; padding: 12px 15px; font-size: 0.8rem; color: #d1bfae; line-height: 1.5; margin-bottom: 25px; border-radius: 0 4px 4px 0; } .privacy-warning strong { color: #ff6b6b; }
+        .privacy-warning { background: rgba(168, 46, 46, 0.1); border-left: 3px solid #a82e2e; padding: 12px 15px; font-size: 0.8rem; color: #d1bfae; line-height: 1.5; margin-bottom: 25px; border-radius: 0 4px 4px 0; position: relative; z-index: 20;} .privacy-warning strong { color: #ff6b6b; }
         
-        .modal-actions { display: flex; gap: 10px; width: 100%; box-sizing: border-box; } 
+        .modal-actions { display: flex; gap: 10px; width: 100%; box-sizing: border-box; position: relative; z-index: 20;} 
         .btn-submit { flex: 1; background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; border: none; padding: 12px; border-radius: 25px; font-family: 'Prompt', sans-serif; font-weight: bold; font-size: 1rem; cursor: pointer; } 
         .btn-submit:disabled, .btn-submit.disabled { background: linear-gradient(180deg, #4a3b1a 0%, #2a1805 100%) !important; color: #8a7761 !important; border: 1px solid #5a4f35 !important; cursor: not-allowed !important; opacity: 0.6; }
         .btn-cancel { background: transparent; color: var(--text-muted); border: 1px solid var(--text-muted); padding: 12px 20px; border-radius: 25px; font-family: 'Prompt', sans-serif; cursor: pointer; }
@@ -241,7 +247,7 @@
             background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); 
             color: #150a03 !important; border: 1px solid #ffeba9; padding: 12px; 
             border-radius: 25px; font-family: 'Prompt', sans-serif; font-weight: bold; 
-            font-size: 1rem; cursor: pointer; width: 80%; margin: 0 auto; display: block; text-align: center; text-decoration: none;
+            font-size: 1rem; cursor: pointer; width: 80%; margin: 0 auto; display: block; text-align: center; text-decoration: none; position: relative; z-index: 20;
         }
     </style>
 </head>
@@ -356,11 +362,17 @@
     <!-- Modal กฎระเบียบ -->
     <div class="sect-modal-overlay" id="webboardRulesModal">
         <div class="sect-modal-content rules-modal-content">
+            <!-- เพิ่มมุม Modal -->
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="modal-corner mc-top-left" alt="">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="modal-corner mc-top-right" alt="">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="modal-corner mc-bottom-left" alt="">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="modal-corner mc-bottom-right" alt="">
+
             <div class="modal-header">
                 <h3>ประกาศิตแห่งสำนัก</h3>
                 <p>โปรดอ่านและน้อมรับกฎเหล็กก่อนเข้าสู่ลานเสวนา</p>
             </div>
-            <div class="rules-body-box" id="rulesBodyContainer">
+            <div class="rules-body-box" id="rulesBodyContainer" style="position: relative; z-index: 20;">
                 <p style="color: var(--gold-light); margin-bottom: 10px;">📜 ประกาศิตและข้อห้ามแห่งสำนักลับแล:</p>
                 <ol>
                     <li><strong>ห้ามลบหลู่เบื้องสูง:</strong> ห้ามเผยแพร่ข้อความที่ลบหลู่สถาบันชาติ ศาสนา พระมหากษัตริย์</li>
@@ -377,8 +389,8 @@
                     <li><strong>ประกาศิตปัดความรับผิดชอบ:</strong> ทางสำนักไม่ขอรับผิดชอบต่อความเสียหายใดๆ</li>
                 </ol>
             </div>
-            <div class="scroll-warning-hint" id="scrollWarningHint">⬇️ กรุณาเลื่อนอ่านกฎประกาศิตด้านบนให้ถึงบรรทัดสุดท้ายก่อน</div>
-            <label class="checkbox-group" id="rulesCheckboxWrapper" style="opacity: 0.5; pointer-events: none;">
+            <div class="scroll-warning-hint" id="scrollWarningHint" style="position: relative; z-index: 20;">⬇️ กรุณาเลื่อนอ่านกฎประกาศิตด้านบนให้ถึงบรรทัดสุดท้ายก่อน</div>
+            <label class="checkbox-group" id="rulesCheckboxWrapper" style="opacity: 0.5; pointer-events: none; position: relative; z-index: 20;">
                 <input type="checkbox" id="acceptWebboardRulesCheckbox">
                 <span>ข้าพเจ้ารับทราบและยินดีปฏิบัติตามกฎของสำนักทุกประการ</span>
             </label>
@@ -392,6 +404,12 @@
     <!-- Modal สมัครสมาชิก / เข้าสู่ระบบ -->
     <div class="sect-modal-overlay" id="registerModal">
         <div class="sect-modal-content">
+            <!-- เพิ่มมุม Modal -->
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="modal-corner mc-top-left" alt="">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="modal-corner mc-top-right" alt="">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="modal-corner mc-bottom-left" alt="">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="modal-corner mc-bottom-right" alt="">
+
             <div class="modal-header">
                 <h3 id="modalTitle">ใบสัตยาบัน</h3>
                 <p id="modalSubTitle">ลงนามเพื่อเข้าร่วมลานเสวนา</p>
@@ -424,8 +442,14 @@
     <!-- Modal แจ้งเตือนทั่วไป -->
     <div class="sect-modal-overlay" id="customAlertModal" style="z-index: 9999;">
         <div class="sect-modal-content" style="max-width: 350px; text-align: center; padding: 30px 20px 40px 20px;">
+            <!-- เพิ่มมุม Modal -->
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="modal-corner mc-top-left" alt="">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="modal-corner mc-top-right" alt="">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="modal-corner mc-bottom-left" alt="">
+            <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="modal-corner mc-bottom-right" alt="">
+
             <div class="modal-header" style="margin-bottom: 15px;"><h3 style="font-size: 1.4rem;">ประกาศสำนัก</h3></div>
-            <p id="customAlertMessage" style="color: #e2d4c3; font-size: 1.05rem; margin-bottom: 25px; text-align:center;">ข้อความแจ้งเตือน</p>
+            <p id="customAlertMessage" style="color: #e2d4c3; font-size: 1.05rem; margin-bottom: 25px; text-align:center; position: relative; z-index: 20;">ข้อความแจ้งเตือน</p>
             <button type="button" class="btn-submit-modal" onclick="closeCustomAlert()" id="customAlertBtn">รับทราบ</button>
         </div>
     </div>
