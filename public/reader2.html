@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ใต้แสงจันทน์ - ศิษย์หลวงปู่</title>
+    <link rel="icon" type="image/png" href="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788446707/favicon4.png">
+    <link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;500;600&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        html { scroll-behavior: smooth; overflow-x: hidden; width: 100%; } 
+        * { box-sizing: border-box; }
+        :root { 
+            --bg-deep: #070402; 
+            --bg-glow: #2a1805; 
+            --gold-light: #f5d77f; 
+            --gold-main: #d4af37; 
+            --gold-dark: #8a6315; 
+            --text-muted: #8a7761; 
+        }
+
+        /* 🌟 เปลี่ยนฟอนต์หลักทั้งหน้าเป็น Prompt */
+        body { 
+            margin: 0; padding: 0; width: 100%; min-height: 100vh; 
+            background-color: var(--bg-deep); 
+            background-image: radial-gradient(circle at 50% 50%, var(--bg-glow) 0%, var(--bg-deep) 90%); 
+            background-attachment: scroll; 
+            color: #d1bfae; 
+            font-family: 'Prompt', sans-serif !important; overflow-x: hidden; 
+            /* 🛡️ ระบบป้องกันการคลุมดำและแตะค้างบนทุกอุปกรณ์ */
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            -webkit-touch-callout: none;
+        }
+        
+        body::before, body::after { display: none !important; }
+
+        h1, h2, h3, h4, input, select, textarea, button { font-family: 'Prompt', sans-serif !important; }
+        
+        .main-container { 
+            position: relative; isolation: isolate; max-width: 1200px; width: 94%; 
+            margin: clamp(20px, 4vw, 40px) auto; 
+            padding: clamp(20px, 4vw, 40px) clamp(15px, 3vw, 30px) clamp(30px, 5vw, 60px) clamp(15px, 3vw, 30px); 
+            padding-top: 45px !important; 
+            background-color: rgba(7, 4, 2, 0.98); 
+            border: 1px solid var(--gold-dark); border-radius: 16px; 
+            box-shadow: 0 5px 20px rgba(0,0,0,0.9);
+        }
+        
+        .main-container::before { display: none !important; }
+        
+        .corner-decor { position: absolute; width: clamp(45px, 8vw, 110px); height: clamp(45px, 8vw, 110px); z-index: 20; pointer-events: none; opacity: 0.8; }
+        .corner-top-left { top: 12px; left: 12px; transform: scaleX(-1); } 
+        .corner-top-right { top: 12px; right: 12px; } 
+        .corner-bottom-left { bottom: 12px; left: 12px; transform: scaleX(-1) scaleY(-1); } 
+        .corner-bottom-right { bottom: 12px; right: 12px; transform: scaleY(-1); }
+        
+        header { 
+            text-align: center; 
+            margin: 0 auto 40px auto !important; 
+            position: relative; 
+            z-index: 10; 
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .site-title { margin: 0 0 25px 0 !important; line-height: 0; }
+        .site-title img { height: 85px !important; width: auto !important; filter: drop-shadow(0 5px 15px rgba(0,0,0,1)); }
+
+        /* 🛠️ แก้ไข CSS ของ Nav ตรงนี้ */
+        nav { 
+            display: flex; flex-wrap: wrap; justify-content: center; align-items: center;
+            gap: 15px; /* ระยะห่างระหว่างเมนู ทั้งแนวนอนและแนวตั้งเวลาตกบรรทัด */
+            background: linear-gradient(to bottom, #1f1107, #070402); 
+            border: 1px solid var(--gold-dark); border-radius: 50px; 
+            padding: 15px 30px !important; /* ใช้ Padding ดันความสูงกล่องแทนการ Fix Height */
+            box-shadow: 0 5px 20px rgba(0,0,0,0.9); 
+            width: 100%; max-width: 800px !important; 
+            min-height: 55px !important; /* เปลี่ยนจาก height เป็น min-height */
+            margin: 0 auto !important; box-sizing: border-box;
+        }
+        nav a { color: var(--gold-light); text-decoration: none; font-size: 1.05rem !important; padding: 5px 15px; transition: color 0.2s; position: relative; white-space: nowrap; line-height: 1; }
+        nav a:hover, nav a.active { color: #fff; text-shadow: 0 0 10px var(--gold-main); }
+        nav a::after { content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 2px; background-color: var(--gold-main); transition: width 0.2s; }
+        nav a:hover::after, nav a.active::after { width: 100%; }
+
+        @media (max-width: 768px) {
+            .site-title img { height: 65px !important; }
+            /* 🛠️ แก้ไข CSS ของ Nav สำหรับมือถือด้วยเช่นกัน */
+            nav { 
+                flex-wrap: nowrap !important; justify-content: flex-start; overflow-x: auto; 
+                scrollbar-width: none; border-radius: 40px; 
+                padding: 12px 20px !important; /* ปรับ Padding มือถือ */
+                min-height: 50px !important; /* เปลี่ยนเป็น min-height */
+            }
+            nav::-webkit-scrollbar { display: none; }
+            nav a { font-size: 0.95rem !important; flex-shrink: 0; }
+        }
+
+        .board-layout { display: flex; justify-content: center; margin-top: 10px; width: 100%; }
+        .board-main { width: 100%; max-width: 950px; }
+        
+        .breadcrumb { font-size: clamp(0.8rem, 2vw, 0.9rem); color: var(--text-muted); margin-bottom: 20px; text-align: left; } 
+        .breadcrumb a { color: var(--gold-light); text-decoration: none; }
+        .btn-back { display: inline-flex; align-items: center; gap: 8px; color: var(--gold-light); text-decoration: none; margin-bottom: 15px; font-size: clamp(0.85rem, 2vw, 0.95rem); transition: 0.2s; }
+        .btn-back:hover { text-shadow: 0 0 8px var(--gold-main); }
+
+        .category-block { background: rgba(12, 7, 4, 0.9); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 8px; margin-top: 35px; margin-bottom: 30px; padding: clamp(35px, 6vw, 55px) clamp(15px, 4vw, 45px) clamp(25px, 5vw, 45px) clamp(15px, 4vw, 45px); box-shadow: 0 5px 15px rgba(0,0,0,0.5); position: relative; }
+        .section-title { text-align: center; background: linear-gradient(180deg, #3a2511 0%, #150a03 100%); color: var(--gold-light); padding: 8px clamp(20px, 4vw, 30px); border: 1px solid var(--gold-main); border-radius: 8px; display: inline-block; position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-size: clamp(1rem, 2.5vw, 1.15rem); font-weight: 700; white-space: nowrap; box-shadow: 0 8px 16px rgba(0,0,0,0.9); letter-spacing: 1px; margin: 0; z-index: 5; }
+
+        .reader-controls { display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-bottom: clamp(20px, 4vw, 35px); border-bottom: 1px solid rgba(138, 99, 21, 0.3); padding-bottom: 15px; }
+        .font-btn-group { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: center; }
+        .btn-tool { background: rgba(0,0,0,0.6); border: 1px solid var(--gold-dark); color: var(--gold-light); padding: 6px 14px; border-radius: 6px; font-family: 'Prompt', sans-serif; font-size: 0.85rem; cursor: pointer; transition: background 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .btn-tool:hover { background: var(--gold-dark); color: #fff; }
+
+        .novel-title-text { color: var(--gold-light); font-size: clamp(1.4rem, 4vw, 2rem); font-family: 'Prompt', sans-serif; margin-bottom: 10px; text-align: center; text-shadow: 0 2px 10px rgba(212,175,55,0.2); line-height: 1.4; }
+        .novel-chapter-sub { color: var(--text-muted); font-size: clamp(0.85rem, 2vw, 0.95rem); margin-bottom: clamp(25px, 5vw, 40px); text-align: center; }
+        
+        .novel-body-text { 
+            line-height: 1.9; color: #dfd0c0; font-size: 1.1rem; text-align: left; 
+            word-break: normal; overflow-wrap: break-word; min-height: 400px; 
+            font-family: 'Mali', cursive, sans-serif !important;
+        }
+        
+        .novel-body-text p { margin-bottom: clamp(18px, 3vw, 24px); text-indent: clamp(1.5em, 4vw, 2.5em); }
+        .scene-divider { text-align: center; color: var(--gold-main); margin: clamp(30px, 6vw, 45px) 0; font-size: 1.2rem; letter-spacing: 8px; }
+
+        .novel-body-text img {
+            max-width: 100% !important; height: auto !important; display: block;
+            margin: clamp(15px, 4vw, 25px) auto; border-radius: 8px; cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+
+        .image-modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: rgba(0, 0, 0, 0.95); z-index: 99999; justify-content: center;
+            align-items: center; cursor: pointer; padding: 10px;
+        }
+        .image-modal-overlay.active { display: flex; }
+        .image-modal-content { max-width: 95vw; max-height: 95vh; border-radius: 6px; box-shadow: 0 0 30px rgba(212, 175, 55, 0.3); object-fit: contain; cursor: default; }
+
+        .poem-box {
+            text-align: center; color: var(--gold-light); margin: clamp(30px, 6vw, 50px) auto; 
+            font-style: italic; line-height: 2.2; font-size: 1.05em;
+            background: rgba(212, 175, 55, 0.05); padding: clamp(20px, 4vw, 30px) clamp(10px, 3vw, 30px); 
+            border-radius: 12px; border: 1px dashed rgba(212, 175, 55, 0.3); max-width: 85%;
+        }
+
+        .bottom-action-group { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 60px; border-top: 1px dashed rgba(138, 99, 21, 0.3); padding-top: 40px; flex-wrap: wrap; width: 100%; }
+        
+        .btn-primary { 
+            display: inline-flex; justify-content: center; align-items: center; text-align: center; 
+            background: linear-gradient(180deg, #d4af37 0%, #8a6315 100%); color: #150a03; 
+            font-family: 'Prompt', sans-serif; font-weight: bold; padding: 12px 24px; border-radius: 25px; 
+            font-size: clamp(0.9rem, 2vw, 1rem); box-shadow: 0 5px 15px rgba(0,0,0,0.6); 
+            border: 1px solid #ffeba9; cursor: pointer; transition: filter 0.2s; text-decoration: none; 
+            flex: 1 1 auto; min-width: 160px; max-width: 250px;
+        } 
+        .btn-primary:hover { filter: brightness(1.15); }
+
+        .site-footer { text-align: center; margin-top: 50px; padding-top: 20px; border-top: 1px dashed rgba(138, 99, 21, 0.3); }
+        .site-footer p { color: var(--text-muted); font-family: 'Sarabun', sans-serif; font-size: 0.85rem; letter-spacing: 0.5px; margin: 0; }
+
+        @media (max-width: 600px) { 
+            .reader-controls { justify-content: center; } 
+            .poem-box { max-width: 100%; font-size: 1em; padding: 20px 15px; }
+            .bottom-action-group { flex-direction: column; gap: 12px; margin-top: 40px; padding-top: 30px; }
+            .btn-primary { width: 100%; max-width: 100%; }
+        }
+
+        #resume-scroll-banner {
+            position: fixed; bottom: clamp(15px, 3vw, 20px); right: clamp(15px, 3vw, 20px); left: clamp(15px, 3vw, auto); 
+            background: linear-gradient(135deg, #1a120b, #0a0603); border: 1px solid var(--gold-main, #d4af37);
+            color: var(--gold-light, #f5d77f); padding: clamp(10px, 2vw, 12px) clamp(15px, 3vw, 20px);
+            border-radius: 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.8);
+            display: none; align-items: center; justify-content: space-between; gap: 12px; z-index: 9999;
+            font-family: 'Prompt', sans-serif; font-size: clamp(0.8rem, 2vw, 0.9rem);
+        }
+        .resume-btn-group { display: flex; align-items: center; gap: 8px; }
+        #resume-scroll-banner button {
+            background: var(--gold-main, #d4af37); color: #150a03; border: none;
+            padding: 5px clamp(10px, 2vw, 12px); border-radius: 15px; font-weight: bold;
+            cursor: pointer; font-family: 'Prompt', sans-serif; font-size: clamp(0.75rem, 2vw, 0.85rem); white-space: nowrap;
+        }
+        #resume-scroll-banner button:hover { filter: brightness(1.2); }
+        #resume-scroll-banner .close-banner { background: transparent; color: #8a7761; padding: 0 5px; font-size: 1rem; }
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        <!-- 🌟 มุมกล่องเรืองแสง -->
+        <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor corner-top-left" alt="" width="110" height="110">
+        <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor corner-top-right" alt="" width="110" height="110">
+        <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor corner-bottom-left" alt="" width="110" height="110">
+        <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019928/corner.png" class="corner-decor corner-bottom-right" alt="" width="110" height="110">
+
+        <header>
+            <div class="site-title"><img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1788019626/logo.png" alt="ศิษย์หลวงปู่"></div>
+            <nav>
+                <a href="index.html">หน้าแรก</a>
+                <a href="reader2.html" class="active">ใต้แสงจันทน์</a>
+                <a href="reader.html">สัตยาสาบาน</a>
+                <a href="webboard.html">ลานเสวนา</a>
+                <a href="admin_login.html" style="color: var(--gold-dark);">ประตูสู่เมืองลับแล</a>
+            </nav>
+        </header>
+
+        <div class="board-layout">
+            <div class="board-main">
+                <a href="index.html" class="btn-back">← กลับสู่หน้าแรก</a>
+                <div class="breadcrumb">
+                    <a href="index.html">หน้าแรก</a> > <span style="color: #fff;">นิยายใต้แสงจันทน์</span>
+                </div>
+
+                <div class="category-block">
+                    <h3 class="section-title">ใต้แสงจันทน์</h3>
+
+                    <div class="reader-controls">
+                        <div class="font-btn-group">
+                            <span style="font-size: 0.85rem; color: var(--gold-light);">ปรับขนาดอักษร:</span>
+                            <button type="button" class="btn-tool" onclick="adjustFontSize(-0.1)">A-</button>
+                            <button type="button" class="btn-tool" onclick="resetFontSize()">ปกติ</button>
+                            <button type="button" class="btn-tool" onclick="adjustFontSize(0.1)">A+</button>
+                        </div>
+                    </div>
+
+                    <!-- 🔴 ส่วนที่ 1: เปลี่ยนชื่อตอน -->
+                    <h1 class="novel-title-text" id="chapterTitle">ตอนจบ - รอทวงถามสัตยาสาบาน</h1>
+                    <div class="novel-chapter-sub" id="chapterSub">สลักเรื่องราวโดย: ศิษย์หลวงปู่</div>
+
+                    <div class="novel-body-text" id="novelContent">
+                        
+                        <!-- 🔴 ส่วนที่ 2: เปลี่ยนลิงก์รูปภาพ -->
+                        <img src="https://res.cloudinary.com/kjdb7wyp/image/upload/v1793009440/Designer_6.png" alt="ฉากเปลี่ยน" width="800" height="450">
+
+                        <p>เช้าวันที่สี่ในเวียงจันทน์เริ่มต้นด้วยแสงแดดที่ดูจะเจิดจ้ากว่าทุกวัน ทว่าในใจของ ‘ท้องฟ้า’ กลับถูกปกคลุมด้วยเมฆหมอกแห่งความใจหาย พรุ่งนี้คือวันเดินทางกลับกรุงเทพฯ แล้ว</p>
+
+<p>จาคันต์มารอรับเธอตั้งแต่สาย วันนี้เขาไม่ได้พาเธอไปเดินตามซอกซอยหรือร้านกาแฟ แต่พามายังสถานที่อันเป็นศูนย์รวมจิตใจของชาวล้านช้าง ‘พระธาตุหลวงเวียงจันทน์’ องค์เจดีย์สีทองอร่ามตั้งตระหง่านตัดกับผืนฟ้าสีคราม</p>
+
+<p>ทั้งสองเดินประทักษิณรอบองค์พระธาตุอย่างเงียบสงบ กลิ่นธูปและดอกไม้บูชาลอยอบอวล ท้องฟ้าหลับตาพนมมืออธิษฐานอยู่นานกว่าปกติ เมื่อเธอลืมตาขึ้น ก็พบว่าจาคันต์กำลังหยุดยืนทอดสายตามองเธออยู่ก่อนแล้ว แววตาของเขาล้ำลึกและเงียบงัน</p>
+
+<p>“ขอพรว่าอะไรหรือครับ ถึงได้ตั้งใจขนาดนั้น” เขาเอ่ยถาม รอยยิ้มยังคงประดับบนใบหน้า ทว่าแววตากลับหม่นแสงลงเล็กน้อย</p>
+
+<p>“ฉันขอให้... ความทรงจำในการเดินทางครั้งนี้อยู่กับฉันตลอดไปค่ะ” เธอตอบตามตรง นัยน์ตาประสานกับเขาอย่างซื่อตรง “และขอให้ฉัน... ไม่ลืมคุณ”</p>
+
+<p>ประโยคนั้นทำให้ฝีเท้าของพญานาคราชชะงักงัน หัวใจของท่านปวดร้าวอย่างแสนสาหัส จาคันต์เบือนหน้าหนีไปทางองค์พระธาตุเพื่อซ่อนความสั่นไหวในดวงตาสีเข้มที่เกือบจะแปรเปลี่ยนเป็นสีทอง</p>
+
+<p>“บางครั้ง... ความทรงจำก็เป็นเหมือนเงาครับ ท้องฟ้า” เขากล่าวเสียงแผ่วเบา กลืนก้อนความรู้สึกตื้อตันลงลำคอ “มันอาจจะสวยงามเมื่อเรามองย้อนกลับไป แต่มันก็ดึงรั้งไม่ให้เราก้าวเดินไปข้างหน้า... หากวันหนึ่งคุณต้องลืมเรื่องราวบางอย่าง เพื่อให้ชีวิตเบาสบายและมีอนาคตที่สว่างไสว ขอให้รู้ไว้ว่า... สิ่งที่หายไปนั้น ยินดีที่จะถูกลืมครับ”</p>
+
+<p>“ทำไมคุณถึงชอบพูดเหมือนเราจะไม่ได้เจอกันอีกเลยล่ะคะ จาคันต์” ท้องฟ้าถามเสียงสั่น ความรู้สึกวูบโหวงในอกตีตื้นขึ้นมา</p>
+
+<p>ชายหนุ่มไม่ตอบ เขาเพียงแค่ยิ้มรับและพาเธอเดินชมบริเวณโดยรอบต่อ ตลอดช่วงบ่าย พวกเขาใช้เวลาเดินทอดน่องไปตามถนนสายเก่า แวะกินเฝอร้านเล็กๆ และนั่งพักใต้ร่มไม้ บรรยากาศของวันที่สี่เต็มไปด้วยความเรียบง่ายที่แสนสบายใจ แต่กลับหนักอึ้งไปด้วย ‘เวลาที่นับถอยหลัง’</p>
+
+<p>ท้องฟ้าลอบมองเสี้ยวหน้าของเขาหลายครั้ง เธอพบว่าเขามักจะเหม่อมองไปทางแม่น้ำโขงเสมอ ราวกับเขากำลังนับเวลาเพื่อกลับคืนสู่ที่ที่เขาจากมา</p>
+
+<p>กระทั่งแสงอาทิตย์เริ่มคล้อยต่ำ อาบไล้ท้องฟ้าให้กลายเป็นสีส้มแดงดั่งสีของความพลัดพราก... เป็นสัญญาณเตือนว่า คืนสุดท้ายของพวกเขากำลังจะคืบคลานเข้ามา ซึ่งจะเชื่อมโยงเข้าสู่ความเงียบงันของลานเจ้าอนุวงศ์ยามดึกสงัดในคืนที่สี่ ที่จาคันต์เตรียมตัวจะลบความทรงจำของเธอและบอกลาตลอดกาล</p>
+
+<h2 class="chapter-title">คืนสุดท้ายในเวียงจันทน์</h2>
+
+<p>ลมจากแม่น้ำโขงพัดแรงกว่าทุกวัน</p>
+
+<p>ลานเจ้าอนุวงศ์ยามดึกสงัดเงียบเชียบ รูปปั้นกษัตริย์องค์สุดท้ายแห่งล้านช้างยืนตระหง่านอยู่ท่ามกลางความมืด พระหัตถ์ของพระองค์ทอดยื่นออกไปเบื้องหน้า ชี้ข้ามสายน้ำกว้างใหญ่ไปยังแผ่นดินอีกฝั่ง เป็นท่วงท่าที่เปี่ยมไปด้วยความเด็ดเดี่ยว ทว่าก็ซ่อนความร้าวรานของการสูญเสียเอาไว้</p>
+
+<p>ท้องฟ้ายืนอยู่ใต้เงาของอนุสาวรีย์ ดวงตาของเธอไม่ได้มองข้ามแม่น้ำเหมือนรูปปั้น แต่กำลังทอดมองแผ่นหลังกว้างของชายหนุ่มที่ยืนอยู่เคียงข้าง</p>
+
+<p>พรุ่งนี้เช้า เธอต้องเดินทางกลับกรุงเทพฯ</p>
+
+<p>รายงานของเธอเสร็จสมบูรณ์แล้ว สมุดบันทึกเต็มไปด้วยข้อมูลและภาพถ่าย แต่หัวใจของเธอกลับว่างเปล่าอย่างน่าประหลาด มันโหวงเหวงราวกับมีใครควักเอาชิ้นส่วนที่สำคัญที่สุดออกไป</p>
+
+<p>“คุณรู้ไหมครับ ว่าทำไมเจ้าอนุวงศ์ถึงหันพระพักตร์ไปทางนั้น” จาคันต์เอ่ยทำลายความเงียบ น้ำเสียงของเขาเรียบเรื่อย ทว่าลอยคว้างไปกับสายลม</p>
+
+<p>“เพราะฝั่งนู้นคือแผ่นดินไทย... แผ่นดินที่เคยมีเรื่องราวบาดหมางกันในอดีตใช่ไหมคะ” ท้องฟ้าตอบตามประวัติศาสตร์ที่เพิ่งศึกษามา</p>
+
+<p>จาคันต์หันกลับมามองเธอ ดวงตาสีน้ำตาลเข้มของเขาสะท้อนแสงจันทร์จนดูคล้ายมีเปลวไฟสีทองเต้นเร่าอยู่ภายใน</p>
+
+<p>“นั่นคือสิ่งที่ประวัติศาสตร์จารึกไว้ครับ แต่สำหรับผม... ผมมองว่านั่นคือท่วงท่าของคนที่กล้าต่อสู้เพื่อสิ่งที่รักที่สุด แม้จะรู้ตั้งแต่ก้าวแรกว่าจุดจบคือความพ่ายแพ้ก็ตาม”</p>
+
+<p>ชายหนุ่มเว้นจังหวะ เขาก้าวเข้ามาใกล้เธออีกนิด</p>
+
+<p>“แต่ในโลกนี้... มีบางคนที่ขี้ขลาดเกินกว่าจะสู้เพื่อสิ่งที่ตัวเองรัก เพราะเขารู้ดีว่า การดึงรั้งเธอเอาไว้ จะมีแต่ทำให้เธอต้องเจ็บปวด เขาจึงเลือกที่จะปล่อยมือ... ทั้งที่หัวใจของเขาเองกำลังจะแหลกสลาย”</p>
+
+<p>ประโยคนั้นไม่ได้อยู่ในหน้าประวัติศาสตร์เล่มใด แต่มันพุ่งตรงเข้ามากระแทกใจของท้องฟ้าอย่างจัง</p>
+
+<p>เธอไม่เข้าใจว่าทำไมจู่ๆ ขอบตาของตัวเองถึงร้อนผ่าว หญิงสาวพยายามฝืนยิ้ม แสร้งทำเป็นหัวเราะกลบเกลื่อน</p>
+
+<p>“คุณพูดซะเศร้าเลยนะคะ จาคันต์ พรุ่งนี้ฉันก็จะกลับแล้วแท้ๆ แทนที่จะพูดเรื่องดีๆ ให้ฉันประทับใจ”</p>
+
+<p>“ท้องฟ้า...”</p>
+
+<p>เพียงแค่เขาเรียกชื่อเธอด้วยน้ำเสียงพร่าสั่น รอยยิ้มที่ฝืนทำไว้ก็พังทลายลง</p>
+
+<p>จาคันต์ยกมือขึ้นช้าๆ ปลายนิ้วเย็นเฉียบของเขาแตะลงบนพวงแก้มเนียนที่ตอนนี้เปียกชุ่มไปด้วยหยดน้ำตา ท้องฟ้าสะดุ้งเล็กน้อย แต่เธอไม่ได้ถอยหนี เธอหลับตาลง ปล่อยให้น้ำตาไหลรินลงมาอาบแก้ม สัมผัสจากฝ่ามือของเขาคุ้นเคยเกินไป อบอุ่นเกินไป และเจ็บปวดเกินกว่าที่เด็กสาววัยสิบเก้าปีจะรับไหว</p>
+
+<p>“ทำไมฉันต้องร้องไห้ด้วยคะ...” เธอสะอื้น “เราเพิ่งรู้จักกันแค่สองวันแท้ๆ แต่ทำไมฉันถึงรู้สึกเหมือน... เหมือนกำลังจะเสียคุณไปตลอดกาล”</p>
+
+<p>คำถามนั้นกรีดลึกลงไปในวิญญาณของพญานาคราช</p>
+
+<p>จาคันต์กัดกรามแน่น เขาอยากจะดึงร่างเล็กนี้เข้ามากอด อยากจะตะโกนบอกความจริงทั้งหมดว่าเขาคือใคร และนางคือดวงใจของเขาที่เวียนว่ายตายเกิดมาเพื่อพบกัน</p>
+
+<p>“คุณไม่ได้เสียผมไปหรอกครับ ท้องฟ้า” จาคันต์กระซิบชิดหน้าผากเนียน “ผมจะอยู่ตรงนี้... อยู่ในทุกๆ ที่ที่คุณมองเห็นแม่น้ำสายนี้”</p>
+
+<p>“ไปกรุงเทพฯ กับฉันไม่ได้เหรอคะ จาคันต์” เธออ้อนวอนด้วยเสียงสั่นเครือ มือเล็กยกขึ้นกำชายเสื้อของเขาไว้แน่นราวกับเด็กหลงทาง “ไปอยู่ด้วยกัน... นะคะ”</p>
+
+<p>“ชีวิตของคุณกว้างใหญ่เกินกว่าจะเอามาผูกติดกับผมครับ” เขาตอบอย่างทะนุถนอม “คุณมีโลกทั้งใบรออยู่ มีอนาคต มีครอบครัว ส่วนผม... เป็นได้แค่เศษเสี้ยวความทรงจำที่รอคอยอยู่หลังกาลเวลาเท่านั้น”</p>
+
+<p>“ฉันไม่เข้าใจ...”</p>
+
+<p>ท้องฟ้าส่ายหน้า น้ำตาไหลพรากหนักกว่าเดิม ความร้าวรานจากก้นบึ้งของจิตวิญญาณปะทุขึ้นมา</p>
+
+<p>จาคันต์ประคองใบหน้าของเธอให้เงยขึ้นสบตา ในวินาทีนั้น ม่านตาสีน้ำตาลของเขาแปรเปลี่ยนเป็นสีทองอร่ามสุกสกาวภายใต้แสงจันทร์</p>
+
+<p>กลิ่นดอกจำปาโบราณและกลิ่นไอของธารน้ำเย็นจัดลอยคลุ้งขึ้นมาในอากาศ</p>
+
+<p>“ฟังผมนะคนดี...” น้ำเสียงของเขาดังก้องกังวานราวกับเสียงสะท้อนจากวังบาดาล “จงกลับไปใช้ชีวิตของคุณให้งดงามที่สุด ใช้ชีวิตในฐานะ ‘ท้องฟ้า’ อย่างที่คุณควรจะเป็น ลืมความเจ็บปวดในคืนนี้ไปเสีย...”</p>
+
+<p>“ไม่... ฉันไม่อยากลืม...”</p>
+
+<p>“คุณจะจำได้เพียงว่า เวียงจันทน์คือเมืองที่สวยงาม และมีชายแปลกหน้าคนหนึ่งเป็นไกด์พาคุณเที่ยว...”</p>
+
+<p>หยาดน้ำตาสีใสหยดหนึ่งร่วงหล่นจากหางตาของจอมนาคราชผู้ยิ่งใหญ่ น้ำตาที่เขาไม่เคยเสียให้ใครเว้นแต่นางเพียงผู้เดียว</p>
+
+<p>“จนกว่าจะถึงวันนั้น... วันที่บ่วงกรรมเริ่มหมุนอีกครา วันที่สิ้นบุญสิ้นกุศล... ผมจะเป็นคนไปทวงคำสาบานนั้นคืนด้วยตัวของผมเอง”</p>
+
+<p>ชายหนุ่มประทับริมฝีปากเย็นจัดลงบนหน้าผากของหญิงสาวเนิ่นนาน ราวกับจะถ่ายทอดทุกความรัก ทุกความคิดถึง และทุกความรวดร้าวตลอดหลายร้อยปีผ่านสัมผัสนั้น</p>
+
+<blockquote class="quote-final">
+    “พี่จักไปรับเจ้ากลับมา... ธารนภาเทวีของพี่”
+</blockquote>
+
+<p>เสียงกระซิบสุดท้ายแผ่วเบาเลือนหายไปพร้อมกับสติของท้องฟ้าที่ดับวูบลง เธอทิ้งตัวลงสู่อ้อมแขนที่แข็งแกร่ง ก่อนที่ทุกอย่างจะจมดิ่งสู่ความมืดมิด</p>
+
+<div class="scene-divider">❖ ❖ ❖</div>
+
+<p>แสงแดดยามเช้าสาดส่องลอดผ้าม่านเข้ามาในห้องหมายเลขเจ็ด</p>
+
+<p>ท้องฟ้าสะดุ้งตื่นขึ้นมาบนเตียงนอนของตัวเอง เธอหอบหายใจแรง เหงื่อซึมชื้นเต็มหน้าผาก หญิงสาวยกมือขึ้นแตะแก้มตัวเองและพบว่ามันเปียกชุ่มไปด้วยคราบน้ำตาที่แห้งกรัง</p>
+
+<p>เธอร้องไห้หนักมาก... แต่จำไม่ได้ว่าร้องไห้เพราะอะไร</p>
+
+<p>สมองของเธอจดจำได้เพียงว่า เมื่อวานเธอเดินเที่ยวจนเหนื่อยล้า พอกลับมาถึงห้องพักก็ทิ้งตัวลงนอนจนถึงเช้า แต่ทำไมในอกถึงได้ปวดหนึบขนาดนี้?</p>
+
+<p>สายตาเหลือบไปเห็นบางสิ่งวางอยู่บนโต๊ะหัวเตียง</p>
+
+<p>มันคือดอกจำปาสีขาวบริสุทธิ์... และข้างๆ กันนั้น มีเศษเกล็ดทรายสีทองละเอียดตกอยู่หนึ่งเม็ด ส่องประกายล้อแสงแดดยามเช้า</p>
+
+<p>ภาพพาดพิงของชายหนุ่มรูปร่างสูงในเสื้อเชิ้ตสีเข้ม ผู้มีรอยยิ้มอบอุ่นและดวงตาแสนเศร้าวูบขึ้นมาในหัว...</p>
+
+<p><strong>จาคันต์</strong></p>
+
+<p>เธอจำชื่อเขาได้ จำได้ว่าเขาพาเธอเที่ยว แต่เมื่อพยายามนึกถึงใบหน้าของเขา ภาพนั้นกลับพร่าเลือนราวกับภาพสะท้อนบนผิวน้ำที่ถูกโยนหินใส่ ยิ่งพยายามนึก ก็ยิ่งลืมเลือน ยิ่งพยายามไขว่คว้า ก็ยิ่งสูญสลาย</p>
+
+<p>ท้องฟ้าหยิบดอกจำปาดอกนั้นขึ้นมาแนบอก ปล่อยให้น้ำตาหยดใหม่ไหลรินลงมาเงียบๆ กลิ่นหอมของมันทำให้เธอรู้สึกปลอดภัยและอ้างว้างในเวลาเดียวกัน</p>
+
+<p>รถโดยสารพาเธอข้ามสะพานมิตรภาพไทย-ลาวกลับสู่ฝั่งหนองคาย ท้องฟ้าทาบมือลงบนกระจกรถ ทอดสายตามองผืนน้ำโขงสีน้ำตาลขุ่นที่ไหลเอื่อยอยู่เบื้องล่าง ความรู้สึกผูกพันประหลาดยังคงตกตะกอนอยู่ในใจ</p>
+
+<p>เธอไม่รู้หรอกว่า ใต้ผืนน้ำลึกลงไปจนแสงแดดส่องไม่ถึง มีนัยน์ตาสีทองเรืองรองคู่หนึ่งกำลังเฝ้ามองรถโดยสารคันนั้นแล่นจากไปจนลับสายตา...</p>
+
+<p>พญาตยาคนาคราชในร่างกึ่งมนุษย์กึ่งนาคขดกายอยู่ใต้กระแสน้ำเย็นเยียบ เขายกมือขึ้นสัมผัสหน้าอกตรงตำแหน่งหัวใจที่ยังคงเต้นเป็นจังหวะเจ็บปวด</p>
+
+<p>เวลาสิบเก้าปีที่รอคอยมาสิ้นสุดลงแล้ว และการรอคอยครั้งใหม่เพิ่งจะเริ่มต้นขึ้น</p>
+
+<p class="final-message">จงใช้ชีวิตวัยเยาว์ของเจ้าให้เต็มที่เถิด ท้องฟ้า...</p>
+
+<p>อีกหกปีข้างหน้า เมื่อเจ้าอายุเบญจเพส เมื่อร่องรอยของทรายสีทองที่ข้อเท้าของเจ้าเริ่มปรากฏชัด และเมื่อดวงตาที่สามถูกเปิดออก...</p>
+
+<p>สัตยาสาบานแห่งวังบาดาล... จะเรียกตัวเจ้ากลับมาหาพี่เอง</p>
+
+<p>สายน้ำโขงยังคงไหลเชี่ยว หมุนวนราวกับวงล้อแห่งกรรมที่เริ่มเดินเครื่องอย่างเงียบงัน... รอคอยวันที่จะดึงรั้งจิตผูกคืนสู่ปฐมบทแห่งโชคชะตาอย่างหลีกเลี่ยงมิได้...</p>
+                        
+                        <div style="text-align: center; color: var(--gold-main); font-weight: bold; margin-top: 60px; letter-spacing: 2px;">♪ ใต้แสงจันทน์ OST. นิยายใต้แสงจันทน์ ♪</div>
+
+                        <div style="display: flex; justify-content: center; width: 100%; margin-top: 15px;">
+                            <div style="width: 100%; max-width: 720px; aspect-ratio: 16 / 9; margin: 0 auto;">
+                                <!-- 🔴 ส่วนที่ 4: เปลี่ยนลิงก์วิดีโอ YouTube (นำ URL มาใส่ตรง src="") -->
+                                <iframe width="100%" height="100%" src="https://youtu.be/sn6n3Cj9hNU?si=Qb8AZVC9qPvnp7iL" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen style="display: block; border-radius: 8px;"></iframe>
+                            </div>
+                        </div>
+                        
+                        <div class="bottom-action-group">
+                            <a href="index.html" class="btn-primary">กลับหน้าแรก</a>
+                            <a href="webboard.html" class="btn-primary">เข้าสู่ลานเสวนา</a>
+                            <button type="button" class="btn-primary" onclick="scrollToTop()">ขึ้นข้างบน</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="site-footer">
+            <p>© 2026 SitLuangPu Studio</p>
+        </footer>
+    </div>
+
+    <!-- Modal ขยายรูปภาพ -->
+    <div class="image-modal-overlay" id="imageModal" onclick="closeImageModal()">
+        <img class="image-modal-content" id="modalImage" alt="ขยายรูปภาพ">
+    </div>
+
+    <!-- แบนเนอร์จดจำจุดอ่านล่าสุด -->
+    <div id="resume-scroll-banner">
+        <span>📜 พบร่องรอยการอ่านค้างไว้...</span>
+        <div class="resume-btn-group">
+            <button onclick="jumpToSavedPosition()">กลับจุดเดิม</button>
+            <button class="close-banner" onclick="dismissResumeBanner()">✕</button>
+        </div>
+    </div>
+
+    <script>
+        // 🛡️ ระบบป้องกันการคัดลอก (Anti-Copy)
+        document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+        document.addEventListener('copy', function(e) { e.preventDefault(); });
+        document.addEventListener('cut', function(e) { e.preventDefault(); });
+        document.addEventListener('selectstart', function(e) { e.preventDefault(); });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F12' || e.keyCode === 123) { e.preventDefault(); return false; }
+            if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) {
+                e.preventDefault(); return false;
+            }
+            if (e.ctrlKey && (e.key === 'u' || e.key === 'U' || e.key === 'c' || e.key === 'C' || e.key === 's' || e.key === 'S')) {
+                e.preventDefault(); return false;
+            }
+        });
+
+        // 🌟 ระบบจัดการขนาดตัวอักษร
+        let currentFontSizeRem = 1.1;
+
+        function adjustFontSize(delta) {
+            currentFontSizeRem += delta;
+            if (currentFontSizeRem < 0.9) currentFontSizeRem = 0.9;
+            if (currentFontSizeRem > 1.8) currentFontSizeRem = 1.8;
+            document.getElementById('novelContent').style.fontSize = currentFontSizeRem + 'rem';
+        }
+
+        function resetFontSize() {
+            currentFontSizeRem = 1.1;
+            document.getElementById('novelContent').style.fontSize = '1.1rem';
+        }
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 🌟 ระบบขยายรูปภาพ (Image Modal)
+        document.addEventListener('DOMContentLoaded', () => {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            const novelImages = document.querySelectorAll('.novel-body-text img');
+
+            novelImages.forEach(img => {
+                img.addEventListener('click', () => {
+                    modal.classList.add('active');
+                    modalImg.src = img.src;
+                });
+            });
+        });
+
+        function closeImageModal() {
+            document.getElementById('imageModal').classList.remove('active');
+        }
+
+        // 🌟 ระบบจดจำจุดอ่าน (Smart Scroll Save)
+        const STORAGE_KEY = 'siy_reading_pos_' + window.location.pathname;
+        let scrollTimer = null;
+        let initialSavedPosition = 0; // เพิ่มตัวแปรเก็บตำแหน่งเดิมก่อนโดนทับ
+
+        window.addEventListener('scroll', () => {
+            if (scrollTimer) clearTimeout(scrollTimer);
+            scrollTimer = setTimeout(() => {
+                if (window.scrollY > 200) {
+                    localStorage.setItem(STORAGE_KEY, window.scrollY);
+                } else {
+                    localStorage.removeItem(STORAGE_KEY);
+                }
+            }, 500);
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedPosition = localStorage.getItem(STORAGE_KEY);
+            if (savedPosition && parseInt(savedPosition, 10) > 200) {
+                initialSavedPosition = parseInt(savedPosition, 10);
+                const banner = document.getElementById('resume-scroll-banner');
+                if (banner) {
+                    banner.style.display = 'flex';
+                }
+            }
+        });
+
+        function jumpToSavedPosition() {
+            if (initialSavedPosition > 0) {
+                // เลื่อนไปยังจุดเดิมที่เซฟไว้ก่อนหน้า (ไม่ใช่จุดที่เพิ่งถูก scroll ทับไปเมื่อกี้)
+                setTimeout(() => {
+                    window.scrollTo({
+                        top: initialSavedPosition,
+                        behavior: 'smooth'
+                    });
+                }, 100);
+            }
+            dismissResumeBanner();
+        }
+
+        function dismissResumeBanner() {
+            const banner = document.getElementById('resume-scroll-banner');
+            if (banner) {
+                banner.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
