@@ -753,7 +753,7 @@
             renderBookmarks();
             startNotificationPolling();
 
-            // เพิ่ม Event Listener สำหรับดักจับการกดปุ่ม Enter ใน Modal สำหรับ สมัคร/ล็อกอิน
+            // ดักจับการกดปุ่ม Enter ใน Input Modal สำหรับ สมัคร/ล็อกอิน
             const modalInputIds = ['regUsername', 'regPassword', 'botCheckInput'];
             modalInputIds.forEach(id => {
                 const el = document.getElementById(id);
@@ -764,6 +764,17 @@
                             handleSubmitAction();
                         }
                     });
+                }
+            });
+
+            // ดักจับการกดปุ่ม Enter ทั่วทั้งหน้าต่าง (Global Listener) สำหรับหน้าต่างแจ้งเตือน (Custom Alert)
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    const customAlert = document.getElementById('customAlertModal');
+                    if (customAlert && customAlert.classList.contains('active')) {
+                        e.preventDefault();
+                        document.getElementById('customAlertBtn').click(); // จำลองการคลิกปุ่มรับทราบ
+                    }
                 }
             });
 
