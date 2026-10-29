@@ -753,6 +753,20 @@
             renderBookmarks();
             startNotificationPolling();
 
+            // เพิ่ม Event Listener สำหรับดักจับการกดปุ่ม Enter ใน Modal สำหรับ สมัคร/ล็อกอิน
+            const modalInputIds = ['regUsername', 'regPassword', 'botCheckInput'];
+            modalInputIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('keypress', function(e) {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            handleSubmitAction();
+                        }
+                    });
+                }
+            });
+
             const hasAcceptedRules = localStorage.getItem('siy_webboard_rules_accepted');
             if (!hasAcceptedRules) {
                 const rulesModal = document.getElementById('webboardRulesModal');
