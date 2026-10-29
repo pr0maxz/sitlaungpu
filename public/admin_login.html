@@ -160,7 +160,7 @@
         <div class="modal-box" id="alertBox">
             <h3 id="alertTitle">อาถรรพ์ต่อต้าน!</h3>
             <p id="alertMessage">มนตราป้องกันทำงาน... เจ้าไม่ใช่คนของเมืองนี้!</p>
-            <button type="button" class="btn-close-modal" onclick="closeAlert()">รับทราบ</button>
+            <button type="button" class="btn-close-modal" id="alertCloseBtn" onclick="closeAlert()">รับทราบ</button>
         </div>
     </div>
 
@@ -206,6 +206,17 @@
         function closeAlert() {
             document.getElementById('alertModal').classList.remove('active');
         }
+
+        // ดักจับการกดปุ่ม Enter ทั่วหน้าเพื่อใช้กดปุ่มใน Modal
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                const alertModal = document.getElementById('alertModal');
+                if (alertModal && alertModal.classList.contains('active')) {
+                    e.preventDefault(); // ป้องกันการ trigger อย่างอื่น
+                    document.getElementById('alertCloseBtn').click(); // จำลองการกดปุ่มรับทราบ
+                }
+            }
+        });
 
         async function handleAdminLogin(e) {
             e.preventDefault();
